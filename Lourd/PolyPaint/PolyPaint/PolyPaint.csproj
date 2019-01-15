@@ -83,13 +83,12 @@
     <Compile Include="Modeles\Editeur.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
     <Compile Include="VueModeles\VueModele.cs" />
-    <Page Include="Vues\FenetreDessin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Vues\FenetreChat.xaml.cs">
+      <DependentUpon>FenetreChat.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\FenetreDessin.xaml.cs">
       <DependentUpon>FenetreDessin.xaml</DependentUpon>
@@ -142,6 +141,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\efface_crayon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Vues\FenetreChat.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\FenetreDessin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

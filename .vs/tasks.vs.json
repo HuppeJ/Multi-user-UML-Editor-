@@ -1,0 +1,10 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "task-FenetreChat",
+      "appliesTo": "Lourd/PolyPaint/PolyPaint/Vues/FenetreChat.xaml",
+      "type": "launch"
+    }
+  ]
+}
