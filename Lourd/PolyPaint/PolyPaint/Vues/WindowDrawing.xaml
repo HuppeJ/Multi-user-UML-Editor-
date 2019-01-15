@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"        
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="PolyPaint.FenetreDessin"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="PolyPaint.WindowDrawing"
         mc:Ignorable="d"
         Title="Poly Paint" Height="700" Width="900" Background="#CBD4E4" MinWidth="627" MinHeight="200">
     <Window.Resources>

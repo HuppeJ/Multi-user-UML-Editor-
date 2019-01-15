@@ -17,9 +17,9 @@ namespace PolyPaint.Vues
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class FenetreChat : Window
+    public partial class WindowChat : Window
     {
-        public FenetreChat()
+        public WindowChat()
         {
             InitializeComponent();
         }

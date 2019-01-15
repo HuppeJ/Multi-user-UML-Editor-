@@ -87,11 +87,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Vues\FenetreChat.xaml.cs">
-      <DependentUpon>FenetreChat.xaml</DependentUpon>
+    <Compile Include="Vues\WindowChat.xaml.cs">
+      <DependentUpon>WindowChat.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Vues\FenetreDessin.xaml.cs">
-      <DependentUpon>FenetreDessin.xaml</DependentUpon>
+    <Compile Include="Vues\WindowDrawing.xaml.cs">
+      <DependentUpon>WindowDrawing.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -143,11 +143,11 @@
     <Resource Include="Resources\efface_crayon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Vues\FenetreChat.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Vues\WindowChat.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Vues\FenetreDessin.xaml">
+    <Page Include="Vues\WindowDrawing.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>

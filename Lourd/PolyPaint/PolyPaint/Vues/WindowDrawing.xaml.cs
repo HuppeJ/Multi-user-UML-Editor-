@@ -8,11 +8,11 @@ using PolyPaint.VueModeles;
 namespace PolyPaint
 {
     /// <summary>
-    /// Logique d'interaction pour FenetreDessin.xaml
+    /// Logique d'interaction pour WindowDrawing.xaml
     /// </summary>
-    public partial class FenetreDessin : Window
+    public partial class WindowDrawing : Window
     {
-        public FenetreDessin()
+        public WindowDrawing()
         {
             InitializeComponent();
             DataContext = new VueModele();
