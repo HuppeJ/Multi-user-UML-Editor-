@@ -1,9 +1,10 @@
-package com.polypaint.polypaint
+package com.polypaint.polypaint.Activity
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.polypaint.polypaint.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onGo(view: View) {
-        val intent = Intent(this, MessageListActivity::class.java)
+        val intent = Intent(this, ChatActivity::class.java)
         startActivity(intent)
     }
 }

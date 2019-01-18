@@ -1,4 +1,4 @@
-package com.polypaint.polypaint
+package com.polypaint.polypaint.Model
 
 import android.provider.ContactsContract
 

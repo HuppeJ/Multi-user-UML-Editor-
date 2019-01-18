@@ -1,4 +1,4 @@
-package com.polypaint.polypaint
+package com.polypaint.polypaint.Adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.polypaint.polypaint.Model.Message
+import com.polypaint.polypaint.R
 
 class MessageListAdapter (var context: Context, var messageList: List<Message>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
