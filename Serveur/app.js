@@ -13,24 +13,38 @@
  * limitations under the License.
  */
 
-'use strict';
+'use strict'; // is used by new versions of Javascript to enforce secure coding practices
 
-// [START gae_node_request_example]
+// Configure .env file 
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
-
 const app = express();
 
-app.get('/', (req, res) => {
-  res
-    .status(200)
-    .send('Hello, world!')
-    .end();
+// Set up the express routing system
+var routes = require('./routes/routes');
+routes(app);
+
+const http = require('http');
+const server = http.createServer(app);
+
+const socketIO = require('socket.io');
+const io = socketIO(server);
+
+// Initialise Socket Events
+const chatSocketEvents = require('./services/chat/chatSocketEvents');
+chatSocketEvents(io);
+
+// Set up the Socket.io communication system
+io.on('connection', (client) => {
+  console.log('New client connected')
 });
 
-// Start the server
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+
+const PORT = process.env.PORT;
+server.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
   console.log('Press Ctrl+C to quit.');
 });
-// [END gae_node_request_example]
+
