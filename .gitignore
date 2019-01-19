@@ -1,1 +1,4 @@
 Serveur/node_modules/
+ClientSocketIoTesting/.cache/
+ClientSocketIoTesting/dist/
+ClientSocketIoTesting/node_modules/
