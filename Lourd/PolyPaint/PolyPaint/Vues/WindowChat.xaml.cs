@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,17 +18,14 @@ using System.Windows.Shapes;
 
 namespace PolyPaint.Vues
 {
-    /// <summary>
-    /// Interaction logic for Window1.xaml
-    /// </summary>
-    public partial class WindowChat : Window
+    public partial class WindowChat
     {
         public WindowChat()
         {
             InitializeComponent();
         }
 
-        void OnClick1(object sender, RoutedEventArgs e)
+        public void OnClick1(object sender, RoutedEventArgs e)
         {
             btn1.Background = Brushes.LightBlue;
         }
