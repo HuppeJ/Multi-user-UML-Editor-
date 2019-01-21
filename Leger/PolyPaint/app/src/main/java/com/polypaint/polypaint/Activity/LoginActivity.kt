@@ -1,6 +1,7 @@
 package com.polypaint.polypaint.Activity
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
@@ -58,6 +59,8 @@ class LoginActivity:Activity(){
         }
 
         socket?.emit("logUser", username)
+        val intent = Intent(this, ChatActivity::class.java)
+        startActivity(intent)
     }
 
     private var onNewLogin: Emitter.Listener = Emitter.Listener{

@@ -1,6 +1,7 @@
 package com.polypaint.polypaint.Application
 
 import android.app.Application
+import android.util.Log
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -12,15 +13,20 @@ class PolyPaint: Application(){
 
     override fun onCreate() {
         super.onCreate()
-        try {
-            socket = IO.socket(SocketConstants.SERVER_URL)
-        } catch (e: URISyntaxException){
-            throw RuntimeException(e)
-        }
+
     }
 
     fun getSocket(): Socket? {
         return socket
+    }
+
+    fun setSocketUri (uri: String){
+        try {
+            this.socket = IO.socket(uri)
+            Log.d("******", "**************************************")
+        } catch (e: URISyntaxException){
+            throw RuntimeException(e)
+        }
     }
 
 

@@ -24,38 +24,38 @@ class ChatActivity : AppCompatActivity(){
         messageList.add(
             Message(
                 "allo",
-                User("bob", 1),
+                User("bob"),
                 System.currentTimeMillis()
             )
         )
         messageList.add(
             Message(
                 "allo",
-                User("bob", 1),
+                User("bob"),
                 System.currentTimeMillis()
             )
         )
         messageList.add(
             Message(
                 "allo",
-                User("bobby", 2),
+                User("bobby"),
                 System.currentTimeMillis()
             )
         )
         messageList.add(
             Message(
                 "allo",
-                User("bob", 1),
+                User("bob"),
                 System.currentTimeMillis()
             )
         )
 
 
 
-        mMessageRecycler = findViewById(R.id.reyclerview_message_list)
-        mMessageAdapter = MessageListAdapter(this, messageList)
-        mMessageRecycler?.layoutManager = LinearLayoutManager(this)
-        mMessageRecycler?.adapter = mMessageAdapter
+//        mMessageRecycler = findViewById(R.id.reyclerview_message_list)
+//        mMessageAdapter = MessageListAdapter(this, messageList)
+//        mMessageRecycler?.layoutManager = LinearLayoutManager(this)
+//        mMessageRecycler?.adapter = mMessageAdapter
     }
 
     fun sendMessage(view: View){
@@ -64,7 +64,7 @@ class ChatActivity : AppCompatActivity(){
         messageList.add(
             Message(
                 editText.text.toString(),
-                User("bob", 1),
+                User("bob"),
                 System.currentTimeMillis()
             )
         )

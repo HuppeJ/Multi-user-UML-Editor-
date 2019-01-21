@@ -45,7 +45,7 @@ class MessageListAdapter (var context: Context, var messageList: List<Message>) 
     override fun getItemViewType(position: Int): Int {
         val message = messageList[position]
 
-        return if (message.sender.id == 1L) {
+        return if (message.sender.username == "bob") {
             VIEW_TYPE_MESSAGE_SENT
         } else {
             VIEW_TYPE_MESSAGE_RECEIVED
@@ -70,7 +70,7 @@ class MessageListAdapter (var context: Context, var messageList: List<Message>) 
         internal fun bind(message: Message) {
             messageText.text = message.text
             timeText.text = DateUtils.formatDateTime(context, message.createdAt, DateUtils.FORMAT_SHOW_TIME)
-            nameText.text = message.sender.nickname
+            nameText.text = message.sender.username
         }
     }
 
