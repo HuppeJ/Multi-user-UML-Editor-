@@ -5,31 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.app.Fragment
+import android.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.TextUtils
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
+import android.widget.ListView
 import android.widget.Toast
-import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
-import com.github.nkzawa.socketio.client.Socket.EVENT_DISCONNECT
-import com.github.nkzawa.socketio.client.Socket.EVENT_CONNECT
-import com.polypaint.polypaint.Adapter.MessageListAdapter
 import com.polypaint.polypaint.Adapter.RoomsListAdapter
-import com.polypaint.polypaint.Application.PolyPaint
-import com.polypaint.polypaint.Model.Message
 import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.Model.User
 import com.polypaint.polypaint.R
-import org.json.JSONException
-import org.json.JSONObject
 
 
 class RoomsListFragment: Fragment(){
@@ -44,6 +32,17 @@ class RoomsListFragment: Fragment(){
     private val typingHandler: Handler = Handler()
     private var isConnected: Boolean = true
 
+    var callback: OnRoomSelectedListener? = null
+
+    fun setOnRoomSelectedListener(activity: Activity) {
+        callback = activity as OnRoomSelectedListener
+    }
+
+    // Container Activity must implement this interface
+    interface OnRoomSelectedListener {
+        fun onRoomSelected(room: Room)
+    }
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         super.onAttach(context)
@@ -52,7 +51,11 @@ class RoomsListFragment: Fragment(){
         roomsList.add(Room("room2"))
         roomsList.add(Room("room3"))
         username = activity?.intent?.getStringExtra("username")
-        adapter = RoomsListAdapter(context!!, roomsList, User(username!!))
+        adapter = RoomsListAdapter(context!!, roomsList, User(username!!), object: RoomsListAdapter.OnItemClickListener{
+            override fun onItemClick(room: Room) {
+                callback?.onRoomSelected(room)
+            }
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,5 +91,10 @@ class RoomsListFragment: Fragment(){
         }
        // user = User(data!!.getStringExtra("username"))
     }
+
+    /*override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
+        super.onListItemClick(l, v, position, id)
+        callback?.onRoomSelected(position)
+    }*/
 
 }

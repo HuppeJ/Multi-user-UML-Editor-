@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.app.Fragment
+import android.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
@@ -23,7 +23,9 @@ import com.github.nkzawa.socketio.client.Socket.EVENT_DISCONNECT
 import com.github.nkzawa.socketio.client.Socket.EVENT_CONNECT
 import com.polypaint.polypaint.Adapter.MessageListAdapter
 import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Holder.MessagesHolder
 import com.polypaint.polypaint.Model.Message
+import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.Model.User
 import com.polypaint.polypaint.R
 import org.json.JSONException
@@ -36,7 +38,7 @@ class MessageListFragment: Fragment(){
     }
     private var socket: Socket? = null
     private var adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>?=null
-    private val messages: MutableList<Message> = mutableListOf()
+    private var messages: MutableList<Message> = mutableListOf()
     private var messageRecyclerView : RecyclerView? = null
     private var messageEditTextView : EditText? = null
     private var username: String? = null
@@ -195,5 +197,9 @@ class MessageListFragment: Fragment(){
             val messageObject = Message(message!!, User(username!!), createdAt!!)
             addMessage(messageObject)
         }
+    }
+
+    fun changeRoom(room: Room){
+        messages = MessagesHolder.getInstance().messagesByRoom[room.name]!!
     }
 }
