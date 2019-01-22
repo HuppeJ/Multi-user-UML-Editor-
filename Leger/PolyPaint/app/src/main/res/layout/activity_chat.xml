@@ -9,7 +9,7 @@
 
     <fragment
             android:id="@+id/fragment_message_list"
-            class="com.polypaint.polypaint.Fragment.MessageListFragment"
+            class="com.polypaint.polypaint.Fragment.RoomsListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 </android.support.constraint.ConstraintLayout>

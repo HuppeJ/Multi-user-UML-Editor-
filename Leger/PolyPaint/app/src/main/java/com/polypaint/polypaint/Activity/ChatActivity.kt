@@ -21,54 +21,5 @@ class ChatActivity : AppCompatActivity(){
 
         setContentView(R.layout.activity_chat)
 
-        messageList.add(
-            Message(
-                "allo",
-                User("bob"),
-                System.currentTimeMillis()
-            )
-        )
-        messageList.add(
-            Message(
-                "allo",
-                User("bob"),
-                System.currentTimeMillis()
-            )
-        )
-        messageList.add(
-            Message(
-                "allo",
-                User("bobby"),
-                System.currentTimeMillis()
-            )
-        )
-        messageList.add(
-            Message(
-                "allo",
-                User("bob"),
-                System.currentTimeMillis()
-            )
-        )
-
-
-
-//        mMessageRecycler = findViewById(R.id.reyclerview_message_list)
-//        mMessageAdapter = MessageListAdapter(this, messageList)
-//        mMessageRecycler?.layoutManager = LinearLayoutManager(this)
-//        mMessageRecycler?.adapter = mMessageAdapter
-    }
-
-    fun sendMessage(view: View){
-
-        var editText: EditText = findViewById(R.id.edittext_chatbox)
-        messageList.add(
-            Message(
-                editText.text.toString(),
-                User("bob"),
-                System.currentTimeMillis()
-            )
-        )
-        editText.setText("")
-        mMessageAdapter?.notifyDataSetChanged()
     }
 }
