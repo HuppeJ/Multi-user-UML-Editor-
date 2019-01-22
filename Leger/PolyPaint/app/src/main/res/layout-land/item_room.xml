@@ -10,7 +10,7 @@
 
     <TextView
             android:id="@+id/text_message_name"
-            android:text="RoomName"
+            android:text="asdfasdgdfgsdfgdsfgddg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
@@ -20,7 +20,7 @@
 
     <TextView
             android:id="@+id/text_message_body"
-            android:text="LastMessageInConvo"
+            android:text="asdfasdgdfgsdfgdsfgddg"
             android:layout_width="wrap_content"
             android:layout_height="43dp"
             android:maxWidth="240dp"
@@ -32,12 +32,12 @@
     <TextView
             android:id="@+id/text_message_time"
             android:layout_width="wrap_content"
-            android:text="TimeStamp"
+            android:text="asdfasdgdfgsdfgdsfgddg"
             android:layout_height="wrap_content"
             android:textSize="10sp"
             app:layout_constraintLeft_toRightOf="@+id/text_message_body"
             android:layout_marginLeft="108dp"
-            android:layout_marginEnd="28dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="28dp"
-            android:layout_marginTop="16dp" app:layout_constraintTop_toTopOf="parent"/>
+            android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

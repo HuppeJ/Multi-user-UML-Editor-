@@ -20,8 +20,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Activity.ChatActivity"></activity>
-        <activity android:name=".Activity.LoginActivity"/>
+        <activity android:name=".Activity.ChatActivity"/>
+        <activity android:name=".Activity.LoginActivity" />
         <activity android:name=".Activity.ChatRoomsActivity"/>
 
     </application>
