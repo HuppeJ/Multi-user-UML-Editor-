@@ -8,9 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.polypaint.polypaint.Model.Message
+import com.polypaint.polypaint.Model.User
 import com.polypaint.polypaint.R
 
-class MessageListAdapter (var context: Context, var messageList: List<Message>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class MessageListAdapter (var context: Context, var messageList: List<Message>, var user: User) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     companion object {
         private const val VIEW_TYPE_MESSAGE_SENT = 1
@@ -45,7 +46,7 @@ class MessageListAdapter (var context: Context, var messageList: List<Message>) 
     override fun getItemViewType(position: Int): Int {
         val message = messageList[position]
 
-        return if (message.sender.username == "bob") {
+        return if (message.sender.username == user.username) {
             VIEW_TYPE_MESSAGE_SENT
         } else {
             VIEW_TYPE_MESSAGE_RECEIVED

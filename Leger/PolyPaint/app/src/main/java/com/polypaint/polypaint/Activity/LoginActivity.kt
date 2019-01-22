@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Application.PolyPaint
@@ -58,8 +59,10 @@ class LoginActivity:Activity(){
             return
         }
 
-        socket?.emit("logUser", username)
+        socket?.emit("connection", username)
+
         val intent = Intent(this, ChatActivity::class.java)
+        intent.putExtra("username", username)
         startActivity(intent)
     }
 

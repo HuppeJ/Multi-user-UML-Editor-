@@ -60,7 +60,7 @@ class ChatActivity : AppCompatActivity(){
 
     fun sendMessage(view: View){
 
-        var editText = findViewById<EditText>(R.id.edittext_chatbox)
+        var editText: EditText = findViewById(R.id.edittext_chatbox)
         messageList.add(
             Message(
                 editText.text.toString(),

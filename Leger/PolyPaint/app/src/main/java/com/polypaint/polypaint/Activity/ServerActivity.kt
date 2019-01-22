@@ -4,20 +4,23 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.github.nkzawa.socketio.client.IO
+import android.widget.EditText
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.R
 
-class MainActivity : AppCompatActivity() {
+class ServerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_server)
     }
 
     fun onGo(view: View) {
         val app = application as PolyPaint
-        app.setSocketUri("http://192.168.0.194:3000")
+        val serverUrlView: EditText = findViewById(R.id.edittext_server_url)
+
+        app.setSocketUri(serverUrlView.text.toString().trim())
+        app.getSocket()?.connect()
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }

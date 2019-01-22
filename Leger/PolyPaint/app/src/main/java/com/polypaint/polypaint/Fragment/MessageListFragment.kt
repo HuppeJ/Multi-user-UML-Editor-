@@ -46,12 +46,14 @@ class MessageListFragment: Fragment(){
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        super.onAttach(context);
-        adapter = MessageListAdapter(context!!, messages!!);
+        super.onAttach(context)
+        username = activity?.intent?.getStringExtra("username")
+        adapter = MessageListAdapter(context!!, messages, User(username!!))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         setHasOptionsMenu(true)
 
@@ -130,14 +132,14 @@ class MessageListFragment: Fragment(){
         isTyping = false
 
         val message: String = messageEditTextView?.text.toString().trim()
-        Toast.makeText(activity?.applicationContext, message, Toast.LENGTH_LONG).show()
         if(TextUtils.isEmpty(message)){
             messageEditTextView?.requestFocus()
             return
         }
 
         messageEditTextView?.setText("")
-        val messageObject = Message(message, User(username!!),System.currentTimeMillis() )
+        Log.d("*****", username)
+        val messageObject = Message(message, User(username!!), System.currentTimeMillis() )
         addMessage(messageObject)
 
         socket?.emit("new message", messageObject)
