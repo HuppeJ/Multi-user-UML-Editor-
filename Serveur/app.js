@@ -110,9 +110,105 @@ app.get('/visit', async (req, res, next) => {
 
 // TODO : section test fin
 
+require('socketio-auth')(io, {
+  authenticate: authenticate,
+  // postAuthenticate: postAuthenticate,
+  // disconnect: disconnect,
+  timeout: 1000
+});
+
+function authenticate(socket, data, callback) {
+  var username = data.username;
+  var password = data.password;
+ 
+  try {
+    findUser(username, password);
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
+/**
+ * Insert a user account into the database.
+ *
+ * @param {object} user The visit record to insert.
+ */
+function insertUser(user) {
+  return datastore.save({
+    key: datastore.key('User'),
+    data: user
+  });
+}
+
+/**
+ * Retrieve a user account from the database.
+ */
+async function findUser(username, password) {
+  const query = datastore
+    .createQuery('User')
+    .filter('username', '=', username);
+
+  const users = await datastore.runQuery(query);
+  const user = users[0].map(
+    entity => { return {'password': entity.password} }
+  );
+  console.log(user);
+  if (user !== undefined && user[0].password === crypto.createHash('sha256').update(password).digest('hex')) {
+    console.log("Connection successful");
+    return true;
+  } else {
+    console.log("Invalid user or password");
+    return false;
+  }
+}
+
+app.get('/setUser', async (req, res, next) => {
+  // Create a user account to be stored in the database
+  const user = {
+    username: "Something",
+    // Store a hash of the visitor's ip address
+    password: crypto
+      .createHash('sha256')
+      .update("anything")
+      .digest('hex')
+  };
+
+  try {
+    await insertUser(user);
+    res
+      .status(200)
+      .set('Content-Type', 'text/plain')
+      .send(`Created user\n${user}`)
+      .end();
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+app.get('/login', async (req, res, next) => {
+  try {
+    const result = await findUser("Something", "anything");
+    if (result) {
+      res
+      .status(200)
+      .set('Content-Type', 'text/plain')
+      .send(`Login Successful\n${result}`)
+      .end();
+    } else {
+      res
+      .status(200)
+      .set('Content-Type', 'text/plain')
+      .send(`Login failed`)
+      .end();
+    }
+  } catch (error) {
+    next(error);
+  }
+})
 
 const PORT = process.env.PORT;
-// TODO : const PORT = 3300;
 server.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
   console.log('Press Ctrl+C to quit.');
