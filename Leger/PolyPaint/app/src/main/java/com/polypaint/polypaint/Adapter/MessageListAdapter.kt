@@ -1,8 +1,13 @@
 package com.polypaint.polypaint.Adapter
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.text.format.DateUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,7 +62,10 @@ class MessageListAdapter (var context: Context, var messageList: List<Message>, 
         internal var messageText: TextView = itemView.findViewById(R.id.text_message_body) as TextView
         internal var timeText: TextView = itemView.findViewById(R.id.text_message_time) as TextView
 
+
         internal fun bind(message: Message) {
+            var rectangle: Drawable? = messageText.background
+            rectangle?.mutate()?.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP)
             messageText.text = message.text
             timeText.text = DateUtils.formatDateTime(context, message.createdAt, DateUtils.FORMAT_SHOW_TIME)
         }
