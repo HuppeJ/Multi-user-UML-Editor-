@@ -111,8 +111,8 @@ app.get('/visit', async (req, res, next) => {
 // TODO : section test fin
 
 
-// TODO : const PORT = process.env.PORT;
-const PORT = 3300;
+const PORT = process.env.PORT;
+// TODO : const PORT = 3300;
 server.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
   console.log('Press Ctrl+C to quit.');
