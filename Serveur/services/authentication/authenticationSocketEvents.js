@@ -1,5 +1,5 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
-
+const SocketEvents = require('../../SocketEvents');
 const UserAccountManager = require('./components/UserAccountManager');
 const userAccountManager = UserAccountManager();
 
@@ -10,7 +10,7 @@ module.exports = (io) => {
             client.emit('hello');
         });
 
-        client.on('createUser', async function (data) {
+        client.on(SocketEvents.CREATE_USER, async function (data) {
             let isUserCreated = false;
             if (await userAccountManager.isUsernameAvailable(data.username)) {
                 userAccountManager.addUser(data.username, data.password);
@@ -20,10 +20,10 @@ module.exports = (io) => {
                 isUserCreated: isUserCreated,
                 message: isUserCreated ? `User ${data.username} has been created` : `${data.username} is not valid.`
             }
-            client.emit('createUserResponse', response);
+            client.emit(SocketEvents.CREATE_USER_RESPONSE, response);
         });
 
-        client.on('loginUser', async function (username, password) {
+        client.on(SocketEvents.LOGIN_USER, async function (username, password) {
             let isLoginSuccessful = false;
             if (await userAccountManager.authenticateUser(username, password)) {
                 isLoginSuccessful = true;
@@ -33,7 +33,7 @@ module.exports = (io) => {
                 message: isLoginSuccessful ? `Login Successful.` : `Login not Successful.`
             }
 
-            client.emit('loginUserResponse', response);
+            client.emit(SocketEvents.LOGIN_USER_RESPONSE, response);
         });
     })
 };
