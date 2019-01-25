@@ -1,43 +1,43 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
 
 module.exports = function ({ name, image }) {
-  const members = new Map()
-  let chatHistory = []
+    const members = new Map(); // [key: client.id, value:client]
+    let chatHistory = [];
 
-  function broadcastMessage(message) {
-    members.forEach(m => m.emit('message', message))
-  }
-
-  function addEntry(entry) {
-    chatHistory = chatHistory.concat(entry)
-  }
-
-  function getChatHistory() {
-    return chatHistory.slice()
-  }
-
-  function addUser(client) {
-    members.set(client.id, client)
-  }
-
-  function removeUser(client) {
-    members.delete(client.id)
-  }
-
-  function serialize() {
-    return {
-      name,
-      image,
-      numMembers: members.size
+    function broadcastMessage(message) {
+        members.forEach(m => m.emit('message', message));
     }
-  }
 
-  return {
-    broadcastMessage,
-    addEntry,
-    getChatHistory,
-    addUser,
-    removeUser,
-    serialize
-  }
+    function addEntry(entry) {
+        chatHistory = chatHistory.concat(entry);
+    }
+
+    function getChatHistory() {
+        return chatHistory.slice();
+    }
+
+    function addUser(client) {
+        members.set(client.id, client);
+    }
+
+    function removeUser(client) {
+        members.delete(client.id);
+    }
+
+    function serialize() {
+        return {
+            name,
+            image,
+            numMembers: members.size
+        }
+    }
+
+    return {
+        broadcastMessage,
+        addEntry,
+        getChatHistory,
+        addUser,
+        removeUser,
+        serialize
+    }
 }
