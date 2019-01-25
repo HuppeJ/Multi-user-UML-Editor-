@@ -23,8 +23,6 @@ const express = require('express');
 const app = express();
 app.enable('trust proxy');
 
-const crypto = require('crypto');
-
 // Set up the express routing system
 var routes = require('./routes/routes');
 routes(app);
@@ -38,87 +36,13 @@ const io = socketIO(server);
 // Initialise Socket Events
 const chatSocketEvents = require('./services/chat/chatSocketEvents');
 chatSocketEvents(io);
+const authenticationSocketEvents = require('./services/authentication/authenticationSocketEvents');
+authenticationSocketEvents(io);
 
 // Set up the Socket.io communication system
 io.on('connection', (client) => {
   console.log('New client connected')
 });
-
-require('socketio-auth')(io, {
-  authenticate: authenticate,
-  // postAuthenticate: postAuthenticate,
-  // disconnect: disconnect,
-  timeout: 1000
-});
-
-function authenticate(socket, data, callback) {
-  var username = data.username;
-  var password = data.password;
- 
-  try {
-    findUser(username, password);
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
-
-const UserAccountManager = require('./services/authentication/components/UserAccountManager');
-const userAccountManager = UserAccountManager();
-
-app.get('/setUser', async (req, res, next) => {
-  // Create a user account to be stored in the database
-  const user = {
-    username: "WAZZZZZA654738GTDW",
-    // Store a hash of the password
-    password: crypto
-      .createHash('sha256')
-      .update("un mot de passe que j'aime")
-      .digest('hex')
-  };
-
-  try {
-    if (await userAccountManager.isUsernameAvailable(user.username)) {
-      await userAccountManager.addUser(user);
-      res
-      .status(200)
-      .set('Content-Type', 'text/plain')
-      .send(`Created user ${user.username}`)
-      .end();
-    }
-    else {
-      res
-      .status(200)
-      .set('Content-Type', 'text/plain')
-      .send(`User ${user.username} already exists`)
-      .end();
-    }
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-});
-
-app.get('/login', async (req, res, next) => {
-  try {
-    const result = await userAccountManager.authenticateUser("Something", "anything");
-    if (result) {
-      res
-      .status(200)
-      .set('Content-Type', 'text/plain')
-      .send(`Login Successful\n${result}`)
-      .end();
-    } else {
-      res
-      .status(200)
-      .set('Content-Type', 'text/plain')
-      .send(`Login failed`)
-      .end();
-    }
-  } catch (error) {
-    next(error);
-  }
-})
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => {

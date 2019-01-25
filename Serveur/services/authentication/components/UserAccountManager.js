@@ -3,7 +3,16 @@ const crypto = require('crypto');
 
 module.exports = function () {
 
-  async function addUser(user) {
+  async function addUser(username, password) {
+    const user = {
+      username: username,
+      // Store a hash of the password
+      password: crypto
+        .createHash('sha256')
+        .update(password)
+        .digest('hex')
+    };
+    console.log("User: " + user.username + " -> " + user.password);
     return datastore.save({
       key: datastore.key('User'),
       data: user
@@ -33,10 +42,8 @@ module.exports = function () {
     );
     if (user !== undefined && 
         user[0].password === crypto.createHash('sha256').update(password).digest('hex')){
-      console.log("Connection successful");
       return true;
     } else {
-      console.log("Invalid user or password");
       return false;
     }
   }

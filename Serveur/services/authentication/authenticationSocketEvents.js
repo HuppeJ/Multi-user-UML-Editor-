@@ -4,28 +4,28 @@ const UserAccountManager = require('./components/UserAccountManager');
 const userAccountManager = UserAccountManager();
 
 module.exports = (io) => {
-    io.on('connection', function (user) {
-        const {
-            handleAddUser,
-            handleLoginUser,
-            handleLeave,
-            handleMessage,
-            handleGetChatrooms,
-            handleGetAvailableUsers,
-            handleDisconnect
-        } = makeHandlers(user, userAccountManager);
+    io.on('connection', function (client) {
+        client.on('test', function () {
+            client.emit('hello');
+        });
 
-        client.on('createUser', handleAddUser);
+        client.on('createUser', function (data) {
+            console.log("Username: " + data.username);
+            console.log("Password: " + data.password);
+            if (userAccountManager.isUsernameAvailable(data.username)) {
+                userAccountManager.addUser(data.username, data.password);
+                client.emit('userCreated', data.username);
+            }
+            else
+                client.emit('usernameUnavailable', data.username);
+        });
 
-        client.on('loginUser', handleLoginUser);
-
-        client.on('disconnect', function () {
-            console.log('client disconnect...', client.id);
-        })
-
-        client.on('error', function (err) {
-            console.log('received error from client:', client.id);
-            console.log(err);
-        })
+        client.on('loginUser', function (username, password) {
+            if (userAccountManager.authenticateUser(username, password)) {
+                client.emit('loginSuccessful');
+            }
+            else
+                client.emit('loginFailed');
+        });
     })
 };
