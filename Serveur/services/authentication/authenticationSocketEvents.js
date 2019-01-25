@@ -9,14 +9,23 @@ module.exports = (io) => {
             client.emit('hello');
         });
 
-        client.on('createUser', function (user) {
-            if (userAccountManager.isUsernameAvailable(user.username)) {
-                userAccountManager.addUser(user);
+        client.on('createUser', function (data) {
+            console.log("Username: " + data.username);
+            console.log("Password: " + data.password);
+            if (userAccountManager.isUsernameAvailable(data.username)) {
+                userAccountManager.addUser(data.username, data.password);
+                client.emit('userCreated', data.username);
             }
+            else
+                client.emit('usernameUnavailable', data.username);
         });
 
-        client.on('loginUser', function (user) {
-            userAccountManager.authenticateUser(user.username, user.password);
+        client.on('loginUser', function (username, password) {
+            if (userAccountManager.authenticateUser(username, password)) {
+                client.emit('loginSuccessful');
+            }
+            else
+                client.emit('loginFailed');
         });
     })
 };

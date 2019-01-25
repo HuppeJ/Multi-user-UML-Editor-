@@ -18,10 +18,16 @@
         socket.on('disconnect', onDisconnect);
         socket.on('connect_error', onError);
         socket.on('reconnect_error', onError);
+		
+		socket.on('userCreated', onUserCreated);
 
         function onConnect(evt) {
             writeToScreen("CONNECTED");
-            doSend("Allo?");
+			socket.emit("createUser", { username: 'TEST', password: 'TEST' });
+        }
+		
+		function onUserCreated(evt) {
+            writeToScreen("USER CREATED");
         }
 		
 		function onHello(evt) {
