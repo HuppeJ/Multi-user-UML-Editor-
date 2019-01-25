@@ -23,9 +23,9 @@ module.exports = (io) => {
             client.emit(SocketEvents.CREATE_USER_RESPONSE, response);
         });
 
-        client.on(SocketEvents.LOGIN_USER, async function (username, password) {
+        client.on(SocketEvents.LOGIN_USER, async function (data) {
             let isLoginSuccessful = false;
-            if (await userAccountManager.authenticateUser(username, password)) {
+            if (await userAccountManager.authenticateUser(data.username, data.password)) {
                 isLoginSuccessful = true;
             }
             const response = {
