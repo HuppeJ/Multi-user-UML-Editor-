@@ -14,23 +14,36 @@
         var socket = io.connect('http://localhost:3000/');
 
         socket.on('connect', onConnect);
-		socket.on('hello', onHello);
+        socket.on('hello', onHello);
         socket.on('disconnect', onDisconnect);
         socket.on('connect_error', onError);
         socket.on('reconnect_error', onError);
-		
-		socket.on('userCreated', onUserCreated);
+
+        socket.on('userCreated', onUserCreated);
 
         function onConnect(evt) {
             writeToScreen("CONNECTED");
-			socket.emit("createUser", { username: 'TEST', password: 'TEST' });
+            var myObject = {
+                username: 'TEST',
+                password: 'TEST'
+            };
+            
+            socket.emit("createUser", myObject);
+            
+            socket.on('createUserResponse', response);            
         }
-		
-		function onUserCreated(evt) {
+
+        function response(evt) {
+            writeToScreen(evt.isUserCreated);
+            writeToScreen(evt.username);
+            writeToScreen(evt.message);
+        }
+
+        function onUserCreated(evt) {
             writeToScreen("USER CREATED");
         }
-		
-		function onHello(evt) {
+
+        function onHello(evt) {
             writeToScreen("HELLO!");
         }
 
