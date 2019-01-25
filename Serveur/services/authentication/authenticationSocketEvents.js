@@ -10,9 +10,9 @@ module.exports = (io) => {
             client.emit('hello');
         });
 
-        client.on('createUser', function (data) {
+        client.on('createUser', async function (data) {
             let isUserCreated = false;
-            if (userAccountManager.isUsernameAvailable(data.username)) {
+            if (await userAccountManager.isUsernameAvailable(data.username)) {
                 userAccountManager.addUser(data.username, data.password);
                 isUserCreated = true;
             }
@@ -23,9 +23,9 @@ module.exports = (io) => {
             client.emit('createUserResponse', response);
         });
 
-        client.on('loginUser', function (username, password) {
+        client.on('loginUser', async function (username, password) {
             let isLoginSuccessful = false;
-            if (userAccountManager.authenticateUser(username, password)) {
+            if (await userAccountManager.authenticateUser(username, password)) {
                 isLoginSuccessful = true;
             }
             const response = {
