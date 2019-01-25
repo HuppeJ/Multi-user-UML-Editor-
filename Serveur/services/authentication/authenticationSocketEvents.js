@@ -5,19 +5,13 @@ const userAccountManager = UserAccountManager();
 
 module.exports = (io) => {
     io.on('connection', function (user) {
-        const {
-            handleAddUser,
-            handleLoginUser,
-            handleLeave,
-            handleMessage,
-            handleGetChatrooms,
-            handleGetAvailableUsers,
-            handleDisconnect
-        } = makeHandlers(user, userAccountManager);
 
-        client.on('createUser', handleAddUser);
+        client.on('createUser', function () {
+            if (userAccountManager.isUsernameAvailable(user.username))
+                userAccountManager.addUser(user);
+        });
 
-        client.on('loginUser', handleLoginUser);
+        client.on('loginUser', userAccountManager.authenticateUser(user.username, user.password));
 
         client.on('disconnect', function () {
             console.log('client disconnect...', client.id);
