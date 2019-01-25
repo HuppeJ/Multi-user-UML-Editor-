@@ -4,22 +4,19 @@ const UserAccountManager = require('./components/UserAccountManager');
 const userAccountManager = UserAccountManager();
 
 module.exports = (io) => {
-    io.on('connection', function (user) {
-
-        client.on('createUser', function () {
-            if (userAccountManager.isUsernameAvailable(user.username))
-                userAccountManager.addUser(user);
+    io.on('connection', function (client) {
+        client.on('test', function () {
+            client.emit('hello');
         });
 
-        client.on('loginUser', userAccountManager.authenticateUser(user.username, user.password));
+        client.on('createUser', function (user) {
+            if (userAccountManager.isUsernameAvailable(user.username)) {
+                userAccountManager.addUser(user);
+            }
+        });
 
-        client.on('disconnect', function () {
-            console.log('client disconnect...', client.id);
-        })
-
-        client.on('error', function (err) {
-            console.log('received error from client:', client.id);
-            console.log(err);
-        })
+        client.on('loginUser', function (user) {
+            userAccountManager.authenticateUser(user.username, user.password);
+        });
     })
 };

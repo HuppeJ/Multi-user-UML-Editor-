@@ -38,6 +38,8 @@ const io = socketIO(server);
 // Initialise Socket Events
 const chatSocketEvents = require('./services/chat/chatSocketEvents');
 chatSocketEvents(io);
+const authenticationSocketEvents = require('./services/authentication/authenticationSocketEvents');
+authenticationSocketEvents(io);
 
 // Set up the Socket.io communication system
 io.on('connection', (client) => {
