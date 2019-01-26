@@ -21,6 +21,7 @@ dotenv.config();
 
 const express = require('express');
 const app = express();
+app.enable('trust proxy');
 
 // Set up the express routing system
 var routes = require('./routes/routes');
@@ -32,15 +33,17 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server);
 
+
 // Initialise Socket Events
 const chatSocketEvents = require('./services/chat/chatSocketEvents');
 chatSocketEvents(io);
+const authenticationSocketEvents = require('./services/authentication/authenticationSocketEvents');
+authenticationSocketEvents(io);
 
 // Set up the Socket.io communication system
 io.on('connection', (client) => {
   console.log('New client connected')
 });
-
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => {

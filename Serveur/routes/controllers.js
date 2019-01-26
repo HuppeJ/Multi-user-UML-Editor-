@@ -1,7 +1,6 @@
 'use strict';
 
 var properties = require('../package.json')
-var distance = require('../services/distance');
 
 var controllers = {
     home: (req, res) => {
@@ -18,11 +17,7 @@ var controllers = {
         res.json(aboutInfo);
     },
     get_distance: (req, res) => {
-        distance.find(req, res, function (err, dist) {
-            if (err)
-                res.send(err);
-            res.json(dist);
-        });
+        
     },
 };
 
