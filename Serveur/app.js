@@ -33,6 +33,9 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server);
 
+require("./services/datastore/datastore");
+
+
 // Initialise Socket Events
 const chatSocketEvents = require('./services/chat/chatSocketEvents');
 chatSocketEvents(io);
