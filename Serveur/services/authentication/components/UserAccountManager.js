@@ -37,15 +37,13 @@ module.exports = function () {
     .limit(1);
 
     const users = await datastore.runQuery(query);
-    const user = users[0].map(
-      entity => { return {'password': entity.password} }
-    );
-    if (user !== undefined && 
-        user[0].password === crypto.createHash('sha256').update(password).digest('hex')){
-      return true;
-    } else {
-      return false;
+    if (users[0][0] !== undefined) {
+      const user = users[0].map(
+        entity => { return {'password': entity.password} }
+      );
+      return user[0].password === crypto.createHash('sha256').update(password).digest('hex');
     }
+    return false;
   }
 
   function removeUser(username) {

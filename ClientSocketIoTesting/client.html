@@ -26,19 +26,18 @@
             writeToScreen("CONNECTED");
             //var myObject = {
             //    username: 'TEST',
-            //    password: 'WASSA'
+            //    password: 'TEST'
             //};
 			
-			var myObject = "{\"username\": \"Test\", \"password\": \"TEST\" }";
+			var myObject = "{\"username\": \"TEST\", \"password\": \"Mondga\" }";
             
-            socket.emit("createUser", myObject);
+            socket.emit("loginUser", myObject);
             
-            socket.on('createUserResponse', response);            
+            socket.on('loginUserResponse', response);            
         }
 
         function response(evt) {
-            writeToScreen(evt.isLoginSuccessful);
-            writeToScreen(evt.message);
+            writeToScreen(evt);
         }
 
         function onUserCreated(evt) {
