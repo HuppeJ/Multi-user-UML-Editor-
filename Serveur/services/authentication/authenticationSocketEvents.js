@@ -5,11 +5,6 @@ const userAccountManager = UserAccountManager();
 
 module.exports = (io) => {
     io.on('connection', function (client) {
-        // TODO : remove
-        client.on('test', function () {
-            client.emit('hello');
-        });
-
         client.on(SocketEvents.CREATE_USER, async function (dataStr) {
             let isUserCreated = false;
             let data = JSON.parse(dataStr);
@@ -18,10 +13,10 @@ module.exports = (io) => {
                 userAccountManager.addUser(data.username, data.password);
                 isUserCreated = true;
             }
-            const response = {
-                isUserCreated: isUserCreated,
-                message: isUserCreated ? `User ${data.username} has been created` : `${data.username} is not valid.`
-            }
+            const response = JSON.stringify({
+                isUserCreated: isUserCreated
+            });
+
             client.emit(SocketEvents.CREATE_USER_RESPONSE, response);
         });
 
@@ -32,10 +27,9 @@ module.exports = (io) => {
             if (await userAccountManager.authenticateUser(data.username, data.password)) {
                 isLoginSuccessful = true;
             }
-            const response = {
-                isLoginSuccessful: isLoginSuccessful,
-                message: isLoginSuccessful ? `Login Successful.` : `Login not Successful.`
-            }
+            const response = JSON.stringify({
+                isLoginSuccessful: isLoginSuccessful
+            });
 
             client.emit(SocketEvents.LOGIN_USER_RESPONSE, response);
         });
