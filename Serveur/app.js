@@ -33,6 +33,7 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server);
 
+// const chatIo = io.of("/chat");
 
 // Initialise Socket Events
 const chatSocketEvents = require('./services/chat/chatSocketEvents');

@@ -4,8 +4,8 @@ const UserAccountManager = require('./components/UserAccountManager');
 const userAccountManager = UserAccountManager();
 
 module.exports = (io) => {
-    io.on('connection', function (client) {
-        client.on(SocketEvents.CREATE_USER, async function (dataStr) {
+    io.on('connection', function (socket) {
+        socket.on(SocketEvents.CREATE_USER, async function (dataStr) {
             let isUserCreated = false;
             let data = JSON.parse(dataStr);
 
@@ -17,10 +17,10 @@ module.exports = (io) => {
                 isUserCreated: isUserCreated
             });
 
-            client.emit(SocketEvents.CREATE_USER_RESPONSE, response);
+            socket.emit(SocketEvents.CREATE_USER_RESPONSE, response);
         });
 
-        client.on(SocketEvents.LOGIN_USER, async function (dataStr) {
+        socket.on(SocketEvents.LOGIN_USER, async function (dataStr) {
             let isLoginSuccessful = false;
             let data = JSON.parse(dataStr);
 
@@ -31,7 +31,7 @@ module.exports = (io) => {
                 isLoginSuccessful: isLoginSuccessful
             });
 
-            client.emit(SocketEvents.LOGIN_USER_RESPONSE, response);
+            socket.emit(SocketEvents.LOGIN_USER_RESPONSE, response);
         });
     })
 };

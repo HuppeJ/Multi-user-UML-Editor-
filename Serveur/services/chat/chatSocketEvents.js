@@ -1,47 +1,66 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
+const SocketEvents = require('../../SocketEvents');
+
 
 const ClientManager = require('./components/ClientManager');
 const ChatroomManager = require('./components/ChatroomManager');
-const makeHandlers = require('./handlers');
+// const makeHandler = require('./handlers');
 
 const clientManager = ClientManager();
 const chatroomManager = ChatroomManager();
 
 module.exports = (io) => {
-    io.on('connection', function (client) {
-        const {
-            handleRegister,
-            handleJoin,
-            handleLeave,
-            handleMessage,
-            handleGetChatrooms,
-            handleGetAvailableUsers,
-            handleDisconnect
-        } = makeHandlers(client, clientManager, chatroomManager);
+    io.on('connection', function (socket) {
+        // const handleEvent = makeHandler(client, clientManager, chatroomManager);
 
-        console.log('client connected...', client.id);
-        clientManager.addClient(client);
+        clientManager.addClient(socket);
 
-        client.on('register', handleRegister);
+        socket.on(SocketEvents.REGISTER_TO_CHAT, function (userStr) {
+            const user = JSON.parse(userStr);
 
-        client.on('join', handleJoin);
+            let isUserRegisteredToChat = false;
+            if (clientManager.isUserAvailable(user.username)) {
+                clientManager.registerClient(socket, user);
+                isUserRegisteredToChat = true;
+            }
 
-        client.on('leave', handleLeave);
+            const response = JSON.stringify({
+                isUserRegisteredToChat: isUserRegisteredToChat
+            });
 
-        client.on('message', handleMessage);
+            socket.emit(SocketEvents.REGISTER_TO_CHAT_RESPONSE, response);
+        });
 
-        client.on('chatrooms', handleGetChatrooms);
+        socket.on(SocketEvents.JOIN_CHATROOM, function () {
+            // let joinedChatroom = true;
 
-        client.on('availableUsers', handleGetAvailableUsers);
+            socket.join('default_room');
 
-        client.on('disconnect', function () {
-            console.log('client disconnect...', client.id);
-            handleDisconnect();
-        })
+            // const response = JSON.stringify({
+                // joinedChatroom: joinedChatroom
+            // });
 
-        client.on('error', function (err) {
-            console.log('received error from client:', client.id);
-            console.log(err);
-        })
+            // socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, response);
+        });
+
+        // socket.on('leave', handleLeave);
+
+        socket.on(SocketEvents.SEND_MESSAGE, function(messageData) {
+            io.to('default_room').emit(SocketEvents.MESSAGE_SENT, messageData);
+        });
+
+        // socket.on('chatrooms', handleGetChatrooms);
+
+        // socket.on('availableUsers', handleGetAvailableUsers);
+
+        // socket.on('disconnect', function () {
+        //     console.log('client disconnect...', socket.id);
+        //     handleDisconnect();
+        // })
+
+        // socket.on('error', function (err) {
+        //     console.log('received error from client:', socket.id);
+        //     console.log(err);
+        // })
     })
 };

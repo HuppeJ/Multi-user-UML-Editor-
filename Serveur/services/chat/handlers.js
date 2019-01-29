@@ -1,6 +1,6 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
 
-function makeHandleEvent(client, clientManager, chatroomManager) {
+module.exports = function(client, clientManager, chatroomManager) {
     function ensureExists(getter, rejectionMessage) {
         return new Promise(function (resolve, reject) {
             const res = getter();
@@ -48,19 +48,19 @@ function makeHandleEvent(client, clientManager, chatroomManager) {
     return handleEvent;
 }
 
-module.exports = function (client, clientManager, chatroomManager) {
+function temp (client, clientManager, chatroomManager) {
     const handleEvent = makeHandleEvent(client, clientManager, chatroomManager);
 
-    function handleRegister(userName, callback) {
-        if (!clientManager.isUserAvailable(userName)) {
-            return callback('user is not available');
-        }
+    // function handleRegister(username, callback) {
+    //     if (!clientManager.isUserAvailable(username)) {
+    //         return callback('user is not available');
+    //     }
 
-        const user = clientManager.getUserByName(userName);
-        clientManager.registerClient(client, user);
+    //     const user = clientManager.getUserByName(username);
+    //     clientManager.registerClient(client, user);
 
-        return callback(null, user);
-    }
+    //     return callback(null, user);
+    // }
 
     function handleJoin(chatroomName, callback) {
         const createEntry = () => ({ event: `joined ${chatroomName}` })

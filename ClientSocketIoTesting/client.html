@@ -31,9 +31,12 @@
 			
 			var myObject = "{\"username\": \"TEST\", \"password\": \"Mondga\" }";
             
-            socket.emit("loginUser", myObject);
-            
-            socket.on('loginUserResponse', response);            
+            socket.emit("joinChatroom");
+
+            let temp = Date.now();
+            socket.emit("sendMessage", temp);
+
+            socket.on('messageSent', response);            
         }
 
         function response(evt) {
