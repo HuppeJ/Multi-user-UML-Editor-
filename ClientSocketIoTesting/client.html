@@ -11,7 +11,8 @@
     }
 
     function testSocket() {
-        var socket = io.connect('http://localhost:3000/');
+        var socket = io.connect('http://localhost:3000');
+        // var socket = io.connect('https://projet-3-228722.appspot.com/');
 
         socket.on('connect', onConnect);
         socket.on('hello', onHello);
@@ -23,14 +24,16 @@
 
         function onConnect(evt) {
             writeToScreen("CONNECTED");
-            var myObject = {
-                username: 'TEST',
-                password: 'WASSA'
-            };
+            //var myObject = {
+            //    username: 'TEST',
+            //    password: 'WASSA'
+            //};
+			
+			var myObject = "{\"username\": \"Test\", \"password\": \"TEST\" }";
             
-            socket.emit("loginUser", myObject);
+            socket.emit("createUser", myObject);
             
-            socket.on('loginUserResponse', response);            
+            socket.on('createUserResponse', response);            
         }
 
         function response(evt) {

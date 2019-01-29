@@ -10,8 +10,10 @@ module.exports = (io) => {
             client.emit('hello');
         });
 
-        client.on(SocketEvents.CREATE_USER, async function (data) {
+        client.on(SocketEvents.CREATE_USER, async function (dataStr) {
             let isUserCreated = false;
+            let data = JSON.parse(dataStr);
+
             if (await userAccountManager.isUsernameAvailable(data.username)) {
                 userAccountManager.addUser(data.username, data.password);
                 isUserCreated = true;
@@ -23,8 +25,10 @@ module.exports = (io) => {
             client.emit(SocketEvents.CREATE_USER_RESPONSE, response);
         });
 
-        client.on(SocketEvents.LOGIN_USER, async function (data) {
+        client.on(SocketEvents.LOGIN_USER, async function (dataStr) {
             let isLoginSuccessful = false;
+            let data = JSON.parse(dataStr);
+
             if (await userAccountManager.authenticateUser(data.username, data.password)) {
                 isLoginSuccessful = true;
             }
