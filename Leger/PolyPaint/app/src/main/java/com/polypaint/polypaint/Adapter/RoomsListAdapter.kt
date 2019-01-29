@@ -41,7 +41,7 @@ class RoomsListAdapter (var context: Context, var roomsList:MutableList<Room>, v
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         //val message = MessagesHolder.getInstance().messagesByRoom[roomsList[position].name]?.last()
-        val message: Message = Message("allo", User("bob"), System.currentTimeMillis())
+        val message: Message = Message("allo","bob",System.currentTimeMillis())
         val room: Room = Room("1")
         when (holder.itemViewType) {
             VIEW_TYPE_MESSAGE_SENT -> (holder as SentMessageHolder).bind(room, listener)
@@ -84,7 +84,7 @@ class RoomsListAdapter (var context: Context, var roomsList:MutableList<Room>, v
             itemView.setOnClickListener { listener.onItemClick(room) }
             messageText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.text
             timeText.text = DateUtils.formatDateTime(context, MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.createdAt!!, DateUtils.FORMAT_SHOW_TIME)
-            nameText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.sender?.username
+            nameText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.sender
         }
     }
 

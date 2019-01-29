@@ -15,6 +15,7 @@
             android:textSize="12sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:text="a"
     />
 
     <TextView
@@ -22,6 +23,7 @@
             android:background="@drawable/message_rectangle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="a"
             android:maxWidth="240dp"
             android:padding="8dp"
             android:textColor="#ffffff"
@@ -32,6 +34,7 @@
     <TextView
             android:id="@+id/text_message_time"
             android:layout_width="wrap_content"
+            android:text="a"
             android:layout_height="wrap_content"
             android:textSize="10sp"
             app:layout_constraintLeft_toRightOf="@+id/text_message_body"

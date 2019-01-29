@@ -1,7 +1,6 @@
 package com.polypaint.polypaint.Activity
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -15,11 +14,10 @@ import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.R
 import com.github.salomonbrys.kotson.*
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.polypaint.polypaint.Socket.SocketConstants
 
-class LoginActivity:Activity(){
+class CreateUserActivity:Activity(){
     private var usernameView : EditText?= null
     private var passwordView : EditText?= null
     private var username: String = ""
@@ -28,34 +26,30 @@ class LoginActivity:Activity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_create_user)
         var app = application as PolyPaint
         socket = app.getSocket()
 
         usernameView = findViewById(R.id.username_text)
         passwordView = findViewById(R.id.password_text)
 
-        var loginButton: Button = findViewById(R.id.login_button)
-        loginButton.setOnClickListener {
-            login()
-        }
-
-        var createUserButton: Button = findViewById(R.id.create_user_button)
-        createUserButton.setOnClickListener {
+        var createButton: Button = findViewById(R.id.create_button)
+        createButton.setOnClickListener { view: View? ->
             createUser()
         }
 
-        socket?.on(SocketConstants.LOGIN_USER_RESPONSE, onLogin)
+        socket?.on(SocketConstants.CREATE_USER_RESPONSE, onUserCreated)
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        socket?.off(SocketConstants.LOGIN_USER_RESPONSE, onLogin)
+        socket?.off(SocketConstants.CREATE_USER_RESPONSE, onUserCreated)
     }
 
-    private fun login() {
+    private fun createUser() {
         usernameView?.error= null
+        passwordView?.error = null
 
         username = usernameView?.text.toString().trim()
         if(TextUtils.isEmpty(username)){
@@ -81,30 +75,13 @@ class LoginActivity:Activity(){
 
         Log.d("*******", obj.toString())
 
-        socket?.emit(SocketConstants.LOGIN_USER, obj)
-
+        socket?.emit(SocketConstants.CREATE_USER, obj)
 
     }
 
-    private fun createUser(){
-        val intent = Intent(this, CreateUserActivity::class.java)
+    private var onUserCreated: Emitter.Listener = Emitter.Listener{
+        val intent = Intent(this, ChatActivity::class.java)
+        intent.putExtra("username", username)
         startActivity(intent)
     }
-
-    private var onLogin: Emitter.Listener = Emitter.Listener{
-        val gson = Gson()
-        val obj: Response = gson.fromJson(it[0].toString())
-        if(obj.isLoginSuccessful){
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra("username", username)
-            startActivity(intent)
-        } else {
-            runOnUiThread{
-                AlertDialog.Builder(this).setMessage("Mauvais mot de passe").show()
-            }
-
-        }
-    }
-
-    private inner class Response internal constructor(var isLoginSuccessful: Boolean)
 }

@@ -30,7 +30,7 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
 
         val ft = fragmentManager.beginTransaction()
         ft.add(R.id.list_container, RoomsListFragment())
-        ft.add(R.id.details_container, MessageListFragment())
+        ft.add(R.id.details_container, MessageListFragment(), MessageListFragment.TAG)
         ft.commit()
 
     }
@@ -42,8 +42,10 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
     }
 
     override fun onRoomSelected(room: Room) {
-        Toast.makeText(this, room.name, Toast.LENGTH_LONG).show()
-        //val messageListFragment: MessageListFragment = fragmentManager.findFragmentById(R.id.fragment_message_list) as MessageListFragment
-        //messageListFragment.changeRoom(room)
+        //Toast.makeText(this, room.name, Toast.LENGTH_LONG).show()
+        val messageListFragment = fragmentManager.findFragmentByTag(MessageListFragment.TAG) as MessageListFragment
+        //Toast.makeText(this, messageListFragment.id, Toast.LENGTH_LONG).show()
+
+        messageListFragment.changeRoom(room)
     }
 }

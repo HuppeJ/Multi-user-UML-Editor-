@@ -8,19 +8,19 @@ class MessagesHolder() {
 
     init {
         var list1: MutableList<Message> = mutableListOf(
-            Message("allo11", User("bob"), System.currentTimeMillis()),
-            Message("allo2", User("bob"), System.currentTimeMillis()),
-            Message("allo3", User("bobby"), System.currentTimeMillis())
+            Message("allo11","bob", System.currentTimeMillis()),
+            Message("allo12","bob", System.currentTimeMillis()),
+            Message("allo13","bobby", System.currentTimeMillis())
         )
         var list2: MutableList<Message> = mutableListOf(
-            Message("allo21", User("bob"), System.currentTimeMillis()),
-            Message("allo2", User("bob"), System.currentTimeMillis()),
-            Message("allo3", User("bobby"), System.currentTimeMillis())
+            Message("allo21", "bob", System.currentTimeMillis()),
+            Message("allo22", "bob", System.currentTimeMillis()),
+            Message("allo23", "bobby", System.currentTimeMillis())
         )
         var list3: MutableList<Message> = mutableListOf(
-            Message("allo31", User("bob"), System.currentTimeMillis()),
-            Message("allo2", User("bob"), System.currentTimeMillis()),
-            Message("allo3", User("bobby"), System.currentTimeMillis())
+            Message("allo31", "bob", System.currentTimeMillis()),
+            Message("allo32", "bob", System.currentTimeMillis()),
+            Message("allo33", "bobby", System.currentTimeMillis())
         )
 
         messagesByRoom["1"] = list1

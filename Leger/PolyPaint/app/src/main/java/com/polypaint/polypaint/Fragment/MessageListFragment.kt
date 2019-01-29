@@ -21,6 +21,11 @@ import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
 import com.github.nkzawa.socketio.client.Socket.EVENT_DISCONNECT
 import com.github.nkzawa.socketio.client.Socket.EVENT_CONNECT
+import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.jsonObject
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.polypaint.polypaint.Activity.LoginActivity
 import com.polypaint.polypaint.Adapter.MessageListAdapter
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Holder.MessagesHolder
@@ -34,10 +39,10 @@ import org.json.JSONObject
 
 class MessageListFragment: Fragment(){
     companion object {
-        private const val TAG: String = "MessageListFragment"
+        const val TAG: String = "MessageListFragment"
     }
     private var socket: Socket? = null
-    private var adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>?=null
+    private var adapter: MessageListAdapter?=null
     private var messages: MutableList<Message> = mutableListOf()
     private var messageRecyclerView : RecyclerView? = null
     private var messageEditTextView : EditText? = null
@@ -50,7 +55,7 @@ class MessageListFragment: Fragment(){
         super.onAttach(context)
         super.onAttach(context)
         username = activity?.intent?.getStringExtra("username")
-        adapter = MessageListAdapter(context!!, messages, User(username!!))
+        adapter = MessageListAdapter(context!!, messages, username!!)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +70,9 @@ class MessageListFragment: Fragment(){
         socket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
         socket?.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
         socket?.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError)
-        socket?.on("new message", onNewMessage)
+        socket?.on("messageSent", onNewMessage)
+
+        socket?.emit("joinChatroom")
 //        socket?.on("user joined", onUserJoined)
 //        socket?.on("user left", onUserLeft)
 //        socket?.on("typing", onTyping)
@@ -86,7 +93,7 @@ class MessageListFragment: Fragment(){
         socket?.off(Socket.EVENT_DISCONNECT, onDisconnect);
         socket?.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
         socket?.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        socket?.off("new message", onNewMessage);
+        socket?.off("messageSent", onNewMessage);
 //        socket?.off("user joined", onUserJoined);
 //        socket?.off("user left", onUserLeft);
 //        socket?.off("typing", onTyping);
@@ -110,7 +117,7 @@ class MessageListFragment: Fragment(){
         }
 
         var sendButton: Button = view.findViewById(R.id.button_chatbox_send)
-        sendButton.setOnClickListener() {view->
+        sendButton.setOnClickListener {
                 trySend()
         }
 
@@ -141,10 +148,16 @@ class MessageListFragment: Fragment(){
 
         messageEditTextView?.setText("")
         Log.d("*****", username)
-        val messageObject = Message(message, User(username!!), System.currentTimeMillis() )
-        addMessage(messageObject)
+        val messageObject = Message(message, username!!, System.currentTimeMillis() )
+        //addMessage(messageObject)
 
-        socket?.emit("new message", messageObject)
+        val obj: JsonObject = jsonObject(
+            "sender" to username,
+            "text" to message,
+            "createdAt" to System.currentTimeMillis()
+        )
+
+        socket?.emit("sendMessage", obj)
     }
 
     private fun addMessage(message: Message){
@@ -182,8 +195,11 @@ class MessageListFragment: Fragment(){
 
     private var onNewMessage:Emitter.Listener = Emitter.Listener {
         activity?.runOnUiThread {
-            val data: JSONObject = it[0] as JSONObject
-            var username: String? = null
+            Log.d("*-*****", it[0].toString())
+            val gson = Gson()
+            val message: Message = gson.fromJson(it[0].toString())
+            //val data: JSONObject = it[0] as JSONObject
+            /*var username: String? = null
             var message: String? = null
             var createdAt: Long? = null
             try {
@@ -194,12 +210,15 @@ class MessageListFragment: Fragment(){
                 Log.e(TAG, e.message)
             }
 
-            val messageObject = Message(message!!, User(username!!), createdAt!!)
-            addMessage(messageObject)
+            val messageObject = Message(message!!, User(username!!), createdAt!!)*/
+            addMessage(message)
         }
     }
 
     fun changeRoom(room: Room){
+        Log.d("------", room.name)
         messages = MessagesHolder.getInstance().messagesByRoom[room.name]!!
+        adapter?.messageList = messages
+        adapter?.notifyDataSetChanged()
     }
 }

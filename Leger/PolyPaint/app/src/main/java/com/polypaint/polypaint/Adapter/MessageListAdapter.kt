@@ -15,8 +15,9 @@ import android.widget.TextView
 import com.polypaint.polypaint.Model.Message
 import com.polypaint.polypaint.Model.User
 import com.polypaint.polypaint.R
+import java.text.SimpleDateFormat
 
-class MessageListAdapter (var context: Context, var messageList: List<Message>, var user: User) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class MessageListAdapter (var context: Context, var messageList: List<Message>, var user: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     companion object {
         private const val VIEW_TYPE_MESSAGE_SENT = 1
@@ -51,7 +52,7 @@ class MessageListAdapter (var context: Context, var messageList: List<Message>, 
     override fun getItemViewType(position: Int): Int {
         val message = messageList[position]
 
-        return if (message.sender.username == user.username) {
+        return if (message.sender == user) {
             VIEW_TYPE_MESSAGE_SENT
         } else {
             VIEW_TYPE_MESSAGE_RECEIVED
@@ -67,7 +68,9 @@ class MessageListAdapter (var context: Context, var messageList: List<Message>, 
             var rectangle: Drawable? = messageText.background
             rectangle?.mutate()?.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP)
             messageText.text = message.text
-            timeText.text = DateUtils.formatDateTime(context, message.createdAt, DateUtils.FORMAT_SHOW_TIME)
+            val formatter = SimpleDateFormat("HH:mm:ss")
+            timeText.text = formatter.format( message.createdAt)
+                    //DateUtils.formatDateTime(context, message.createdAt, DateUtils.FORMAT_SHOW_TIME)
         }
     }
 
@@ -78,8 +81,9 @@ class MessageListAdapter (var context: Context, var messageList: List<Message>, 
 
         internal fun bind(message: Message) {
             messageText.text = message.text
-            timeText.text = DateUtils.formatDateTime(context, message.createdAt, DateUtils.FORMAT_SHOW_TIME)
-            nameText.text = message.sender.username
+            val formatter = SimpleDateFormat("HH:mm:ss")
+            timeText.text = formatter.format( message.createdAt)
+            nameText.text = message.sender
         }
     }
 

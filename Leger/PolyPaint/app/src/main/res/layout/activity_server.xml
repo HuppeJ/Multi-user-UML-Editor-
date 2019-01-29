@@ -21,7 +21,7 @@
 
         <EditText
                 android:id="@+id/edittext_server_url"
-                android:text="http://192.168.0.194:3000"
+                android:text="http://10.200.5.31:3000"
 
                 android:hint="Server url"
                 android:background="@android:color/transparent"
