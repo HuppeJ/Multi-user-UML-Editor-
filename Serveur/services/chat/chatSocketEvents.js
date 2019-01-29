@@ -32,35 +32,45 @@ module.exports = (io) => {
         });
 
         socket.on(SocketEvents.JOIN_CHATROOM, function () {
-            // let joinedChatroom = true;
-
             socket.join('default_room');
-
-            // const response = JSON.stringify({
-                // joinedChatroom: joinedChatroom
-            // });
-
-            // socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, response);
+            if(chatroomManager.addChatroom('default_room', socket.id)) {
+                io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
+            } else {
+                chatroomManager.addClientToChatroom(roomName, socketId);
+            }
         });
 
-        // socket.on('leave', handleLeave);
+        socket.on(SocketEvents.JOIN_SPECIFIC_CHATROOM, function (roomName) {
+            socket.join(roomName);
+            if(chatroomManager.addChatroom(roomName, socket.id)) {
+                io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
+            } else {
+                chatroomManager.addClientToChatroom(roomName, socketId);
+            }
+        });
+
+        socket.on(SocketEvents.LEAVE_SPECIFIC_CHATROOM, function(roomName) {
+            if(chatroomManager.removeClientFromChatroom(roomName, socket.id)) {
+                socket.leave(roomName);
+            }
+        });
 
         socket.on(SocketEvents.SEND_MESSAGE, function(messageData) {
             io.to('default_room').emit(SocketEvents.MESSAGE_SENT, messageData);
         });
 
-        // socket.on('chatrooms', handleGetChatrooms);
+        // TODO : Utiliser le chatroom manager
+        socket.on(SocketEvents.GET_CHATROOMS, function() {
+            socket.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
+        });
 
-        // socket.on('availableUsers', handleGetAvailableUsers);
+        socket.on('disconnect', function () {
+             console.log('client disconnect...', socket.id);
+        });
 
-        // socket.on('disconnect', function () {
-        //     console.log('client disconnect...', socket.id);
-        //     handleDisconnect();
-        // })
-
-        // socket.on('error', function (err) {
-        //     console.log('received error from client:', socket.id);
-        //     console.log(err);
-        // })
-    })
+        socket.on('error', function (err) {
+            console.log('received error from client:', socket.id);
+            console.log(err);
+        });
+    });
 };

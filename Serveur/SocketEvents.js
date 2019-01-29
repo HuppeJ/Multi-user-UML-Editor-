@@ -14,6 +14,11 @@ module.exports = Object.freeze({
     REGISTER_TO_CHAT_RESPONSE: "registerToChatResponse",
 
     JOIN_CHATROOM: "joinChatroom",
+    JOIN_SPECIFIC_CHATROOM: "joinSpecificRoom",
+    LEAVE_CHATROOM: "leaveChatroom",
+    LEAVE_SPECIFIC_CHATROOM: "leaveSpecificChatroom",
+    GET_CHATROOMS: "getChatrooms",
+    GET_CHATROOMS_RESPONSE: "getChatroomsResponse",
 
     SEND_MESSAGE: "sendMessage",
     MESSAGE_SENT: "messageSent",

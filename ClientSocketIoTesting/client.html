@@ -36,7 +36,11 @@
             let temp = Date.now();
             socket.emit("sendMessage", temp);
 
-            socket.on('messageSent', response);            
+            socket.on('messageSent', response);  
+
+			socket.emit("getChatrooms");
+			
+			socket.on("getChatroomsResponse", response);
         }
 
         function response(evt) {
