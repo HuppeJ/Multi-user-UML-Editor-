@@ -10,7 +10,6 @@ module.exports = function () {
     function addChatroom(chatroomName, socketId) {
         if(!isChatroom(chatroomName)) {
             let clients = [];
-            infos.concat(clients);
             clients.concat(socketId);
             chatrooms.set(chatroomName, clients);
             return true;
@@ -81,7 +80,8 @@ module.exports = function () {
     }
 
     function getChatrooms() {
-        return chatrooms.keys();
+        let strKeys = Array.from(chatrooms.keys());
+        return strKeys;
     }
 
     return {

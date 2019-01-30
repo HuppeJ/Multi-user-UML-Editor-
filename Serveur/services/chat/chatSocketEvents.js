@@ -32,11 +32,13 @@ module.exports = (io) => {
         });
 
         socket.on(SocketEvents.JOIN_CHATROOM, function () {
-            socket.join('default_room');
-            if(chatroomManager.addChatroom('default_room', socket.id)) {
+            const defaultChatroom = "default_room";
+            socket.join(defaultChatroom);
+            if(chatroomManager.addChatroom(defaultChatroom, socket.id)) {
                 io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
             } else {
-                chatroomManager.addClientToChatroom(roomName, socketId);
+                chatroomManager.addClientToChatroom(defaultChatroom, socket.id);
+                io.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, defaultChatroom);
             }
         });
 
@@ -45,7 +47,8 @@ module.exports = (io) => {
             if(chatroomManager.addChatroom(roomName, socket.id)) {
                 io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
             } else {
-                chatroomManager.addClientToChatroom(roomName, socketId);
+                chatroomManager.addClientToChatroom(roomName, socket.id);
+                io.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, roomName);
             }
         });
 
@@ -59,7 +62,6 @@ module.exports = (io) => {
             io.to('default_room').emit(SocketEvents.MESSAGE_SENT, messageData);
         });
 
-        // TODO : Utiliser le chatroom manager
         socket.on(SocketEvents.GET_CHATROOMS, function() {
             socket.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
         });

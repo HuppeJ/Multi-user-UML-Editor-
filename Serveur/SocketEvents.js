@@ -15,6 +15,7 @@ module.exports = Object.freeze({
 
     JOIN_CHATROOM: "joinChatroom",
     JOIN_SPECIFIC_CHATROOM: "joinSpecificRoom",
+    JOIN_CHATROOM_RESPONSE: "joinChatroomResponse",
     LEAVE_CHATROOM: "leaveChatroom",
     LEAVE_SPECIFIC_CHATROOM: "leaveSpecificChatroom",
     GET_CHATROOMS: "getChatrooms",
