@@ -11,9 +11,11 @@ import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -108,12 +110,14 @@ class MessageListFragment: Fragment(){
         messageRecyclerView?.adapter = adapter
 
         messageEditTextView = view.findViewById(R.id.edittext_chatbox)
-        messageEditTextView?.setOnEditorActionListener { textView, i, keyEvent ->
-            if(id == R.id.edittext_chatbox){
-                trySend()
-                return@setOnEditorActionListener true
+        messageEditTextView?.setOnEditorActionListener { textView, actionId, keyEvent ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    trySend()
+                    true
+                }
+                else -> false
             }
-            false
         }
 
         var sendButton: Button = view.findViewById(R.id.button_chatbox_send)

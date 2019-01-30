@@ -3,6 +3,7 @@ package com.polypaint.polypaint.Activity
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -27,10 +28,14 @@ class LoginActivity:Activity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val app = application as PolyPaint
+        socket = app.getSocket()
+        socket?.connect()
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
 
         setContentView(R.layout.activity_login)
-        var app = application as PolyPaint
-        socket = app.getSocket()
+
 
         usernameView = findViewById(R.id.username_text)
         passwordView = findViewById(R.id.password_text)

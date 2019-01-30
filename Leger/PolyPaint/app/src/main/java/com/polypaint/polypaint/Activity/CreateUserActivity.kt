@@ -1,7 +1,9 @@
 package com.polypaint.polypaint.Activity
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -14,6 +16,7 @@ import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.R
 import com.github.salomonbrys.kotson.*
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.polypaint.polypaint.Socket.SocketConstants
 
@@ -25,6 +28,8 @@ class CreateUserActivity:Activity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
 
         setContentView(R.layout.activity_create_user)
         var app = application as PolyPaint
@@ -80,8 +85,20 @@ class CreateUserActivity:Activity(){
     }
 
     private var onUserCreated: Emitter.Listener = Emitter.Listener{
-        val intent = Intent(this, ChatActivity::class.java)
-        intent.putExtra("username", username)
-        startActivity(intent)
+        val gson = Gson()
+        val obj: Response = gson.fromJson(it[0].toString())
+        if(obj.isUserCreated){
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra("username", username)
+            startActivity(intent)
+        } else {
+            runOnUiThread{
+                AlertDialog.Builder(this).setMessage("Pseudonyme déjà utilisé").show()
+            }
+
+        }
     }
+
+    private inner class Response internal constructor(var isUserCreated: Boolean)
+
 }

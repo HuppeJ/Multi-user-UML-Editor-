@@ -49,7 +49,10 @@ android:id="@+id/fragment_message_list">
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:maxLines="6"/>
+                android:imeOptions="actionSend"
+                android:maxLines="1"
+                android:inputType="text"
+                />
 
         <Button
                 android:id="@+id/button_chatbox_send"
