@@ -38,7 +38,7 @@ module.exports = (io) => {
                 io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
             } else {
                 chatroomManager.addClientToChatroom(defaultChatroom, socket.id);
-                io.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, defaultChatroom);
+                socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, defaultChatroom);
             }
         });
 
@@ -48,7 +48,7 @@ module.exports = (io) => {
                 io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
             } else {
                 chatroomManager.addClientToChatroom(roomName, socket.id);
-                io.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, roomName);
+                socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, roomName);
             }
         });
 
