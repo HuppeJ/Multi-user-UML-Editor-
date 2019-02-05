@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
@@ -46,18 +46,17 @@ class MessageListFragment: Fragment(){
     private var socket: Socket? = null
     private var adapter: MessageListAdapter?=null
     private var messages: MutableList<Message> = mutableListOf()
-    private var messageRecyclerView : RecyclerView? = null
+    private var messageRecyclerView : androidx.recyclerview.widget.RecyclerView? = null
     private var messageEditTextView : EditText? = null
     private var username: String? = null
     private var isTyping: Boolean = false
     private val typingHandler: Handler = Handler()
     private var isConnected: Boolean = true
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         username = activity?.intent?.getStringExtra("username")
-        adapter = MessageListAdapter(context!!, messages, username!!)
+        adapter = MessageListAdapter(context, messages, username!!)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +66,7 @@ class MessageListFragment: Fragment(){
         setHasOptionsMenu(true)
 
         val app = activity!!.application as PolyPaint
-        socket = app.getSocket()
+        socket = app.socket
         socket?.on(Socket.EVENT_CONNECT, onConnect)
         socket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
         socket?.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
@@ -106,7 +105,7 @@ class MessageListFragment: Fragment(){
         super.onViewCreated(view, savedInstanceState)
 
         messageRecyclerView = view.findViewById(R.id.reyclerview_message_list)
-        messageRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        messageRecyclerView?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
         messageRecyclerView?.adapter = adapter
 
         messageEditTextView = view.findViewById(R.id.edittext_chatbox)
@@ -138,7 +137,7 @@ class MessageListFragment: Fragment(){
 
     private fun trySend(){
         if(! socket!!.connected()){
-            Toast.makeText(activity?.applicationContext, "not  connected", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity?.applicationContext, "not  connected", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -178,7 +177,7 @@ class MessageListFragment: Fragment(){
         activity?.runOnUiThread {
             if(!isConnected){
                 socket?.emit("add user", username)
-                Toast.makeText(activity?.applicationContext, "Connected", Toast.LENGTH_LONG).show()
+                Toast.makeText(activity?.applicationContext, "Connected", Toast.LENGTH_SHORT).show()
                 isConnected = true
             }
         }
@@ -187,13 +186,13 @@ class MessageListFragment: Fragment(){
     private var onDisconnect:Emitter.Listener = Emitter.Listener {
         activity?.runOnUiThread {
             isConnected = false
-            Toast.makeText(activity?.applicationContext, "Disconnected", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity?.applicationContext, "Disconnected", Toast.LENGTH_SHORT).show()
         }
     }
 
     private var onConnectError:Emitter.Listener = Emitter.Listener {
         activity?.runOnUiThread {
-            Toast.makeText(activity?.applicationContext, "Connection error", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity?.applicationContext, "Connection error", Toast.LENGTH_SHORT).show()
         }
     }
 

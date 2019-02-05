@@ -1,15 +1,16 @@
 package com.polypaint.polypaint.Activity
 
-import android.app.Fragment
+import androidx.fragment.app.Fragment
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Model.Message
 import com.polypaint.polypaint.Adapter.MessageListAdapter
 import com.polypaint.polypaint.Adapter.RoomsListAdapter
@@ -22,7 +23,7 @@ import com.polypaint.polypaint.Model.User
 
 
 class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListener{
-    private var mMessageRecycler: RecyclerView? = null
+    private var mMessageRecycler: androidx.recyclerview.widget.RecyclerView? = null
     private var mMessageAdapter: MessageListAdapter? = null
     private var messageList: ArrayList<Message> = ArrayList()
 
@@ -33,7 +34,7 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
 
         setContentView(R.layout.activity_chat)
 
-        val ft = fragmentManager.beginTransaction()
+        val ft = supportFragmentManager.beginTransaction()
         //ft.add(R.id.list_container, RoomsListFragment())
         ft.add(R.id.details_container, MessageListFragment(), MessageListFragment.TAG)
         ft.commit()
@@ -47,19 +48,23 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
     }
 
     override fun onRoomSelected(room: Room) {
-        //Toast.makeText(this, room.name, Toast.LENGTH_LONG).show()
-        val messageListFragment = fragmentManager.findFragmentByTag(MessageListFragment.TAG) as MessageListFragment
-        //Toast.makeText(this, messageListFragment.id, Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, room.name, Toast.LENGTH_SHORT).show()
+        val messageListFragment = supportFragmentManager.findFragmentByTag(MessageListFragment.TAG) as MessageListFragment
+        //Toast.makeText(this, messageListFragment.id, Toast.LENGTH_SHORT).show()
 
         messageListFragment.changeRoom(room)
     }
 
     override fun onBackPressed() {
         val app = application as PolyPaint
-        app.getSocket()?.disconnect()
+        val socket: Socket? = app.socket
+        socket?.disconnect()
 
-        Toast.makeText(this, "Disconnected", Toast.LENGTH_LONG).show()
+
+        Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
+        finish()
     }
 }
