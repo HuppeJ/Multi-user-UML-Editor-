@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,8 +25,8 @@ class RoomsListFragment: Fragment(){
         private const val TAG: String = "RoomsListFragment"
     }
     private var socket: Socket? = null
-    private var adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>?=null
-    private var roomsRecyclerView : RecyclerView? = null
+    private var adapter: androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>?=null
+    private var roomsRecyclerView : androidx.recyclerview.widget.RecyclerView? = null
     private var username: String? = null
     private var isTyping: Boolean = false
     private val typingHandler: Handler = Handler()
@@ -43,15 +43,14 @@ class RoomsListFragment: Fragment(){
         fun onRoomSelected(room: Room)
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         var roomsList: MutableList<Room> = mutableListOf()
         roomsList.add(Room("room"))
         roomsList.add(Room("room2"))
         roomsList.add(Room("room3"))
         username = activity?.intent?.getStringExtra("username")
-        adapter = RoomsListAdapter(context!!, roomsList, User(username!!), object: RoomsListAdapter.OnItemClickListener{
+        adapter = RoomsListAdapter(context, roomsList, User(username!!), object: RoomsListAdapter.OnItemClickListener{
             override fun onItemClick(room: Room) {
                 callback?.onRoomSelected(room)
             }
@@ -77,7 +76,7 @@ class RoomsListFragment: Fragment(){
         super.onViewCreated(view, savedInstanceState)
 
         roomsRecyclerView = view.findViewById(R.id.reyclerview_rooms_list)
-        roomsRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        roomsRecyclerView?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
         roomsRecyclerView?.adapter = adapter
 
 

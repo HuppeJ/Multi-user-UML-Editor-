@@ -10,8 +10,10 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.github.nkzawa.emitter.Emitter
+import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.R
@@ -19,17 +21,31 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.polypaint.polypaint.Socket.SocketConstants
+import java.lang.RuntimeException
+import java.net.URISyntaxException
+
+
 
 class LoginActivity:Activity(){
     private var usernameView : EditText?= null
     private var passwordView : EditText?= null
+    private var progressBar: ProgressBar? = null
     private var username: String = ""
     private var socket: Socket? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val app = application as PolyPaint
-        socket = app.getSocket()
+        val opts = IO.Options()
+        opts.forceNew = true
+        opts.reconnection = false
+        try {
+            app.socket = IO.socket(app.uri, opts)
+            Log.d("******", "**************************************")
+        } catch (e: URISyntaxException){
+            throw RuntimeException(e)
+        }
+        socket = app.socket
         socket?.connect()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
@@ -39,6 +55,9 @@ class LoginActivity:Activity(){
 
         usernameView = findViewById(R.id.username_text)
         passwordView = findViewById(R.id.password_text)
+        progressBar = findViewById(R.id.progressBar)
+
+        progressBar?.visibility = View.GONE
 
         var loginButton: Button = findViewById(R.id.login_button)
         loginButton.setOnClickListener {
@@ -79,20 +98,28 @@ class LoginActivity:Activity(){
         }
 
 
+
+
         val obj: JsonObject = jsonObject(
             "username" to username,
             "password" to password
         )
 
-        Log.d("*******", obj.toString())
 
-        socket?.emit(SocketConstants.LOGIN_USER, obj)
+        if(socket!!.connected()) {
+            Log.d("*******", obj.toString())
+            socket?.emit(SocketConstants.LOGIN_USER, obj)
+        } else {
+            Log.d("*******", "disconect")
+        }
 
+        progressBar?.visibility = View.VISIBLE
 
     }
 
     private fun createUser(){
         val intent = Intent(this, CreateUserActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
         startActivity(intent)
     }
 
@@ -105,6 +132,7 @@ class LoginActivity:Activity(){
             startActivity(intent)
         } else {
             runOnUiThread{
+                progressBar?.visibility = View.GONE
                 AlertDialog.Builder(this).setMessage("Mauvais mot de passe").show()
             }
 

@@ -33,7 +33,7 @@ class CreateUserActivity:Activity(){
 
         setContentView(R.layout.activity_create_user)
         var app = application as PolyPaint
-        socket = app.getSocket()
+        socket = app.socket
 
         usernameView = findViewById(R.id.username_text)
         passwordView = findViewById(R.id.password_text)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -8,7 +8,7 @@
         tools:context=".Activity.ChatActivity"
 android:id="@+id/fragment_message_list">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/reyclerview_message_list"
             android:layout_width="match_parent"
             android:layout_height="681dp"
@@ -18,7 +18,7 @@ android:id="@+id/fragment_message_list">
             app:layout_constraintHorizontal_bias="0.0"
             android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/layout_chatbox"
             app:layout_constraintVertical_bias="0.0">
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <View
             android:layout_width="0dp"
@@ -67,4 +67,4 @@ android:id="@+id/fragment_message_list">
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
