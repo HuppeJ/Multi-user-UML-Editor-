@@ -22,8 +22,7 @@
         <EditText
                 android:id="@+id/edittext_server_url"
 
-                android:text="https://projet-3-228722.appspot.com"
-
+                android:text="http://192.168.0.194:8080"
 
                 android:hint="Server url"
                 android:background="@android:color/transparent"
@@ -35,9 +34,9 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:maxLines="6"/>
-        <!--android:text="http://10.200.15.230:3000"-->
+        <!--android:text="http://10.200.15.230:8080"-->
         <!--android:text="https://projet-3-228722.appspot.com"-->
-        <!--android:text="http://192.168.0.194:3000"-->
+        <!--android:text="http://192.168.0.194:8080"-->
 
     </LinearLayout>
     <Button

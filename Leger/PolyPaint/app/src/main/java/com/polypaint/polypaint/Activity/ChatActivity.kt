@@ -10,6 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import co.zsmb.materialdrawerkt.builders.drawer
+import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
+import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
+import co.zsmb.materialdrawerkt.draweritems.divider
 import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Model.Message
 import com.polypaint.polypaint.Adapter.MessageListAdapter
@@ -20,6 +25,8 @@ import com.polypaint.polypaint.Fragment.RoomsListFragment
 import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Model.User
+
+
 
 
 class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListener{
@@ -33,6 +40,16 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
 
 
         setContentView(R.layout.activity_chat)
+
+        /*drawer {
+            primaryItem("Home") {}
+            divider {}
+            primaryItem("Users") {}
+            secondaryItem("Settings") {}
+            builder.withGenerateMiniDrawer(true)
+            generateMiniDrawer = true
+            toolbar = Toolbar(this@ChatActivity)
+        }*/
 
         val ft = supportFragmentManager.beginTransaction()
         //ft.add(R.id.list_container, RoomsListFragment())
@@ -59,9 +76,6 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
         val app = application as PolyPaint
         val socket: Socket? = app.socket
         socket?.disconnect()
-
-
-        Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)

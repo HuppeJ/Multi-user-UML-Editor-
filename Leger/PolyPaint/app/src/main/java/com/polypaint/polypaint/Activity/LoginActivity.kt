@@ -24,6 +24,8 @@ import com.polypaint.polypaint.Socket.SocketConstants
 import java.lang.RuntimeException
 import java.net.URISyntaxException
 
+
+
 class LoginActivity:Activity(){
     private var usernameView : EditText?= null
     private var passwordView : EditText?= null
@@ -34,8 +36,11 @@ class LoginActivity:Activity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val app = application as PolyPaint
+        val opts = IO.Options()
+        opts.forceNew = true
+        opts.reconnection = false
         try {
-            app.socket = IO.socket(app.uri)
+            app.socket = IO.socket(app.uri, opts)
             Log.d("******", "**************************************")
         } catch (e: URISyntaxException){
             throw RuntimeException(e)
@@ -100,9 +105,13 @@ class LoginActivity:Activity(){
             "password" to password
         )
 
-        Log.d("*******", obj.toString())
 
-        socket?.emit(SocketConstants.LOGIN_USER, obj)
+        if(socket!!.connected()) {
+            Log.d("*******", obj.toString())
+            socket?.emit(SocketConstants.LOGIN_USER, obj)
+        } else {
+            Log.d("*******", "disconect")
+        }
 
         progressBar?.visibility = View.VISIBLE
 
@@ -122,8 +131,8 @@ class LoginActivity:Activity(){
             intent.putExtra("username", username)
             startActivity(intent)
         } else {
-            progressBar?.visibility = View.GONE
             runOnUiThread{
+                progressBar?.visibility = View.GONE
                 AlertDialog.Builder(this).setMessage("Mauvais mot de passe").show()
             }
 

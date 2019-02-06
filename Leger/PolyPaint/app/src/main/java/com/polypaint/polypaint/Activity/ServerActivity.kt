@@ -20,15 +20,6 @@ class ServerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_server)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        drawer {
-            primaryItem("Home") {}
-            divider {}
-            primaryItem("Users") {}
-            secondaryItem("Settings") {}
-            builder.withGenerateMiniDrawer(true)
-            generateMiniDrawer = true
-            toolbar = Toolbar(this@ServerActivity)
-        }
 
     }
 
