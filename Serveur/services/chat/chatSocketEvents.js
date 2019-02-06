@@ -34,6 +34,8 @@ module.exports = (io) => {
         socket.on(SocketEvents.JOIN_CHATROOM, function () {
             const defaultChatroom = "default_room";
             socket.join(defaultChatroom);
+            console.log(`JOIN_CHATROOM`, defaultChatroom);
+            
             if(chatroomManager.addChatroom(defaultChatroom, socket.id)) {
                 io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
             } else {
@@ -58,8 +60,18 @@ module.exports = (io) => {
             }
         });
 
-        socket.on(SocketEvents.SEND_MESSAGE, function(messageData) {
-            io.to('default_room').emit(SocketEvents.MESSAGE_SENT, messageData);
+        socket.on(SocketEvents.SEND_MESSAGE, function(messageDataStr) {
+            const messageData = JSON.parse(messageDataStr);
+
+            const date = new Date();
+            const timestamp = date.getTime();
+
+            messageData.createdAt = timestamp;
+            const response = JSON.stringify(messageData);
+        
+            console.log(`SEND_MESSAGE, response:`, response);
+
+            io.to('default_room').emit(SocketEvents.MESSAGE_SENT, response);
         });
 
         socket.on(SocketEvents.GET_CHATROOMS, function() {
