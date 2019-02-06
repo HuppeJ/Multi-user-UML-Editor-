@@ -1,4 +1,5 @@
 Serveur/node_modules/
+Serveur/package-lock.json
 ClientSocketIoTesting/.cache/
 ClientSocketIoTesting/dist/
 ClientSocketIoTesting/node_modules/

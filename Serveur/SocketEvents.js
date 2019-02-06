@@ -7,5 +7,22 @@ module.exports = Object.freeze({
     CREATE_USER: "createUser", 
     CREATE_USER_RESPONSE: "createUserResponse",
     LOGIN_USER: "loginUser",
-    LOGIN_USER_RESPONSE: "loginUserResponse"
+    LOGIN_USER_RESPONSE: "loginUserResponse",
+
+    // Chat
+    REGISTER_TO_CHAT: "registerToChat",
+    REGISTER_TO_CHAT_RESPONSE: "registerToChatResponse",
+
+    JOIN_CHATROOM: "joinChatroom",
+    JOIN_SPECIFIC_CHATROOM: "joinSpecificRoom",
+    JOIN_CHATROOM_RESPONSE: "joinChatroomResponse",
+    LEAVE_CHATROOM: "leaveChatroom",
+    LEAVE_SPECIFIC_CHATROOM: "leaveSpecificChatroom",
+    GET_CHATROOMS: "getChatrooms",
+    GET_CHATROOMS_RESPONSE: "getChatroomsResponse",
+
+    SEND_MESSAGE: "sendMessage",
+    MESSAGE_SENT: "messageSent",
+
+
 });

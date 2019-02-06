@@ -1,51 +1,49 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
 
-const userTemplates = require('../config/users')
+// const userTemplates = require('../config/users')
 
 module.exports = function () {
   // mapping of all connected clients
-  const clients = new Map()
+  const sockets = new Map()
 
-  function addClient(client) {
-    clients.set(client.id, { client });
+  function addClient(socket) {
+    sockets.set(socket.id, { socket });
   }
 
-  function registerClient(client, user) {
-    clients.set(client.id, { client, user });
+  function registerClient(socket, user) {
+    sockets.set(socket.id, { socket, user });
   }
 
-  function removeClient(client) {
-    clients.delete(client.id);
+  function removeClient(socket) {
+    sockets.delete(socket.id);
   }
 
-  function getAvailableUsers() {
-    const usersTaken = new Set(
-      Array.from(clients.values())
+  function getUnavailableUsers() {
+    return usersTaken = new Set(
+      Array.from(sockets.values())
         .filter(c => c.user)
-        .map(c => c.user.name)
-    )
-    return userTemplates.filter(u => !usersTaken.has(u.name));
+        .map(c => c.user.username)
+    );
   }
 
-  function isUserAvailable(userName) {
-    return getAvailableUsers().some(u => u.name === userName);
+  function isUserAvailable(username) {
+    return !getUnavailableUsers().has(username);
   }
 
-  function getUserByName(userName) {
-    return userTemplates.find(u => u.name === userName);
-  }
+  // function getUserByName(username) {
+  //   return userTemplates.find(u => u.username === username);
+  // }
 
   function getUserByClientId(clientId) {
-    return (clients.get(clientId) || {}).user;
+    return (sockets.get(clientId) || {}).user;
   }
 
   return {
     addClient,
     registerClient,
     removeClient,
-    getAvailableUsers,
+    getUnavailableUsers,
     isUserAvailable,
-    getUserByName,
     getUserByClientId
   }
 }

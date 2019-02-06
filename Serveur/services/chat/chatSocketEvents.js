@@ -1,47 +1,90 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
+const SocketEvents = require('../../SocketEvents');
+
 
 const ClientManager = require('./components/ClientManager');
 const ChatroomManager = require('./components/ChatroomManager');
-const makeHandlers = require('./handlers');
+// const makeHandler = require('./handlers');
 
 const clientManager = ClientManager();
 const chatroomManager = ChatroomManager();
 
 module.exports = (io) => {
-    io.on('connection', function (client) {
-        const {
-            handleRegister,
-            handleJoin,
-            handleLeave,
-            handleMessage,
-            handleGetChatrooms,
-            handleGetAvailableUsers,
-            handleDisconnect
-        } = makeHandlers(client, clientManager, chatroomManager);
+    io.on('connection', function (socket) {
+        // const handleEvent = makeHandler(client, clientManager, chatroomManager);
 
-        console.log('client connected...', client.id);
-        clientManager.addClient(client);
+        clientManager.addClient(socket);
 
-        client.on('register', handleRegister);
+        socket.on(SocketEvents.REGISTER_TO_CHAT, function (userStr) {
+            const user = JSON.parse(userStr);
 
-        client.on('join', handleJoin);
+            let isUserRegisteredToChat = false;
+            if (clientManager.isUserAvailable(user.username)) {
+                clientManager.registerClient(socket, user);
+                isUserRegisteredToChat = true;
+            }
 
-        client.on('leave', handleLeave);
+            const response = JSON.stringify({
+                isUserRegisteredToChat: isUserRegisteredToChat
+            });
 
-        client.on('message', handleMessage);
+            socket.emit(SocketEvents.REGISTER_TO_CHAT_RESPONSE, response);
+        });
 
-        client.on('chatrooms', handleGetChatrooms);
+        socket.on(SocketEvents.JOIN_CHATROOM, function () {
+            const defaultChatroom = "default_room";
+            socket.join(defaultChatroom);
+            console.log(`JOIN_CHATROOM`, defaultChatroom);
+            
+            if(chatroomManager.addChatroom(defaultChatroom, socket.id)) {
+                io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
+            } else {
+                chatroomManager.addClientToChatroom(defaultChatroom, socket.id);
+                socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, defaultChatroom);
+            }
+        });
 
-        client.on('availableUsers', handleGetAvailableUsers);
+        socket.on(SocketEvents.JOIN_SPECIFIC_CHATROOM, function (roomName) {
+            socket.join(roomName);
+            if(chatroomManager.addChatroom(roomName, socket.id)) {
+                io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
+            } else {
+                chatroomManager.addClientToChatroom(roomName, socket.id);
+                socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, roomName);
+            }
+        });
 
-        client.on('disconnect', function () {
-            console.log('client disconnect...', client.id);
-            handleDisconnect();
-        })
+        socket.on(SocketEvents.LEAVE_SPECIFIC_CHATROOM, function(roomName) {
+            if(chatroomManager.removeClientFromChatroom(roomName, socket.id)) {
+                socket.leave(roomName);
+            }
+        });
 
-        client.on('error', function (err) {
-            console.log('received error from client:', client.id);
+        socket.on(SocketEvents.SEND_MESSAGE, function(messageDataStr) {
+            const messageData = JSON.parse(messageDataStr);
+
+            const date = new Date();
+            const timestamp = date.getTime();
+
+            messageData.createdAt = timestamp;
+            const response = JSON.stringify(messageData);
+        
+            console.log(`SEND_MESSAGE, response:`, response);
+
+            io.to('default_room').emit(SocketEvents.MESSAGE_SENT, response);
+        });
+
+        socket.on(SocketEvents.GET_CHATROOMS, function() {
+            socket.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
+        });
+
+        socket.on('disconnect', function () {
+             console.log('client disconnect...', socket.id);
+        });
+
+        socket.on('error', function (err) {
+            console.log('received error from client:', socket.id);
             console.log(err);
-        })
-    })
+        });
+    });
 };

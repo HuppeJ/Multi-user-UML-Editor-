@@ -33,6 +33,7 @@ const server = http.createServer(app);
 const socketIO = require('socket.io');
 const io = socketIO(server);
 
+// const chatIo = io.of("/chat");
 
 // Initialise Socket Events
 const chatSocketEvents = require('./services/chat/chatSocketEvents');
@@ -42,12 +43,17 @@ authenticationSocketEvents(io);
 
 // Set up the Socket.io communication system
 io.on('connection', (client) => {
-  console.log('New client connected')
+    console.log('New client connected');
+
+    // TODO : remove
+    client.on('test', function () {
+        client.emit('hello');
+    });
 });
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-  console.log('Press Ctrl+C to quit.');
+    console.log(`App listening on port ${PORT}`);
+    console.log('Press Ctrl+C to quit.');
 });
 

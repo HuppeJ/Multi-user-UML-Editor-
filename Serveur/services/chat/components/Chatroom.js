@@ -1,7 +1,7 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
 
 module.exports = function ({ name, image }) {
-    const members = new Map(); // [key: client.id, value:client]
+    const members = new Map(); // [key: socket.id, value:socket]
     let chatHistory = [];
 
     function broadcastMessage(message) {

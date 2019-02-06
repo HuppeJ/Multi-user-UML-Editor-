@@ -11,7 +11,8 @@
     }
 
     function testSocket() {
-        var socket = io.connect('http://localhost:3000/');
+        var socket = io.connect('http://localhost:3000');
+        // var socket = io.connect('https://projet-3-228722.appspot.com/');
 
         socket.on('connect', onConnect);
         socket.on('hello', onHello);
@@ -23,19 +24,27 @@
 
         function onConnect(evt) {
             writeToScreen("CONNECTED");
-            var myObject = {
-                username: 'TEST',
-                password: 'WASSA'
-            };
+            //var myObject = {
+            //    username: 'TEST',
+            //    password: 'TEST'
+            //};
+			
+			var myObject = "{\"username\": \"TEST\", \"password\": \"Mondga\" }";
             
-            socket.emit("loginUser", myObject);
-            
-            socket.on('loginUserResponse', response);            
+            socket.emit("joinChatroom");
+
+            let temp = Date.now();
+            socket.emit("sendMessage", temp);
+
+            socket.on('messageSent', response);  
+
+			socket.emit("getChatrooms");
+			
+			socket.on("getChatroomsResponse", response);
         }
 
         function response(evt) {
-            writeToScreen(evt.isLoginSuccessful);
-            writeToScreen(evt.message);
+            writeToScreen(evt);
         }
 
         function onUserCreated(evt) {
