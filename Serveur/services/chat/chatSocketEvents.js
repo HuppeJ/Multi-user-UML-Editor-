@@ -15,6 +15,7 @@ module.exports = (io) => {
 
         clientManager.addClient(socket);
 
+        // TODO : CAn we remove the next socket message?
         socket.on(SocketEvents.REGISTER_TO_CHAT, function (userStr) {
             const user = JSON.parse(userStr);
 
@@ -31,6 +32,20 @@ module.exports = (io) => {
             socket.emit(SocketEvents.REGISTER_TO_CHAT_RESPONSE, response);
         });
 
+        socket.on(SocketEvents.CREATE_CHATROOM, function (roomName) {
+            let response = {
+                roomName = roomName,
+                isCreated: chatroomManager.addChatroom(roomName, socket.id)
+            };
+
+            if(response.isCreated) {
+                socket.join(roomName);
+                io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
+            } 
+            
+            socket.emit(SocketEvents.CREATE_CHATROOM_RESPONSE, JSON.stringify(response));
+        });
+
         socket.on(SocketEvents.JOIN_CHATROOM, function () {
             const defaultChatroom = "default_room";
             socket.join(defaultChatroom);
@@ -43,19 +58,30 @@ module.exports = (io) => {
         });
 
         socket.on(SocketEvents.JOIN_SPECIFIC_CHATROOM, function (roomName) {
-            socket.join(roomName);
-            if(chatroomManager.addChatroom(roomName, socket.id)) {
-                io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
-            } else {
-                chatroomManager.addClientToChatroom(roomName, socket.id);
-                socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, roomName);
-            }
+            const response = {
+                roomName = roomName,
+                isJoined: chatroomManager.addClientToChatroom(roomName, socket.id)
+            };
+
+            if(response.isJoined) {
+                socket.join(roomName);
+            } 
+
+            socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, JSON.stringify(response));
         });
 
         socket.on(SocketEvents.LEAVE_SPECIFIC_CHATROOM, function(roomName) {
-            if(chatroomManager.removeClientFromChatroom(roomName, socket.id)) {
+            const response = {
+                roomName = roomName,
+                isJoined: chatroomManager.removeClientFromChatroom(roomName, socket.id)
+            };
+
+            if(response.isJoined) {
                 socket.leave(roomName);
             }
+            
+            socket.emit(SocketEvents.LEAVE_CHATROOM_RESPONSE, JSON.stringify(response));
+
         });
 
         socket.on(SocketEvents.SEND_MESSAGE, function(messageData) {
