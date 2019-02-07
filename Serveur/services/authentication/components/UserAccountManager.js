@@ -12,7 +12,7 @@ module.exports = function () {
         .update(password)
         .digest('hex')
     };
-    console.log("User: " + user.username + " -> " + user.password);
+    // console.log("User: " + user.username + " -> " + user.password);
     return datastore.save({
       key: datastore.key('User'),
       data: user

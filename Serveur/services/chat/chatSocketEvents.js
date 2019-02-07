@@ -65,7 +65,7 @@ module.exports = (io) => {
             messageData.createdAt = timestamp;
             const response = JSON.stringify(messageData);
         
-            console.log(`SEND_MESSAGE, response:`, response);
+            // console.log(`SEND_MESSAGE, response:`, response);
 
             io.to('default_room').emit(SocketEvents.MESSAGE_SENT, response);
         });
@@ -75,12 +75,12 @@ module.exports = (io) => {
         });
 
         socket.on('disconnect', function () {
-             console.log('client disconnect...', socket.id);
+            //  console.log('client disconnect...', socket.id);
         });
 
         socket.on('error', function (err) {
-            console.log('received error from client:', socket.id);
-            console.log(err);
+            // console.log('received error from client:', socket.id);
+            // console.log(err);
         });
     });
 };
