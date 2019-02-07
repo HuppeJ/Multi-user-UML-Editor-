@@ -196,9 +196,6 @@
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"/>
             </Border>
-            
-            <!--<Button x:Name="button1" Content="Change chat mode" HorizontalAlignment="Left" Margin="94.667,71.667,-221.333,-90.333" Grid.Row="1" VerticalAlignment="Top" Width="134" Click="ChangeChatMode" Grid.Column="1"/>-->
         </Grid>
-<Vues:WindowChat x:Name="WindowChat" Margin="24.667,0,-334.333,-31.333" Grid.Column="1" Grid.RowSpan="2"/>
     </DockPanel>
 </Window>

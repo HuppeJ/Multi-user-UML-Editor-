@@ -22,7 +22,6 @@ namespace PolyPaint.VueModeles
         private Editeur editeur = new Editeur();
 
         private ChatService chat = new ChatService();
-        public User user;
 
         private string _username;
         public string username

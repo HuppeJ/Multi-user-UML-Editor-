@@ -18,8 +18,8 @@ namespace PolyPaint.Services
 
         private JavaScriptSerializer serializer;
         private Socket socket;
-        private string url = "https://projet-3-228722.appspot.com";
-        //private string url = "http://localhost:8080";
+        //private string url = "https://projet-3-228722.appspot.com";
+        private string url = "http://localhost:8080";
 
         public ChatService()
         {
