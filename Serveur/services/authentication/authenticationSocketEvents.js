@@ -16,7 +16,7 @@ module.exports = (io) => {
                 isUserCreated: isUserCreated
             });
 
-            console.log(`CREATE_USER, isUserCreated:`, isUserCreated)
+            // console.log(`CREATE_USER, isUserCreated:`, isUserCreated)
 
             socket.emit(SocketEvents.CREATE_USER_RESPONSE, response);
         });
@@ -32,7 +32,7 @@ module.exports = (io) => {
                 isLoginSuccessful: isLoginSuccessful
             });
 
-            console.log(`LOGIN_USER, isLoginSuccessful:`, isLoginSuccessful)
+            // console.log(`LOGIN_USER, isLoginSuccessful:`, isLoginSuccessful)
 
             socket.emit(SocketEvents.LOGIN_USER_RESPONSE, response);
         });
