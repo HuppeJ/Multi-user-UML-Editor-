@@ -1,18 +1,14 @@
-// Based on https://github.com/justadudewhohacks/websocket-chat
-const SocketEvents = require('../../SocketEvents');
+const SocketEvents = require('../../constants/SocketEvents');
 
 
 const ClientManager = require('./components/ClientManager');
 const ChatroomManager = require('./components/ChatroomManager');
-// const makeHandler = require('./handlers');
 
 const clientManager = ClientManager();
 const chatroomManager = ChatroomManager();
 
 module.exports = (io) => {
     io.on('connection', function (socket) {
-        // const handleEvent = makeHandler(client, clientManager, chatroomManager);
-
         clientManager.addClient(socket);
 
         socket.on(SocketEvents.REGISTER_TO_CHAT, function (userStr) {

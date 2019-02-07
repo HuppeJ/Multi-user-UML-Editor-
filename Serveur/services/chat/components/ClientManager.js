@@ -1,7 +1,5 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
 
-// const userTemplates = require('../config/users')
-
 module.exports = function () {
   // mapping of all connected clients
   const sockets = new Map()

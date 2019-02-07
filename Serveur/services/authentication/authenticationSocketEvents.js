@@ -1,5 +1,4 @@
-// Based on https://github.com/justadudewhohacks/websocket-chat
-const SocketEvents = require('../../SocketEvents');
+const SocketEvents = require('../../constants/SocketEvents');
 const UserAccountManager = require('./components/UserAccountManager');
 const userAccountManager = UserAccountManager();
 

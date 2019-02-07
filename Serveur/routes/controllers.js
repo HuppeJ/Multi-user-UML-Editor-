@@ -15,24 +15,7 @@ var controllers = {
             version: properties.version
         }
         res.json(aboutInfo);
-    },
-    get_distance: (req, res) => {
-        
-    },
+    }
 };
 
 module.exports = controllers;
-
-// On pourrait utiliser un syntax comme celle-ci ça serait plus clean pour les imports
-// /**
-//  * GET /contact
-//  * Contact form page.
-//  */
-// exports.getContact = (req, res) => {
-//     const unknownUser = !(req.user);
-  
-//     res.render('contact', {
-//       title: 'Contact',
-//       unknownUser,
-//     });
-//   };
