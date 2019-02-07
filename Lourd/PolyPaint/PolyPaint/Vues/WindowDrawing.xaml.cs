@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using PolyPaint.VueModeles;
+using PolyPaint.Vues;
 
 namespace PolyPaint
 {
@@ -12,6 +13,7 @@ namespace PolyPaint
     /// </summary>
     public partial class WindowDrawing : Window
     {
+
         public WindowDrawing()
         {
             InitializeComponent();
@@ -43,5 +45,6 @@ namespace PolyPaint
         }
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutSelection();
+
     }
 }
