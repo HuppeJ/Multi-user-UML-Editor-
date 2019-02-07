@@ -1,9 +1,12 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Ink;
 using System.Windows.Media;
 using PolyPaint.Modeles;
+using PolyPaint.Services;
 using PolyPaint.Utilitaires;
+using Quobject.SocketIoClientDotNet.Client;
 
 namespace PolyPaint.VueModeles
 {
@@ -17,6 +20,30 @@ namespace PolyPaint.VueModeles
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private Editeur editeur = new Editeur();
+
+        private ChatService chat = new ChatService();
+        public User user;
+
+        private string _username;
+        public string username
+        {
+            get { return _username; }
+            set
+            {
+                _username = value;
+                ProprieteModifiee();
+            }
+        }
+        private string _password;
+        public string password
+        {
+            get { return _password; }
+            set
+            {
+                _password = value;
+                ProprieteModifiee();
+            }
+        }
 
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
@@ -52,7 +79,17 @@ namespace PolyPaint.VueModeles
         public RelayCommand<object> Depiler { get; set; }
         public RelayCommand<string> ChoisirPointe { get; set; }
         public RelayCommand<string> ChoisirOutil { get; set; }
-        public RelayCommand<object> Reinitialiser { get; set; }        
+        public RelayCommand<object> Reinitialiser { get; set; }
+
+        public RelayCommand<object> ConnectCommand { get; set; }
+        public RelayCommand<object> CreateUserCommand { get; set; }
+        public RelayCommand<object> LoginUserCommand { get; set; }
+
+
+        private void UserCreated(User user)
+        {
+            Console.WriteLine("test");
+        }
 
         /// <summary>
         /// Constructeur de VueModele
@@ -63,6 +100,8 @@ namespace PolyPaint.VueModeles
         {
             // On écoute pour des changements sur le modèle. Lorsqu'il y en a, EditeurProprieteModifiee est appelée.
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
+
+            //chat.UserCreated += UserCreated;
 
             // On initialise les attributs de dessin avec les valeurs de départ du modèle.
             AttributsDessin = new DrawingAttributes();            
@@ -78,7 +117,35 @@ namespace PolyPaint.VueModeles
             // Donc, aucune vérification de type Peut"Action" à faire.
             ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
-            Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);            
+            Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
+
+            ConnectCommand = new RelayCommand<object>(chat.Connect);
+            //CreateUserCommand = new RelayCommand<object>(chat.CreateUser);
+            //LoginUserCommand = new RelayCommand<object>(chat.LoginUser);
+
+        }
+
+        private void ConnectCommand2(string outil) 
+        {
+
+            Socket socket = IO.Socket("https://projet-3-228722.appspot.com");
+
+            socket.On(Socket.EVENT_CONNECT, () => {
+                Console.WriteLine("fasdf");
+            });
+
+            socket.On("hello", () => {
+                Console.WriteLine("fasdf");
+            });
+
+            // Connect to server
+            socket.Connect();
+
+            socket.Emit("test");
+
+            // disconnect from the server
+            socket.Close();
+
         }
 
         /// <summary>

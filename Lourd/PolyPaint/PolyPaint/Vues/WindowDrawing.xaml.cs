@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using PolyPaint.VueModeles;
+using PolyPaint.Vues;
 
 namespace PolyPaint
 {
@@ -12,6 +13,10 @@ namespace PolyPaint
     /// </summary>
     public partial class WindowDrawing : Window
     {
+        private Boolean integrated = true;
+        //private Window host;
+        //private WindowChat newWindowChat;
+
         public WindowDrawing()
         {
             InitializeComponent();
@@ -43,5 +48,26 @@ namespace PolyPaint
         }
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutSelection();
+
+        // ne garde pas encore le meme chat qu'avant
+        //private void ChangeChatMode(object sender, RoutedEventArgs e)
+        //{
+        //    if (integrated)
+        //    {
+        //        WindowChat.Visibility = Visibility.Hidden;
+        //        newWindowChat = new WindowChat();
+        //        host = new Window();
+        //        host.Content = newWindowChat;
+        //        host.Show();
+        //        newWindowChat.chatBox.Text = WindowChat.chatBox.Text;
+        //    }
+        //    else
+        //    {
+        //        WindowChat.Visibility = Visibility.Visible;
+        //        WindowChat.chatBox.Text = newWindowChat.chatBox.Text;
+        //        host.Close();
+        //    }
+        //    integrated = !integrated;
+        //}
     }
 }

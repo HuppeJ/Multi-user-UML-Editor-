@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="PolyPaint.Vues.CreateUserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"              
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--Material Design-->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="336" Margin="200,60,200,41">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="160"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <materialDesign:ColorZone Mode="Light" Margin="0" VerticalAlignment="Stretch" Background="WhiteSmoke">
+                <Grid HorizontalAlignment="Center" Width="120" Height="120" VerticalAlignment="Center"
+                          SnapsToDevicePixels="True">
+                    <Grid.OpacityMask>
+                        <VisualBrush Visual="{Binding ElementName=ClipEllipse}"/>
+                    </Grid.OpacityMask>
+                    <Ellipse x:Name="ClipEllipse" Fill="White" Stroke="Black"/>
+                    <materialDesign:PackIcon Kind="AccountCircle" Width="144" Height="144" Margin="-12"/>
+                    <Image Source="{Binding ProfilePic, FallbackValue={StaticResource BlankImage},
+                            TargetNullValue={StaticResource BlankImage}}"/>
+                    <Ellipse Stroke="Black" StrokeThickness="1" UseLayoutRounding="True" Opacity="0.2"/>
+                </Grid>
+            </materialDesign:ColorZone>
+            <Button Grid.Row="0" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" 
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,36,16">
+                <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" />
+            </Button>
+
+            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="0,0,0,11" Grid.Row="1">
+                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center"
+                                VerticalAlignment="Top" Height="161">
+                    <TextBox x:Name="UsernameTxtBox" Width="150" Margin="0,5"
+                                 materialDesign:HintAssist.Hint="Username"   
+                                 Text="{Binding username, UpdateSourceTrigger=PropertyChanged}">
+                    </TextBox>
+                    <TextBox x:Name="PasswordTxtBox" Width="150" Margin="0,5"
+                                 materialDesign:HintAssist.Hint="Password"   
+                                 Text="{Binding password, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Command="{Binding LoginUserCommand}" CommandParameter="{Binding Text, ElementName=PasswordTxtBox}" Key="Return"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button Content="Create user" Margin="0,10,0,0" Command="{Binding CreateUserCommand}" Width="150"/>
+                    <Button Content="Back to login" Margin="0,10,0,0" Command="{Binding BackToLoginCommand}" Width="150"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </materialDesign:Card>
+</UserControl>
