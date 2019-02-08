@@ -30,7 +30,7 @@ module.exports = (io) => {
 
         socket.on(SocketEvents.CREATE_CHATROOM, function (roomName) {
             let response = {
-                roomName = roomName,
+                roomName: roomName,
                 isCreated: chatroomManager.addChatroom(roomName, socket.id)
             };
 
@@ -57,7 +57,7 @@ module.exports = (io) => {
 
         socket.on(SocketEvents.JOIN_SPECIFIC_CHATROOM, function (roomName) {
             const response = {
-                roomName = roomName,
+                roomName: roomName,
                 isJoined: chatroomManager.addClientToChatroom(roomName, socket.id)
             };
 
@@ -70,7 +70,7 @@ module.exports = (io) => {
 
         socket.on(SocketEvents.LEAVE_SPECIFIC_CHATROOM, function(roomName) {
             const response = {
-                roomName = roomName,
+                roomName: roomName,
                 isJoined: chatroomManager.removeClientFromChatroom(roomName, socket.id)
             };
 
