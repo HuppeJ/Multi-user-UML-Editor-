@@ -30,7 +30,7 @@ module.exports = (io) => {
         socket.on(SocketEvents.JOIN_CHATROOM, function () {
             const defaultChatroom = "default_room";
             socket.join(defaultChatroom);
-            console.log(`JOIN_CHATROOM`, defaultChatroom);
+            // console.log(`JOIN_CHATROOM`, defaultChatroom);
             
             if(chatroomManager.addChatroom(defaultChatroom, socket.id)) {
                 io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());

@@ -1,4 +1,8 @@
-﻿<UserControl x:Class="PolyPaint.Vues.LoginView"
+﻿<!--
+    Inspired from: Meshack Musundi
+    Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
+-->
+ <UserControl x:Class="PolyPaint.Vues.LoginView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

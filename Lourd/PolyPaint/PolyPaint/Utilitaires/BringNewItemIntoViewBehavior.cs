@@ -1,4 +1,9 @@
-﻿using System.Collections.Specialized;
+﻿/**
+ * Author Meshack Musundi
+ * Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
+ */
+
+using System.Collections.Specialized;
 using System.Windows.Interactivity;
 using System.Windows.Controls;
 using System.Windows;

@@ -184,7 +184,6 @@
     <Compile Include="Utilitaires\BringNewItemIntoViewBehavior.cs" />
     <Compile Include="Utilitaires\ByteBitmapSourceConverter.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
-    <Compile Include="Utilitaires\RelayCommandAsync.cs" />
     <Compile Include="Utilitaires\ViewModelLocator.cs" />
     <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="VueModeles\ViewModelBase.cs" />

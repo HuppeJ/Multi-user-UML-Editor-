@@ -1,4 +1,9 @@
-﻿using Unity;
+﻿/**
+ * Author Meshack Musundi
+ * Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
+ */
+
+using Unity;
 using PolyPaint.Services;
 using PolyPaint.VueModeles;
 

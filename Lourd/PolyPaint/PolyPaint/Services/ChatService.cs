@@ -30,11 +30,11 @@ namespace PolyPaint.Services
         {
             socket = IO.Socket(url, new IO.Options() { ForceNew = true });
 
-            Console.WriteLine("connect");
+            //Console.WriteLine("connect");
 
 
             socket.On(Socket.EVENT_CONNECT, () => {
-                Console.WriteLine("on connect");
+                //Console.WriteLine("on connect");
                 Connection?.Invoke(true);
             });
 
@@ -44,7 +44,7 @@ namespace PolyPaint.Services
             });
 
             socket.On("createUserResponse", (data) => {
-                Console.WriteLine("on create");
+                //Console.WriteLine("on create");
                 
                 bool isUserCreated = serializer.Deserialize<dynamic>((string) data)["isUserCreated"];
 
@@ -53,7 +53,7 @@ namespace PolyPaint.Services
 
             socket.On("loginUserResponse", (data) =>
             {
-                Console.WriteLine("on login");
+                //Console.WriteLine("on login");
                 bool isLoginSuccessful = serializer.Deserialize<dynamic>((string) data)["isLoginSuccessful"];
 
                 // TODO : ou le mettre? Le client ne devrait pas la joindre par defaut quand il login, sur le serveur?
@@ -66,7 +66,7 @@ namespace PolyPaint.Services
             {
 
                 ChatMessageTemplate message = serializer.Deserialize<ChatMessageTemplate>((string) data);
-                Console.WriteLine("on receive" + message.text);
+                //Console.WriteLine("on receive: " + message.text);
 
                 NewMessage?.Invoke(message);
             });
@@ -91,7 +91,7 @@ namespace PolyPaint.Services
 
             string serializedResult = serializer.Serialize(user);
 
-            Console.WriteLine(serializedResult);
+            //Console.WriteLine(serializedResult);
 
             socket.Emit("createUser", serializedResult);
         }
@@ -118,7 +118,7 @@ namespace PolyPaint.Services
                 createdAt = timestamp
             };
 
-            Console.WriteLine("on send" + chatMessage.text);
+            //Console.WriteLine("on send" + chatMessage.text);
 
 
             socket.Emit("sendMessage", serializer.Serialize(chatMessage));

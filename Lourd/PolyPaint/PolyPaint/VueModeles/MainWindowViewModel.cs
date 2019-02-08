@@ -1,4 +1,9 @@
-﻿using System;
+﻿/**
+ * Inspired from: Meshack Musundi
+ * Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
+ */
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
@@ -256,7 +261,7 @@ namespace PolyPaint.VueModeles
             };
 
 
-            Console.WriteLine("newMessage from modelView");
+            //Console.WriteLine("newMessage from modelView");
 
 
             if (!_selectedRoom.Chatter.Contains(cm)){
@@ -291,7 +296,7 @@ namespace PolyPaint.VueModeles
         {
             if (isLoginSuccessful)
             {
-                Console.WriteLine("log in from model to view");
+                //Console.WriteLine("log in from model to view");
                 UserMode = UserModes.Chat;
                 selectedRoom = rooms.First();
                 IsLoggedIn = true;

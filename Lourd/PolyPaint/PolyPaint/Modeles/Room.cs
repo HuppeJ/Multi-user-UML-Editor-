@@ -1,4 +1,9 @@
-﻿using PolyPaint.VueModeles;
+﻿/**
+ * Inspired from: Meshack Musundi
+ * Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
+ */
+
+using PolyPaint.VueModeles;
 using System.Collections.ObjectModel;
 
 namespace PolyPaint.Modeles

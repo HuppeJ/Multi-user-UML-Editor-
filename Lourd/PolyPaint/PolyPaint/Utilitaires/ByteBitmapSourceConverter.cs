@@ -1,4 +1,9 @@
-﻿using System;
+﻿/**
+ * Author Meshack Musundi
+ * Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
+ */
+
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
