@@ -10,23 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace PolyPaint.Vues
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Interaction logic for ChatView.xaml
     /// </summary>
-    public partial class WindowChat : Window
+    public partial class ChatView : UserControl
     {
-        public WindowChat()
+        public ChatView()
         {
             InitializeComponent();
-        }
-
-        void OnClick1(object sender, RoutedEventArgs e)
-        {
-            btn1.Background = Brushes.LightBlue;
         }
     }
 }

@@ -43,7 +43,7 @@ authenticationSocketEvents(io);
 
 // Set up the Socket.io communication system
 io.on('connection', (client) => {
-    console.log('New client connected');
+    // console.log('New client connected');
 
     // TODO : remove
     client.on('test', function () {
