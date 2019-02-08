@@ -65,8 +65,8 @@ class MessageListAdapter (var context: Context, var messageList: List<Message>, 
 
 
         internal fun bind(message: Message) {
-            var rectangle: Drawable? = messageText.background
-            rectangle?.mutate()?.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP)
+            //var rectangle: Drawable? = messageText.background
+            //rectangle?.mutate()?.setColorFilter(R.color.colorOutlineSendMessage, PorterDuff.Mode.SRC_ATOP)
             messageText.text = message.text
             val formatter = SimpleDateFormat("HH:mm:ss")
             timeText.text = formatter.format( message.createdAt)

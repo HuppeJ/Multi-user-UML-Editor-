@@ -21,7 +21,7 @@
 
         <EditText
                 android:id="@+id/edittext_server_url"
-                android:text="http://192.168.0.194:3000"
+                android:text="https://projet-3-228722.appspot.com"
 
                 android:hint="Server url"
                 android:background="@android:color/transparent"
@@ -35,6 +35,7 @@
                 android:maxLines="6"/>
 
         <!--android:text="https://projet-3-228722.appspot.com"-->
+        <!--android:text="http://192.168.0.194:3000"-->
 
     </LinearLayout>
     <Button

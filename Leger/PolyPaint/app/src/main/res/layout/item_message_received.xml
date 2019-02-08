@@ -20,7 +20,7 @@
 
     <TextView
             android:id="@+id/text_message_body"
-            android:background="@drawable/message_rectangle"
+            android:background="@drawable/message_rectangle_r"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="a"
