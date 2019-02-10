@@ -61,6 +61,11 @@ module.exports = function () {
         return strKeys;
     }
 
+    function getChatroomClients(chatroomName) {
+        let strKeys = JSON.stringify(chatrooms.get(chatroomName));
+        return strKeys;
+    }
+
     return {
         addChatroom,
         isChatroom,
@@ -68,6 +73,7 @@ module.exports = function () {
         addClientToChatroom,
         isClientInChatroom,
         removeClientFromChatroom,
-        getChatrooms
+        getChatrooms,
+        getChatroomClients
     }
 }

@@ -29,18 +29,16 @@
             //    password: 'TEST'
             //};
 			
-			var myObject = "{\"username\": \"TEST\", \"password\": \"Mondga\" }";
-            
-            socket.emit("joinChatroom");
+			//var myObject = "{\"username\": \"TEST\", \"password\": \"Mondga\" }";
 
-            let temp = Date.now();
-            socket.emit("sendMessage", temp);
+            socket.emit("createChatroom", "TESTING");
+            socket.on("createChatroomResponse", response);
+            //let temp = Date.now();
+            //socket.emit("sendMessage", temp);
 
-            socket.on('messageSent', response);  
-
-			socket.emit("getChatrooms");
-			
-			socket.on("getChatroomsResponse", response);
+            //socket.on('messageSent', response);  
+			socket.emit("getChatroomClients", "TESTING");
+			socket.on("getChatroomClientsResponse", response);
         }
 
         function response(evt) {
