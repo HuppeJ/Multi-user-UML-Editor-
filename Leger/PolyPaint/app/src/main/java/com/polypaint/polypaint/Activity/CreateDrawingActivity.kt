@@ -10,8 +10,10 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
 import co.zsmb.materialdrawerkt.builders.drawer
 import com.mikepenz.materialdrawer.Drawer
+import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.R
 
 class CreateDrawingActivity: AppCompatActivity(){
@@ -72,15 +74,17 @@ class CreateDrawingActivity: AppCompatActivity(){
     }
 
     private fun createDrawing(){
-        var name = nameView?.text.toString().trim()
-        if(TextUtils.isEmpty(name)){
-            nameView?.requestFocus()
-            nameView?.error = "Enter a name"
-            name = ""
-            return
-        }
-        var password = passwordView?.text.toString().trim()
-        isPasswordProtected = TextUtils.isEmpty(password)
+        var dialog: DialogFragment = EditClassDialogFragment()
+        dialog.show(supportFragmentManager, "alllooooo")
+//        var name = nameView?.text.toString().trim()
+//        if(TextUtils.isEmpty(name)){
+//            nameView?.requestFocus()
+//            nameView?.error = "Enter a name"
+//            name = ""
+//            return
+//        }
+//        var password = passwordView?.text.toString().trim()
+//        isPasswordProtected = TextUtils.isEmpty(password)
     }
 
 }
