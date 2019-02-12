@@ -127,7 +127,8 @@ class LoginActivity:Activity(){
         val gson = Gson()
         val obj: Response = gson.fromJson(it[0].toString())
         if(obj.isLoginSuccessful){
-            val intent = Intent(this, ChatActivity::class.java)
+            /* val intent = Intent(this, ChatActivity::class.java) */
+            val intent = Intent(this, DrawingActivity::class.java)
             intent.putExtra("username", username)
             startActivity(intent)
         } else {
