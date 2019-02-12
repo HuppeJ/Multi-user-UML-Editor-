@@ -8,9 +8,43 @@
         tools:context=".Activity.DrawingActivity">
 
 <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="DRAWINGACTIVITY"
-/>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:text="DRAWINGACTIVITY"/>
+
+    <Button
+            android:id="@+id/canvas_button"
+            android:text="Show Cavas"
+            android:textSize="14dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:layout_width="80dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="56dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="16dp"/>
+
+    <Button
+            android:id="@+id/draw_button"
+            android:text="DRAW"
+            android:textSize="14dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:layout_width="80dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="16dp"
+            android:layout_marginTop="28dp" app:layout_constraintTop_toBottomOf="@+id/canvas_button"/>
+
+    <ImageView
+            android:id="@+id/canvasHolder"
+            android:layout_width="174dp"
+            android:layout_height="match_parent" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
