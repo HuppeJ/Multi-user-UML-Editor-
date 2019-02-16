@@ -2,6 +2,7 @@ package com.polypaint.polypaint.Activity
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.content.Intent
 import android.text.TextUtils
 import android.view.MenuItem
 import android.widget.Button
@@ -74,8 +75,14 @@ class CreateDrawingActivity: AppCompatActivity(){
     }
 
     private fun createDrawing(){
-        var dialog: DialogFragment = EditClassDialogFragment()
-        dialog.show(supportFragmentManager, "alllooooo")
+
+        val intent = Intent(this, DrawingActivity::class.java)
+        startActivity(intent)
+//        var dialog: DialogFragment = EditClassDialogFragment()
+//        dialog.show(supportFragmentManager, "alllooooo")
+
+
+
 //        var name = nameView?.text.toString().trim()
 //        if(TextUtils.isEmpty(name)){
 //            nameView?.requestFocus()
