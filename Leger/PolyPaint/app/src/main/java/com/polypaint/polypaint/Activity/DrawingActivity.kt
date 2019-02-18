@@ -15,6 +15,7 @@ import com.polypaint.polypaint.Model.BasicElement
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.*
+import kotlinx.android.synthetic.main.basic_element.view.*
 
 class DrawingActivity : AppCompatActivity(){
     // private var parentRelativeLayout : RelativeLayout? = null
@@ -27,29 +28,15 @@ class DrawingActivity : AppCompatActivity(){
     //TODO: déplacer dans object contenant tous les eventListeners possible
     private var onTouchListener = View.OnTouchListener { v, event ->
         v.x = event.rawX - v.width/2 - parent_relative_layout!!.x
-        v.y = event.rawY - v.height - parent_relative_layout!!.y
-        //Set soft focus
+        v.y = event.rawY - v.height/2 - parent_relative_layout!!.y
+
         childSelected = v.id
 
         v.requestFocus()
-        // Return true means this listener has complete process this event successfully.
         true
     }
 
-    private var onLongClickListener = View.OnLongClickListener { v ->
-        first_line.text = "LONGCLICK"
-        true
-    }
-    /*
-    private var onTouchListenerRelLayout = View.OnClickListener { v ->
-        childSelected = parentRelativeLayout!!.indexOfChild(parentRelativeLayout!!.focusedChild)
-        for (i in 0..parentRelativeLayout!!.childCount)
-            Log.d("focus : ", ""+i+childSelected)
 
-        // Return true means this listener has complete process this event successfully.
-        true
-    }
-    */
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate (savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,18 +57,36 @@ class DrawingActivity : AppCompatActivity(){
             val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
             mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
 
-           mBasicElem.setOnTouchListener(onTouchListener)
-//            mBasicElem.setOnLongClickListener(onLongClickListener)
+            mBasicElem.setOnTouchListener(onTouchListener)
             parent_relative_layout?.addView(mBasicElem, childIndexCount)
             childIndexCount++
         }
 
         move_button.setOnClickListener {
-//            val txt = parentRelativeLayout?.getChildAt(childSelected)!!.first_line.text
-//            parentRelativeLayout?.getChildAt(childSelected )!!.findViewById<TextView>(R.id.first_line).text = txt.toString() + "3"
-//            parentRelativeLayout?.getChildAt(childSelected )!!.findViewById<TextView>(R.id.second_line).text = "TEXT4"
+            val txt = parent_relative_layout?.getChildAt(childSelected)!!.first_line.text
+            parent_relative_layout?.getChildAt(childSelected )!!.first_line.text = txt.toString() + "3"
         }
     }
+
+
+    /* Max
+
+        private var onLongClickListener = View.OnLongClickListener { v ->
+        first_line.text = "LONGCLICK"
+        true
+    }
+            mBasicElem.setOnLongClickListener(onLongClickListener)
+
+
+    var onTouchListenerRelLayout = View.OnClickListener { v ->
+    childSelected = parentRelativeLayout!!.indexOfChild(parentRelativeLayout!!.focusedChild)
+    for (i in 0..parentRelativeLayout!!.childCount)
+        Log.d("focus : ", ""+i+childSelected)
+
+    // Return true means this listener has complete process this event successfully.
+    true
+}
+*/
 
     override fun onBackPressed() {
         val app = application as PolyPaint

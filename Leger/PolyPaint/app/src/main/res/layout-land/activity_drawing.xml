@@ -42,7 +42,7 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/parent_relative_layout"
-                    android:layout_width="869dp"
+                    android:layout_width="876dp"
                     android:layout_height="0dp"
                     android:layout_margin="5dp"
                     android:orientation="vertical"

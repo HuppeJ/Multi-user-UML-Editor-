@@ -52,7 +52,7 @@
                     android:layout_alignParentLeft="true"
                     tools:layout_editor_absoluteY="93dp"
                     tools:layout_editor_absoluteX="230dp"
-                    android:background="@drawable/borders"
+                    android:background="@drawable/borders_white"
                     android:gravity="center"
                     android:layout_marginRight="20dp"
                     android:layout_marginLeft="20dp">
@@ -81,7 +81,7 @@
                 android:layout_weight="1">
 
             <ImageButton
-                    android:id="@+id/moveButton"
+                    android:id="@+id/resizeButton"
                     android:src="@drawable/edit_button"
                     android:layout_width="20dp"
                     android:layout_height="20dp"/>

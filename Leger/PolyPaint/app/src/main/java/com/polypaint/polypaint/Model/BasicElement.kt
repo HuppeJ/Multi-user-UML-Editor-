@@ -3,15 +3,17 @@ package com.polypaint.polypaint.Model
 import android.content.Context
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import com.polypaint.polypaint.R
+import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.activity_drawing.view.*
 import kotlinx.android.synthetic.main.basic_element.view.*
 
 class BasicElement: RelativeLayout, View.OnTouchListener {
 
-    var xRel : Float = 0F
-    var yRel : Float = 0F
-    var mId : Int = -1
+    var isElementSelected : Boolean = false
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -19,44 +21,61 @@ class BasicElement: RelativeLayout, View.OnTouchListener {
 
     fun init(context: Context) {
         setOnTouchListener(this)
-//        dragHandle = this.findViewById(R.id.drag_handle)
-        //dragHandle = this.findViewById(R.id.resizableLayout)
-
     }
+
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
-        first_line.text = "aa";
+        first_line.text = "onTouch"
 
-        // view.x = motionEvent.rawX - view.width/2// - parent_relative_layout!!.x
-        // view.y = motionEvent.rawY - view.height// - parent_relative_layout!!.y
-        //Set soft focus
 
-//        view.requestFocus()
+        editButton.setOnTouchListener(onTouchListenerEditButton)
 
-//
-//        val action = motionEvent.action
-//        if (action == MotionEvent.ACTION_DOWN) {
-//            // detect if tap is on handles
-//            downRawY = motionEvent.rawY
-//            height = this.measuredHeight.toFloat()
-//        } else {
-//            // change layout margin inside switch
-//            when (side) {
-//
-//            }
-//            val parent = this.parent as View
-//            if (downRawY < parent.height - height + 2 * dragHandle!!.height) {
-//                val rawY =
-//                    if (motionEvent.rawY > 20 * dragHandle!!.height) motionEvent.rawY else 20 * dragHandle!!.height
-//                val p = this.layoutParams as ViewGroup.MarginLayoutParams
-////                p.topMargin = rawY.toInt()
-//                p.topMargin = 100
-//                if (p.topMargin != 0)
-//                //this.top_margine = p.topMargin
-//                    this.layoutParams = p
-//            }
-//        }
+        deleteButton.setOnTouchListener(onTouchListenerDeleteButton)
+
+        resizeButton.setOnTouchListener(onTouchListenerResizeButton)
+
+
+        val borderResizableLayout : LinearLayout = findViewById(R.id.borderResizableLayout)
+        borderResizableLayout.setBackgroundResource(R.drawable.borders)
+
         return false
     }
+
+    private var onTouchListenerEditButton = View.OnTouchListener { v, event ->
+        val txt = first_line.text
+        first_line.text = txt.toString() + "onTouchListenerEditButton"
+
+        v.requestFocus()
+        true
+    }
+
+    private var onTouchListenerDeleteButton = View.OnTouchListener { v, event ->
+        val txt = first_line.text
+        first_line.text = txt.toString() + "onTouchListenerDeleteButton"
+
+        v.requestFocus()
+        true
+    }
+
+    private var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
+        val txt = first_line.text
+        first_line.text = txt.toString() + "onTouchListenerResizeButton"
+
+
+        var dx = event.rawX - this.x
+
+        var temp = outerResizableLayout.width
+
+//        outerResizableLayout.layoutParams().height = temp + dx
+
+        // val parentRelativeLayout : RelativeLayout = findViewById(R.id.parent_relative_layout)
+        // v.x = event.rawX - v.width - parentRelativeLayout!!.x
+        // v.y = event.rawY - v.height - parentRelativeLayout!!.y
+        //Set soft focus
+
+        v.requestFocus()
+        true
+    }
+
 
     override fun onInterceptTouchEvent(motionEvent: MotionEvent): Boolean {
         onTouch(this, motionEvent)
