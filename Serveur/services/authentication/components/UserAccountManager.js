@@ -2,6 +2,8 @@ const datastore = require("./../../datastore/datastore");
 const crypto = require('crypto');
 
 module.exports = function () {
+  // connectedUsers is a Map : [key: username, value: socketId]
+  const connectedUsers = new Map();
 
   async function addUser(username, password) {
     const user = {
@@ -30,7 +32,10 @@ module.exports = function () {
     return users[0][0] === undefined;
   }
 
-  async function authenticateUser(username, password) {
+  async function authenticateUser(username, password, socketId) {
+    if (isConnected(username)) {
+      return false;
+    }
     const query = datastore
     .createQuery('User')
     .filter('username', '=', username)
@@ -41,9 +46,20 @@ module.exports = function () {
       const user = users[0].map(
         entity => { return {'password': entity.password} }
       );
-      return user[0].password === crypto.createHash('sha256').update(password).digest('hex');
+      if (user[0].password === crypto.createHash('sha256').update(password).digest('hex')) {
+        connectedUsers.set(socketId, username);
+        return true;
+      }
     }
     return false;
+  }
+
+  function disconnectUser(socketId) {
+    return connectedUsers.delete(socketId);
+  }
+
+  function isConnected(username) {
+    return Array.from(connectedUsers.values()).includes(username);
   }
 
   function removeUser(username) {
@@ -54,6 +70,8 @@ module.exports = function () {
     addUser,
     isUsernameAvailable,
     authenticateUser,
-    removeUser
+    removeUser,
+    isConnected,
+    disconnectUser
   }
 }

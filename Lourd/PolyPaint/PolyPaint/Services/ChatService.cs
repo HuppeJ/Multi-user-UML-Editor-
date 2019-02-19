@@ -17,9 +17,9 @@ namespace PolyPaint.Services
         public event Action ConnectionClosed;
 
         private JavaScriptSerializer serializer;
-        private Socket socket;
         //private string url = "https://projet-3-228722.appspot.com";
-        private string url = "http://localhost:8080";
+        private static string url = "http://localhost:8080";
+        private static Socket socket = IO.Socket(url);
 
         public ChatService()
         {
@@ -28,8 +28,7 @@ namespace PolyPaint.Services
 
         public void Connect(object o)
         {
-            socket = IO.Socket(url, new IO.Options() { ForceNew = true });
-
+            // socket = IO.Socket(url, new IO.Options() { ForceNew = true });
             //Console.WriteLine("connect");
 
 
@@ -40,6 +39,7 @@ namespace PolyPaint.Services
 
             socket.On(Socket.EVENT_RECONNECT, () =>
             {
+                Connection?.Invoke(true);
                 socket.Emit("joinChatroom");
             });
 
@@ -71,14 +71,19 @@ namespace PolyPaint.Services
                 NewMessage?.Invoke(message);
             });
 
+            socket.On("disconnect", (data) =>
+            {
+                Connection?.Invoke(false);
+            });
+
             // Connect to server
-            socket.Connect();
+            // socket.Connect();
         }
 
         public void Disconnect()
         {
             // disconnect from the server
-            socket.Disconnect();
+            socket.Emit("logoutUser");
         }
 
         public void CreateUser(string username, string password)

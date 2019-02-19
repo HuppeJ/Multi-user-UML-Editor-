@@ -183,7 +183,6 @@ namespace PolyPaint.VueModeles
         {
             UserMode = UserModes.Login;
             _isLoggedIn = false;
-            IsConnected = false;
             textMessage = string.Empty;
             _selectedRoom?.Chatter.Clear();
             chatService.Disconnect();

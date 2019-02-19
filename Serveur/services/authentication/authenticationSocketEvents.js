@@ -4,6 +4,8 @@ const userAccountManager = UserAccountManager();
 
 module.exports = (io) => {
     io.on('connection', function (socket) {
+        console.log(socket.id + " is connected to the server");
+
         socket.on(SocketEvents.CREATE_USER, async function (dataStr) {
             let isUserCreated = false;
             let data = JSON.parse(dataStr);
@@ -25,16 +27,36 @@ module.exports = (io) => {
             let isLoginSuccessful = false;
             let data = JSON.parse(dataStr);
 
-            if (await userAccountManager.authenticateUser(data.username, data.password)) {
-                isLoginSuccessful = true;
-            }
+            isLoginSuccessful = await userAccountManager.authenticateUser(data.username, data.password, socket.id);
+
             const response = JSON.stringify({
                 isLoginSuccessful: isLoginSuccessful
             });
 
-            // console.log(`LOGIN_USER, isLoginSuccessful:`, isLoginSuccessful)
+            if (isLoginSuccessful) {
+                console.log(socket.id + " connected with user " + data.username);
+            } else {
+                console.log(socket.id + " failed to connect user " + data.username);
+            }
 
             socket.emit(SocketEvents.LOGIN_USER_RESPONSE, response);
+        });
+
+        socket.on("logoutUser", function () {
+            if (userAccountManager.disconnectUser(socket.id)) {
+                console.log(socket.id + " disconnected its user");
+            } else {
+                console.log(socket.id + " failed to disconnect its user");
+            }
+        });
+        
+        socket.on("disconnect", function () {
+            if (userAccountManager.disconnectUser(socket.id)) {
+                console.log(socket.id + " disconnected its user");
+            } else {
+                console.log(socket.id + " failed to disconnect its user");
+            }
+            console.log("Socket " + socket.id + " disconnected");
         });
     })
 };
