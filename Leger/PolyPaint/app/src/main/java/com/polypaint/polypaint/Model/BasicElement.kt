@@ -99,8 +99,8 @@ class BasicElement: RelativeLayout {
                 oldFrameRawY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> {first_line.text = "ActionMoveResize"
-                outerResizableLayout.layoutParams.width = (outerResizableLayout.width + (event.rawX - oldFrameRawX)).toInt()
-                outerResizableLayout.layoutParams.height = (outerResizableLayout.height + (event.rawY - oldFrameRawY)).toInt()
+                borderResizableLayout.layoutParams.width = (borderResizableLayout.width + (event.rawX - oldFrameRawX)).toInt()
+                borderResizableLayout.layoutParams.height = (borderResizableLayout.height + (event.rawY - oldFrameRawY)).toInt()
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
