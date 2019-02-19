@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using PolyPaint.VueModeles;
-using PolyPaint.Vues;
+using PolyPaint;
 
-namespace PolyPaint
+namespace PolyPaint.Vues
 {
     /// <summary>
     /// Logique d'interaction pour WindowDrawing.xaml
     /// </summary>
-    public partial class WindowDrawing : Window
+    public partial class WindowDrawing : UserControl
     {
 
         public WindowDrawing()

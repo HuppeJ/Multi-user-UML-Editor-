@@ -9,6 +9,8 @@ namespace PolyPaint.Enums
     {
         Login,
         Chat,
-        CreateUser
+        CreateUser,
+        Gallery,
+        Drawing
     }
 }
