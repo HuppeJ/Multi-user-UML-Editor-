@@ -7,6 +7,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"        
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:Vues="clr-namespace:PolyPaint.Vues"
         mc:Ignorable="d"
         Height="700" Width="900" Background="#CBD4E4" MinWidth="627" MinHeight="200">
     <UserControl.Resources>
@@ -36,18 +37,18 @@
                         BorderBrush="Transparent"
                         Background="Transparent"                                
                         Click="DupliquerSelection">
-                    <StackPanel>
-                        <Image Source="/Resources/dupliquer.png"  />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="Couper" Width="24" Height="24" Margin="0" Padding="0,0"
+                        <StackPanel>
+                            <Image Source="/Resources/dupliquer.png"  />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="Couper" Width="24" Height="24" Margin="0" Padding="0,0"
                         HorizontalContentAlignment="Left"                                
                         BorderBrush="Transparent"
                         Content="✂"
                         Background="Transparent"
                         Foreground="Black"
                         Click="SupprimerSelection" FontSize="14"/>
-            </StackPanel>
+                </StackPanel>
                 <Button x:Name="lasso" Width="40" Height="40" Margin="5" Padding="0,0"
                             BorderBrush="{Binding OutilSelectionne, ConverterParameter=lasso, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                             Background="{Binding OutilSelectionne, ConverterParameter=lasso, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -167,7 +168,7 @@
             </StackPanel>
         </Border>
 
-        <Grid DockPanel.Dock="Left" Margin="0,1,0,0">
+        <Grid DockPanel.Dock="Left" Margin="0,1,0,0" Width="1052">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="colonne" Width="550" />
                 <ColumnDefinition Width="6" />
@@ -188,7 +189,7 @@
                       Width="6" Height="6" DragDelta="GlisserMouvementRecu" 
                       DragStarted="GlisserCommence" DragCompleted="GlisserTermine"
                       />
-            <Border BorderThickness="5,5,0,0">
+            <Border BorderThickness="5,5,0,0" >
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.3" BlurRadius="10"/>
                 </Border.Effect>
@@ -198,6 +199,8 @@
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"/>
             </Border>
+
         </Grid>
     </DockPanel>
 </UserControl>
+    

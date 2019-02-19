@@ -23,27 +23,6 @@ namespace PolyPaint.VueModeles
 
         private ChatService chat = new ChatService();
 
-        private string _username;
-        public string username
-        {
-            get { return _username; }
-            set
-            {
-                _username = value;
-                ProprieteModifiee();
-            }
-        }
-        private string _password;
-        public string password
-        {
-            get { return _password; }
-            set
-            {
-                _password = value;
-                ProprieteModifiee();
-            }
-        }
-
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 

@@ -243,6 +243,22 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region BackToGalleryCommand
+        private ICommand _backToGalleryCommand;
+        public ICommand BackToGalleryCommand
+        {
+            get
+            {
+                return _backToGalleryCommand ?? (_backToGalleryCommand = new RelayCommand<Object>(BackToLogin));
+            }
+        }
+
+        private void BackToGallery(object o)
+        {
+            UserMode = UserModes.Gallery;
+        }
+        #endregion
+
         #region Send Message Command
         private ICommand _sendMessageCommand;
         public ICommand SendMessageCommand
