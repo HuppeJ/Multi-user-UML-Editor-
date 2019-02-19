@@ -19,8 +19,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_resize" />
-                            <entry key="sourceFile" value="$USER_HOME$/Downloads/resize.svg" />
+                            <entry key="outputName" value="ic_anchor_unselected" />
+                            <entry key="sourceFile" value="$USER_HOME$/Downloads/anchor-unselected.svg" />
                           </map>
                         </option>
                       </PersistentState>
