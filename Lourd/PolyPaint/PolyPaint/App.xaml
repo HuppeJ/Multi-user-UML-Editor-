@@ -31,6 +31,15 @@
             <DataTemplate x:Key="CreateUserTemplate">
                 <views:CreateUserView/>
             </DataTemplate>
+            <DataTemplate x:Key="GalleryTemplate">
+                <views:GalleryView/>
+            </DataTemplate>
+            <DataTemplate x:Key="DrawingTemplate">
+                <views:WindowDrawing/>
+            </DataTemplate>
+            <DataTemplate x:Key="DrawingChatTemplate">
+                <views:DrawingChatView/>
+            </DataTemplate>
 
             <Style x:Key="ChatContentStyle" TargetType="ContentControl">
                 <Setter Property="ContentTemplate" Value="{StaticResource LoginTemplate}"/>
@@ -40,6 +49,12 @@
                     </DataTrigger>
                     <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.CreateUser}">
                         <Setter Property="ContentTemplate" Value="{StaticResource CreateUserTemplate}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.Gallery}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource GalleryTemplate}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.Drawing}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource DrawingChatTemplate}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

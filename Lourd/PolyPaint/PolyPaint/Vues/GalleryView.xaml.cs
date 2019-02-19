@@ -10,18 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PolyPaint.VueModeles;
 
 namespace PolyPaint.Vues
 {
     /// <summary>
-    /// Interaction logic for ChatView.xaml
+    /// Interaction logic for GalleryView.xaml
     /// </summary>
-    public partial class ChatView : UserControl
+    public partial class GalleryView : UserControl
     {
-        public ChatView()
+        public GalleryView()
         {
             InitializeComponent();
         }

@@ -195,6 +195,12 @@
     <Compile Include="Vues\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\DrawingChatView.xaml.cs">
+      <DependentUpon>DrawingChatView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\GalleryView.xaml.cs">
+      <DependentUpon>GalleryView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
@@ -262,6 +268,14 @@
     <Page Include="Vues\ChatView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\DrawingChatView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\GalleryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vues\LoginView.xaml">
       <Generator>MSBuild:Compile</Generator>

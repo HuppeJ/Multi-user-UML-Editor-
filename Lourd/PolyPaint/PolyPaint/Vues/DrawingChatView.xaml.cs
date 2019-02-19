@@ -12,16 +12,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PolyPaint.VueModeles;
 
 namespace PolyPaint.Vues
 {
     /// <summary>
-    /// Interaction logic for ChatView.xaml
+    /// Interaction logic for DrawingChatView.xaml
     /// </summary>
-    public partial class ChatView : UserControl
+    public partial class DrawingChatView : UserControl
     {
-        public ChatView()
+        public DrawingChatView()
         {
             InitializeComponent();
         }

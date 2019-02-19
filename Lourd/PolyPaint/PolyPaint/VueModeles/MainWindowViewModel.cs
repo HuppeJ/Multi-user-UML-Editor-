@@ -198,13 +198,29 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _createUserViewCommand ?? (_createUserViewCommand = new RelayCommand<Object>(CreateUserView));
+                return _createUserViewCommand ?? (_createUserViewCommand = new RelayCommand<Object>(GoToCreateUserView));
             }
         }
 
-        private void CreateUserView(object o)
+        private void GoToCreateUserView(object o)
         {
             UserMode = UserModes.CreateUser;
+        }
+        #endregion
+
+        #region DrawingViewCommand
+        private ICommand _drawingViewCommand;
+        public ICommand DrawingViewCommand
+        {
+            get
+            {
+                return _drawingViewCommand ?? (_drawingViewCommand = new RelayCommand<Object>(GoToDrawingView));
+            }
+        }
+
+        private void GoToDrawingView(object o)
+        {
+            UserMode = UserModes.Drawing;
         }
         #endregion
 
@@ -221,6 +237,22 @@ namespace PolyPaint.VueModeles
         private void BackToLogin(object o)
         {
             UserMode = UserModes.Login;
+        }
+        #endregion
+
+        #region BackToGalleryCommand
+        private ICommand _backToGalleryCommand;
+        public ICommand BackToGalleryCommand
+        {
+            get
+            {
+                return _backToGalleryCommand ?? (_backToGalleryCommand = new RelayCommand<Object>(BackToLogin));
+            }
+        }
+
+        private void BackToGallery(object o)
+        {
+            UserMode = UserModes.Gallery;
         }
         #endregion
 
@@ -293,8 +325,7 @@ namespace PolyPaint.VueModeles
         {
             if (isLoginSuccessful)
             {
-                //Console.WriteLine("log in from model to view");
-                UserMode = UserModes.Chat;
+                UserMode = UserModes.Gallery;
                 selectedRoom = rooms.First();
                 IsLoggedIn = true;
             }
