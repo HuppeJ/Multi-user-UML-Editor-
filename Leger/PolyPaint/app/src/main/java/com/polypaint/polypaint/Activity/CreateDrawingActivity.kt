@@ -51,8 +51,9 @@ class CreateDrawingActivity: AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)*/
 
 
-        var radioPublic: RadioButton = findViewById(R.id.radio_public)
-        var radioPrivate: RadioButton = findViewById(R.id.radio_private)
+        val radioPublic: RadioButton = findViewById(R.id.radio_public)
+        val radioPrivate: RadioButton = findViewById(R.id.radio_private)
+        radioPublic.isChecked = true
         radioPublic.setOnClickListener { _->
             isDrawingPrivate = false
         }
