@@ -1,3 +1,5 @@
 package com.polypaint.polypaint.Model
 
-class Canevas(var id: Int, var name: String, var author: String, var owner: String, var accessibility: Int, var password: String, var shapes: Array<BasicShape>, var links: Array<Link>)
+import java.io.Serializable
+
+class Canevas(var id: String, var name: String, var author: String, var owner: String, var accessibility: Int, var password: String?, var shapes: ArrayList<BasicShape>, var links: ArrayList<Link>): Serializable

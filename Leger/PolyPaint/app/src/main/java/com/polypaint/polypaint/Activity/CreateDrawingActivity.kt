@@ -4,6 +4,7 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.content.Intent
 import android.text.TextUtils
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
@@ -14,8 +15,12 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import co.zsmb.materialdrawerkt.builders.drawer
 import com.mikepenz.materialdrawer.Drawer
+import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
+import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.R
+import java.util.*
 
 class CreateDrawingActivity: AppCompatActivity(){
     private var drawer: Drawer? = null
@@ -77,22 +82,35 @@ class CreateDrawingActivity: AppCompatActivity(){
 
     private fun createDrawing(){
 
+        var name = nameView?.text.toString().trim()
+        if(TextUtils.isEmpty(name)){
+            nameView?.requestFocus()
+            nameView?.error = "Enter a name"
+            name = ""
+            return
+        }
+        var password = passwordView?.text.toString().trim()
+        isPasswordProtected = TextUtils.isEmpty(password)
+
+        var canevas: Canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, null, ArrayList(), ArrayList())
+
+
         val intent = Intent(this, DrawingActivity::class.java)
+        intent.putExtra("canevas", canevas)
         startActivity(intent)
+
+//
 //        var dialog: DialogFragment = EditClassDialogFragment()
+//        var bundle: Bundle = Bundle()
+//        bundle.putString("id", "asdfasg")
+//        dialog.arguments = bundle
+//
+//        Log.d("****", dialog.arguments.toString())
 //        dialog.show(supportFragmentManager, "alllooooo")
 
 
 
-//        var name = nameView?.text.toString().trim()
-//        if(TextUtils.isEmpty(name)){
-//            nameView?.requestFocus()
-//            nameView?.error = "Enter a name"
-//            name = ""
-//            return
-//        }
-//        var password = passwordView?.text.toString().trim()
-//        isPasswordProtected = TextUtils.isEmpty(password)
+
     }
 
 }
