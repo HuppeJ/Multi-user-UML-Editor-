@@ -8,8 +8,10 @@
 
     <LinearLayout
             android:id="@+id/outerResizableLayout"
-            android:layout_width="301dp"
-            android:layout_height="264dp"
+            android:minHeight="100dp"
+            android:minWidth="100dp"
+            android:layout_width="300dp"
+            android:layout_height="100dp"
             android:orientation="vertical">
 
 

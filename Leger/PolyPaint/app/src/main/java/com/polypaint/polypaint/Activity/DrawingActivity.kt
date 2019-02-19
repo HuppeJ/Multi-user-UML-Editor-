@@ -27,8 +27,8 @@ class DrawingActivity : AppCompatActivity(){
 
     //TODO: déplacer dans object contenant tous les eventListeners possible
     private var onTouchListener = View.OnTouchListener { v, event ->
-        v.x = event.rawX - v.width/2 - parent_relative_layout!!.x
-        v.y = event.rawY - v.height/2 - parent_relative_layout!!.y
+        //v.x = event.rawX - v.width/2 - parent_relative_layout!!.x
+        //v.y = event.rawY - v.height/2 - parent_relative_layout!!.y
 
         childSelected = v.id
 
@@ -45,8 +45,6 @@ class DrawingActivity : AppCompatActivity(){
         setContentView(R.layout.activity_drawing)
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-
 
         var addButton: Button = findViewById(R.id.add_button)
         addButton.setOnClickListener {
@@ -68,27 +66,10 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
-
-    /* Max
-
-        private var onLongClickListener = View.OnLongClickListener { v ->
-        first_line.text = "LONGCLICK"
-        true
-    }
-            mBasicElem.setOnLongClickListener(onLongClickListener)
-
-
-    var onTouchListenerRelLayout = View.OnClickListener { v ->
-    childSelected = parentRelativeLayout!!.indexOfChild(parentRelativeLayout!!.focusedChild)
-    for (i in 0..parentRelativeLayout!!.childCount)
-        Log.d("focus : ", ""+i+childSelected)
-
-    // Return true means this listener has complete process this event successfully.
-    true
-}
-*/
-
+    /*
     override fun onBackPressed() {
+        val intent = Intent(this, GalleryActivity::class.java)
+        startActivity(intent)
         val app = application as PolyPaint
         val socket: Socket? = app.socket
         socket?.disconnect()
@@ -96,5 +77,6 @@ class DrawingActivity : AppCompatActivity(){
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
         finish()
-    }
+
+    }*/
 }
