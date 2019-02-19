@@ -13,6 +13,7 @@ using PolyPaint.Modeles;
 using PolyPaint.Utilitaires;
 using System.Windows.Input;
 using System.Reactive.Linq;
+using System.Windows.Controls;
 
 namespace PolyPaint.VueModeles
 {
@@ -29,17 +30,6 @@ namespace PolyPaint.VueModeles
             set
             {
                 _userName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _password;
-        public string password
-        {
-            get { return _password; }
-            set
-            {
-                _password = value;
                 OnPropertyChanged();
             }
         }
@@ -139,11 +129,15 @@ namespace PolyPaint.VueModeles
 
         private void Create(object o)
         {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
             chatService.CreateUser(username, password);
         }
 
         private bool CanCreate(object o)
         {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
             return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password) && IsConnected;// && UserName.Length >= 2;
         }
         #endregion
@@ -160,11 +154,15 @@ namespace PolyPaint.VueModeles
 
         private void Login(object o)
         {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
             chatService.LoginUser(username, password);
         }
 
         private bool CanLogin(object o)
         {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
             return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password) && IsConnected;// && UserName.Length >= 2;
         }
         #endregion
@@ -299,7 +297,6 @@ namespace PolyPaint.VueModeles
                 UserMode = UserModes.Chat;
                 selectedRoom = rooms.First();
                 IsLoggedIn = true;
-                password = string.Empty;
             }
             else
             {
