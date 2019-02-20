@@ -1,10 +1,15 @@
 package com.polypaint.polypaint.Model
 
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
+import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.fragment.app.DialogFragment
+import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
 import java.util.*
@@ -34,9 +39,10 @@ class BasicElement: RelativeLayout {
         resizeButton.setOnTouchListener(onTouchListenerResizeButton)
 
         //DEFAULT STATE
-        editButton.visibility = View.INVISIBLE
-        deleteButton.visibility = View.INVISIBLE
-        resizeButton.visibility = View.INVISIBLE
+
+        var parent = this.parent as RelativeLayout
+        parent.dispatchSetSelected(false)
+        isSelected = true
     }
 
     override fun setSelected(selected: Boolean) {
@@ -46,12 +52,20 @@ class BasicElement: RelativeLayout {
             editButton.visibility = View.VISIBLE
             deleteButton.visibility = View.VISIBLE
             resizeButton.visibility = View.VISIBLE
+            anchorPoint0.visibility = View.VISIBLE
+            anchorPoint1.visibility = View.VISIBLE
+            anchorPoint2.visibility = View.VISIBLE
+            anchorPoint3.visibility = View.VISIBLE
         }else{
             first_line.text = "NoFocus"
             borderResizableLayout.setBackgroundResource(R.drawable.borders_white)
             editButton.visibility = View.INVISIBLE
             deleteButton.visibility = View.INVISIBLE
             resizeButton.visibility = View.INVISIBLE
+            anchorPoint0.visibility = View.INVISIBLE
+            anchorPoint1.visibility = View.INVISIBLE
+            anchorPoint2.visibility = View.INVISIBLE
+            anchorPoint3.visibility = View.INVISIBLE
         }
         return super.setSelected(selected)
     }
@@ -80,12 +94,32 @@ class BasicElement: RelativeLayout {
     }
 
     private var onTouchListenerEditButton = View.OnTouchListener { v, event ->
-        first_line.text = "onTouchListenerEditButton"
+        when(event.action){
+            MotionEvent.ACTION_DOWN -> {
+
+                first_line.text = "onTouchListenerEditButton"
+                var activity: AppCompatActivity = context as AppCompatActivity
+
+                var dialog: DialogFragment = EditClassDialogFragment()
+                var bundle: Bundle = Bundle()
+                bundle.putString("id", "asdfasg")
+                dialog.arguments = bundle
+
+                Log.d("****", dialog.arguments.toString())
+                dialog.show(activity.supportFragmentManager, "alllooooo")
+            }
+        }
         true
     }
 
     private var onTouchListenerDeleteButton = View.OnTouchListener { v, event ->
-        first_line.text = "onTouchListenerDeleteButton"
+        when(event.action){
+            MotionEvent.ACTION_DOWN -> {
+                first_line.text = "onTouchListenerDeleteButton"
+                val parentView = v.parent.parent.parent as RelativeLayout
+                parentView.removeView(this)
+            }
+        }
         true
     }
 
