@@ -89,10 +89,10 @@
                     </StackPanel>
                 </Button>
                 <Button x:Name="chat" Width="40" Height="40" Margin="5" Padding="0,0"
-                        BorderBrush="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        BorderBrush="{Binding OutilSelectionne, ConverterParameter=chat, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding OutilSelectionne, ConverterParameter=chat, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChoisirOutil}"
-                        CommandParameter="efface_trait">
+                        CommandParameter="chat">
                     <StackPanel>
                         <Image Source="/Resources/chat.png" />
                     </StackPanel>
