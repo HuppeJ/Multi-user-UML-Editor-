@@ -1,17 +1,18 @@
 // Based on https://github.com/justadudewhohacks/websocket-chat
 
+const Chatroom = require("./Chatroom");
+
 module.exports = function () {
     // mapping of all available chatrooms 
     // chatrooms est une Map : [key: chatroom.name, value: Chatroom]
     const chatrooms = new Map();
-
     // TODO : Arranger le type chatroom pour avoir l'historique des messages et les sockets id
 
     function addChatroom(chatroomName, socketId) {
         if(!isChatroom(chatroomName)) {
-            let clients = [];
-            clients.concat(socketId);
-            chatrooms.set(chatroomName, clients);
+            let chatroom = Chatroom();
+            chatroom.addUser(socketId);
+            chatrooms.set(chatroomName, chatroom);
             return true;
         }
         return false;
@@ -29,58 +30,39 @@ module.exports = function () {
 
     function addClientToChatroom(chatroomName, socketId) {
         if (isChatroom(chatroomName)){
-            let clients = chatrooms.get(chatroomName);
-            if (clients.includes(socketId)) {
-                return false;
+            let chatroom = chatrooms.get(chatroomName);
+            if (!chatroom.hasUser(socketId)) {
+                chatroom.addUser(socketId);
+                return true;
             }
-            clients.concat(socketId);
-            chatrooms.set(chatroomName, clients);
-            return true;
         }
         return false;
     }
 
     function isClientInChatroom(chatroomName, socketId) {
         if (isChatroom(chatroomName)){
-            let clients = chatrooms.get(chatroomName);
-            if (clients.includes(socketId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function addClientToChatroom(chatroomName, socketId) {
-        if (isChatroom(chatroomName)){
-            let clients = chatrooms.get(chatroomName);
-            if (isClientInChatroom(chatroomName, socketId)) {
-                clients.concat(socketId);chat
-                chatrooms.set(chatroomName, clients);
-                return true;
-            }
+            let chatroom = chatrooms.get(chatroomName);
+            return chatroom.hasUser(socketId);
         }
         return false;
     }
 
     function removeClientFromChatroom(chatroomName, socketId) {
         if(isClientInChatroom(chatroomName, socketId)) {
-            let clients = chatrooms.get(chatroomName);
-            let lastSocketId = clients.pop();
-            if(lastSocketId === socketId) {
-                return true;
-            }
-            clients.forEach(function(element) {
-                if(element === socketId) {
-                    element = lastSocketId;
-                    return true;
-                }
-            });
+            let chatroom = chatrooms.get(chatroomName);
+            chatroom.removeUser(socketId);
+            return true;
         }
         return false;
     }
 
     function getChatrooms() {
-        let strKeys = Array.from(chatrooms.keys());
+        let strKeys = JSON.stringify(Array.from(chatrooms.keys()));
+        return strKeys;
+    }
+
+    function getChatroomClients(chatroomName) {
+        let strKeys = JSON.stringify(chatrooms.get(chatroomName));
         return strKeys;
     }
 
@@ -89,7 +71,9 @@ module.exports = function () {
         isChatroom,
         removeChatroom,
         addClientToChatroom,
+        isClientInChatroom,
         removeClientFromChatroom,
-        getChatrooms
+        getChatrooms,
+        getChatroomClients
     }
 }
