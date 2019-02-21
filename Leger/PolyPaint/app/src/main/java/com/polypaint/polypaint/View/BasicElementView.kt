@@ -1,4 +1,4 @@
-package com.polypaint.polypaint.Model
+package com.polypaint.polypaint.View
 
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
@@ -6,16 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
-import java.util.*
 
 
-class BasicElement: RelativeLayout {
+open class BasicElementView: RelativeLayout {
 
     var isElementSelected : Boolean = false
 

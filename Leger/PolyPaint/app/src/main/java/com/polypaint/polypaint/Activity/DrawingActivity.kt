@@ -2,19 +2,16 @@ package com.polypaint.polypaint.Activity
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.github.nkzawa.socketio.client.Socket
-import com.polypaint.polypaint.Application.PolyPaint
-import com.polypaint.polypaint.Model.BasicElement
+import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.View.ClassView
 import kotlinx.android.synthetic.main.activity_drawing.*
-import kotlinx.android.synthetic.main.basic_element.*
 import kotlinx.android.synthetic.main.basic_element.view.*
 
 class DrawingActivity : AppCompatActivity(){
@@ -49,7 +46,21 @@ class DrawingActivity : AppCompatActivity(){
         var addButton: Button = findViewById(R.id.add_button)
         addButton.setOnClickListener {
 
-            val mBasicElem = BasicElement(this)
+            val mBasicElem = BasicElementView(this)
+
+            mBasicElem.id = childIndexCount
+            val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
+            mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
+
+            mBasicElem.setOnTouchListener(onTouchListener)
+            parent_relative_layout?.addView(mBasicElem, childIndexCount)
+            childIndexCount++
+        }
+
+        var addClassButton: Button = findViewById(R.id.class_button)
+        addClassButton.setOnClickListener {
+
+            val mBasicElem = ClassView(this)
 
             mBasicElem.id = childIndexCount
             val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)

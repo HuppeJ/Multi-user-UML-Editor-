@@ -11,7 +11,7 @@ open class BasicShape (var id: String, var type: Int, var name: String, var shap
     init {
 //        inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-//        val mBasicElem = BasicElement(this)
+//        val mBasicElem = BasicElementView(this)
 
 //        val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
 //        mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)

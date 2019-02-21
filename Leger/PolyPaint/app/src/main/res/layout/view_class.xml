@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        android:id="@+id/class_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        app:layout_constraintVertical_bias="0.498" xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                  android:layout_height="wrap_content"
+                                                  app:layout_constraintTop_toTopOf="parent"
+                                                  android:id="@+id/linearLayoutCompat" android:layout_marginBottom="8dp"
+                                                  app:layout_constraintBottom_toBottomOf="parent"
+                                                  app:layout_constraintVertical_bias="0.04"
+    >
+        <TextView
+                android:id="@+id/class_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:text="class"/>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                  android:layout_height="wrap_content"
+                                                  app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat"
+                                                  android:id="@+id/linearLayoutCompat2"
+                                                  android:layout_marginTop="35dp"
+                                                  android:layout_below="@+id/linearLayoutCompat">
+        <TextView
+                android:id="@+id/class_attributes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:text="attributes"/>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                  android:layout_height="wrap_content"
+                                                  android:layout_marginTop="53dp"
+                                                  app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat2"
+                                                  android:layout_below="@+id/linearLayoutCompat2">
+        <TextView
+                android:id="@+id/class_methods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:text="methods"/>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+</RelativeLayout>
