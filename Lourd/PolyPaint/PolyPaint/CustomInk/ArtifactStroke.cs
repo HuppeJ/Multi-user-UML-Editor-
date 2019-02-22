@@ -19,7 +19,7 @@ namespace PolyPaint.CustomInk
             }
             for (double i = lastPoint.X; i < 60 + lastPoint.X; i += 0.5)
             {
-                for (double j = lastPoint.Y; j < 100 + lastPoint.Y; j += 0.5)
+                for (double j = lastPoint.Y; j < 80 + lastPoint.Y; j += 0.5)
                 {
                     StylusPoints.Add(new StylusPoint(i, j));
                 }
