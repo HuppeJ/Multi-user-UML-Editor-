@@ -298,6 +298,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\chat.png" />
+    <Resource Include="Resources\artefact.png" />
+    <Resource Include="Resources\rotate.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

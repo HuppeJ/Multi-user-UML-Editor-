@@ -29,7 +29,7 @@ namespace PolyPaint.CustomInk
         {
             // Remove the original stroke and add a custom stroke.
             Strokes.Remove(e.Stroke);
-            CustomStroke customStroke = new CustomStroke(e.Stroke.StylusPoints);
+            ArtefactStroke customStroke = new ArtefactStroke(e.Stroke.StylusPoints);
             Strokes.Add(customStroke);
 
             // Pass the custom stroke to base class' OnStrokeCollected method.

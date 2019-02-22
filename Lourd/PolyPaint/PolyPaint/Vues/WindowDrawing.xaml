@@ -157,6 +157,12 @@
                         </Button>
                     </StackPanel>
                 </StackPanel>
+                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0"
+                    Command="{Binding Rotate}">
+                    <StackPanel>
+                        <Image Source="/Resources/rotate.png" />
+                    </StackPanel>
+                </Button>
                 <xctk:ColorPicker x:Name="selecteurCouleur"                             
                   VerticalContentAlignment="Stretch"
                   Background="#00000000"
@@ -219,6 +225,7 @@
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
                            CustomStrokeType="{Binding SelectedStrokeType, UpdateSourceTrigger=PropertyChanged}"
                            />
+                
             </Border>
 
         </Grid>
