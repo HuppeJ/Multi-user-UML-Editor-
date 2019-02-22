@@ -19,7 +19,7 @@ namespace PolyPaint.Services
         private JavaScriptSerializer serializer;
         //private string url = "https://projet-3-228722.appspot.com";
         private static string url = "http://localhost:8080";
-        private static Socket socket = IO.Socket(url);
+        private static Socket socket;// = IO.Socket(url);
 
         public ChatService()
         {
@@ -28,7 +28,7 @@ namespace PolyPaint.Services
 
         public void Connect(object o)
         {
-            // socket = IO.Socket(url, new IO.Options() { ForceNew = true });
+            socket = IO.Socket(url);
             //Console.WriteLine("connect");
 
 
