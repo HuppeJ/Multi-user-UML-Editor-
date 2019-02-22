@@ -62,6 +62,24 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
+                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="class" 
+                        BorderBrush="{Binding OutilSelectionne, ConverterParameter=class, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding OutilSelectionne, ConverterParameter=class, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChoisirOutil}"
+                        CommandParameter="class">
+                    <!--<StackPanel>
+                        <Image Source="/Resources/crayon.png"  />
+                    </StackPanel>-->
+                </Button>
+                <Button x:Name="Role" Width="40" Height="40" Margin="5" Padding="0,0" Content="role" 
+                        BorderBrush="{Binding OutilSelectionne, ConverterParameter=role, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding OutilSelectionne, ConverterParameter=role, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChoisirOutil}"
+                        CommandParameter="role">
+                    <!--<StackPanel>
+                        <Image Source="/Resources/crayon.png"  />
+                    </StackPanel>-->
+                </Button>
                 <Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -199,6 +217,7 @@
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"                                              
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
+                           CustomStrokeType="{Binding SelectedStrokeType, UpdateSourceTrigger=PropertyChanged}"
                            />
             </Border>
 

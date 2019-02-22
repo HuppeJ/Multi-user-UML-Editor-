@@ -43,7 +43,7 @@ namespace PolyPaint.CustomInk
                 brush = new LinearGradientBrush(Colors.Blue, primaryColor, 20d);
             }
 
-            drawingContext.DrawGeometry(brush, null, geometry);
+            //drawingContext.DrawGeometry(brush, null, geometry);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Ink;
+using PolyPaint.Enums;
 
 namespace PolyPaint.Modeles
 {
@@ -16,6 +17,15 @@ namespace PolyPaint.Modeles
         public event PropertyChangedEventHandler PropertyChanged;
         public StrokeCollection traits = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
+
+        // StrokeType selected
+        private string selectedStrokeType = "class";
+        public string SelectedStrokeType
+        {
+            get { return selectedStrokeType; }
+            set { selectedStrokeType = value; ProprieteModifiee(); }
+        }
+        
 
         // Outil actif dans l'éditeur
         private string outilSelectionne = "crayon";
@@ -68,6 +78,8 @@ namespace PolyPaint.Modeles
             }
         }
 
+        public static object StrokeType { get; private set; }
+
         /// <summary>
         /// Appelee lorsqu'une propriété d'Editeur est modifiée.
         /// Un évènement indiquant qu'une propriété a été modifiée est alors émis à partir d'Editeur.
@@ -117,5 +129,7 @@ namespace PolyPaint.Modeles
 
         // On vide la surface de dessin de tous ses traits.
         public void Reinitialiser(object o) => traits.Clear();
+
+        public void ChooseStrokeTypeCommand(string strokeType) => SelectedStrokeType = strokeType;
     }
 }

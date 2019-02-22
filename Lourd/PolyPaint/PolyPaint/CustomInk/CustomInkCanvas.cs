@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PolyPaint.Enums;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace PolyPaint.CustomInk
@@ -10,6 +7,16 @@ namespace PolyPaint.CustomInk
     class CustomInkCanvas : InkCanvas
     {
         CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
+        
+
+        public string CustomStrokeType
+        {
+            get { return (string) GetValue(CustomStrokeTypeProperty); }
+            set { SetValue(CustomStrokeTypeProperty, value); }
+        }
+        public static readonly DependencyProperty CustomStrokeTypeProperty = DependencyProperty.Register(
+          "CustomStrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("class"));
+
 
         public CustomInkCanvas() : base()
         {

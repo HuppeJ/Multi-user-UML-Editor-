@@ -13,4 +13,16 @@ namespace PolyPaint.Enums
         Gallery,
         Drawing
     }
+
+    public enum StrokeTypes
+    {
+        None,
+        Class,
+        Artifact,
+        Role,
+        Comment,
+        Activity,
+        Phase,
+        Relation
+    }
 }

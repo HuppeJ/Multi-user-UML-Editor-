@@ -10,6 +10,7 @@ using Quobject.SocketIoClientDotNet.Client;
 using System.Windows.Input;
 using System.Windows;
 using System.Collections.ObjectModel;
+using PolyPaint.Enums;
 
 namespace PolyPaint.VueModeles
 {
@@ -28,6 +29,14 @@ namespace PolyPaint.VueModeles
 
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
+
+
+        public string SelectedStrokeType
+        {
+            get { return editeur.SelectedStrokeType; }
+            set { ProprieteModifiee(); }
+        }
+
 
         public string OutilSelectionne
         {
@@ -62,15 +71,10 @@ namespace PolyPaint.VueModeles
         public RelayCommand<string> ChoisirOutil { get; set; }
         public RelayCommand<object> Reinitialiser { get; set; }
 
-        public RelayCommand<object> ConnectCommand { get; set; }
-        public RelayCommand<object> CreateUserCommand { get; set; }
-        public RelayCommand<object> LoginUserCommand { get; set; }
+
+        public RelayCommand<string> ChooseStrokeTypeCommand { get; set; }
 
 
-        private void UserCreated(User user)
-        {
-            Console.WriteLine("test");
-        }
 
         /// <summary>
         /// Constructeur de VueModele
@@ -100,32 +104,8 @@ namespace PolyPaint.VueModeles
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
             Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
 
-            ConnectCommand = new RelayCommand<object>(chat.Connect);
-            //CreateUserCommand = new RelayCommand<object>(chat.CreateUser);
-            //LoginUserCommand = new RelayCommand<object>(chat.LoginUser);
 
-        }
-
-        private void ConnectCommand2(string outil) 
-        {
-
-            Socket socket = IO.Socket("https://projet-3-228722.appspot.com");
-
-            socket.On(Socket.EVENT_CONNECT, () => {
-                Console.WriteLine("fasdf");
-            });
-
-            socket.On("hello", () => {
-                Console.WriteLine("fasdf");
-            });
-
-            // Connect to server
-            socket.Connect();
-
-            socket.Emit("test");
-
-            // disconnect from the server
-            socket.Close();
+            ChooseStrokeTypeCommand = new RelayCommand<string>(editeur.ChooseStrokeTypeCommand);
 
         }
 
@@ -150,7 +130,11 @@ namespace PolyPaint.VueModeles
         /// Il indique quelle propriété a été modifiée dans le modèle.</param>
         private void EditeurProprieteModifiee(object sender, PropertyChangedEventArgs e)
         {     
-            if (e.PropertyName == "CouleurSelectionnee")
+            if (e.PropertyName == "SelectedStrokeType")
+            {
+                SelectedStrokeType = editeur.SelectedStrokeType;
+            }
+            else if (e.PropertyName == "CouleurSelectionnee")
             {
                 AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
             }                
@@ -180,56 +164,5 @@ namespace PolyPaint.VueModeles
             AttributsDessin.Width = (editeur.PointeSelectionnee == "verticale") ? 1 : editeur.TailleTrait;
             AttributsDessin.Height = (editeur.PointeSelectionnee == "horizontale") ? 1 : editeur.TailleTrait;
         }
-    }
-}
-
-public class CustomStroke : Stroke
-{
-    public CustomStroke(StylusPointCollection pts)
-     : base(pts)
-    {
-        StylusPoints = pts;
-    }
-
-    protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
-    {
-        if (drawingContext == null)
-        {
-            throw new ArgumentNullException("drawingContext");
-        }
-        if (null == drawingAttributes)
-        {
-            throw new ArgumentNullException("drawingAttributes");
-        }
-        DrawingAttributes originalDa = drawingAttributes.Clone();
-        SolidColorBrush brush2 = new SolidColorBrush(drawingAttributes.Color);
-        brush2.Freeze();
-        drawingContext.DrawRectangle(brush2, null, new Rect(GetTheLeftTopPoint(), GetTheRightBottomPoint()));
-    }
-
-    Point GetTheLeftTopPoint()
-    {
-        if (this.StylusPoints == null)
-            throw new ArgumentNullException("StylusPoints");
-        StylusPoint tmpPoint = new StylusPoint(double.MaxValue, double.MaxValue);
-        foreach (StylusPoint point in this.StylusPoints)
-        {
-            if ((point.X < tmpPoint.X) || (point.Y < tmpPoint.Y))
-                tmpPoint = point;
-        }
-        return tmpPoint.ToPoint();
-    }
-
-    Point GetTheRightBottomPoint()
-    {
-        if (this.StylusPoints == null)
-            throw new ArgumentNullException("StylusPoints");
-        StylusPoint tmpPoint = new StylusPoint(0, 0);
-        foreach (StylusPoint point in this.StylusPoints)
-        {
-            if ((point.X > tmpPoint.X) || (point.Y > tmpPoint.Y))
-                tmpPoint = point;
-        }
-        return tmpPoint.ToPoint();
     }
 }
