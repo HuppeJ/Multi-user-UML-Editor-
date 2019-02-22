@@ -2,7 +2,9 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Ink;
+using System.Windows.Media;
 
 namespace PolyPaint.Modeles
 {
@@ -117,5 +119,24 @@ namespace PolyPaint.Modeles
 
         // On vide la surface de dessin de tous ses traits.
         public void Reinitialiser(object o) => traits.Clear();
+
+        // On tourne la selection de 90 degres
+        public void Rotate(object o)
+        {
+            StrokeCollection strokes = traits;
+            if (strokes.Count == 1)
+            {
+                Stroke stroke = strokes[0];
+                Matrix rotatingMatrix = new Matrix();
+                Rect bounds = stroke.GetBounds();
+                double x = (bounds.Right + bounds.Left) / 2;
+                double y = (bounds.Bottom + bounds.Top) / 2;
+
+                Point rotatePoint = new Point(x, y);
+
+                rotatingMatrix.RotateAt(90, rotatePoint.X, rotatePoint.Y);
+                stroke.Transform(rotatingMatrix, false);
+            }
+        }
     }
 }
