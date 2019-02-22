@@ -7,6 +7,9 @@ using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using Quobject.SocketIoClientDotNet.Client;
+using System.Windows.Input;
+using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace PolyPaint.VueModeles
 {
@@ -50,8 +53,8 @@ namespace PolyPaint.VueModeles
             set { editeur.TailleTrait = value; }
         }
        
-        public StrokeCollection Traits { get; set; }
-
+        public Collection<CustomStroke> Traits { get; set; }
+        
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<object> Empiler { get; set; }
         public RelayCommand<object> Depiler { get; set; }
@@ -177,5 +180,56 @@ namespace PolyPaint.VueModeles
             AttributsDessin.Width = (editeur.PointeSelectionnee == "verticale") ? 1 : editeur.TailleTrait;
             AttributsDessin.Height = (editeur.PointeSelectionnee == "horizontale") ? 1 : editeur.TailleTrait;
         }
+    }
+}
+
+public class CustomStroke : Stroke
+{
+    public CustomStroke(StylusPointCollection pts)
+     : base(pts)
+    {
+        this.StylusPoints = pts;
+    }
+
+    protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
+    {
+        if (drawingContext == null)
+        {
+            throw new ArgumentNullException("drawingContext");
+        }
+        if (null == drawingAttributes)
+        {
+            throw new ArgumentNullException("drawingAttributes");
+        }
+        DrawingAttributes originalDa = drawingAttributes.Clone();
+        SolidColorBrush brush2 = new SolidColorBrush(drawingAttributes.Color);
+        brush2.Freeze();
+        drawingContext.DrawRectangle(brush2, null, new Rect(GetTheLeftTopPoint(), GetTheRightBottomPoint()));
+    }
+
+    Point GetTheLeftTopPoint()
+    {
+        if (this.StylusPoints == null)
+            throw new ArgumentNullException("StylusPoints");
+        StylusPoint tmpPoint = new StylusPoint(double.MaxValue, double.MaxValue);
+        foreach (StylusPoint point in this.StylusPoints)
+        {
+            if ((point.X < tmpPoint.X) || (point.Y < tmpPoint.Y))
+                tmpPoint = point;
+        }
+        return tmpPoint.ToPoint();
+    }
+
+    Point GetTheRightBottomPoint()
+    {
+        if (this.StylusPoints == null)
+            throw new ArgumentNullException("StylusPoints");
+        StylusPoint tmpPoint = new StylusPoint(0, 0);
+        foreach (StylusPoint point in this.StylusPoints)
+        {
+            if ((point.X > tmpPoint.X) || (point.Y > tmpPoint.Y))
+                tmpPoint = point;
+        }
+        return tmpPoint.ToPoint();
     }
 }

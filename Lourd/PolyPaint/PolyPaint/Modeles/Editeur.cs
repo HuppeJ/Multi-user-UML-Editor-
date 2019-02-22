@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Ink;
@@ -13,8 +14,8 @@ namespace PolyPaint.Modeles
     class Editeur : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public StrokeCollection traits = new StrokeCollection();
-        private StrokeCollection traitsRetires = new StrokeCollection();
+        public Collection<CustomStroke> traits = new Collection<CustomStroke>();
+        private Collection<CustomStroke> traitsRetires = new Collection<CustomStroke>();
 
         // Outil actif dans l'éditeur
         private string outilSelectionne = "crayon";
@@ -86,7 +87,7 @@ namespace PolyPaint.Modeles
         {
             try
             {
-                Stroke trait = traits.Last();
+                CustomStroke trait = traits.Last();
                 traitsRetires.Add(trait);
                 traits.Remove(trait);               
             }
@@ -101,7 +102,7 @@ namespace PolyPaint.Modeles
         {
             try
             {
-                Stroke trait = traitsRetires.Last();
+                CustomStroke trait = traitsRetires.Last();
                 traits.Add(trait);
                 traitsRetires.Remove(trait);
             }
