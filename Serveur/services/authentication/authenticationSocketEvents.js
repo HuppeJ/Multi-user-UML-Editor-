@@ -4,7 +4,6 @@ const userAccountManager = UserAccountManager();
 
 module.exports = (io) => {
     io.on('connection', function (socket) {
-        console.log(socket.id + " is connected to the server");
 
         socket.on(SocketEvents.CREATE_USER, async function (dataStr) {
             let isUserCreated = false;

@@ -39,7 +39,7 @@ namespace PolyPaint.Convertisseurs
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            switch (value)
+            switch (value.ToString())
             {
                 case "lasso":
                     return InkCanvasEditingMode.Select;
