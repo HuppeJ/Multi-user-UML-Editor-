@@ -27,37 +27,23 @@ namespace PolyPaint.CustomInk
                                        StylusPointCollection stylusPoints,
                                        Geometry geometry, Brush fillBrush)
         {
-            // Create a new Brush, if necessary.
             if (brush == null)
             {
-                brush = new LinearGradientBrush(Colors.Red, Colors.Blue, 20d);
-            }
+                Color primaryColor;
 
-            // Create a new Pen, if necessary.
-            if (pen == null)
-            {
-                pen = new Pen(brush, 2d);
-            }
-
-            // Draw linear gradient ellipses between 
-            // all the StylusPoints that have come in.
-            for (int i = 0; i < stylusPoints.Count; i++)
-            {
-                Point pt = (Point)stylusPoints[i];
-                Vector v = Point.Subtract(prevPoint, pt);
-
-                // Only draw if we are at least 4 units away 
-                // from the end of the last ellipse. Otherwise, 
-                // we're just redrawing and wasting cycles.
-                if (v.Length > 4)
+                if (fillBrush is SolidColorBrush)
                 {
-                    // Set the thickness of the stroke based 
-                    // on how hard the user pressed.
-                    double radius = stylusPoints[i].PressureFactor * 10d;
-                    drawingContext.DrawEllipse(brush, pen, pt, radius, radius);
-                    prevPoint = pt;
+                    primaryColor = ((SolidColorBrush)fillBrush).Color;
                 }
+                else
+                {
+                    primaryColor = Colors.Red;
+                }
+
+                brush = new LinearGradientBrush(Colors.Blue, primaryColor, 20d);
             }
+
+            drawingContext.DrawGeometry(brush, null, geometry);
         }
     }
 }
