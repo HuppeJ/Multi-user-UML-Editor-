@@ -9,6 +9,15 @@ namespace PolyPaint.CustomInk
 {
     class CustomInkCanvas : InkCanvas
     {
+        CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
+
+        public CustomInkCanvas() : base()
+        {
+            // Use the custom dynamic renderer on the
+            // custom InkCanvas.
+            this.DynamicRenderer = customRenderer;
+        }
+
         protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
         {
             // Remove the original stroke and add a custom stroke.
