@@ -1,6 +1,7 @@
 ﻿using PolyPaint.Enums;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Ink;
 
 namespace PolyPaint.CustomInk
 {
@@ -9,13 +10,13 @@ namespace PolyPaint.CustomInk
         CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
         
 
-        public string CustomStrokeType
+        public string StrokeType
         {
-            get { return (string) GetValue(CustomStrokeTypeProperty); }
-            set { SetValue(CustomStrokeTypeProperty, value); }
+            get { return (string) GetValue(StrokeTypeProperty); }
+            set { SetValue(StrokeTypeProperty, value); }
         }
-        public static readonly DependencyProperty CustomStrokeTypeProperty = DependencyProperty.Register(
-          "CustomStrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("class"));
+        public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
+          "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("class"));
 
 
         public CustomInkCanvas() : base()
@@ -29,7 +30,20 @@ namespace PolyPaint.CustomInk
         {
             // Remove the original stroke and add a custom stroke.
             Strokes.Remove(e.Stroke);
-            ArtefactStroke customStroke = new ArtefactStroke(e.Stroke.StylusPoints);
+
+            Stroke customStroke;
+
+            switch (StrokeType)
+            {
+                case "role":
+                    customStroke = new ArtefactStroke(e.Stroke.StylusPoints);
+                    break;
+                default:
+                    customStroke = new CustomStroke(e.Stroke.StylusPoints);
+                    break;
+               
+            }
+
             Strokes.Add(customStroke);
 
             // Pass the custom stroke to base class' OnStrokeCollected method.

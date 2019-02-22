@@ -47,7 +47,7 @@ namespace PolyPaint.CustomInk
             img.UriSource = new Uri("../../Resources/artefact.png", UriKind.Relative);
             img.EndInit();
 
-            drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
+            //drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
 
             FormattedText formattedText = new FormattedText(
                 "Hello",
@@ -57,7 +57,7 @@ namespace PolyPaint.CustomInk
                 32,
                 Brushes.Black);
 
-            // drawingContext.DrawText(formattedText, GetTheFirstPoint());
+            drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
 
         Point GetTheLeftTopPoint()
