@@ -19,6 +19,9 @@ open class BasicElementView: RelativeLayout {
 
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
+    open var mMinimumWidth : Float = 300F
+    open var mMinimumHeight : Float = 100F
+
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -45,7 +48,7 @@ open class BasicElementView: RelativeLayout {
 
     override fun setSelected(selected: Boolean) {
         if(selected){
-            first_line.text = "Focus"
+            //first_line.text = "Focus"
             borderResizableLayout.setBackgroundResource(R.drawable.borders)
             editButton.visibility = View.VISIBLE
             deleteButton.visibility = View.VISIBLE
@@ -55,7 +58,7 @@ open class BasicElementView: RelativeLayout {
             anchorPoint2.visibility = View.VISIBLE
             anchorPoint3.visibility = View.VISIBLE
         }else{
-            first_line.text = "NoFocus"
+            //first_line.text = "NoFocus"
             borderResizableLayout.setBackgroundResource(R.drawable.borders_white)
             editButton.visibility = View.INVISIBLE
             deleteButton.visibility = View.INVISIBLE
@@ -70,7 +73,7 @@ open class BasicElementView: RelativeLayout {
 
     private var onTouchListenerBody = View.OnTouchListener { v, event ->
         when(event.action){
-            MotionEvent.ACTION_DOWN -> {first_line.text = "ActionDown"
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
 
@@ -78,13 +81,13 @@ open class BasicElementView: RelativeLayout {
                 parentView.dispatchSetSelected(false)
                 v.isSelected = true
             }
-            MotionEvent.ACTION_MOVE -> {first_line.text = "ActionMove"
+            MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
                 this.x = this.x + (event.rawX - oldFrameRawX )
                 this.y = this.y + (event.rawY - oldFrameRawY)
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
-            MotionEvent.ACTION_UP -> {first_line.text = "ActionUp"
+            MotionEvent.ACTION_UP -> {//first_line.text = "ActionUp"
                 //isElementSelected = false
             }
         }
@@ -93,9 +96,7 @@ open class BasicElementView: RelativeLayout {
 
     private var onTouchListenerEditButton = View.OnTouchListener { v, event ->
         when(event.action){
-            MotionEvent.ACTION_DOWN -> {
-
-                first_line.text = "onTouchListenerEditButton"
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerEditButton"
                 var activity: AppCompatActivity = context as AppCompatActivity
 
                 var dialog: DialogFragment = EditClassDialogFragment()
@@ -112,8 +113,7 @@ open class BasicElementView: RelativeLayout {
 
     private var onTouchListenerDeleteButton = View.OnTouchListener { v, event ->
         when(event.action){
-            MotionEvent.ACTION_DOWN -> {
-                first_line.text = "onTouchListenerDeleteButton"
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
                 val parentView = v.parent.parent.parent as RelativeLayout
                 parentView.removeView(this)
             }
@@ -121,18 +121,27 @@ open class BasicElementView: RelativeLayout {
         true
     }
 
-    private var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
-        val txt = first_line.text
-        first_line.text = txt.toString() + "onTouchListenerResizeButton"
+    open protected var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
+        //val txt = first_line.text
+        //first_line.text = txt.toString() + "onTouchListenerResizeButton"
 
         when(event.action){
-            MotionEvent.ACTION_DOWN -> {first_line.text = "ActionDownResize"
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDownResize"
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
-            MotionEvent.ACTION_MOVE -> {first_line.text = "ActionMoveResize"
-                borderResizableLayout.layoutParams.width = (borderResizableLayout.width + (event.rawX - oldFrameRawX)).toInt()
-                borderResizableLayout.layoutParams.height = (borderResizableLayout.height + (event.rawY - oldFrameRawY)).toInt()
+            MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMoveResize"
+                val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
+                val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
+
+                if(newWidth >= mMinimumWidth){
+                    borderResizableLayout.layoutParams.width = (newWidth).toInt()
+                }
+
+                if(newHeight >= mMinimumHeight){
+                    borderResizableLayout.layoutParams.height = (newHeight).toInt()
+                }
+
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }

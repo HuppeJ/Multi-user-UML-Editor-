@@ -48,32 +48,37 @@ class DrawingActivity : AppCompatActivity(){
 
             val mBasicElem = BasicElementView(this)
 
-            mBasicElem.id = childIndexCount
+            //mBasicElem.id = childIndexCount
             val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-            mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
+            //mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
+
+            mBasicElem.addView(viewToAdd)
 
             mBasicElem.setOnTouchListener(onTouchListener)
-            parent_relative_layout?.addView(mBasicElem, childIndexCount)
-            childIndexCount++
+            parent_relative_layout?.addView(mBasicElem)
+            //childIndexCount++
         }
 
         var addClassButton: Button = findViewById(R.id.class_button)
         addClassButton.setOnClickListener {
 
-            val mBasicElem = ClassView(this)
+            val mClassView = ClassView(this)
 
-            mBasicElem.id = childIndexCount
+            //mBasicElem.id = childIndexCount
             val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-            mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
+            //mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
+            mClassView.addView(viewToAdd)
 
-            mBasicElem.setOnTouchListener(onTouchListener)
-            parent_relative_layout?.addView(mBasicElem, childIndexCount)
-            childIndexCount++
+            mClassView.setOnTouchListener(onTouchListener)
+            //parent_relative_layout?.addView(mBasicElem, childIndexCount)
+            parent_relative_layout?.addView(mClassView)
+            //childIndexCount++
         }
 
-        move_button.setOnClickListener {
-            val txt = parent_relative_layout?.getChildAt(childSelected)!!.first_line.text
-            parent_relative_layout?.getChildAt(childSelected )!!.first_line.text = txt.toString() + "3"
+        clear_canvas_button.setOnClickListener {
+            parent_relative_layout?.removeAllViews()
+            //val txt = parent_relative_layout?.getChildAt(childSelected)!!.first_line.text
+            //parent_relative_layout?.getChildAt(childSelected )!!.first_line.text = txt.toString() + "3"
         }
     }
 
