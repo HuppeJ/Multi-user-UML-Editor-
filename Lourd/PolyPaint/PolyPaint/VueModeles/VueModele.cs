@@ -188,7 +188,7 @@ public class CustomStroke : Stroke
     public CustomStroke(StylusPointCollection pts)
      : base(pts)
     {
-        this.StylusPoints = pts;
+        StylusPoints = pts;
     }
 
     protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)

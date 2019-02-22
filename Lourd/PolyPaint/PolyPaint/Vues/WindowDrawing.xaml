@@ -197,7 +197,8 @@
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                           
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"                                              
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                           DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"/>
+                           DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
+                           />
             </Border>
 
         </Grid>
