@@ -8,9 +8,9 @@ using System.Globalization;
 
 namespace PolyPaint.CustomInk
 {
-    public class CustomStroke : Stroke
+    public class ArtefactStroke : Stroke
     {
-        public CustomStroke(StylusPointCollection pts) : base(pts)
+        public ArtefactStroke(StylusPointCollection pts) : base(pts)
         {
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             while (StylusPoints.Count > 1)
