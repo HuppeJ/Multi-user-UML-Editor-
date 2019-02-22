@@ -53,7 +53,7 @@ namespace PolyPaint.VueModeles
             set { editeur.TailleTrait = value; }
         }
        
-        public Collection<CustomStroke> Traits { get; set; }
+        public StrokeCollection Traits { get; set; }
         
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<object> Empiler { get; set; }
