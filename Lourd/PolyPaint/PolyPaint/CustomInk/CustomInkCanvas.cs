@@ -36,14 +36,13 @@ namespace PolyPaint.CustomInk
             switch (StrokeType)
             {
                 case "role":
-                    customStroke = new ArtefactStroke(e.Stroke.StylusPoints);
+                    customStroke = new ArtifactStroke(e.Stroke.StylusPoints);
                     break;
                 default:
                     customStroke = new CustomStroke(e.Stroke.StylusPoints);
                     break;
                
             }
-
             Strokes.Add(customStroke);
 
             // Pass the custom stroke to base class' OnStrokeCollected method.
