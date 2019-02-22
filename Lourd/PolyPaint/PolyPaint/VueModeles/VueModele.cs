@@ -61,6 +61,7 @@ namespace PolyPaint.VueModeles
         public RelayCommand<string> ChoisirPointe { get; set; }
         public RelayCommand<string> ChoisirOutil { get; set; }
         public RelayCommand<object> Reinitialiser { get; set; }
+        public RelayCommand<object> Rotate { get; set; }
 
         public RelayCommand<object> ConnectCommand { get; set; }
         public RelayCommand<object> CreateUserCommand { get; set; }
@@ -99,6 +100,7 @@ namespace PolyPaint.VueModeles
             ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
             Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
+            Rotate = new RelayCommand<object>(editeur.Rotate);
 
             ConnectCommand = new RelayCommand<object>(chat.Connect);
             //CreateUserCommand = new RelayCommand<object>(chat.CreateUser);
