@@ -1,10 +1,7 @@
 const SocketEvents = require('../../constants/SocketEvents');
-const UserAccountManager = require('./components/UserAccountManager');
-const userAccountManager = UserAccountManager();
 
-module.exports = (io) => {
+module.exports = (io, userAccountManager) => {
     io.on('connection', function (socket) {
-
         socket.on(SocketEvents.CREATE_USER, async function (dataStr) {
             let isUserCreated = false;
             let data = JSON.parse(dataStr);

@@ -1,8 +1,8 @@
-const datastore = require("./../../datastore/datastore");
+const datastore = require("./../services/datastore/datastore");
 const crypto = require('crypto');
 
 module.exports = function () {
-  // connectedUsers is a Map : [key: username, value: socketId]
+  // connectedUsers is a Map : [key: socketId, value: username]
   const connectedUsers = new Map();
 
   async function addUser(username, password) {
@@ -14,7 +14,7 @@ module.exports = function () {
         .update(password)
         .digest('hex')
     };
-    // console.log("User: " + user.username + " -> " + user.password);
+
     return datastore.save({
       key: datastore.key('User'),
       data: user
@@ -62,11 +62,9 @@ module.exports = function () {
     return Array.from(connectedUsers.values()).includes(username);
   }
 
-  function removeUser(username) {
-    //TODO
-  }
 
   return {
+    connectedUsers,
     addUser,
     isUsernameAvailable,
     authenticateUser,

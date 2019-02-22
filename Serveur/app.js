@@ -35,15 +35,19 @@ const io = socketIO(server);
 
 // const chatIo = io.of("/chat");
 
+
+// Initialise components
+const UserAccountManager = require('./components/UserAccountManager');
+const userAccountManager = UserAccountManager();
+
 // Initialise Socket Events
 const chatSocketEvents = require('./services/chat/chatSocketEvents');
 chatSocketEvents(io);
 const authenticationSocketEvents = require('./services/authentication/authenticationSocketEvents');
-authenticationSocketEvents(io);
+authenticationSocketEvents(io, userAccountManager);
 
 // Set up the Socket.io communication system
 io.on('connection', (client) => {
-    // console.log('New client connected');
 
     // TODO : remove
     client.on('test', function () {

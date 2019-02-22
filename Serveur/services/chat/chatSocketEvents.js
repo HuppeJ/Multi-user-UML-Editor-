@@ -1,43 +1,23 @@
 const SocketEvents = require('../../constants/SocketEvents');
 
-
-//const ClientManager = require('./components/ClientManager');
 const ChatroomManager = require('./components/ChatroomManager');
-
-//const clientManager = ClientManager();
 const chatroomManager = ChatroomManager();
 
 module.exports = (io) => {
     io.on('connection', function (socket) {
         console.log(socket.id + " connected on the server");
-        //clientManager.addClient(socket);
 
-        // TODO : CAn we remove the next socket message?
-        /*
-        socket.on(SocketEvents.REGISTER_TO_CHAT, function (userStr) {
-            const user = JSON.parse(userStr);
+        function getRoom() {
 
-            let isUserRegisteredToChat = false;
-            if (clientManager.isUserAvailable(user.username)) {
-                clientManager.registerClient(socket, user);
-                isUserRegisteredToChat = true;
-            }
-
-            const response = JSON.stringify({
-                isUserRegisteredToChat: isUserRegisteredToChat
-            });
-
-            socket.emit(SocketEvents.REGISTER_TO_CHAT_RESPONSE, response);
-        });
-        */
+        }
 
         socket.on(SocketEvents.CREATE_CHATROOM, function (roomName) {
-            let response = {
+            const response = {
                 roomName: roomName,
                 isCreated: chatroomManager.addChatroom(roomName, socket.id)
             };
 
-            if(response.isCreated) {
+            if (response.isCreated) {
                 socket.join(roomName);
                 console.log(socket.id + " created chatroom " + roomName);
                 io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
@@ -53,10 +33,10 @@ module.exports = (io) => {
             socket.join(defaultChatroom);
             // console.log(`JOIN_CHATROOM`, defaultChatroom);
             
-            if(chatroomManager.addChatroom(defaultChatroom, socket.id)) {
+            if (chatroomManager.addChatroom(defaultChatroom, socket.id)) {
                 io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
             } else {
-                chatroomManager.addClientToChatroom(defaultChatroom, socket.id);
+                chatroomManager.addUserToChatroom(defaultChatroom, socket.id);
                 socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, defaultChatroom);
             }
         });
@@ -64,10 +44,10 @@ module.exports = (io) => {
         socket.on(SocketEvents.JOIN_SPECIFIC_CHATROOM, function (roomName) {
             const response = {
                 roomName: roomName,
-                isJoined: chatroomManager.addClientToChatroom(roomName, socket.id)
+                isJoined: chatroomManager.addUserToChatroom(roomName, socket.id)
             };
 
-            if(response.isJoined) {
+            if (response.isJoined) {
                 socket.join(roomName);
                 console.log(socket.id + " joined chatroom " + roomName);
             }
@@ -82,7 +62,7 @@ module.exports = (io) => {
                 isJoined: chatroomManager.removeClientFromChatroom(roomName, socket.id)
             };
 
-            if(response.isJoined) {
+            if (response.isJoined) {
                 socket.leave(roomName);
                 console.log(socket.id + " left chatroom " + roomName);
             }

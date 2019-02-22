@@ -6,11 +6,10 @@ module.exports = function () {
     // mapping of all available chatrooms 
     // chatrooms est une Map : [key: chatroom.name, value: Chatroom]
     const chatrooms = new Map();
-    // TODO : Arranger le type chatroom pour avoir l'historique des messages et les sockets id
 
     function addChatroom(chatroomName, socketId) {
-        if(!isChatroom(chatroomName)) {
-            let chatroom = Chatroom();
+        if (!isChatroom(chatroomName)) {
+            const chatroom = Chatroom();
             chatroom.addUser(socketId);
             chatrooms.set(chatroomName, chatroom);
             return true;
@@ -23,14 +22,14 @@ module.exports = function () {
     }
 
     function removeChatroom(chatroomName) {
-        if(isChatroom(chatroomName)) {
+        if (isChatroom(chatroomName)) {
             chatrooms.delete(chatroomName);
         }
     }
 
-    function addClientToChatroom(chatroomName, socketId) {
+    function addUserToChatroom(chatroomName, socketId) {
         if (isChatroom(chatroomName)){
-            let chatroom = chatrooms.get(chatroomName);
+            const chatroom = chatrooms.get(chatroomName);
             if (!chatroom.hasUser(socketId)) {
                 chatroom.addUser(socketId);
                 return true;
@@ -70,7 +69,7 @@ module.exports = function () {
         addChatroom,
         isChatroom,
         removeChatroom,
-        addClientToChatroom,
+        addUserToChatroom,
         isClientInChatroom,
         removeClientFromChatroom,
         getChatrooms,

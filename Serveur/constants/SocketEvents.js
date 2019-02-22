@@ -24,6 +24,7 @@ module.exports = Object.freeze({
     GET_CHATROOMS: "getChatrooms",
     GET_CHATROOMS_RESPONSE: "getChatroomsResponse",
 
+    // todo clients??
     GET_CHATROOM_CLIENTS: "getChatroomClients",
     GET_CHATROOM_CLIENTS_RESPONSE: "getChatroomClientsResponse",
 
