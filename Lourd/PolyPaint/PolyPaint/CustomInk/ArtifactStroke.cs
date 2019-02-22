@@ -8,16 +8,16 @@ using System.Globalization;
 
 namespace PolyPaint.CustomInk
 {
-    public class ArtefactStroke : Stroke
+    public class ArtifactStroke : Stroke
     {
-        public ArtefactStroke(StylusPointCollection pts) : base(pts)
+        public ArtifactStroke(StylusPointCollection pts) : base(pts)
         {
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             while (StylusPoints.Count > 1)
             {
                 StylusPoints.RemoveAt(0);
             }
-            for (double i = lastPoint.X; i < 100 + lastPoint.X; i += 0.5)
+            for (double i = lastPoint.X; i < 60 + lastPoint.X; i += 0.5)
             {
                 for (double j = lastPoint.Y; j < 100 + lastPoint.Y; j += 0.5)
                 {
@@ -58,6 +58,8 @@ namespace PolyPaint.CustomInk
                 Brushes.Black);
 
             // drawingContext.DrawText(formattedText, GetTheFirstPoint());
+
+
         }
 
         Point GetTheLeftTopPoint()
