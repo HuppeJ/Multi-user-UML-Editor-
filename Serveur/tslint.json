@@ -11,6 +11,8 @@
     "rulesDirectory": [],
     "only-arrow-functions": false,
     "object-literal-shorthand": true,
+    "skipBlankLines": true,
+    "ignoreComments": true,
     "jsRules":{
         "object-literal-sort-keys": false,
     }

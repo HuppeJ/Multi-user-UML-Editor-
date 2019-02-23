@@ -1,4 +1,3 @@
-// Based on https://github.com/justadudewhohacks/websocket-chat
 export default class Chatroom {
     private chatroomName: string = "";
     private users: any = null; // [key: socketId]
