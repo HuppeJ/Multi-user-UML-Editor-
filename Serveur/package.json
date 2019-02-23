@@ -13,7 +13,7 @@
     "test": "npm run system-test",
     "e2e-test": "repo-tools test deploy",
     "build": "tsc",
-    "runApp": "node dist/app.js",
+    "runApp": "node build/app.js",
     "start": "npm run build && npm run runApp"
   },
   "dependencies": {

@@ -9,4 +9,4 @@ const datastore = new Datastore({
   keyFilename: keypath
 });
 
-module.exports = datastore;
+export default datastore;

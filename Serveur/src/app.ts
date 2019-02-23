@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 // Configure .env file 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -17,14 +19,20 @@ const socketIO = require('socket.io');
 const io = socketIO(server);
 
 // Initialise components
-const UserAccountManager = require('../components/UserAccountManager');
-const userAccountManager = UserAccountManager();
+import datastore from "./services/datastore/datastore";
+
+import UserAccountManager from "./components/UserAccountManager";
+const userAccountManager = new UserAccountManager(datastore);
+
+import ChatroomManager from "./services/chat/components/ChatroomManager";
+const chatroomManager = new ChatroomManager();
 
 // Initialise Socket Events
-const chatSocketEvents = require('../services/chat/chatSocketEvents');
-chatSocketEvents(io);
-const authenticationSocketEvents = require('../services/authentication/authenticationSocketEvents');
-authenticationSocketEvents(io, userAccountManager);
+import ChatSocketEvents from "./services/chat/ChatSocketEvents";
+new ChatSocketEvents(io, chatroomManager);
+
+import AuthenticationSocketEvents from "./services/Authentication/AuthenticationSocketEvents";
+new AuthenticationSocketEvents(io, userAccountManager);
 
 // Set up the Socket.io communication system
 io.on('connection', (client: any) => {
@@ -39,6 +47,3 @@ server.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
     console.log('Press Ctrl+C to quit.');
 });
-
-
-

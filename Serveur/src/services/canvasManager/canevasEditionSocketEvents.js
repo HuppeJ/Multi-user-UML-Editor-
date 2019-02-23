@@ -1,10 +1,7 @@
-const SocketEvents = require('../../constants/SocketEvents');
-
+import * as SocketEvents from "../../constants/SocketEvents";
 
 module.exports = (io) => {
     io.on('connection', function (socket) {
-
-
         socket.on(SocketEvents.CREATE_CHATROOM, function (roomName) {
             let response = {
                 roomName: roomName,
