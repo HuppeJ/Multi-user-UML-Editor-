@@ -68,7 +68,6 @@ module.exports = function () {
     addUser,
     isUsernameAvailable,
     authenticateUser,
-    removeUser,
     isConnected,
     disconnectUser
   }

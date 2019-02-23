@@ -7,10 +7,6 @@ module.exports = (io) => {
     io.on('connection', function (socket) {
         console.log(socket.id + " connected on the server");
 
-        function getRoom() {
-
-        }
-
         socket.on(SocketEvents.CREATE_CHATROOM, function (roomName) {
             const response = {
                 roomName: roomName,

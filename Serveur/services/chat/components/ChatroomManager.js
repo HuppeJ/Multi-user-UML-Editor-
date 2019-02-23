@@ -2,6 +2,8 @@
 
 const Chatroom = require("./Chatroom");
 
+// import Chatroom from "./Chatroom";
+
 module.exports = function () {
     // mapping of all available chatrooms 
     // chatrooms est une Map : [key: chatroom.name, value: Chatroom]
@@ -9,7 +11,7 @@ module.exports = function () {
 
     function addChatroom(chatroomName, socketId) {
         if (!isChatroom(chatroomName)) {
-            const chatroom = Chatroom();
+            const chatroom = new Chatroom(chatroomName);
             chatroom.addUser(socketId);
             chatrooms.set(chatroomName, chatroom);
             return true;
