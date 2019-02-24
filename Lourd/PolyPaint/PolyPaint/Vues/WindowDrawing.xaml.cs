@@ -6,6 +6,9 @@ using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using PolyPaint.VueModeles;
 using PolyPaint;
+using System.Windows.Documents;
+using PolyPaint.CustomInk;
+using System.Windows.Ink;
 
 namespace PolyPaint.Vues
 {
@@ -39,13 +42,9 @@ namespace PolyPaint.Vues
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
         }
 
-        private void DupliquerSelection(object sender, RoutedEventArgs e)
-        {          
-            surfaceDessin.CopySelection();
-            surfaceDessin.Paste();
-        }
+        private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
-        private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutSelection();
+        private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
 
     }
 }

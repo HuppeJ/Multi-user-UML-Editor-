@@ -8,7 +8,8 @@
         xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"        
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:Vues="clr-namespace:PolyPaint.Vues"
-        mc:Ignorable="d"
+    xmlns:customink="clr-namespace:PolyPaint.CustomInk"
+    mc:Ignorable="d"
         Height="700" Width="900" Background="#CBD4E4" MinWidth="627" MinHeight="200">
     <UserControl.Resources>
         <convertisseurs:ConvertisseurBordure x:Key="convertisseurBordure" />
@@ -61,6 +62,42 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
+                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="class" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=class, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=class, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="class">
+                    <!--<StackPanel>
+                        <Image Source="/Resources/crayon.png"  />
+                    </StackPanel>-->
+                </Button>
+                <Button x:Name="Actor" Width="40" Height="40" Margin="5" Padding="0,0" Content="actor" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=actor, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=actor, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="actor">
+                    <!--<StackPanel>
+                        <Image Source="/Resources/crayon.png"  />
+                    </StackPanel>-->
+                </Button>
+                <Button x:Name="Artifact" Width="40" Height="40" Margin="5" Padding="0,0" Content="artifact" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=artifact, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=artifact, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="artifact">
+                    <!--<StackPanel>
+                        <Image Source="/Resources/crayon.png"  />
+                    </StackPanel>-->
+                </Button>
+                <Button x:Name="Activity" Width="40" Height="40" Margin="5" Padding="0,0" Content="activity" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=activity, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=activity, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="activity">
+                    <!--<StackPanel>
+                        <Image Source="/Resources/crayon.png"  />
+                    </StackPanel>-->
+                </Button>
                 <Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -68,15 +105,6 @@
                         CommandParameter="crayon">
                     <StackPanel>
                         <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="efface_segment" Width="40" Height="40" Margin="5" Padding="0,0"
-                        BorderBrush="{Binding OutilSelectionne, ConverterParameter=efface_segment, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding OutilSelectionne, ConverterParameter=efface_segment, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
-                        Command="{Binding ChoisirOutil}"
-                        CommandParameter="efface_segment">
-                    <StackPanel>
-                        <Image Source="/Resources/efface_crayon.png" />
                     </StackPanel>
                 </Button>
                 <Button x:Name="efface_trait" Width="40" Height="40" Margin="5" Padding="0,0"
@@ -138,6 +166,12 @@
                         </Button>
                     </StackPanel>
                 </StackPanel>
+                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0"
+                    Command="{Binding Rotate}">
+                    <StackPanel>
+                        <Image Source="/Resources/rotate.png" />
+                    </StackPanel>
+                </Button>
                 <xctk:ColorPicker x:Name="selecteurCouleur"                             
                   VerticalContentAlignment="Stretch"
                   Background="#00000000"
@@ -193,11 +227,15 @@
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.3" BlurRadius="10"/>
                 </Border.Effect>
-                <InkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" x:Name="surfaceDessin" 
+                <customink:CustomInkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" x:Name="surfaceDessin" 
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                           
-                           MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"                                              
+                           MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"         
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                           DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"/>
+                           SelectedStrokes="{Binding SelectedStrokes}"
+                           DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
+                           StrokeType="{Binding SelectedStrokeType, UpdateSourceTrigger=PropertyChanged}"
+                           />
+                
             </Border>
 
         </Grid>
