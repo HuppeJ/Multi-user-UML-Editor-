@@ -2,7 +2,6 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Media;
 
@@ -11,10 +10,11 @@ namespace PolyPaint.CustomInk
     class CustomInkCanvas : InkCanvas
     {
         CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
-        
+        StrokeCollection clipboard = new StrokeCollection();
+
         public string StrokeType
         {
-            get { return (string) GetValue(StrokeTypeProperty); }
+            get { return (string)GetValue(StrokeTypeProperty); }
             set { SetValue(StrokeTypeProperty, value); }
         }
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
@@ -31,9 +31,43 @@ namespace PolyPaint.CustomInk
 
         public CustomInkCanvas() : base()
         {
-            // Use the custom dynamic renderer on the
-            // custom InkCanvas.
+            // Use the custom dynamic renderer on the custom InkCanvas.
             DynamicRenderer = customRenderer;
+        }
+
+        public void PasteStrokes()
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+
+            if(strokes.Count == 0)
+            {
+                // strokes from clipboard will be pasted
+                strokes = clipboard;
+            } 
+
+            foreach (Stroke stroke in strokes)
+            {
+                Stroke newStroke = stroke.Clone();
+
+                // TODO : 2 options. 1- Avoir un compteur de Paste qui incremente a chaque Paste, le reinitialiser quand 
+                // nouveau OnSelectionChanged. 2- Coller au coin du canvas
+                // Voir quoi faire avec le client leger
+                Matrix translateMatrix = new Matrix();
+                translateMatrix.Translate(20.0, 20.0);
+                newStroke.Transform(translateMatrix, false);
+
+                Strokes.Add(newStroke);
+            }
+        }
+
+        public void CutStrokes()
+        {
+            StrokeCollection selection = GetSelectedStrokes();
+            // put selection in clipboard to be able to paste it
+            clipboard = selection;
+
+            // cut selection from canvas
+            CutSelection();
         }
 
         protected override void OnSelectionChanged(EventArgs e) {
