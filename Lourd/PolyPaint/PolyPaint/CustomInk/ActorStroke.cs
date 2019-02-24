@@ -8,9 +8,9 @@ using System.Globalization;
 
 namespace PolyPaint.CustomInk
 {
-    public class ArtifactStroke : CustomStroke
+    public class ActorStroke : CustomStroke
     {
-        public ArtifactStroke(StylusPointCollection pts) : base(pts)
+        public ActorStroke(StylusPointCollection pts) : base(pts)
         {
             
         }
@@ -33,10 +33,11 @@ namespace PolyPaint.CustomInk
             // Create the image
             BitmapImage img = new BitmapImage();
             img.BeginInit();
-            img.UriSource = new Uri("../../Resources/artefact.png", UriKind.Relative);
+            img.UriSource = new Uri("../../Resources/actor.png", UriKind.Relative);
             img.EndInit();
 
             drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
+
         }
 
         public override void Rotate()
@@ -52,6 +53,5 @@ namespace PolyPaint.CustomInk
             rotatingMatrix.RotateAt(90, rotatePoint.X, rotatePoint.Y);
             this.Transform(rotatingMatrix, false);
         }
-       
     }
 }

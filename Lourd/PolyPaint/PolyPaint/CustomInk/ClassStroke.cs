@@ -8,11 +8,11 @@ using System.Globalization;
 
 namespace PolyPaint.CustomInk
 {
-    public class ArtifactStroke : CustomStroke
+    public class ClassStroke : CustomStroke
     {
-        public ArtifactStroke(StylusPointCollection pts) : base(pts)
+        public ClassStroke(StylusPointCollection pts) : base(pts)
         {
-            
+
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
@@ -29,14 +29,16 @@ namespace PolyPaint.CustomInk
             SolidColorBrush brush2 = new SolidColorBrush(drawingAttributes.Color);
             brush2.Freeze();
             // drawingContext.DrawRectangle(brush2, null, new Rect(GetTheLeftTopPoint(), GetTheRightBottomPoint()));
-            
-            // Create the image
-            BitmapImage img = new BitmapImage();
-            img.BeginInit();
-            img.UriSource = new Uri("../../Resources/artefact.png", UriKind.Relative);
-            img.EndInit();
 
-            drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
+            FormattedText formattedText = new FormattedText(
+                "Hello",
+                CultureInfo.GetCultureInfo("en-us"),
+                FlowDirection.LeftToRight,
+                new Typeface("Verdana"),
+                32,
+                Brushes.Black);
+
+            drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
 
         public override void Rotate()
@@ -52,6 +54,6 @@ namespace PolyPaint.CustomInk
             rotatingMatrix.RotateAt(90, rotatePoint.X, rotatePoint.Y);
             this.Transform(rotatingMatrix, false);
         }
-       
+
     }
 }

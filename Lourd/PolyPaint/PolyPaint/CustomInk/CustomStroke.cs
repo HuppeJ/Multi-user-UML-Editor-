@@ -8,7 +8,7 @@ using System.Globalization;
 
 namespace PolyPaint.CustomInk
 {
-    public class CustomStroke : Stroke
+    public abstract class CustomStroke : Stroke
     {
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
@@ -60,7 +60,9 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
 
-        Point GetTheLeftTopPoint()
+        public abstract void Rotate();
+
+        protected Point GetTheLeftTopPoint()
         {
             if (StylusPoints == null)
                 throw new ArgumentNullException("StylusPoints");
@@ -73,17 +75,17 @@ namespace PolyPaint.CustomInk
             return tmpPoint.ToPoint();
         }
 
-        Point GetTheFirstPoint()
+        protected Point GetTheFirstPoint()
         {
             return StylusPoints[0].ToPoint();
         }
 
-        Point GetTheLastPoint()
+        protected Point GetTheLastPoint()
         {
             return StylusPoints[StylusPoints.Count - 1].ToPoint();
         }
 
-        Point GetTheRightBottomPoint()
+        protected Point GetTheRightBottomPoint()
         {
             if (StylusPoints == null)
                 throw new ArgumentNullException("StylusPoints");

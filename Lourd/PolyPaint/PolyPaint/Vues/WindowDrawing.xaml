@@ -71,6 +71,15 @@
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>-->
                 </Button>
+                <Button x:Name="Actor" Width="40" Height="40" Margin="5" Padding="0,0" Content="actor" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=actor, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=actor, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="actor">
+                    <!--<StackPanel>
+                        <Image Source="/Resources/crayon.png"  />
+                    </StackPanel>-->
+                </Button>
                 <Button x:Name="Artifact" Width="40" Height="40" Margin="5" Padding="0,0" Content="artifact" 
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=artifact, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=artifact, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 

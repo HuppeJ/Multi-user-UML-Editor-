@@ -169,8 +169,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="CustomInk\ActorStroke.cs" />
     <Compile Include="CustomInk\AnchorPointAdorner.cs" />
     <Compile Include="CustomInk\ArtifactStroke.cs" />
+    <Compile Include="CustomInk\ClassStroke.cs" />
     <Compile Include="CustomInk\CustomDynamicRenderer.cs" />
     <Compile Include="CustomInk\CustomInkCanvas.cs" />
     <Compile Include="CustomInk\CustomStroke.cs" />

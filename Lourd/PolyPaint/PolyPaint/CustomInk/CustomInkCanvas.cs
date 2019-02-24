@@ -40,14 +40,20 @@ namespace PolyPaint.CustomInk
                 case "artifact":
                     customStroke = new ArtifactStroke(e.Stroke.StylusPoints);
                     break;
+                case "actor":
+                    customStroke = new ActorStroke(e.Stroke.StylusPoints);
+                    break;
+                case "class":
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
+                    break;
                 default:
-                    customStroke = new CustomStroke(e.Stroke.StylusPoints);
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
                     break;
                
             }
             Strokes.Add(customStroke);
 
-            Visual visual = this.GetVisualChild(this.Children.Count - 1);
+            // Visual visual = this.GetVisualChild(this.Children.Count - 1);
 
             //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(visual);
             //myAdornerLayer.Add(new AnchorPointAdorner(visual));
