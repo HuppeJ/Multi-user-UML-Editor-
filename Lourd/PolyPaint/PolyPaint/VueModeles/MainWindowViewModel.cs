@@ -246,7 +246,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _backToGalleryCommand ?? (_backToGalleryCommand = new RelayCommand<Object>(BackToLogin));
+                return _backToGalleryCommand ?? (_backToGalleryCommand = new RelayCommand<Object>(BackToGallery));
             }
         }
 
