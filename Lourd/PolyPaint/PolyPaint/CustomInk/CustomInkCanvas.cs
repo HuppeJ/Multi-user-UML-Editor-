@@ -1,7 +1,9 @@
 ﻿using PolyPaint.Enums;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Ink;
+using System.Windows.Media;
 
 namespace PolyPaint.CustomInk
 {
@@ -35,7 +37,7 @@ namespace PolyPaint.CustomInk
 
             switch (StrokeType)
             {
-                case "role":
+                case "artifact":
                     customStroke = new ArtifactStroke(e.Stroke.StylusPoints);
                     break;
                 default:
@@ -44,6 +46,11 @@ namespace PolyPaint.CustomInk
                
             }
             Strokes.Add(customStroke);
+
+            Visual visual = this.GetVisualChild(this.Children.Count - 1);
+
+            //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(visual);
+            //myAdornerLayer.Add(new AnchorPointAdorner(visual));
 
             // Pass the custom stroke to base class' OnStrokeCollected method.
             InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);

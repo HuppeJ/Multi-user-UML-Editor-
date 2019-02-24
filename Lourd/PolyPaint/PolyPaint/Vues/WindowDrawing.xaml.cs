@@ -6,6 +6,8 @@ using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using PolyPaint.VueModeles;
 using PolyPaint;
+using System.Windows.Documents;
+using PolyPaint.CustomInk;
 
 namespace PolyPaint.Vues
 {
@@ -38,6 +40,14 @@ namespace PolyPaint.Vues
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
         }
+
+        //private void surfaceDessin_MouseLeftButtonUp(object sender, MouseEventArgs e)
+        //{
+        //    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(visual);
+        //    //myAdornerLayer.Add(new AnchorPointAdorner(visual));
+        //    foreach (UIElement toAdorn in surfaceDessin.Children)
+        //        myAdornerLayer.Add(new AnchorPointAdorner(toAdorn));
+        //}
 
         private void DupliquerSelection(object sender, RoutedEventArgs e)
         {          
