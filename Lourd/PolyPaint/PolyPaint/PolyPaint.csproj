@@ -169,13 +169,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
-    <Compile Include="CustomInk\ActorStroke.cs" />
+    <Compile Include="CustomInk\Strokes\ActivityStroke.cs" />
+    <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
     <Compile Include="CustomInk\AnchorPointAdorner.cs" />
-    <Compile Include="CustomInk\ArtifactStroke.cs" />
-    <Compile Include="CustomInk\ClassStroke.cs" />
+    <Compile Include="CustomInk\Strokes\ArtifactStroke.cs" />
+    <Compile Include="CustomInk\Strokes\ClassStroke.cs" />
     <Compile Include="CustomInk\CustomDynamicRenderer.cs" />
     <Compile Include="CustomInk\CustomInkCanvas.cs" />
-    <Compile Include="CustomInk\CustomStroke.cs" />
+    <Compile Include="CustomInk\Strokes\CustomStroke.cs" />
     <Compile Include="Enums\UserModes.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -304,6 +305,8 @@
     <Resource Include="Resources\chat.png" />
     <Resource Include="Resources\artefact.png" />
     <Resource Include="Resources\rotate.png" />
+    <Resource Include="Resources\actor.png" />
+    <Resource Include="Resources\activity.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

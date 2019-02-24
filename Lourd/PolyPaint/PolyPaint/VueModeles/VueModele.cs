@@ -63,7 +63,8 @@ namespace PolyPaint.VueModeles
         }
        
         public StrokeCollection Traits { get; set; }
-        
+        public StrokeCollection SelectedStrokes { get; set; }
+
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<object> Empiler { get; set; }
         public RelayCommand<object> Depiler { get; set; }
@@ -95,6 +96,7 @@ namespace PolyPaint.VueModeles
             AjusterPointe();
 
             Traits = editeur.traits;
+            SelectedStrokes = editeur.selectedStrokes;
             
             // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.            
             Empiler = new RelayCommand<object>(editeur.Empiler, editeur.PeutEmpiler);            
@@ -108,6 +110,7 @@ namespace PolyPaint.VueModeles
 
 
             ChooseStrokeTypeCommand = new RelayCommand<string>(editeur.ChooseStrokeTypeCommand);
+            
 
         }
 

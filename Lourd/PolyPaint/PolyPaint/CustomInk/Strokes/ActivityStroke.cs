@@ -8,11 +8,11 @@ using System.Globalization;
 
 namespace PolyPaint.CustomInk
 {
-    public class ActorStroke : CustomStroke
+    public class ActivityStroke : CustomStroke
     {
-        public ActorStroke(StylusPointCollection pts) : base(pts)
+        public ActivityStroke(StylusPointCollection pts) : base(pts)
         {
-            
+
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
@@ -29,11 +29,11 @@ namespace PolyPaint.CustomInk
             SolidColorBrush brush2 = new SolidColorBrush(drawingAttributes.Color);
             brush2.Freeze();
             // drawingContext.DrawRectangle(brush2, null, new Rect(GetTheLeftTopPoint(), GetTheRightBottomPoint()));
-            
+
             // Create the image
             BitmapImage img = new BitmapImage();
             img.BeginInit();
-            img.UriSource = new Uri("../../Resources/actor.png", UriKind.Relative);
+            img.UriSource = new Uri("../../Resources/activity.png", UriKind.Relative);
             img.EndInit();
 
             drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));

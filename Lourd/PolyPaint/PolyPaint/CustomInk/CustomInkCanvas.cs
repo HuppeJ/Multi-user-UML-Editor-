@@ -1,4 +1,5 @@
 ﻿using PolyPaint.Enums;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -11,7 +12,6 @@ namespace PolyPaint.CustomInk
     {
         CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
         
-
         public string StrokeType
         {
             get { return (string) GetValue(StrokeTypeProperty); }
@@ -20,12 +20,24 @@ namespace PolyPaint.CustomInk
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
           "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("class"));
 
+        public StrokeCollection SelectedStrokes
+        {
+            get { return (StrokeCollection) GetValue(SelectedStrokesProperty); }
+            set { SetValue(SelectedStrokesProperty, value); }
+        }
+        public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
+          "SelectedStrokes", typeof(StrokeCollection), typeof(CustomInkCanvas), new PropertyMetadata(new StrokeCollection()));
+       
 
         public CustomInkCanvas() : base()
         {
             // Use the custom dynamic renderer on the
             // custom InkCanvas.
             DynamicRenderer = customRenderer;
+        }
+
+        protected override void OnSelectionChanged(EventArgs e) {
+            SelectedStrokes = this.GetSelectedStrokes();
         }
 
         protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
@@ -39,6 +51,9 @@ namespace PolyPaint.CustomInk
             {
                 case "artifact":
                     customStroke = new ArtifactStroke(e.Stroke.StylusPoints);
+                    break;
+                case "activity":
+                    customStroke = new ActivityStroke(e.Stroke.StylusPoints);
                     break;
                 case "actor":
                     customStroke = new ActorStroke(e.Stroke.StylusPoints);

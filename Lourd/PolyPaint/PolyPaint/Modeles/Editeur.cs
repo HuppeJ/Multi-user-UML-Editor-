@@ -19,6 +19,7 @@ namespace PolyPaint.Modeles
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public StrokeCollection traits = new StrokeCollection();
+        public StrokeCollection selectedStrokes = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
 
         // StrokeType selected
@@ -138,12 +139,11 @@ namespace PolyPaint.Modeles
             SelectedStrokeType = strokeType;
             ProprieteModifiee();
         }
-
         
         // Rotate selected strokes of 90 degrees
         public void Rotate(object o)
         {
-            foreach (CustomStroke stroke in traits)
+            foreach (CustomStroke stroke in selectedStrokes)
             {
                 stroke.Rotate();
             }

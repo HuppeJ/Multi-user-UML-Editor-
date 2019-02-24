@@ -89,6 +89,15 @@
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>-->
                 </Button>
+                <Button x:Name="Activity" Width="40" Height="40" Margin="5" Padding="0,0" Content="activity" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=activity, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=activity, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="activity">
+                    <!--<StackPanel>
+                        <Image Source="/Resources/crayon.png"  />
+                    </StackPanel>-->
+                </Button>
                 <Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -222,6 +231,7 @@
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                           
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"                                              
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                           SelectedStrokes="{Binding SelectedStrokes}"
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
                            StrokeType="{Binding SelectedStrokeType, UpdateSourceTrigger=PropertyChanged}"
                            />
