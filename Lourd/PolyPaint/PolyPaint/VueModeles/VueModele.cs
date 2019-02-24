@@ -50,12 +50,6 @@ namespace PolyPaint.VueModeles
             set { editeur.CouleurSelectionnee = value; }
         }
 
-        public string PointeSelectionnee
-        {
-            get { return editeur.PointeSelectionnee; }
-            set { ProprieteModifiee(); }
-        }
-
         public int TailleTrait
         {
             get { return editeur.TailleTrait; }
@@ -103,7 +97,6 @@ namespace PolyPaint.VueModeles
             Depiler = new RelayCommand<object>(editeur.Depiler, editeur.PeutDepiler);
             // Pour les commandes suivantes, il est toujours possible des les activer.
             // Donc, aucune vérification de type Peut"Action" à faire.
-            ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
             Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
             Rotate = new RelayCommand<object>(editeur.Rotate);
@@ -147,11 +140,6 @@ namespace PolyPaint.VueModeles
             {
                 OutilSelectionne = editeur.OutilSelectionne;
             }                
-            else if (e.PropertyName == "PointeSelectionnee")
-            {
-                PointeSelectionnee = editeur.PointeSelectionnee;
-                AjusterPointe();
-            }
             else // e.PropertyName == "TailleTrait"
             {               
                 AjusterPointe();
@@ -165,9 +153,9 @@ namespace PolyPaint.VueModeles
         /// </summary>
         private void AjusterPointe()
         {
-            AttributsDessin.StylusTip = (editeur.PointeSelectionnee == "ronde") ? StylusTip.Ellipse : StylusTip.Rectangle;
-            AttributsDessin.Width = (editeur.PointeSelectionnee == "verticale") ? 1 : editeur.TailleTrait;
-            AttributsDessin.Height = (editeur.PointeSelectionnee == "horizontale") ? 1 : editeur.TailleTrait;
+            AttributsDessin.StylusTip = StylusTip.Ellipse;
+            AttributsDessin.Width = editeur.TailleTrait;
+            AttributsDessin.Height = editeur.TailleTrait;
         }
     }
 }
