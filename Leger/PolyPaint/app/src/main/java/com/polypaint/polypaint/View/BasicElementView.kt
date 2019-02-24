@@ -126,11 +126,11 @@ open class BasicElementView: RelativeLayout {
         //first_line.text = txt.toString() + "onTouchListenerResizeButton"
 
         when(event.action){
-            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDownResize"
+            MotionEvent.ACTION_DOWN -> {first_line.text = "ActionDownResize"
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
-            MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMoveResize"
+            MotionEvent.ACTION_MOVE -> {first_line.text = "ActionMoveResize"
                 val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
                 val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
 
@@ -148,5 +148,4 @@ open class BasicElementView: RelativeLayout {
         }
         true
     }
-
 }

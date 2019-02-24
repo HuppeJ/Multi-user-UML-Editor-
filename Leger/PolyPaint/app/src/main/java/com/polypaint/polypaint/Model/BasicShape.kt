@@ -5,7 +5,7 @@ import com.polypaint.polypaint.R
 import android.view.LayoutInflater
 
 
-open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var links: Array<String?>) {
+open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var links: ArrayList<String?>) {
 //    private var inflater : LayoutInflater? = null
 
     init {

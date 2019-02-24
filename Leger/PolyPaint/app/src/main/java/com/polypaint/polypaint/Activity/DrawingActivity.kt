@@ -4,35 +4,37 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.polypaint.polypaint.Enum.AccessibilityTypes
+import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.View.ClassView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
 
+
 class DrawingActivity : AppCompatActivity(){
-    // private var parentRelativeLayout : RelativeLayout? = null
     private var inflater : LayoutInflater? = null
-    private var childIndexCount : Int = 0
-    public var childSelected : Int = 0
+    private var canevas : Canevas = defaultInit()
+    private var mapElemShape : HashMap<BasicElementView, BasicShape> = hashMapOf()
 
 
+    private fun defaultInit() : Canevas{
 
-    //TODO: déplacer dans object contenant tous les eventListeners possible
-    private var onTouchListener = View.OnTouchListener { v, event ->
-        //v.x = event.rawX - v.width/2 - parent_relative_layout!!.x
-        //v.y = event.rawY - v.height/2 - parent_relative_layout!!.y
+        /*var shapeArray = ArrayList<BasicShape>()
+        var mShapeStyle = ShapeStyle(Coordinates(100.0,100.0), 300.0, 100.0, 0.0, "white", 0, "white")
+        var mBasicShape1 = BasicShape("1", 0, "defaultShape1", mShapeStyle, ArrayList<String?>())
 
-        childSelected = v.id
+        shapeArray.add(mBasicShape1)*/
 
-        v.requestFocus()
-        true
+        return Canevas("default","default name","aa-author", "aa-owner",
+                    2, null, ArrayList<BasicShape>(), ArrayList<Link>())
     }
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate (savedInstanceState: Bundle?) {
@@ -43,43 +45,73 @@ class DrawingActivity : AppCompatActivity(){
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        var addButton: Button = findViewById(R.id.add_button)
-        addButton.setOnClickListener {
-
-            val mBasicElem = BasicElementView(this)
-
-            //mBasicElem.id = childIndexCount
-            val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-            //mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
-
-            mBasicElem.addView(viewToAdd)
-
-            mBasicElem.setOnTouchListener(onTouchListener)
-            parent_relative_layout?.addView(mBasicElem)
-            //childIndexCount++
+        add_button.setOnClickListener {
+            addBasicElementOnCanevas()
+            //TODO: Send to all others the event here
         }
 
-        var addClassButton: Button = findViewById(R.id.class_button)
-        addClassButton.setOnClickListener {
-
-            val mClassView = ClassView(this)
-
-            //mBasicElem.id = childIndexCount
-            val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-            //mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
-            mClassView.addView(viewToAdd)
-
-            mClassView.setOnTouchListener(onTouchListener)
-            //parent_relative_layout?.addView(mBasicElem, childIndexCount)
-            parent_relative_layout?.addView(mClassView)
-            //childIndexCount++
+        class_button.setOnClickListener {
+            addClassViewOnCanevas()
         }
 
         clear_canvas_button.setOnClickListener {
             parent_relative_layout?.removeAllViews()
-            //val txt = parent_relative_layout?.getChildAt(childSelected)!!.first_line.text
-            //parent_relative_layout?.getChildAt(childSelected )!!.first_line.text = txt.toString() + "3"
         }
+
+        free_text_button.setOnClickListener {
+            syncLayoutFromCanevas()
+        }
+    }
+
+    private fun addBasicElementOnCanevas(){
+
+        var mShapeStyle = ShapeStyle(Coordinates(100.0,100.0), 400.0, 300.0, 0.0, "white", 0, "white")
+        //TODO : Request uuid
+        var mBasicShape = BasicShape("1", 0, "defaultShape1", mShapeStyle, ArrayList<String?>())
+
+
+        val mBasicElem = BasicElementView(this)
+        val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
+        mBasicElem.addView(viewToAdd)
+
+        mapElemShape.put(mBasicElem, mBasicShape)
+
+        canevas.addShape(mBasicShape)
+        parent_relative_layout?.addView(mBasicElem)
+    }
+
+    private fun addClassViewOnCanevas(){
+        val mClassView = ClassView(this)
+        val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
+        mClassView.addView(viewToAdd)
+
+        parent_relative_layout?.addView(mClassView)
+    }
+
+
+    private fun syncLayoutFromCanevas(){
+        Log.d("canvas",""+canevas.shapes.size)
+        Log.d("layout",""+parent_relative_layout.childCount)
+        //if(canevas.shapes.size == parent_relative_layout.childCount)
+
+        //sync view based on view layout params
+        for (view in mapElemShape.keys){
+
+            //TODO : Width and Height Not refreshing auto when called
+            /*
+            view.borderResizableLayout.layoutParams.width = (mapElemShape.getValue(view).shapeStyle.width).toInt()
+            view.borderResizableLayout.layoutParams.height = (mapElemShape.getValue(view).shapeStyle.height).toInt()
+            view.borderResizableLayout.invalidate()
+            view.invalidate()
+            */
+
+            view.x = (mapElemShape.getValue(view).shapeStyle.coordinates.x).toFloat()
+            view.y = (mapElemShape.getValue(view).shapeStyle.coordinates.y).toFloat()
+            //view.borderResizableLayout.layoutParams.width = 500
+            //view.borderResizableLayout.layoutParams.height = 500
+
+        }
+        //parent_relative_layout.invalidate()
     }
 
     /*
