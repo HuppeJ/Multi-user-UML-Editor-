@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
+import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape
@@ -87,8 +88,12 @@ open class BasicElementView: RelativeLayout {
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
-            MotionEvent.ACTION_UP -> {//first_line.text = "ActionUp"
-                //isElementSelected = false
+            MotionEvent.ACTION_UP -> { first_line.text = "ActionUp"
+                val activity: AppCompatActivity = context as AppCompatActivity
+                if(activity is DrawingActivity){
+                    val drawingActivity : DrawingActivity = activity as DrawingActivity
+                    drawingActivity.syncCanevasFromLayout()
+                }
             }
         }
         true
@@ -132,14 +137,23 @@ open class BasicElementView: RelativeLayout {
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
-            MotionEvent.ACTION_MOVE -> {first_line.text = "ActionMoveResize"
+            MotionEvent.ACTION_MOVE -> {
+                first_line.text = "ActionMoveResize"
                 val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
                 val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
 
-                resize(newWidth.toInt(),newHeight.toInt())
+                resize(newWidth.toInt(), newHeight.toInt())
 
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
+            }
+            MotionEvent.ACTION_UP -> {
+                first_line.text = "ActionUpResize"
+                val activity: AppCompatActivity = context as AppCompatActivity
+                if(activity is DrawingActivity){
+                    val drawingActivity : DrawingActivity = activity as DrawingActivity
+                    drawingActivity.syncCanevasFromLayout()
+                }
             }
         }
         true

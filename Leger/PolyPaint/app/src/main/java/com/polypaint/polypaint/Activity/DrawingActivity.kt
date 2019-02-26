@@ -83,8 +83,6 @@ class DrawingActivity : AppCompatActivity(){
 
         ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
 
-
-
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         add_button.setOnClickListener {
@@ -123,8 +121,6 @@ class DrawingActivity : AppCompatActivity(){
         val basicShape: BasicShape = addBasicShapeOnCanevas()
         val basicElementView: BasicElementView = addBasicElementOnCanevas()
         ViewShapeHolder.getInstance().map.put(basicElementView, basicShape)
-
-
 
         val gson = Gson()
         val response :Response = Response(UserHolder.getInstance().username, basicShape)
@@ -169,9 +165,6 @@ class DrawingActivity : AppCompatActivity(){
 
 
     private fun syncLayoutFromCanevas(){
-        //Log.d("canvas",""+ViewShapeHolder.getInstance().canevas.shapes.size)
-        //Log.d("layout",""+parent_relative_layout.childCount)
-        
         for (view in ViewShapeHolder.getInstance().map.keys){
             val basicShape = ViewShapeHolder.getInstance().map.getValue(view)
             view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
@@ -179,13 +172,10 @@ class DrawingActivity : AppCompatActivity(){
             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
         }
     }
-    private fun syncCanevasFromLayout(){
-        //Log.d("canvas",""+ViewShapeHolder.getInstance().canevas.shapes.size)
-        //Log.d("layout",""+parent_relative_layout.childCount)
 
+    public fun syncCanevasFromLayout(){
         for (shape in ViewShapeHolder.getInstance().map.inverse().keys){
             val basicElem = ViewShapeHolder.getInstance().map.inverse().getValue(shape)
-
             shape.shapeStyle.coordinates.x = (basicElem.x).toDouble()
             shape.shapeStyle.coordinates.y = (basicElem.y).toDouble()
             shape.shapeStyle.width = basicElem.borderResizableLayout.width.toDouble()
