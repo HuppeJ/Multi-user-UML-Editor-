@@ -33,31 +33,19 @@ class ClassView(context: Context): BasicElementView(context) {
         linearLayoutCompat3.layoutParams.height = (3*mMinimumHeight/7).toInt()
     }
 
-     override var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
-         when(event.action){
-            MotionEvent.ACTION_DOWN -> {first_line.text = "ActionDownResize"
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
-            }
-            MotionEvent.ACTION_MOVE -> {first_line.text = "ActionMoveResize"
-                val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
-                val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
-
-                if(newWidth >= mMinimumWidth){
-                    borderResizableLayout.layoutParams.width = (newWidth).toInt()
-                }
-
-                if(newHeight >= mMinimumHeight){
-                    borderResizableLayout.layoutParams.height = (newHeight).toInt()
-                    linearLayoutCompat.layoutParams.height = (newHeight/7).toInt()
-                    linearLayoutCompat2.layoutParams.height = (3 * newHeight / 7).toInt()
-                    linearLayoutCompat3.layoutParams.height = (3 * newHeight / 7).toInt()
-                }
-
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
-            }
+    override fun resize(newWidth:Int, newHeight:Int){
+        if(newWidth >= mMinimumWidth){
+            borderResizableLayout.layoutParams.width = newWidth
         }
-        true
+
+        if(newHeight >= mMinimumHeight){
+            borderResizableLayout.layoutParams.height = newHeight
+            linearLayoutCompat.layoutParams.height = (newHeight / 7)
+            linearLayoutCompat2.layoutParams.height = (3 * newHeight / 7)
+            linearLayoutCompat3.layoutParams.height = (3 * newHeight / 7)
+        }
+
+        borderResizableLayout.requestLayout()
+        requestLayout()
     }
 }
