@@ -30,7 +30,6 @@ import kotlinx.android.synthetic.main.basic_element.view.*
 
 class DrawingActivity : AppCompatActivity(){
     private var inflater : LayoutInflater? = null
-    //private var canevas : Canevas = defaultInit()
 
     private var drawer: Drawer? = null
 
@@ -112,28 +111,28 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun addBasicElementOnCanevas(): BasicElementView {
-        val mBasicElem = BasicElementView(this)
+        val basicElem = BasicElementView(this)
         val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-        mBasicElem.addView(viewToAdd)
-        parent_relative_layout?.addView(mBasicElem)
+        basicElem.addView(viewToAdd)
+        parent_relative_layout?.addView(basicElem)
 
-        return mBasicElem
+        return basicElem
     }
     private fun addBasicShapeOnCanevas() : BasicShape{
-        var mShapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
+        var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
         //TODO : Request uuid
-        var mBasicShape = BasicShape("1", 0, "defaultShape1", mShapeStyle, ArrayList<String?>())
-        ViewShapeHolder.getInstance().canevas.addShape(mBasicShape)
+        var basicShape = BasicShape("1", 0, "defaultShape1", shapeStyle, ArrayList<String?>())
+        ViewShapeHolder.getInstance().canevas.addShape(basicShape)
 
-        return mBasicShape
+        return basicShape
     }
 
     private fun addClassViewOnCanevas(){
-        val mClassView = ClassView(this)
+        val classView = ClassView(this)
         val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-        mClassView.addView(viewToAdd)
+        classView.addView(viewToAdd)
 
-        parent_relative_layout?.addView(mClassView)
+        parent_relative_layout?.addView(classView)
     }
 
 
