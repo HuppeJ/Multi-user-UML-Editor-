@@ -31,6 +31,7 @@ import com.polypaint.polypaint.Activity.LoginActivity
 import com.polypaint.polypaint.Adapter.MessageListAdapter
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Holder.MessagesHolder
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Model.Message
 import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.Model.User
@@ -55,7 +56,7 @@ class MessageListFragment: Fragment(){
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        username = activity?.intent?.getStringExtra("username")
+        username = UserHolder.getInstance().username
         adapter = MessageListAdapter(context, messages, username!!)
     }
 

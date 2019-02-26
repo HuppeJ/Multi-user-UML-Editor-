@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Activity.CreateDrawingActivity">
+
+    <include layout="@layout/toolbar"
+             android:layout_width="match_parent"
+             android:layout_height="?attr/actionBarSize" android:id="@+id/include"/>
+
+    <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:minHeight="48dp"
+            android:background="#ffffff"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            android:id="@+id/linearLayout"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/include"
+            app:layout_constraintVertical_bias="0.032">
+
+        <EditText
+                android:id="@+id/drawing_name_text"
+                android:hint="Drawing name"
+                android:background="@android:color/transparent"
+                android:inputType="textPersonName"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:maxLines="6"/>
+    </LinearLayout>
+
+
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="301dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp" android:id="@+id/radioGroup" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        <RadioButton android:id="@+id/radio_public"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Public"/>
+        <RadioButton android:id="@+id/radio_private"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Private"/>
+    </RadioGroup>
+
+
+    <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:minHeight="48dp"
+            android:background="#ffffff"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            android:id="@+id/linearLayout2" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup">
+
+        <EditText
+                android:id="@+id/drawing_password_text"
+                android:hint="Password (Optionnal)"
+                android:background="@android:color/transparent"
+                android:inputType="textPassword"
+                android:layout_gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:maxLines="6" tools:layout_editor_absoluteY="248dp" tools:layout_editor_absoluteX="215dp"/>
+    </LinearLayout>
+
+    <Button
+            android:id="@+id/create_drawing_button"
+            android:text="Create drawing"
+            android:textSize="14dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:layout_width="80dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+    />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

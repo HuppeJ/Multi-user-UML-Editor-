@@ -30,6 +30,9 @@
                   android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".Activity.CreateUserActivity"
                   android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".Activity.DrawingActivity"/>
+        <activity android:name=".Activity.GalleryActivity"/>
+        <activity android:name=".Activity.CreateDrawingActivity"/>
 
     </application>
 

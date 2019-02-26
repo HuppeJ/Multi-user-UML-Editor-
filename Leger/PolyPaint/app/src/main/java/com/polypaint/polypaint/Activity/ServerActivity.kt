@@ -25,7 +25,7 @@ class ServerActivity : AppCompatActivity() {
 
     fun onGo(view: View) {
         val app = application as PolyPaint
-        val serverUrlView: EditText = findViewById(R.id.edittext_server_url)
+        val serverUrlView: EditText = this.findViewById(R.id.edittext_server_url)
 
         app.uri = serverUrlView.text.toString().trim()
 

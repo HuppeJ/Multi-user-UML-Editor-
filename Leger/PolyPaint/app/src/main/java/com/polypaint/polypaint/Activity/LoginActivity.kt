@@ -20,6 +20,7 @@ import com.polypaint.polypaint.R
 import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Socket.SocketConstants
 import java.lang.RuntimeException
 import java.net.URISyntaxException
@@ -127,8 +128,8 @@ class LoginActivity:Activity(){
         val gson = Gson()
         val obj: Response = gson.fromJson(it[0].toString())
         if(obj.isLoginSuccessful){
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra("username", username)
+            UserHolder.getInstance().username = username
+            val intent = Intent(this, GalleryActivity::class.java)
             startActivity(intent)
         } else {
             runOnUiThread{
