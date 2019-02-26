@@ -1,14 +1,17 @@
-﻿using PolyPaint.Templates;
+﻿using PolyPaint.CustomInk;
+using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
+using System.Windows.Ink;
+using System.Windows.Input;
 
 namespace PolyPaint.Services
 {
     class DrawingService: ConnectionService
     {
-        public event Action<BasicShape> AddStroke;
-        public event Action<BasicShape> UpdateStroke;
         public event Action<string> JoinCanvasRoom;
+        public event Action<CustomStroke> NewStroke;
+        public event Action<CustomStroke> UpdateStroke;
 
         public DrawingService()
         {
@@ -28,7 +31,7 @@ namespace PolyPaint.Services
             {
                 BasicShape updatedStroke = serializer.Deserialize<BasicShape>((string)data);
 
-                UpdateStroke?.Invoke(updatedStroke);
+                UpdateStroke?.Invoke(createStroke(updatedStroke));
             });
         }
 
@@ -51,5 +54,42 @@ namespace PolyPaint.Services
 
             socket.Emit("canvasUpdateTest", serializer.Serialize(updatedShape));
         }
+
+        private CustomStroke createStroke(BasicShape basicShape)
+        {
+            StylusPointCollection points = new StylusPointCollection();
+            points.Add(new StylusPoint(basicShape.shapeStyle.coordinates.x, basicShape.shapeStyle.coordinates.y));
+
+            CustomStroke customStroke;
+
+            switch (basicShape.type)
+            {
+                case 0:
+                    customStroke = new ClassStroke(points);
+                    break;
+                case 1:
+                    customStroke = new ActivityStroke(points);
+                    break;
+                case 2:
+                    customStroke = new ArtifactStroke(points);
+                    break;
+                case 3:
+                    customStroke = new ActorStroke(points);
+                    break;
+                //case 4:
+                //    customStroke = new CommentStroke(points);
+                //    break;
+                //case 5:
+                //    customStroke = new PhaseStroke(points);
+                //    break;
+                default:
+                    customStroke = new ClassStroke(points);
+                    break;
+
+            }
+
+            return customStroke;
+        }
+
     }
 }

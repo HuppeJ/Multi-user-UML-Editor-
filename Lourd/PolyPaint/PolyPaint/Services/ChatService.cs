@@ -1,7 +1,5 @@
 ﻿using System;
 using PolyPaint.Modeles;
-using Quobject.SocketIoClientDotNet.Client;
-using System.Web.Script.Serialization;
 
 namespace PolyPaint.Services
 {

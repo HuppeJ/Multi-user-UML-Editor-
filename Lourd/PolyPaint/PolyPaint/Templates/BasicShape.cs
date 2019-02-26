@@ -2,7 +2,7 @@
 
 namespace PolyPaint.Templates
 {
-    class BasicShape
+    public class BasicShape
     {
         public string id { get; set; }
         public int type { get; set; }

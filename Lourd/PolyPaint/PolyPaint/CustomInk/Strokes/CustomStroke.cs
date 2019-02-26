@@ -5,11 +5,13 @@ using System.Windows;
 using System;
 using System.Windows.Media.Imaging;
 using System.Globalization;
+using PolyPaint.Templates;
 
 namespace PolyPaint.CustomInk
 {
     public abstract class CustomStroke : Stroke
     {
+
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
             Point lastPoint = pts[pts.Count - 1].ToPoint();

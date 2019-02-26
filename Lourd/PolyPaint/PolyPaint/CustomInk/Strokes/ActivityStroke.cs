@@ -12,7 +12,6 @@ namespace PolyPaint.CustomInk
     {
         public ActivityStroke(StylusPointCollection pts) : base(pts)
         {
-
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)

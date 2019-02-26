@@ -1,5 +1,4 @@
-﻿using PolyPaint.Enums;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
@@ -9,9 +8,11 @@ namespace PolyPaint.CustomInk
 {
     class CustomInkCanvas : InkCanvas
     {
-        CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
-        StrokeCollection clipboard = new StrokeCollection();
+        private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
+        private StrokeCollection clipboard;
+
+        #region StrokeType dependency property
         public string StrokeType
         {
             get { return (string)GetValue(StrokeTypeProperty); }
@@ -19,7 +20,9 @@ namespace PolyPaint.CustomInk
         }
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
           "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("class"));
+        #endregion
 
+        #region SelectedStrokes dependency property
         public StrokeCollection SelectedStrokes
         {
             get { return (StrokeCollection) GetValue(SelectedStrokesProperty); }
@@ -27,53 +30,21 @@ namespace PolyPaint.CustomInk
         }
         public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
           "SelectedStrokes", typeof(StrokeCollection), typeof(CustomInkCanvas), new PropertyMetadata(new StrokeCollection()));
-       
+        #endregion
 
         public CustomInkCanvas() : base()
         {
             // Use the custom dynamic renderer on the custom InkCanvas.
             DynamicRenderer = customRenderer;
-        }
 
-        public void PasteStrokes()
-        {
-            StrokeCollection strokes = GetSelectedStrokes();
-
-            if(strokes.Count == 0)
-            {
-                // strokes from clipboard will be pasted
-                strokes = clipboard;
-            } 
-
-            foreach (Stroke stroke in strokes)
-            {
-                Stroke newStroke = stroke.Clone();
-
-                // TODO : 2 options. 1- Avoir un compteur de Paste qui incremente a chaque Paste, le reinitialiser quand 
-                // nouveau OnSelectionChanged. 2- Coller au coin du canvas
-                // Voir quoi faire avec le client leger
-                Matrix translateMatrix = new Matrix();
-                translateMatrix.Translate(20.0, 20.0);
-                newStroke.Transform(translateMatrix, false);
-
-                Strokes.Add(newStroke);
-            }
-        }
-
-        public void CutStrokes()
-        {
-            StrokeCollection selection = GetSelectedStrokes();
-            // put selection in clipboard to be able to paste it
-            clipboard = selection;
-
-            // cut selection from canvas
-            CutSelection();
+            clipboard = new StrokeCollection();
         }
 
         protected override void OnSelectionChanged(EventArgs e) {
             SelectedStrokes = this.GetSelectedStrokes();
         }
 
+        #region OnStrokeCollected
         protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
         {
             // Remove the original stroke and add a custom stroke.
@@ -111,5 +82,45 @@ namespace PolyPaint.CustomInk
             InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
             base.OnStrokeCollected(args);
         }
+        #endregion
+
+        #region PasteStrokes
+        public void PasteStrokes()
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+
+            if (strokes.Count == 0)
+            {
+                // strokes from clipboard will be pasted
+                strokes = clipboard;
+            }
+
+            foreach (Stroke stroke in strokes)
+            {
+                Stroke newStroke = stroke.Clone();
+
+                // TODO : 2 options. 1- Avoir un compteur de Paste qui incremente a chaque Paste, le reinitialiser quand 
+                // nouveau OnSelectionChanged. 2- Coller au coin du canvas
+                // Voir quoi faire avec le client leger
+                Matrix translateMatrix = new Matrix();
+                translateMatrix.Translate(20.0, 20.0);
+                newStroke.Transform(translateMatrix, false);
+
+                Strokes.Add(newStroke);
+            }
+        }
+        #endregion
+
+        #region CutStrokes
+        public void CutStrokes()
+        {
+            StrokeCollection selection = GetSelectedStrokes();
+            // put selection in clipboard to be able to paste it
+            clipboard = selection;
+
+            // cut selection from canvas
+            CutSelection();
+        }
+        #endregion
     }
 }

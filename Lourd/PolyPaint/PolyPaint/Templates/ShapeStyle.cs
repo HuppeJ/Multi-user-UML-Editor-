@@ -1,6 +1,6 @@
 ﻿namespace PolyPaint.Templates
 {
-    class ShapeStyle
+    public class ShapeStyle
     {
         public Coordinates coordinates { get; set; }
         public double width { get; set; }
