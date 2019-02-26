@@ -19,6 +19,7 @@ namespace PolyPaint.VueModeles
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private ConnectionService connectionService;
         private ChatService chatService;
         private IDialogService dialogService;
         private TaskFactory ctxTaskFactory;
@@ -106,13 +107,24 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _connectCommand ?? (_connectCommand = new RelayCommand<object>(chatService.Connect, CanConnect));
+                return _connectCommand ?? (_connectCommand = new RelayCommand<object>(connectionService.Connect, CanConnect));
             }
         }
 
         private bool CanConnect(object o)
         {
-            return !IsConnected;// && UserName.Length >= 2;
+            return !IsConnected;
+        }
+        #endregion
+
+        #region Initialize Chat Command
+        private ICommand _initializeChatCommand;
+        public ICommand InitializeChatCommand
+        {
+            get
+            {
+                return _initializeChatCommand ?? (_initializeChatCommand = new RelayCommand<object>(chatService.Initialize));
+            }
         }
         #endregion
 
@@ -339,12 +351,13 @@ namespace PolyPaint.VueModeles
         public MainWindowViewModel(IDialogService diagSvc)
         {
             dialogService = diagSvc;
+            connectionService = new ConnectionService();
             chatService = new ChatService();
             ctxTaskFactory = new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext());
 
-            chatService.Connection += Connection;
-            chatService.UserCreation += UserCreation;
-            chatService.UserLogin += UserLogin;
+            connectionService.Connection += Connection;
+            connectionService.UserCreation += UserCreation;
+            connectionService.UserLogin += UserLogin;
             chatService.NewMessage += NewMessage;
 
             rooms.Add(new Room { name = "Everyone" });

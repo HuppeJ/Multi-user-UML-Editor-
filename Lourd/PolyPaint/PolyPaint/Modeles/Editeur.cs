@@ -38,19 +38,6 @@ namespace PolyPaint.Modeles
             set { outilSelectionne = value; ProprieteModifiee(); }
         }
 
-        // Forme de la pointe du crayon
-        private string pointeSelectionnee = "ronde";
-        public string PointeSelectionnee
-        {
-            get { return pointeSelectionnee; }
-            set
-            {
-                OutilSelectionne = "crayon";
-                pointeSelectionnee = value;                                
-                ProprieteModifiee();
-            }
-        }
-
         // Couleur des traits tracés par le crayon.
         private string couleurSelectionnee = "Black";
         public string CouleurSelectionnee
@@ -123,9 +110,6 @@ namespace PolyPaint.Modeles
             }
             catch { }         
         }
-        
-        // On assigne une nouvelle forme de pointe passée en paramètre.
-        public void ChoisirPointe(string pointe) => PointeSelectionnee = pointe;
 
         // L'outil actif devient celui passé en paramètre.
         public void ChoisirOutil(string outil) => OutilSelectionne = outil;
