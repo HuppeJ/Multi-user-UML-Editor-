@@ -11,8 +11,8 @@
     }
 
     function testSocket() {
-        var socket = io.connect('http://localhost:8080');
-        // var socket = io.connect('https://projet-3-228722.appspot.com/');
+        // var socket = io.connect('http://localhost:8080');
+        var socket = io.connect('https://projet-3-228722.appspot.com/');
 
         socket.on('connect', onConnect);
         socket.on('hello', onHello);
@@ -41,19 +41,11 @@
 			// socket.on("getChatroomClientsResponse", response);
 
 
-            socket.emit("joinDrawingTest");
-            socket.on('joinDrawingTestResponse', response);
+            socket.emit("joinCanvasTest");
+            socket.emit("CanvasUpdateTest", "Test");
 
-            socket.emit("drawingUpdateTest", "TESTING");
-            socket.on('drawingUpdateTestResponse', response);
+            socket.on('CanvasUpdateTestResponse', response);
 
-
-            
-            socket.emit("drawingUpdateTest", "TESTING");
-            socket.on('drawingUpdateTestResponse', response);
-
-            socket.emit("drawingUpdateTest", "TESTING");
-            socket.on('drawingUpdateTestResponse', response);
         }
 
 
