@@ -19,6 +19,12 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
+    <i:Interaction.Triggers>
+        <i:EventTrigger>
+            <i:InvokeCommandAction Command="{Binding InitializeDrawingCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="336" Margin="200,60,200,41">
         <Grid>
             <Button Content="DrawingView" Margin="25,246,25,58" Command="{Binding DrawingViewCommand}" Width="150"/>
