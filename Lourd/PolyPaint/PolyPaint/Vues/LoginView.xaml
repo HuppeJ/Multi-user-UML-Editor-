@@ -26,6 +26,7 @@
     <i:Interaction.Triggers>
         <i:EventTrigger>
             <i:InvokeCommandAction Command="{Binding ConnectCommand}"/>
+            <i:InvokeCommandAction Command="{Binding InitializeChatCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
