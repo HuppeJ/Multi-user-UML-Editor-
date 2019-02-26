@@ -8,11 +8,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
+import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Activity.DrawingActivity
+import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
 import kotlinx.android.synthetic.main.basic_element.view.*
 
 
@@ -168,6 +171,14 @@ open class BasicElementView: RelativeLayout {
         }
         borderResizableLayout.requestLayout()
         requestLayout()
+    }
+
+    private fun emitUpdate(){
+        val activity: AppCompatActivity = context as AppCompatActivity
+        val app: PolyPaint = activity.application as PolyPaint
+        val socket: Socket? = app.socket
+        val basicShape: BasicShape = ViewShapeHolder.getInstance().map.getValue(this)
+        socket?.emit(SocketConstants.UPDATE_FORMS, basicShape)
     }
 
 }

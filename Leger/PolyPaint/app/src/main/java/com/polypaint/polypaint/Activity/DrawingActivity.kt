@@ -113,6 +113,7 @@ class DrawingActivity : AppCompatActivity(){
         socket = app.socket
         socket?.on(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
         socket?.on(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
+        socket?.on(SocketConstants.FORMS_UPDATED, onFormsUpdated)
 
         socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
     }
@@ -120,7 +121,7 @@ class DrawingActivity : AppCompatActivity(){
     private fun addOnCanevas(){
         val basicShape: BasicShape = addBasicShapeOnCanevas()
         val basicElementView: BasicElementView = addBasicElementOnCanevas()
-        ViewShapeHolder.getInstance().map.put(basicElementView, basicShape)
+        ViewShapeHolder.getInstance().map.put(basicElementView, basicShape.id)
 
         val gson = Gson()
         val response :Response = Response(UserHolder.getInstance().username, basicShape)
@@ -132,7 +133,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun addOnCanevas(basicShape: BasicShape){
-        ViewShapeHolder.getInstance().map.put(addBasicElementOnCanevas(), basicShape)
+        ViewShapeHolder.getInstance().map.put(addBasicElementOnCanevas(), basicShape.id)
         syncLayoutFromCanevas()
     }
 
@@ -174,8 +175,8 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     public fun syncCanevasFromLayout(){
-        for (shape in ViewShapeHolder.getInstance().map.inverse().keys){
-            val basicElem = ViewShapeHolder.getInstance().map.inverse().getValue(shape)
+        for (shape in ViewShapeHolder.getInstance().canevas.shapes){
+            val basicElem = ViewShapeHolder.getInstance().map.inverse().getValue(shape.id)
             shape.shapeStyle.coordinates.x = (basicElem.x).toDouble()
             shape.shapeStyle.coordinates.y = (basicElem.y).toDouble()
             shape.shapeStyle.width = basicElem.borderResizableLayout.width.toDouble()
@@ -201,6 +202,21 @@ class DrawingActivity : AppCompatActivity(){
 
     private var onJoinCanvas: Emitter.Listener = Emitter.Listener {
         Log.d("joinCanvas", it.get(0).toString())
+    }
+
+    private var onFormsUpdated: Emitter.Listener = Emitter.Listener {
+        Log.d("onFormsUpdated", it.get(0).toString())
+
+        val gson = Gson()
+        val obj: Response = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            Log.d("formsUpdate", obj.username + obj.basicShape.name)
+            runOnUiThread {
+                ViewShapeHolder.getInstance().canevas.updateShape(obj.basicShape)
+                syncLayoutFromCanevas()
+            }
+        }
+
     }
 
     override fun onBackPressed() {

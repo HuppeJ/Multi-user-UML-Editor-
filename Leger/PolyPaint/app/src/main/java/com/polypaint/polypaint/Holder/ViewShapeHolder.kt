@@ -8,7 +8,7 @@ import com.polypaint.polypaint.Model.Link
 import com.polypaint.polypaint.View.BasicElementView
 
 class ViewShapeHolder(){
-    var map: BiMap<BasicElementView, BasicShape> = HashBiMap.create()
+    var map: BiMap<BasicElementView, String> = HashBiMap.create()
     var canevas : Canevas = Canevas("default","default name","aa-author", "aa-owner", 2, null, ArrayList<BasicShape>(), ArrayList<Link>())
     companion object {
         private val viewShapeHolder: ViewShapeHolder = ViewShapeHolder()
@@ -20,10 +20,10 @@ class ViewShapeHolder(){
 
     fun remove(basicShape: BasicShape){
         canevas.shapes.remove(basicShape)
-        map.inverse().remove(basicShape)
+        map.inverse().remove(basicShape.id)
     }
     fun remove(basicElementView: BasicElementView){
-        canevas.shapes.remove(map.getValue(basicElementView))
+        canevas.shapes.remove(canevas.findShape(map.getValue(basicElementView)))
         map.remove(basicElementView)
     }
     fun isSync(): Boolean{

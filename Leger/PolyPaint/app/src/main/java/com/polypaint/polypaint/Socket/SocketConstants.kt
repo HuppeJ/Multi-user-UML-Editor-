@@ -8,6 +8,9 @@ class SocketConstants{
         const val LOGIN_USER: String = "loginUser"
         const val LOGIN_USER_RESPONSE: String = "loginUserResponse"
 
+        const val UPDATE_FORMS: String = " updateForms"
+        const val FORMS_UPDATED: String = "formsUpdated"
+
 
         const val JOIN_CANVAS_TEST: String = "joinCanvasTest"
         const val JOIN_CANVAS_TEST_RESPONSE: String = "joinCanvasTestResponse"
