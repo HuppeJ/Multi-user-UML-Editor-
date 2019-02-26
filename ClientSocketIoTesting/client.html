@@ -31,15 +31,31 @@
 			
 			//var myObject = "{\"username\": \"TEST\", \"password\": \"Mondga\" }";
 
-            socket.emit("createChatroom", "TESTING");
-            socket.on("createChatroomResponse", response);
+            // socket.emit("createChatroom", "TESTING");
+            // socket.on("createChatroomResponse", response);
             //let temp = Date.now();
             //socket.emit("sendMessage", temp);
 
             //socket.on('messageSent', response);  
-			socket.emit("getChatroomClients", "TESTING");
-			socket.on("getChatroomClientsResponse", response);
+			// socket.emit("getChatroomClients", "TESTING");
+			// socket.on("getChatroomClientsResponse", response);
+
+
+            socket.emit("joinDrawingTest");
+            socket.on('joinDrawingTestResponse', response);
+
+            socket.emit("drawingUpdateTest", "TESTING");
+            socket.on('drawingUpdateTestResponse', response);
+
+
+            
+            socket.emit("drawingUpdateTest", "TESTING");
+            socket.on('drawingUpdateTestResponse', response);
+
+            socket.emit("drawingUpdateTest", "TESTING");
+            socket.on('drawingUpdateTestResponse', response);
         }
+
 
         function response(evt) {
             writeToScreen(evt);
