@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Ink;
+using System.Windows.Input;
 using System.Windows.Media;
 using PolyPaint.CustomInk;
 using PolyPaint.Modeles;

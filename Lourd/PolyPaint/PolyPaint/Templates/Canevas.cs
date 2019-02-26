@@ -2,7 +2,7 @@
 
 namespace PolyPaint.Templates
 {
-    class Canevas
+    public class Canevas
     {
         public string id { get; set; }
         public string name { get; set; }
