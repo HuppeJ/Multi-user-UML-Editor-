@@ -2,6 +2,7 @@ package com.polypaint.polypaint.Activity
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import co.zsmb.materialdrawerkt.builders.drawer
+import co.zsmb.materialdrawerkt.builders.footer
+import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
+import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
+import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.View.BasicElementView
@@ -22,6 +29,7 @@ class DrawingActivity : AppCompatActivity(){
     private var inflater : LayoutInflater? = null
     private var canevas : Canevas = defaultInit()
     private var mapElemShape : HashMap<BasicElementView, BasicShape> = hashMapOf()
+    private var drawer: Drawer? = null
 
 
     private fun defaultInit() : Canevas{
@@ -42,6 +50,37 @@ class DrawingActivity : AppCompatActivity(){
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         setContentView(R.layout.activity_drawing)
+
+        val activityToolbar : Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(activityToolbar)
+        drawer = drawer {
+            primaryItem("Gallery") {
+                icon = R.drawable.message_rectangle_r
+                onClick { _ ->
+                    false
+                }
+            }
+            primaryItem("Chat") {
+                icon = R.drawable.message_rectangle_r
+                onClick { _ ->
+                    val intent = Intent(this@DrawingActivity, ChatActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                selectable = false
+            }
+            footer{
+                secondaryItem("Settings") {
+                    icon = R.drawable.message_rectangle_r
+                }
+            }
+
+            toolbar = activityToolbar
+        }
+
+        canevas = intent.getSerializableExtra("canevas") as Canevas
+
+
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -109,7 +148,6 @@ class DrawingActivity : AppCompatActivity(){
             view.y = (mapElemShape.getValue(view).shapeStyle.coordinates.y).toFloat()
             //view.borderResizableLayout.layoutParams.width = 500
             //view.borderResizableLayout.layoutParams.height = 500
-
         }
         //parent_relative_layout.invalidate()
     }
