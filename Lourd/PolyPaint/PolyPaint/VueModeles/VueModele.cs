@@ -169,5 +169,16 @@ namespace PolyPaint.VueModeles
             AttributsDessin.Width = editeur.TailleTrait;
             AttributsDessin.Height = editeur.TailleTrait;
         }
+
+        #region Initialize DrawingService Command
+        private ICommand _initializeDrawingCommand;
+        public ICommand InitializeDrawingCommand
+        {
+            get
+            {
+                return _initializeDrawingCommand ?? (_initializeDrawingCommand = new RelayCommand<object>(drawingService.Initialize));
+            }
+        }
+        #endregion
     }
 }

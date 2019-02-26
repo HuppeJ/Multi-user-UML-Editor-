@@ -15,7 +15,7 @@ namespace PolyPaint.Services
 
         public DrawingService()
         {
-            int i = 0;
+            
         }
 
         public void Initialize(object o)
