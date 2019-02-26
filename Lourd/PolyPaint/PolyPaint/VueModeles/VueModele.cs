@@ -81,8 +81,6 @@ namespace PolyPaint.VueModeles
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
             drawingService = new DrawingService();
-            // TODO a appeler plus tot
-            drawingService.Initialize(null);
 
             drawingService.AddStroke += AddStroke;
             drawingService.UpdateStroke += UpdateStroke;
