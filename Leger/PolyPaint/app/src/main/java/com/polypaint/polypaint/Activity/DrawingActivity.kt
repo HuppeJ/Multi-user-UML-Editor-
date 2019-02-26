@@ -122,6 +122,8 @@ class DrawingActivity : AppCompatActivity(){
         var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
         //TODO : Request uuid
         var basicShape = BasicShape("1", 0, "defaultShape1", shapeStyle, ArrayList<String?>())
+
+
         ViewShapeHolder.getInstance().canevas.addShape(basicShape)
 
         return basicShape
@@ -137,8 +139,8 @@ class DrawingActivity : AppCompatActivity(){
 
 
     private fun syncLayoutFromCanevas(){
-        Log.d("canvas",""+ViewShapeHolder.getInstance().canevas.shapes.size)
-        Log.d("layout",""+parent_relative_layout.childCount)
+        //Log.d("canvas",""+ViewShapeHolder.getInstance().canevas.shapes.size)
+        //Log.d("layout",""+parent_relative_layout.childCount)
         
         for (view in ViewShapeHolder.getInstance().map.keys){
             val basicShape = ViewShapeHolder.getInstance().map.getValue(view)
@@ -148,15 +150,16 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
     private fun syncCanevasFromLayout(){
-        Log.d("canvas",""+ViewShapeHolder.getInstance().canevas.shapes.size)
-        Log.d("layout",""+parent_relative_layout.childCount)
+        //Log.d("canvas",""+ViewShapeHolder.getInstance().canevas.shapes.size)
+        //Log.d("layout",""+parent_relative_layout.childCount)
 
         for (shape in ViewShapeHolder.getInstance().map.inverse().keys){
             val basicElem = ViewShapeHolder.getInstance().map.inverse().getValue(shape)
 
             shape.shapeStyle.coordinates.x = (basicElem.x).toDouble()
             shape.shapeStyle.coordinates.y = (basicElem.y).toDouble()
-            //shape.resize(basicElem.shapeStyle.width.toInt(), basicElem.shapeStyle.height.toInt())
+            shape.shapeStyle.width = basicElem.borderResizableLayout.width.toDouble()
+            shape.shapeStyle.height = basicElem.borderResizableLayout.height.toDouble()
         }
 
     }

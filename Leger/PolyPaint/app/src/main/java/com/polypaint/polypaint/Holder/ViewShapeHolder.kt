@@ -26,4 +26,7 @@ class ViewShapeHolder(){
         canevas.shapes.remove(map.getValue(basicElementView))
         map.remove(basicElementView)
     }
+    fun isSync(): Boolean{
+        return ViewShapeHolder.getInstance().map.keys.size == ViewShapeHolder.getInstance().canevas.shapes.size
+    }
 }
