@@ -7,4 +7,6 @@
     <color name="colorOutlineSendMessage">#64B5F6</color>
     <color name="colorReceivedMessage">#EFEBE9</color>
     <color name="colorOutlineReceivedMessage">#BCAAA4</color>
+    <color name="colorOutlineButtonDrawing">#333333</color>
+
 </resources>

@@ -12,10 +12,12 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import co.zsmb.materialdrawerkt.builders.drawer
+import co.zsmb.materialdrawerkt.builders.footer
 import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
 import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import co.zsmb.materialdrawerkt.draweritems.divider
 import com.github.nkzawa.socketio.client.Socket
+import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Model.Message
 import com.polypaint.polypaint.Adapter.MessageListAdapter
 import com.polypaint.polypaint.Adapter.RoomsListAdapter
@@ -26,30 +28,47 @@ import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Model.User
 
-
-
-
 class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListener{
     private var mMessageRecycler: androidx.recyclerview.widget.RecyclerView? = null
     private var mMessageAdapter: MessageListAdapter? = null
     private var messageList: ArrayList<Message> = ArrayList()
+    private var drawer: Drawer? = null
 
     override fun onCreate (savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
-
         setContentView(R.layout.activity_chat)
 
-        /*drawer {
-            primaryItem("Home") {}
-            divider {}
-            primaryItem("Users") {}
-            secondaryItem("Settings") {}
-            builder.withGenerateMiniDrawer(true)
-            generateMiniDrawer = true
-            toolbar = Toolbar(this@ChatActivity)
-        }*/
+        val activityToolbar : Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(activityToolbar)
+
+
+        drawer = drawer {
+            primaryItem("Gallery") {
+                icon = R.drawable.message_rectangle_r
+                onClick { _ ->
+                    val intent = Intent(this@ChatActivity, GalleryActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+            }
+            primaryItem("Chat") {
+                icon = R.drawable.message_rectangle_r
+                onClick { _ ->
+                    false
+                }
+            }
+
+            footer{
+                secondaryItem("Settings") {
+                    icon = R.drawable.message_rectangle_r
+                }
+            }
+
+            toolbar = activityToolbar
+        }
+        drawer?.setSelectionAtPosition(2, false)
 
         val ft = supportFragmentManager.beginTransaction()
         //ft.add(R.id.list_container, RoomsListFragment())
@@ -73,12 +92,17 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
     }
 
     override fun onBackPressed() {
-        val app = application as PolyPaint
-        val socket: Socket? = app.socket
-        socket?.disconnect()
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        startActivity(intent)
-        finish()
+        if(drawer!!.isDrawerOpen){
+            drawer?.closeDrawer()
+        } else {
+            super.onBackPressed()
+            /*val app = application as PolyPaint
+            val socket: Socket? = app.socket
+            socket?.disconnect()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()*/
+        }
     }
 }
