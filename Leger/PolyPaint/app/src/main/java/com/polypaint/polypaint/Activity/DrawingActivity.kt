@@ -48,6 +48,8 @@ class DrawingActivity : AppCompatActivity(){
         add_button.setOnClickListener {
             addBasicElementOnCanevas()
             //TODO: Send to all others the event here
+
+
         }
 
         class_button.setOnClickListener {
@@ -68,7 +70,6 @@ class DrawingActivity : AppCompatActivity(){
         var mShapeStyle = ShapeStyle(Coordinates(100.0,100.0), 400.0, 300.0, 0.0, "white", 0, "white")
         //TODO : Request uuid
         var mBasicShape = BasicShape("1", 0, "defaultShape1", mShapeStyle, ArrayList<String?>())
-
 
         val mBasicElem = BasicElementView(this)
         val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
@@ -92,26 +93,13 @@ class DrawingActivity : AppCompatActivity(){
     private fun syncLayoutFromCanevas(){
         Log.d("canvas",""+canevas.shapes.size)
         Log.d("layout",""+parent_relative_layout.childCount)
-        //if(canevas.shapes.size == parent_relative_layout.childCount)
-
-        //sync view based on view layout params
+        
         for (view in mapElemShape.keys){
-
-            //TODO : Width and Height Not refreshing auto when called
-            /*
-            view.borderResizableLayout.layoutParams.width = (mapElemShape.getValue(view).shapeStyle.width).toInt()
-            view.borderResizableLayout.layoutParams.height = (mapElemShape.getValue(view).shapeStyle.height).toInt()
-            view.borderResizableLayout.invalidate()
-            view.invalidate()
-            */
-
-            view.x = (mapElemShape.getValue(view).shapeStyle.coordinates.x).toFloat()
-            view.y = (mapElemShape.getValue(view).shapeStyle.coordinates.y).toFloat()
-            //view.borderResizableLayout.layoutParams.width = 500
-            //view.borderResizableLayout.layoutParams.height = 500
-
+            val basicShape = mapElemShape.getValue(view)
+            view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
+            view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
+            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
         }
-        //parent_relative_layout.invalidate()
     }
 
     /*

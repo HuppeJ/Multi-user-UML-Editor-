@@ -15,13 +15,10 @@ import kotlinx.android.synthetic.main.basic_element.view.*
 
 open class BasicElementView: RelativeLayout {
 
-    var isElementSelected : Boolean = false
-
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
     open var mMinimumWidth : Float = 300F
     open var mMinimumHeight : Float = 100F
-
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -134,13 +131,7 @@ open class BasicElementView: RelativeLayout {
                 val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
                 val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
 
-                if(newWidth >= mMinimumWidth){
-                    borderResizableLayout.layoutParams.width = (newWidth).toInt()
-                }
-
-                if(newHeight >= mMinimumHeight){
-                    borderResizableLayout.layoutParams.height = (newHeight).toInt()
-                }
+                resize(newWidth.toInt(),newHeight.toInt())
 
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
@@ -148,4 +139,16 @@ open class BasicElementView: RelativeLayout {
         }
         true
     }
+
+    open fun resize(newWidth:Int, newHeight:Int){
+        if(newWidth >= mMinimumWidth){
+            borderResizableLayout.layoutParams.width = newWidth
+        }
+        if(newHeight >= mMinimumHeight){
+            borderResizableLayout.layoutParams.height = newHeight
+        }
+        borderResizableLayout.requestLayout()
+        requestLayout()
+    }
+
 }
