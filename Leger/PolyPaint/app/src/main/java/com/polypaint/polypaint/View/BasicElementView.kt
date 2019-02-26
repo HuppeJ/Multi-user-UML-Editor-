@@ -8,7 +8,10 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
+import com.google.common.collect.BiMap
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
+import com.polypaint.polypaint.Holder.ViewShapeHolder
+import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
 
@@ -19,6 +22,7 @@ open class BasicElementView: RelativeLayout {
     var oldFrameRawY : Float = 0.0F
     open var mMinimumWidth : Float = 300F
     open var mMinimumHeight : Float = 100F
+
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -113,6 +117,8 @@ open class BasicElementView: RelativeLayout {
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
                 val parentView = v.parent.parent.parent as RelativeLayout
                 parentView.removeView(this)
+
+                ViewShapeHolder.getInstance().remove(this)
             }
         }
         true

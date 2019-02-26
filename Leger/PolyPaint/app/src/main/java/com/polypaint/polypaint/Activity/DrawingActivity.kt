@@ -22,10 +22,13 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
@@ -37,20 +40,12 @@ import kotlinx.android.synthetic.main.basic_element.view.*
 
 class DrawingActivity : AppCompatActivity(){
     private var inflater : LayoutInflater? = null
-    private var canevas : Canevas = defaultInit()
-    private var mapElemShape : HashMap<BasicElementView, BasicShape> = hashMapOf()
+
     private var drawer: Drawer? = null
     private var socket: Socket? = null
 
 
     private fun defaultInit() : Canevas{
-
-        /*var shapeArray = ArrayList<BasicShape>()
-        var mShapeStyle = ShapeStyle(Coordinates(100.0,100.0), 300.0, 100.0, 0.0, "white", 0, "white")
-        var mBasicShape1 = BasicShape("1", 0, "defaultShape1", mShapeStyle, ArrayList<String?>())
-
-        shapeArray.add(mBasicShape1)*/
-
         return Canevas("default","default name","aa-author", "aa-owner",
                     2, null, ArrayList<BasicShape>(), ArrayList<Link>())
     }
@@ -88,17 +83,15 @@ class DrawingActivity : AppCompatActivity(){
             toolbar = activityToolbar
         }
 
-        canevas = intent.getSerializableExtra("canevas") as Canevas
+        ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
 
 
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         add_button.setOnClickListener {
-            addBasicElementOnCanevas()
+            addOnCanevas()
             //TODO: Send to all others the event here
-
-
         }
 
         class_button.setOnClickListener {
@@ -109,10 +102,14 @@ class DrawingActivity : AppCompatActivity(){
             parent_relative_layout?.removeAllViews()
         }
 
+        phase_button.setOnClickListener {
+            syncCanevasFromLayout()
+        }
         free_text_button.setOnClickListener {
             syncLayoutFromCanevas()
         }
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -124,25 +121,15 @@ class DrawingActivity : AppCompatActivity(){
         socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
     }
 
-    private fun addBasicElementOnCanevas(){
-
-        var mShapeStyle = ShapeStyle(Coordinates(100.0,100.0), 400.0, 300.0, 0.0, "white", 0, "white")
-        //TODO : Request uuid
-        var mBasicShape = BasicShape("1", 0, "defaultShape1", mShapeStyle, ArrayList<String?>())
-
-        val mBasicElem = BasicElementView(this)
-        val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-        mBasicElem.addView(viewToAdd)
-
-        mapElemShape.put(mBasicElem, mBasicShape)
-
-        canevas.addShape(mBasicShape)
-        parent_relative_layout?.addView(mBasicElem)
+    private fun addOnCanevas(){
+        val basicShape: BasicShape = addBasicShapeOnCanevas()
+        val basicElementView: BasicElementView = addBasicElementOnCanevas()
+        ViewShapeHolder.getInstance().map.put(basicElementView, basicShape)
 
 
 
         val gson = Gson()
-        val response :Response = Response(UserHolder.getInstance().username, mBasicShape)
+        val response :Response = Response(UserHolder.getInstance().username, basicShape)
         val obj: String = gson.toJson(response)
         /*val obj: JsonObject = jsonObject(
             "username" to UserHolder.getInstance().username,
@@ -154,33 +141,78 @@ class DrawingActivity : AppCompatActivity(){
 */
         Log.d("sending", obj)
         socket?.emit(SocketConstants.CANVAS_UPDATE_TEST, obj)
+
+        syncLayoutFromCanevas()
+    }
+
+    private fun addOnCanevas(basicShape: BasicShape){
+        ViewShapeHolder.getInstance().map.put(addBasicElementOnCanevas(), basicShape)
+        syncLayoutFromCanevas()
+    }
+
+    private fun addBasicElementOnCanevas(): BasicElementView {
+        val basicElem = BasicElementView(this)
+        val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
+        basicElem.addView(viewToAdd)
+        parent_relative_layout?.addView(basicElem)
+
+        return basicElem
+    }
+    private fun addBasicShapeOnCanevas() : BasicShape{
+        var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
+        //TODO : Request uuid
+        var basicShape = BasicShape("1", 0, "defaultShape1", shapeStyle, ArrayList<String?>())
+
+
+        ViewShapeHolder.getInstance().canevas.addShape(basicShape)
+
+        return basicShape
     }
 
     private fun addClassViewOnCanevas(){
-        val mClassView = ClassView(this)
+        val classView = ClassView(this)
         val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-        mClassView.addView(viewToAdd)
+        classView.addView(viewToAdd)
 
-        parent_relative_layout?.addView(mClassView)
+        parent_relative_layout?.addView(classView)
     }
 
 
     private fun syncLayoutFromCanevas(){
-        Log.d("canvas",""+canevas.shapes.size)
-        Log.d("layout",""+parent_relative_layout.childCount)
+        //Log.d("canvas",""+ViewShapeHolder.getInstance().canevas.shapes.size)
+        //Log.d("layout",""+parent_relative_layout.childCount)
         
-        for (view in mapElemShape.keys){
-            val basicShape = mapElemShape.getValue(view)
+        for (view in ViewShapeHolder.getInstance().map.keys){
+            val basicShape = ViewShapeHolder.getInstance().map.getValue(view)
             view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
             view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
         }
+    }
+    private fun syncCanevasFromLayout(){
+        //Log.d("canvas",""+ViewShapeHolder.getInstance().canevas.shapes.size)
+        //Log.d("layout",""+parent_relative_layout.childCount)
+
+        for (shape in ViewShapeHolder.getInstance().map.inverse().keys){
+            val basicElem = ViewShapeHolder.getInstance().map.inverse().getValue(shape)
+
+            shape.shapeStyle.coordinates.x = (basicElem.x).toDouble()
+            shape.shapeStyle.coordinates.y = (basicElem.y).toDouble()
+            shape.shapeStyle.width = basicElem.borderResizableLayout.width.toDouble()
+            shape.shapeStyle.height = basicElem.borderResizableLayout.height.toDouble()
+        }
+
     }
 
     private var onCanvasUpdate: Emitter.Listener = Emitter.Listener {
         val gson = Gson()
         val obj: Response = gson.fromJson(it[0].toString())
         Log.d("canvasUpdate", obj.username+obj.basicShape.name)
+        runOnUiThread{
+            addOnCanevas(obj.basicShape)
+
+        }
+
     }
 
     private class Response(var username: String, var basicShape: BasicShape){}
@@ -193,7 +225,6 @@ class DrawingActivity : AppCompatActivity(){
         socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
         socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
     }
-
     /*
     override fun onBackPressed() {
         val intent = Intent(this, GalleryActivity::class.java)
