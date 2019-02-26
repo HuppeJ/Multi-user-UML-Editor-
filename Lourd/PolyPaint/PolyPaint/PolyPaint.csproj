@@ -187,6 +187,7 @@
     <Compile Include="Modeles\Room.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ChatService.cs" />
+    <Compile Include="Services\ConnectionService.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\IDialogService.cs" />
     <Compile Include="Utilitaires\BringNewItemIntoViewBehavior.cs" />
