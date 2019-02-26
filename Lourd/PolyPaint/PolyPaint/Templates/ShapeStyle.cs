@@ -9,5 +9,6 @@
         public string borderColor { get; set; }
         public int borderStyle { get; set; }
         public string backgroundColor { get; set; }
+        
     }
 }

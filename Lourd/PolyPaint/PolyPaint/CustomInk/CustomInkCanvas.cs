@@ -44,6 +44,9 @@ namespace PolyPaint.CustomInk
 
             clipboard = new StrokeCollection();
             drawingService = new DrawingService();
+            //drawingService.Initialize(null);
+            //drawingService.AddStroke += AddStroke;
+            //drawingService.UpdateStroke += UpdateStroke;
         }
 
         protected override void OnSelectionChanged(EventArgs e) {
@@ -80,7 +83,11 @@ namespace PolyPaint.CustomInk
             }
             Strokes.Add(customStroke);
 
-            drawingService.UpdateShape("id", 1, "strokeName", new ShapeStyle(), new List<string>());
+            Coordinates coordinates = new Coordinates(customStroke.StylusPoints[0].X, customStroke.StylusPoints[0].Y);
+            ShapeStyle shapeStyle = new ShapeStyle();
+            shapeStyle.coordinates = coordinates;
+
+            drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>());
 
             // Visual visual = this.GetVisualChild(this.Children.Count - 1);
 
@@ -92,6 +99,20 @@ namespace PolyPaint.CustomInk
             base.OnStrokeCollected(args);
         }
         #endregion
+
+        //private void AddStroke(CustomStroke newStroke)
+        //{
+        //    Console.WriteLine("add de vueModele en provenance du service :) ");
+            
+        //    Strokes.Add(newStroke);
+        //}
+
+        //private void UpdateStroke(CustomStroke newStroke)
+        //{
+        //    Console.WriteLine("update de vueModele en provenance du service :) ");
+        //    // ne add pas le trait pour vrai..
+        //    Strokes.Add(newStroke);
+        //}
 
         #region PasteStrokes
         public void PasteStrokes()

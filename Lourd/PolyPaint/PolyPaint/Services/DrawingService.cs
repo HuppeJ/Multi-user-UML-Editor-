@@ -11,8 +11,8 @@ namespace PolyPaint.Services
     class DrawingService: ConnectionService
     {
         public event Action<string> JoinCanvasRoom;
-        public event Action<CustomStroke> AddStroke;
-        public event Action<CustomStroke> UpdateStroke;
+        public event Action<Stroke> AddStroke;
+        public event Action<Stroke> UpdateStroke;
 
         public DrawingService()
         {
@@ -21,11 +21,13 @@ namespace PolyPaint.Services
 
         public void Initialize(object o)
         {
+            socket.Emit("joinCanvasTest");
+
             socket.On("joinCanvasTestResponse", (data) =>
             {
-                string joinCanvas = serializer.Deserialize<string>((string)data);
+                //string joinCanvas = serializer.Deserialize<string>((string)data);
 
-                JoinCanvasRoom?.Invoke(joinCanvas);
+                //JoinCanvasRoom?.Invoke(joinCanvas);
             });
 
             socket.On("canvasUpdateTestResponse", (data) =>
@@ -56,12 +58,12 @@ namespace PolyPaint.Services
             socket.Emit("canvasUpdateTest", serializer.Serialize(updatedShape));
         }
 
-        private CustomStroke createStroke(BasicShape basicShape)
+        private Stroke createStroke(BasicShape basicShape)
         {
             StylusPointCollection points = new StylusPointCollection();
             points.Add(new StylusPoint(basicShape.shapeStyle.coordinates.x, basicShape.shapeStyle.coordinates.y));
 
-            CustomStroke customStroke;
+            Stroke customStroke;
             StrokeTypes type = (StrokeTypes) basicShape.type;
 
             switch (type)
