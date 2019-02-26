@@ -34,8 +34,8 @@ new ChatSocketEvents(io, chatroomManager);
 import AuthenticationSocketEvents from "./services/Authentication/AuthenticationSocketEvents";
 new AuthenticationSocketEvents(io, userAccountManager);
 
-import DrawingSocketEvents from "./services/drawing/DrawingSocketEvents";
-new DrawingSocketEvents(io);
+import CanvasSocketEvents from "./services/canvas/CanvasSocketEvents";
+new CanvasSocketEvents(io);
 
 // Set up the Socket.io communication system
 io.on('connection', (client: any) => {
