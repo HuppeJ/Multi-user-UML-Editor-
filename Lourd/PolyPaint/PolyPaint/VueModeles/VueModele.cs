@@ -81,7 +81,10 @@ namespace PolyPaint.VueModeles
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
             drawingService = new DrawingService();
-            drawingService.NewStroke += AddStroke;
+            // TODO a appeler plus tot
+            drawingService.Initialize(null);
+
+            drawingService.AddStroke += AddStroke;
             drawingService.UpdateStroke += UpdateStroke;
 
             // On initialise les attributs de dessin avec les valeurs de départ du modèle.
@@ -90,6 +93,7 @@ namespace PolyPaint.VueModeles
             AjusterPointe();
 
             Traits = editeur.traits;
+            
             SelectedStrokes = editeur.selectedStrokes;
             
             // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.            
@@ -106,7 +110,7 @@ namespace PolyPaint.VueModeles
             
 
         }
-
+        
         private void AddStroke(CustomStroke newStroke)
         {
             Console.WriteLine("add de vueModele en provenance du service :) ");

@@ -1,4 +1,5 @@
 ﻿using PolyPaint.CustomInk;
+using PolyPaint.Enums;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace PolyPaint.Services
     class DrawingService: ConnectionService
     {
         public event Action<string> JoinCanvasRoom;
-        public event Action<CustomStroke> NewStroke;
+        public event Action<CustomStroke> AddStroke;
         public event Action<CustomStroke> UpdateStroke;
 
         public DrawingService()
@@ -61,25 +62,26 @@ namespace PolyPaint.Services
             points.Add(new StylusPoint(basicShape.shapeStyle.coordinates.x, basicShape.shapeStyle.coordinates.y));
 
             CustomStroke customStroke;
+            StrokeTypes type = (StrokeTypes) basicShape.type;
 
-            switch (basicShape.type)
+            switch (type)
             {
-                case 0:
+                case StrokeTypes.CLASS_SHAPE:
                     customStroke = new ClassStroke(points);
                     break;
-                case 1:
+                case StrokeTypes.ARTIFACT:
                     customStroke = new ActivityStroke(points);
                     break;
-                case 2:
+                case StrokeTypes.ACTIVITY:
                     customStroke = new ArtifactStroke(points);
                     break;
-                case 3:
+                case StrokeTypes.ROLE:
                     customStroke = new ActorStroke(points);
                     break;
-                //case 4:
+                //case StrokeTypes.COMMENT:
                 //    customStroke = new CommentStroke(points);
                 //    break;
-                //case 5:
+                //case StrokeTypes.PHASE:
                 //    customStroke = new PhaseStroke(points);
                 //    break;
                 default:

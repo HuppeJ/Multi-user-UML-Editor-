@@ -23,7 +23,7 @@ namespace PolyPaint.Modeles
         private StrokeCollection traitsRetires = new StrokeCollection();
 
         // StrokeType selected
-        private string selectedStrokeType = "class";
+        private string selectedStrokeType = "CLASS_SHAPE";
         public string SelectedStrokeType
         {
             get { return selectedStrokeType; }

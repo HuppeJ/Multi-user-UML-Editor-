@@ -1,4 +1,8 @@
-﻿using System;
+﻿using PolyPaint.Enums;
+using PolyPaint.Services;
+using PolyPaint.Templates;
+using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
@@ -11,6 +15,7 @@ namespace PolyPaint.CustomInk
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
         private StrokeCollection clipboard;
+        private DrawingService drawingService;
 
         #region StrokeType dependency property
         public string StrokeType
@@ -19,7 +24,7 @@ namespace PolyPaint.CustomInk
             set { SetValue(StrokeTypeProperty, value); }
         }
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
-          "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("class"));
+          "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("CLASS_SHAPE"));
         #endregion
 
         #region SelectedStrokes dependency property
@@ -38,6 +43,7 @@ namespace PolyPaint.CustomInk
             DynamicRenderer = customRenderer;
 
             clipboard = new StrokeCollection();
+            drawingService = new DrawingService();
         }
 
         protected override void OnSelectionChanged(EventArgs e) {
@@ -51,20 +57,21 @@ namespace PolyPaint.CustomInk
             Strokes.Remove(e.Stroke);
 
             Stroke customStroke;
+            StrokeTypes strokeType = (StrokeTypes) Enum.Parse(typeof(StrokeTypes), StrokeType);
 
-            switch (StrokeType)
+            switch (strokeType)
             {
-                case "artifact":
+                case StrokeTypes.CLASS_SHAPE:
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
+                    break;
+                case StrokeTypes.ARTIFACT:
                     customStroke = new ArtifactStroke(e.Stroke.StylusPoints);
                     break;
-                case "activity":
+                case StrokeTypes.ACTIVITY:
                     customStroke = new ActivityStroke(e.Stroke.StylusPoints);
                     break;
-                case "actor":
+                case StrokeTypes.ROLE:
                     customStroke = new ActorStroke(e.Stroke.StylusPoints);
-                    break;
-                case "class":
-                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
                     break;
                 default:
                     customStroke = new ClassStroke(e.Stroke.StylusPoints);
@@ -72,6 +79,8 @@ namespace PolyPaint.CustomInk
                
             }
             Strokes.Add(customStroke);
+
+            drawingService.UpdateShape("id", 1, "strokeName", new ShapeStyle(), new List<string>());
 
             // Visual visual = this.GetVisualChild(this.Children.Count - 1);
 

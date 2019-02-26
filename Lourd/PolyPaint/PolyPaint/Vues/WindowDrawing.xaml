@@ -62,38 +62,38 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="class" 
-                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=class, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding SelectedStrokeType, ConverterParameter=class, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="CLASS_SHAPE" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="class">
+                        CommandParameter="CLASS_SHAPE">
                     <!--<StackPanel>
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>-->
                 </Button>
-                <Button x:Name="Actor" Width="40" Height="40" Margin="5" Padding="0,0" Content="actor" 
-                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=actor, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding SelectedStrokeType, ConverterParameter=actor, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                <Button x:Name="Role" Width="40" Height="40" Margin="5" Padding="0,0" Content="ROLE" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="actor">
+                        CommandParameter="ROLE">
                     <!--<StackPanel>
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>-->
                 </Button>
-                <Button x:Name="Artifact" Width="40" Height="40" Margin="5" Padding="0,0" Content="artifact" 
-                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=artifact, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding SelectedStrokeType, ConverterParameter=artifact, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                <Button x:Name="Artifact" Width="40" Height="40" Margin="5" Padding="0,0" Content="ARTIFACT" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="artifact">
+                        CommandParameter="ARTIFACT">
                     <!--<StackPanel>
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>-->
                 </Button>
-                <Button x:Name="Activity" Width="40" Height="40" Margin="5" Padding="0,0" Content="activity" 
-                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=activity, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding SelectedStrokeType, ConverterParameter=activity, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                <Button x:Name="Activity" Width="40" Height="40" Margin="5" Padding="0,0" Content="ACTIVITY" 
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="activity">
+                        CommandParameter="ACTIVITY">
                     <!--<StackPanel>
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>-->
