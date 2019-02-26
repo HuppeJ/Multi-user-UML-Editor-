@@ -128,44 +128,6 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <StackPanel Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <Button x:Name="PointeRonde" Width="24" Height="24" Margin="0" Padding="0,0"
-                            BorderBrush="{Binding PointeSelectionnee, ConverterParameter=ronde, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                            Background="{Binding PointeSelectionnee, ConverterParameter=ronde, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}"                                 
-                            HorizontalContentAlignment="Center"                                
-                            Command="{Binding ChoisirPointe}"
-                            CommandParameter="ronde">
-                            <Ellipse Width="10" Height="10" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
-                        </Button>
-                        <Button x:Name="PointeCarree" Width="24" Height="24" Margin="0" Padding="0,0"
-                            HorizontalContentAlignment="Center"                            
-                            BorderBrush="{Binding PointeSelectionnee, ConverterParameter=carree, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                            Background="{Binding PointeSelectionnee, ConverterParameter=carree, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}"                                
-                            Command="{Binding ChoisirPointe}"
-                            CommandParameter="carree">
-                            <Rectangle Width="10" Height="10" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
-                        </Button>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button x:Name="Verticale" Width="24" Height="24" Margin="0" Padding="0,0"
-                            HorizontalContentAlignment="Center"
-                            BorderBrush="{Binding PointeSelectionnee, ConverterParameter=verticale, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                            Background="{Binding PointeSelectionnee, ConverterParameter=verticale, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}"   
-                            Command="{Binding ChoisirPointe}"
-                            CommandParameter="verticale">
-                            <Rectangle Width="2" Height="10" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
-                        </Button>
-                        <Button x:Name="Horizontale" Width="24" Height="24" Margin="0" Padding="0,0"
-                            HorizontalContentAlignment="Center"
-                            BorderBrush="{Binding PointeSelectionnee, ConverterParameter=horizontale, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                            Background="{Binding PointeSelectionnee, ConverterParameter=horizontale, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}"   
-                            Command="{Binding ChoisirPointe}"
-                            CommandParameter="horizontale">
-                            <Rectangle Width="10" Height="2" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
                 <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0"
                     Command="{Binding Rotate}">
                     <StackPanel>
