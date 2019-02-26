@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
-import com.google.common.collect.BiMap
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape

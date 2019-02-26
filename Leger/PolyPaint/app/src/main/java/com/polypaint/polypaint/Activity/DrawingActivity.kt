@@ -22,8 +22,6 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.common.collect.BiMap
-import com.google.common.collect.HashBiMap
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AccessibilityTypes
@@ -131,14 +129,6 @@ class DrawingActivity : AppCompatActivity(){
         val gson = Gson()
         val response :Response = Response(UserHolder.getInstance().username, basicShape)
         val obj: String = gson.toJson(response)
-        /*val obj: JsonObject = jsonObject(
-            "username" to UserHolder.getInstance().username,
-            "basicShape" to jsonObject(
-                "id" to mBasicShape.id,
-                "name" to mBasicShape.name
-            )
-        )
-*/
         Log.d("sending", obj)
         socket?.emit(SocketConstants.CANVAS_UPDATE_TEST, obj)
 
@@ -207,10 +197,12 @@ class DrawingActivity : AppCompatActivity(){
     private var onCanvasUpdate: Emitter.Listener = Emitter.Listener {
         val gson = Gson()
         val obj: Response = gson.fromJson(it[0].toString())
-        Log.d("canvasUpdate", obj.username+obj.basicShape.name)
-        runOnUiThread{
-            addOnCanevas(obj.basicShape)
+        if(obj.username != UserHolder.getInstance().username) {
+            Log.d("canvasUpdate", obj.username + obj.basicShape.name)
+            runOnUiThread {
+                addOnCanevas(obj.basicShape)
 
+            }
         }
 
     }
