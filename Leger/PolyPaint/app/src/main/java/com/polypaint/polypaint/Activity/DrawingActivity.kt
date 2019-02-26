@@ -9,17 +9,27 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import co.zsmb.materialdrawerkt.builders.drawer
 import co.zsmb.materialdrawerkt.builders.footer
 import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
 import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
+import com.github.nkzawa.emitter.Emitter
+import com.github.nkzawa.socketio.client.Socket
+import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.jsonObject
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.mikepenz.materialdrawer.Drawer
+import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AccessibilityTypes
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.View.ClassView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
@@ -30,6 +40,7 @@ class DrawingActivity : AppCompatActivity(){
     private var canevas : Canevas = defaultInit()
     private var mapElemShape : HashMap<BasicElementView, BasicShape> = hashMapOf()
     private var drawer: Drawer? = null
+    private var socket: Socket? = null
 
 
     private fun defaultInit() : Canevas{
@@ -47,7 +58,6 @@ class DrawingActivity : AppCompatActivity(){
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate (savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         setContentView(R.layout.activity_drawing)
 
@@ -104,6 +114,16 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val app = application as PolyPaint
+        socket = app.socket
+        socket?.on(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
+        socket?.on(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
+
+        socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
+    }
+
     private fun addBasicElementOnCanevas(){
 
         var mShapeStyle = ShapeStyle(Coordinates(100.0,100.0), 400.0, 300.0, 0.0, "white", 0, "white")
@@ -118,6 +138,22 @@ class DrawingActivity : AppCompatActivity(){
 
         canevas.addShape(mBasicShape)
         parent_relative_layout?.addView(mBasicElem)
+
+
+
+        val gson = Gson()
+        val response :Response = Response(UserHolder.getInstance().username, mBasicShape)
+        val obj: String = gson.toJson(response)
+        /*val obj: JsonObject = jsonObject(
+            "username" to UserHolder.getInstance().username,
+            "basicShape" to jsonObject(
+                "id" to mBasicShape.id,
+                "name" to mBasicShape.name
+            )
+        )
+*/
+        Log.d("sending", obj)
+        socket?.emit(SocketConstants.CANVAS_UPDATE_TEST, obj)
     }
 
     private fun addClassViewOnCanevas(){
@@ -139,6 +175,23 @@ class DrawingActivity : AppCompatActivity(){
             view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
         }
+    }
+
+    private var onCanvasUpdate: Emitter.Listener = Emitter.Listener {
+        val gson = Gson()
+        val obj: Response = gson.fromJson(it[0].toString())
+        Log.d("canvasUpdate", obj.username+obj.basicShape.name)
+    }
+
+    private class Response(var username: String, var basicShape: BasicShape){}
+
+    private var onJoinCanvas: Emitter.Listener = Emitter.Listener {
+        Log.d("joinCanvas", it.get(0).toString())
+    }
+
+    override fun onBackPressed() {
+        socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
+        socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
     }
 
     /*
