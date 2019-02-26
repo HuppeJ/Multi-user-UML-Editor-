@@ -6,30 +6,21 @@ export default class CanvasGallerySocketEvents {
             console.log(socket.id + " connected to Canvas GallerySocketEvents");
 
             // Canvas Gallery 
-            socket.on("createCanvas", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
-            });
-
             socket.on("getPublicCanvas", function (data: any) { 
                 const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
+              //  socket.emit("temp", JSON.stringify(response)); 
             });
 
             socket.on("getPrivateCanvas", function (data: any) { 
                 const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
+              //  socket.emit("temp", JSON.stringify(response)); 
             });
 
-            socket.on("joinCanvasRoom", function (data: any) { 
+            socket.on("getCanvas", function (data: any) { 
                 const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
+              //  socket.emit("temp", JSON.stringify(response)); 
             });
 
-            socket.on("joinProtectedCanvasRoom", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
-            });
         });
 
     }

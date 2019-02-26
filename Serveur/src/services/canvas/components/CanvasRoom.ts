@@ -1,14 +1,15 @@
-import { Canvas, ICanvas } from "./Canvas";
+export interface ICanvasRoom {
+
+}
+
 
 export default class CanvasRoom {
-    private CanvasRoomId: string;
+    private canvasRoomName: string;
     private connectedUsers: any;  // connectedUsers is a Map : [key: socketId, value: username]
-    private Canvas: Canvas;
 
-    constructor(CanvasRoomId: string, CanvasProperties: ICanvas) {
-        this.CanvasRoomId = CanvasRoomId;
+    constructor(canvasRoomName: string, CanvasProperties: any) {
+        this.canvasRoomName = canvasRoomName;
         this.connectedUsers = new Map();
-        this.Canvas = new Canvas(CanvasProperties);
     }
 
 }

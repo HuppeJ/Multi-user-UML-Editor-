@@ -1,4 +1,5 @@
 import * as SocketEvents from "../../constants/SocketEvents";
+import { CanvasTestRoom } from "./CanvasSocketEvents";
 
 export default class CanvasEditionSocketEvents {
     constructor(io: any) {
@@ -6,59 +7,42 @@ export default class CanvasEditionSocketEvents {
             console.log(socket.id + " connected to CanvasEditionSocketEvents");
 
             // Collaborative Basic Edition
-
             socket.on("createForm", function (data: any) { // addForm ? 
-                const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
+                console.log(`createForm from ${socket.id}, response:`, data);
+                io.to(CanvasTestRoom).emit("formCreated", data);
             }); 
 
-            socket.on("deleteForm", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false };
-                socket.emit("temp", JSON.stringify(response)); 
+            socket.on("updateForms", function (data: any) { 
+                console.log(`updateForms from ${socket.id}, response:`, data);
+                io.to(CanvasTestRoom).emit("formsUpdated", data);
             });
 
-            socket.on("selectForm", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false };
-                socket.emit("temp", JSON.stringify(response)); 
+            socket.on("deleteForms", function (data: any) { 
+                console.log(`deleteForms from ${socket.id}, response:`, data);
+                io.to(CanvasTestRoom).emit("formsDeleted", data);
+            });
+
+            socket.on("selectForms", function (data: any) { 
+                console.log(`selectForms from ${socket.id}, response:`, data);
+                io.to(CanvasTestRoom).emit("formsSelected", data); 
+            });
+
+            socket.on("reinitialiseCanvas", function (data: any) { 
+                console.log(`reinitialiseCanvas from ${socket.id}, response:`, data);
+                io.to(CanvasTestRoom).emit("canvasReinitialized", data); 
             });
 
 
-            // [****************************************************************
-            // Toutes ces modification ne pourraient pas seulement être ...
-            //  socket.on("updateForm", function (data: any) ?
-            socket.on("moveForm", function (data: any) { const response = { data: data, isRequestSuccessul: false }; socket.emit("temp", JSON.stringify(response)); });
-            socket.on("resizeForm", function (data: any) { const response = { data: data, isRequestSuccessul: false }; socket.emit("temp", JSON.stringify(response)); });
-            socket.on("rotateForm", function (data: any) { const response = { data: data, isRequestSuccessul: false }; socket.emit("temp", JSON.stringify(response)); });
-            socket.on("changeFormOutlineColor", function (data: any) { const response = { data: data, isRequestSuccessul: false }; socket.emit("temp", JSON.stringify(response)); });
-            socket.on("changeFormOutlineStyle", function (data: any) { const response = { data: data, isRequestSuccessul: false }; socket.emit("temp", JSON.stringify(response)); });
-            socket.on("changeFormFillColor", function (data: any) { const response = { data: data, isRequestSuccessul: false }; socket.emit("temp", JSON.stringify(response)); }); // Existe vraiment ? 
-            socket.on("changeFormBorderWeight", function (data: any) { const response = { data: data, isRequestSuccessul: false }; socket.emit("temp", JSON.stringify(response)); });
-            // *****************************************************************]
-
-            socket.on("createImage", function (data: any) { // addImage ? 
+            
+            socket.on("updatefloatingText", function (data: any) { 
                 const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
-            }); 
-
-            socket.on("deleteImage", function (data: any) {  // n'est pas dans le Protocole de communication
-                const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
+              //  socket.emit("temp", JSON.stringify(response)); 
             });
 
-
-            socket.on("floatingTextModified", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
-            });
-
-            socket.on("canvasReinitialized", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
-            });
 
             socket.on("canvasResized", function (data: any) {  // Existe vraiment, le canevas n'aura pas de taille non?
                 const response = { data: data, isRequestSuccessul: false }; 
-                socket.emit("temp", JSON.stringify(response)); 
+              //  socket.emit("temp", JSON.stringify(response)); 
             });
 
         });

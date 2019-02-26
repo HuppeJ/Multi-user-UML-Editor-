@@ -1,5 +1,4 @@
 import CanvasRoom from "./CanvasRoom";
-import { Canvas } from "./Canvas";
 
 export default class CanvasManager {  
     private canvasRooms: any; // [key: CanvasRoomId, value: CanvasRoom]
