@@ -27,6 +27,10 @@ const userAccountManager = new UserAccountManager(datastore);
 import ChatroomManager from "./services/chat/components/ChatroomManager";
 const chatroomManager = new ChatroomManager();
 
+import CanvasManager from "./services/canvas/components/CanvasManager";
+const canvasManager = new CanvasManager();
+
+
 // Initialise Socket Events
 import ChatSocketEvents from "./services/chat/ChatSocketEvents";
 new ChatSocketEvents(io, chatroomManager);
@@ -35,7 +39,7 @@ import AuthenticationSocketEvents from "./services/Authentication/Authentication
 new AuthenticationSocketEvents(io, userAccountManager);
 
 import CanvasSocketEvents from "./services/canvas/CanvasSocketEvents";
-new CanvasSocketEvents(io);
+new CanvasSocketEvents(io, canvasManager);
 
 // Set up the Socket.io communication system
 io.on('connection', (client: any) => {

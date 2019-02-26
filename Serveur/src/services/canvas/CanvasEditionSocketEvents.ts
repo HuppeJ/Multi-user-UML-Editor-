@@ -4,7 +4,6 @@ import { CanvasTestRoom } from "./CanvasSocketEvents";
 export default class CanvasEditionSocketEvents {
     constructor(io: any) {
         io.on('connection', function (socket: any) {
-            console.log(socket.id + " connected to CanvasEditionSocketEvents");
 
             // Collaborative Basic Edition
             socket.on("createForm", function (data: any) { // addForm ? 
@@ -31,14 +30,6 @@ export default class CanvasEditionSocketEvents {
                 console.log(`reinitialiseCanvas from ${socket.id}, response:`, data);
                 io.to(CanvasTestRoom).emit("canvasReinitialized", data); 
             });
-
-
-            
-            socket.on("updatefloatingText", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false }; 
-              //  socket.emit("temp", JSON.stringify(response)); 
-            });
-
 
             socket.on("canvasResized", function (data: any) {  // Existe vraiment, le canevas n'aura pas de taille non?
                 const response = { data: data, isRequestSuccessul: false }; 

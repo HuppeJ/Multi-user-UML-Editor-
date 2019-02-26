@@ -1,2 +1,2 @@
-export const CHAT_ROOM_ID: string = "CHAT_ROOM_";
-export const CANVAS_ROOM_ID: string = "CANVAS_ROOM_";
+export const CHAT_ROOM_ID: string = "CHAT_ROOM";
+export const CANVAS_ROOM_ID: string = "CANVAS_ROOM";

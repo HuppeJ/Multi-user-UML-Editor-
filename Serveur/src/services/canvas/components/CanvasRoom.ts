@@ -1,15 +1,26 @@
+import { ICanevas } from "../interfaces/interfaces";
+
 export interface ICanvasRoom {
 
 }
 
 
 export default class CanvasRoom {
-    private canvasRoomName: string;
-    private connectedUsers: any;  // connectedUsers is a Map : [key: socketId, value: username]
+    public connectedUsers: any;  // connectedUsers is a Map : [key: socketId, value: username]
 
-    constructor(canvasRoomName: string, CanvasProperties: any) {
-        this.canvasRoomName = canvasRoomName;
-        this.connectedUsers = new Map();
+    constructor(public canvas: ICanevas) {
+        this.connectedUsers = new Set();
     }
 
+    public addUser(socketId: any) {
+        this.connectedUsers.add(socketId);
+    }
+
+    public removeUser(socketId: any) {
+        this.connectedUsers.delete(socketId);
+    }
+
+    public hasUser(socketId: any) {
+        return this.connectedUsers.has(socketId);
+    }
 }

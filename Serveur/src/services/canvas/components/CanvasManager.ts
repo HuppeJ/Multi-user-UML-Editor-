@@ -1,45 +1,53 @@
 import CanvasRoom from "./CanvasRoom";
+import { ICanevas } from "../interfaces/interfaces";
+import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 
 export default class CanvasManager {  
-    private canvasRooms: any; // [key: CanvasRoomId, value: CanvasRoom]
+    private canvasRooms: any; // [key: canvasRoomId, value: CanvasRoom]
 
     constructor() {
         this.canvasRooms = new Map(); 
     }
 
+    public getCanvasRoomIdFromName(canvasName: string): string {
+        return `${CANVAS_ROOM_ID}-${canvasName}`;
+    }
     
-    // public addCanvas(canvasName: string, socketId: any) {
-    //     if (this.doesCanvasExist(canvasName)) {
-    //         return false;
-    //     }
+    public addCanvasRoom(newCanvas: ICanevas, socketId: any) {
+        const canvasRoomId: string = this.getCanvasRoomIdFromName(newCanvas.name);
 
-    //     const canvas = new Canvas();
-    //     canvas.addUserToCanvas(canvasName, socketId);
-    //     this.canvasRooms.set(canvasName, canvas);
-    //     return true;
-    // }
+        if (this.doesCanvasRoomExist(canvasRoomId)) {
+            return false;
+        }
 
-    // public doesCanvasExist(canvasName: string) {
-    //     return this.canvasRooms.has(canvasName);
-    // }
+        const canvasRoom = new CanvasRoom(newCanvas);
+        canvasRoom.addUser(socketId);
+        this.canvasRooms.set(canvasRoomId, canvasRoom);
+        return true;
+    }
 
-    // public addUserToCanvas(canvasName: string, socketId: any) {
-    //     if (this.doesCanvasExist(canvasName)){
-    //         const Canvas = this.canvasRooms.get(canvasName);
-    //         if (!Canvas.hasUser(socketId)) {
-    //             Canvas.addUser(socketId);
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    public doesCanvasRoomExist(canvasRoomId: string) {
+        return this.canvasRooms.has(canvasRoomId);
+    }
+
+    public addUserToCanvasRoom(canvasRoomId: string, socketId: any) {
+        if (this.doesCanvasRoomExist(canvasRoomId)){
+            const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+            if (!canvasRoom.hasUser(socketId)) {
+                canvasRoom.addUser(socketId);
+                return true;
+            }
+        }
+        return false;
+    }
 
 
-    // public removeCanvas(canvasName: string) {
-    //     if (this.isCanvas(canvasName)) {
-    //         this.canvasRooms.delete(canvasName);
-    //     }
-    // }
+    public removeCanvas(canvasRoomId: string) {
+        if (this.doesCanvasRoomExist(canvasRoomId)) {
+            this.canvasRooms.delete(canvasRoomId);
+            // TODO : à compléter
+        }
+    }
 
     // public isClientInCanvas(canvasName: string, socketId: any) {
     //     if (this.isCanvas(canvasName)){
@@ -58,13 +66,11 @@ export default class CanvasManager {
     //     return false;
     // }
 
-    // public getCanvass() {
-    //     let strKeys = JSON.stringify(Array.from(this.canvasRooms.keys()));
-    //     return strKeys;
-    // }
+    public getCanvasRooms() {
+        return JSON.stringify(Array.from(this.canvasRooms.keys()));
+    }
 
     // public getCanvasClients(canvasName: string) {
-    //     let strKeys = JSON.stringify(this.canvasRooms.get(canvasName));
-    //     return strKeys;
+    //     return JSON.stringify(this.canvasRooms.get(canvasName));
     // }
 }
