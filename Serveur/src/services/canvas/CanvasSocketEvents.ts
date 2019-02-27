@@ -11,8 +11,8 @@ export default class CanvasSocketEvents {
         io.on('connection', function (socket: any) {
             console.log(socket.id + " connected to Canvas server");
             // Initialise other socketEvents
-            new CanvasGallerySocketEvents(io);
-            new CanvasEditionSocketEvents(io);
+            new CanvasGallerySocketEvents(io, canvasManager);
+            new CanvasEditionSocketEvents(io, canvasManager);
 
             // Save Canvas 
             socket.on("createCanvasRoom", function (data: string) { 
@@ -54,6 +54,28 @@ export default class CanvasSocketEvents {
             socket.on("saveCanvas", function (data: any) { 
                // TODO  
             });
+
+            socket.on("removeCanvasRoom", function (canvasName: string) { 
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
+
+                const response = {
+                    isCanvasRoomRemoved: canvasManager.removeCanvasRoom(canvasRoomId)
+                };
+
+                if (response.isCanvasRoomRemoved) {
+                    io.to(canvasRoomId).emit("canvasRoomRemoved", canvasManager.getCanvasRooms());
+                    console.log(socket.id + " removed canvasRoom " + canvasName);
+                } else {
+                    console.log(socket.id + " failed to remove canvasRoom " + canvasName);
+                }
+
+                socket.emit("removeCanvasRoomResponse", JSON.stringify(response));
+                
+                // TODO on gère cela là? 
+                // io.sockets.clients(someRoom).forEach(function(s){
+                //     s.leave(someRoom);
+                // });
+             });
 
 
             // [**************************************************

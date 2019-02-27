@@ -1,7 +1,8 @@
 import * as SocketEvents from "../../constants/SocketEvents";
+import CanvasManager from "./components/CanvasManager";
 
 export default class CanvasGallerySocketEvents {
-    constructor(io: any) {
+    constructor(io: any, canvasManager: CanvasManager) {
         io.on('connection', function (socket: any) {
             console.log(socket.id + " connected to Canvas GallerySocketEvents");
 

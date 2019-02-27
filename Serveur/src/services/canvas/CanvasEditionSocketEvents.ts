@@ -1,8 +1,9 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { CanvasTestRoom } from "./CanvasSocketEvents";
+import CanvasManager from "./components/CanvasManager";
 
 export default class CanvasEditionSocketEvents {
-    constructor(io: any) {
+    constructor(io: any, canvasManager: CanvasManager) {
         io.on('connection', function (socket: any) {
 
             // Collaborative Basic Edition

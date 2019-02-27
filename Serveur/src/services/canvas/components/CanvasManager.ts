@@ -3,7 +3,7 @@ import { ICanevas } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 
 export default class CanvasManager {  
-    private canvasRooms: any; // [key: canvasRoomId, value: CanvasRoom]
+    private canvasRooms: any; // [key: canvasRoomId, value: canvasRoom]
 
     constructor() {
         this.canvasRooms = new Map(); 
@@ -42,20 +42,23 @@ export default class CanvasManager {
     }
 
 
-    public removeCanvas(canvasRoomId: string) {
+    public removeCanvasRoom(canvasRoomId: string) {
         if (this.doesCanvasRoomExist(canvasRoomId)) {
             this.canvasRooms.delete(canvasRoomId);
-            // TODO : à compléter
+            return true;
         }
+
+        return false;
     }
 
-    // public isClientInCanvas(canvasName: string, socketId: any) {
-    //     if (this.isCanvas(canvasName)){
-    //         let Canvas = this.canvasRooms.get(canvasName);
-    //         return Canvas.hasUser(socketId);
-    //     }
-    //     return false;
-    // }
+    public isClientInCanvas(canvasRoomId: string, socketId: any) {
+        if (this.doesCanvasRoomExist(canvasRoomId)){
+            const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+            return canvasRoom.hasUser(socketId);
+        }
+
+        return false;
+    }
 
     // public removeClientFromCanvas(canvasName: string, socketId: any) {
     //     if(this.isClientInCanvas(canvasName, socketId)) {
@@ -65,9 +68,20 @@ export default class CanvasManager {
     //     }
     //     return false;
     // }
-
+    
     public getCanvasRooms() {
         return JSON.stringify(Array.from(this.canvasRooms.keys()));
+    }
+
+    // TODO : Fonction pas testée... en fait il y a rien qui a vraiment été testé pour le moment ^^ 
+    public getCanvasRoomFromSocketId(socketId: any): string {
+        for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
+            if (canvasRoom.hasUser())  {
+                return canvasRoomId;
+            }
+        }
+          
+        return null;
     }
 
     // public getCanvasClients(canvasName: string) {
