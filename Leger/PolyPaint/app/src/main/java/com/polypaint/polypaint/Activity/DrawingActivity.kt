@@ -34,6 +34,8 @@ import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.View.ClassView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -167,10 +169,13 @@ class DrawingActivity : AppCompatActivity(){
 
     private fun syncLayoutFromCanevas(){
         for (view in ViewShapeHolder.getInstance().map.keys){
-            val basicShape = ViewShapeHolder.getInstance().map.getValue(view)
-            view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
-            view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
-            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+            val basicShapeId:  String = ViewShapeHolder.getInstance().map.getValue(view)
+            val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
+            if(basicShape != null) {
+                view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
+                view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
+                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+            }
         }
     }
 
@@ -186,6 +191,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onCanvasUpdate: Emitter.Listener = Emitter.Listener {
+
         val gson = Gson()
         val obj: Response = gson.fromJson(it[0].toString())
         if(obj.username != UserHolder.getInstance().username) {
@@ -198,14 +204,14 @@ class DrawingActivity : AppCompatActivity(){
 
     }
 
-    private class Response(var username: String, var basicShape: BasicShape){}
+    public class Response(var username: String, var basicShape: BasicShape){}
 
     private var onJoinCanvas: Emitter.Listener = Emitter.Listener {
         Log.d("joinCanvas", it.get(0).toString())
     }
 
     private var onFormsUpdated: Emitter.Listener = Emitter.Listener {
-        Log.d("onFormsUpdated", it.get(0).toString())
+        Log.d("onFormsUpdated", "alllooo")
 
         val gson = Gson()
         val obj: Response = gson.fromJson(it[0].toString())
@@ -222,6 +228,8 @@ class DrawingActivity : AppCompatActivity(){
     override fun onBackPressed() {
         socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
         socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
+        socket?.off(SocketConstants.FORMS_UPDATED, onFormsUpdated)
+        super.onBackPressed()
     }
     /*
     override fun onBackPressed() {

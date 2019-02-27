@@ -9,9 +9,11 @@ import android.view.View
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
+import com.google.gson.Gson
 import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.R
@@ -157,6 +159,7 @@ open class BasicElementView: RelativeLayout {
                     val drawingActivity : DrawingActivity = activity as DrawingActivity
                     drawingActivity.syncCanevasFromLayout()
                 }
+                emitUpdate()
             }
         }
         true
@@ -177,8 +180,15 @@ open class BasicElementView: RelativeLayout {
         val activity: AppCompatActivity = context as AppCompatActivity
         val app: PolyPaint = activity.application as PolyPaint
         val socket: Socket? = app.socket
-        val basicShape: BasicShape = ViewShapeHolder.getInstance().map.getValue(this)
-        socket?.emit(SocketConstants.UPDATE_FORMS, basicShape)
+        val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(this))
+
+        if(basicShape !=null) {
+            val gson = Gson()
+            val response: DrawingActivity.Response =DrawingActivity.Response(UserHolder.getInstance().username, basicShape)
+            val obj: String = gson.toJson(response)
+            Log.d("emitingUpdate", obj)
+            socket?.emit(SocketConstants.UPDATE_FORMS, obj)
+        }
     }
 
 }
