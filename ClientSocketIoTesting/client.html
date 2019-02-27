@@ -46,6 +46,11 @@
 
             socket.on('canvasUpdateTestResponse', response);
 
+
+            socket.emit("createForm", "TestcreateForm");
+
+            socket.on('formCreated', response);
+
         }
 
 

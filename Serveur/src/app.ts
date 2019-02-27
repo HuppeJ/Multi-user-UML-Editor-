@@ -41,6 +41,12 @@ new AuthenticationSocketEvents(io, userAccountManager);
 import CanvasSocketEvents from "./services/canvas/CanvasSocketEvents";
 new CanvasSocketEvents(io, canvasManager);
 
+import CanvasGallerySocketEvents from './services/canvas/CanvasGallerySocketEvents';
+new CanvasGallerySocketEvents(io, canvasManager);
+
+import CanvasEditionSocketEvents from './services/canvas/CanvasEditionSocketEvents';
+new CanvasEditionSocketEvents(io, canvasManager);
+
 // Set up the Socket.io communication system
 io.on('connection', (client: any) => {
     // TODO : remove

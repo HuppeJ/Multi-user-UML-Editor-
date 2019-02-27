@@ -10,9 +10,6 @@ export default class CanvasSocketEvents {
     constructor(io: any, canvasManager: CanvasManager) {
         io.on('connection', function (socket: any) {
             console.log(socket.id + " connected to Canvas server");
-            // Initialise other socketEvents
-            new CanvasGallerySocketEvents(io, canvasManager);
-            new CanvasEditionSocketEvents(io, canvasManager);
 
             // Save Canvas 
             socket.on("createCanvasRoom", function (data: string) { 
