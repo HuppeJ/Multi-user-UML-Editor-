@@ -8,7 +8,7 @@ class SocketConstants{
         const val LOGIN_USER: String = "loginUser"
         const val LOGIN_USER_RESPONSE: String = "loginUserResponse"
 
-        const val UPDATE_FORMS: String = " updateForms"
+        const val UPDATE_FORMS: String = "updateForms"
         const val FORMS_UPDATED: String = "formsUpdated"
 
 
