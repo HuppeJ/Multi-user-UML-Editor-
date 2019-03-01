@@ -13,7 +13,7 @@ export default class CanvasRoom {
     }
 
     public addUser(socketId: any) {
-        this.connectedUsers.add(socketId);
+        this.connectedUsers.add(socketId);       
     }
 
     public removeUser(socketId: any) {
