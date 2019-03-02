@@ -1,0 +1,38 @@
+@import '../utils/styles.scss';
+
+.container {
+    margin: 20px 0 0 0;
+    display: flex;
+    flex-direction: row;
+}
+
+.star {
+    font-size: 1.5em;
+    padding: 0 6px;
+}
+
+.star:hover {
+    cursor: pointer;
+}
+
+.starSelected {
+    color: $green;
+}
+
+.starUnselected {
+    color: $gray;
+}
+
+.title {
+    flex: 1;
+    margin: 7px 0 0 10px;
+}
+
+.description {
+    flex: 1;
+    margin-top: 7px;
+}
+
+.description>ul>li {
+    list-style-type: disc;
+}
