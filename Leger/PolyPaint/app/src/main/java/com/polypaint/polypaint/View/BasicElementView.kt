@@ -8,8 +8,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
+import com.github.nkzawa.socketio.client.Socket
+import com.google.gson.Gson
+import com.polypaint.polypaint.Activity.DrawingActivity
+import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
+import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
+import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
 import kotlinx.android.synthetic.main.basic_element.view.*
 
 
@@ -17,11 +25,17 @@ open class BasicElementView: RelativeLayout {
 
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
+    var isSelectedByOther: Boolean = false
     open var mMinimumWidth : Float = 300F
     open var mMinimumHeight : Float = 100F
+    var socket: Socket? = null
+
 
     constructor(context: Context) : super(context) {
         init(context)
+        val activity: AppCompatActivity = context as AppCompatActivity
+        val app: PolyPaint = activity.application as PolyPaint
+        this.socket = app.socket
     }
 
     fun init(context: Context) {
@@ -46,7 +60,7 @@ open class BasicElementView: RelativeLayout {
     override fun setSelected(selected: Boolean) {
         if(selected){
             //first_line.text = "Focus"
-            borderResizableLayout.setBackgroundResource(R.drawable.borders)
+            borderResizableLayout.setBackgroundResource(R.drawable.borders_blue)
             editButton.visibility = View.VISIBLE
             deleteButton.visibility = View.VISIBLE
             resizeButton.visibility = View.VISIBLE
@@ -69,23 +83,31 @@ open class BasicElementView: RelativeLayout {
     }
 
     private var onTouchListenerBody = View.OnTouchListener { v, event ->
-        when(event.action){
-            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
+        if(!isSelectedByOther) {
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
 
-                val parentView = v.parent as RelativeLayout
-                parentView.dispatchSetSelected(false)
-                v.isSelected = true
-            }
-            MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
-                this.x = this.x + (event.rawX - oldFrameRawX )
-                this.y = this.y + (event.rawY - oldFrameRawY)
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
-            }
-            MotionEvent.ACTION_UP -> {//first_line.text = "ActionUp"
-                //isElementSelected = false
+                    val parentView = v.parent as RelativeLayout
+                    parentView.dispatchSetSelected(false)
+                    v.isSelected = true
+                    emitSelection()
+                }
+                MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
+                    this.x = this.x + (event.rawX - oldFrameRawX)
+                    this.y = this.y + (event.rawY - oldFrameRawY)
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+                }
+                MotionEvent.ACTION_UP -> {
+                    first_line.text = "ActionUp"
+                    val activity: AppCompatActivity = context as AppCompatActivity
+                    if (activity is DrawingActivity) {
+                        val drawingActivity: DrawingActivity = activity as DrawingActivity
+                        drawingActivity.syncCanevasFromLayout()
+                    }
+                }
             }
         }
         true
@@ -111,8 +133,11 @@ open class BasicElementView: RelativeLayout {
     private var onTouchListenerDeleteButton = View.OnTouchListener { v, event ->
         when(event.action){
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
+                emitDelete()
                 val parentView = v.parent.parent.parent as RelativeLayout
                 parentView.removeView(this)
+
+                ViewShapeHolder.getInstance().remove(this)
             }
         }
         true
@@ -127,14 +152,24 @@ open class BasicElementView: RelativeLayout {
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
-            MotionEvent.ACTION_MOVE -> {first_line.text = "ActionMoveResize"
+            MotionEvent.ACTION_MOVE -> {
+                first_line.text = "ActionMoveResize"
                 val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
                 val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
 
-                resize(newWidth.toInt(),newHeight.toInt())
+                resize(newWidth.toInt(), newHeight.toInt())
 
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
+            }
+            MotionEvent.ACTION_UP -> {
+                first_line.text = "ActionUpResize"
+                val activity: AppCompatActivity = context as AppCompatActivity
+                if(activity is DrawingActivity){
+                    val drawingActivity : DrawingActivity = activity as DrawingActivity
+                    drawingActivity.syncCanevasFromLayout()
+                }
+                emitUpdate()
             }
         }
         true
@@ -149,6 +184,45 @@ open class BasicElementView: RelativeLayout {
         }
         borderResizableLayout.requestLayout()
         requestLayout()
+    }
+
+    private fun emitUpdate(){
+        val response: String = this.createResponseObject()
+
+        if(response !="") {
+            Log.d("emitingUpdate", response)
+            socket?.emit(SocketConstants.UPDATE_FORMS, response)
+        }
+    }
+
+    private fun emitSelection(){
+        val response: String = this.createResponseObject()
+
+        if(response !="") {
+            Log.d("emitingSelection", response)
+            socket?.emit(SocketConstants.SELECT_FORMS, response)
+        }
+    }
+
+    private fun emitDelete(){
+        val response: String = this.createResponseObject()
+
+        if(response !="") {
+            Log.d("emitingDelete", response)
+            socket?.emit(SocketConstants.DELETE_FORMS, response)
+        }
+    }
+
+    private fun createResponseObject(): String{
+        val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(this))
+
+        var obj: String =""
+        if(basicShape !=null) {
+            val gson = Gson()
+            val response: DrawingActivity.Response =DrawingActivity.Response(UserHolder.getInstance().username, basicShape)
+            obj = gson.toJson(response)
+        }
+        return obj
     }
 
 }
