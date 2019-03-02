@@ -31,5 +31,15 @@ class Canevas(var id: String, var name: String, var author: String, var owner: S
         return false
     }
 
+    fun removeShape(id: String): Boolean {
+        for(shape in shapes){
+            if(shape.id == id){
+                shapes.remove(shape)
+                return true
+            }
+        }
+        return false
+    }
+
 
 }

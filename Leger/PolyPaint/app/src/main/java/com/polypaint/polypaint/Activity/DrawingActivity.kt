@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import co.zsmb.materialdrawerkt.builders.drawer
@@ -24,7 +22,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Application.PolyPaint
-import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
@@ -34,8 +31,7 @@ import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.View.ClassView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
-import com.google.common.collect.BiMap
-import com.google.common.collect.HashBiMap
+import org.json.JSONObject
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -97,6 +93,7 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         clear_canvas_button.setOnClickListener {
+            emitClearCanvas()
             parent_relative_layout?.removeAllViews()
         }
 
@@ -116,6 +113,10 @@ class DrawingActivity : AppCompatActivity(){
         socket?.on(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
         socket?.on(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
         socket?.on(SocketConstants.FORMS_UPDATED, onFormsUpdated)
+        socket?.on(SocketConstants.FORMS_SELECTED, onFormsSelected)
+        socket?.on(SocketConstants.FORMS_DELETED, onFormsDeleted)
+        socket?.on(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
+        socket?.on(SocketConstants.FORM_CREATED, onFormsCreated)
 
         socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
     }
@@ -130,6 +131,7 @@ class DrawingActivity : AppCompatActivity(){
         val obj: String = gson.toJson(response)
         Log.d("sending", obj)
         socket?.emit(SocketConstants.CANVAS_UPDATE_TEST, obj)
+        emitAddForm(basicShape)
 
         syncLayoutFromCanevas()
     }
@@ -190,6 +192,31 @@ class DrawingActivity : AppCompatActivity(){
 
     }
 
+    private fun emitClearCanvas(){
+        val gson = Gson()
+        val response: UserResponse = UserResponse(UserHolder.getInstance().username)
+        val obj: String = gson.toJson(response)
+
+        Log.d("emitingClearCanvas", obj)
+        socket?.emit(SocketConstants.REINITIALISE_CANVAS, obj)
+    }
+
+    private fun emitAddForm(basicShape: BasicShape){
+        var obj: String =""
+        val gson = Gson()
+        val response: DrawingActivity.Response =DrawingActivity.Response(UserHolder.getInstance().username, basicShape)
+        obj = gson.toJson(response)
+        Log.d("emitingCreateForm", obj)
+        socket?.emit(SocketConstants.CREATE_FORM, obj)
+
+    }
+
+
+
+
+    public class Response(var username: String, var basicShape: BasicShape){}
+    public class UserResponse(var username: String){}
+
     private var onCanvasUpdate: Emitter.Listener = Emitter.Listener {
 
         val gson = Gson()
@@ -203,8 +230,6 @@ class DrawingActivity : AppCompatActivity(){
         }
 
     }
-
-    public class Response(var username: String, var basicShape: BasicShape){}
 
     private var onJoinCanvas: Emitter.Listener = Emitter.Listener {
         Log.d("joinCanvas", it.get(0).toString())
@@ -225,12 +250,87 @@ class DrawingActivity : AppCompatActivity(){
 
     }
 
-    override fun onBackPressed() {
+    private var onFormsSelected: Emitter.Listener = Emitter.Listener {
+        Log.d("onFormsSelected", "alllooo")
+
+        val gson = Gson()
+        val obj: Response = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            Log.d("formsSelect", obj.username + obj.basicShape.name)
+            runOnUiThread {
+                val view: BasicElementView? = ViewShapeHolder.getInstance().map.inverse()[obj.basicShape.id]
+                if(view != null) {
+                    view.borderResizableLayout?.setBackgroundResource(R.drawable.borders_red)
+                    view.isSelectedByOther = true
+                }
+
+                syncLayoutFromCanevas()
+            }
+        }
+
+    }
+
+    private var onFormsDeleted: Emitter.Listener = Emitter.Listener {
+        Log.d("onFormsDeleted", "alllooo")
+
+        val gson = Gson()
+        val obj: Response = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            Log.d("formsDeleted", obj.username + obj.basicShape.name)
+            runOnUiThread {
+                ViewShapeHolder.getInstance().remove(obj.basicShape)
+                syncLayoutFromCanevas()
+            }
+        }
+
+    }
+
+    private var onCanvasReinitialized: Emitter.Listener = Emitter.Listener {
+        Log.d("onCanvasReinitialized", "alllooo")
+
+        val gson = Gson()
+        val obj: UserResponse = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            Log.d("canvasReinitialized", obj.username)
+            runOnUiThread {
+                ViewShapeHolder.getInstance().removeAll()
+                syncLayoutFromCanevas()
+            }
+        }
+
+    }
+
+    private var onFormsCreated: Emitter.Listener = Emitter.Listener {
+        Log.d("onFormsCreated", "alllooo")
+
+        val gson = Gson()
+        val obj: Response = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            Log.d("formsCreated", obj.username + obj.basicShape.name)
+            runOnUiThread {
+                addOnCanevas(obj.basicShape)
+            }
+        }
+
+    }
+
+    override fun onPause(){
+        socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
+        socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
+        socket?.off(SocketConstants.FORMS_UPDATED, onFormsUpdated)
+        socket?.off(SocketConstants.FORMS_SELECTED, onFormsSelected)
+        socket?.off(SocketConstants.FORMS_DELETED, onFormsDeleted)
+        socket?.off(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
+        socket?.off(SocketConstants.FORM_CREATED, onFormsCreated)
+        super.onPause()
+    }
+
+    /*override fun onBackPressed() {
         socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
         socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
         socket?.off(SocketConstants.FORMS_UPDATED, onFormsUpdated)
         super.onBackPressed()
-    }
+    }*/
     /*
     override fun onBackPressed() {
         val intent = Intent(this, GalleryActivity::class.java)
