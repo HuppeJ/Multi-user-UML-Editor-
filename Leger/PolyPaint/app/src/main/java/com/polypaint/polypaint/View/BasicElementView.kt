@@ -2,10 +2,13 @@ package com.polypaint.polypaint.View
 
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageButton
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
@@ -16,6 +19,7 @@ import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape
+import com.polypaint.polypaint.Model.Coordinates
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
 import kotlinx.android.synthetic.main.basic_element.view.*
@@ -25,6 +29,8 @@ open class BasicElementView: RelativeLayout {
 
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
+    var start: Coordinates = Coordinates(0.0,0.0)
+    var oldLink: LinkView? = null
     var isSelectedByOther: Boolean = false
     open var mMinimumWidth : Float = 300F
     open var mMinimumHeight : Float = 100F
@@ -49,6 +55,11 @@ open class BasicElementView: RelativeLayout {
         editButton.setOnTouchListener(onTouchListenerEditButton)
         deleteButton.setOnTouchListener(onTouchListenerDeleteButton)
         resizeButton.setOnTouchListener(onTouchListenerResizeButton)
+        anchorPoint0.setOnTouchListener(onTouchListenerAnchor)
+        anchorPoint1.setOnTouchListener(onTouchListenerAnchor)
+        anchorPoint2.setOnTouchListener(onTouchListenerAnchor)
+        anchorPoint3.setOnTouchListener(onTouchListenerAnchor)
+
 
         //DEFAULT STATE
 
@@ -74,13 +85,120 @@ open class BasicElementView: RelativeLayout {
             editButton.visibility = View.INVISIBLE
             deleteButton.visibility = View.INVISIBLE
             resizeButton.visibility = View.INVISIBLE
-            anchorPoint0.visibility = View.INVISIBLE
-            anchorPoint1.visibility = View.INVISIBLE
-            anchorPoint2.visibility = View.INVISIBLE
-            anchorPoint3.visibility = View.INVISIBLE
+//            anchorPoint0.visibility = View.INVISIBLE
+//            anchorPoint1.visibility = View.INVISIBLE
+//            anchorPoint2.visibility = View.INVISIBLE
+//            anchorPoint3.visibility = View.INVISIBLE
         }
         return super.setSelected(selected)
     }
+
+    private var onTouchListenerAnchor = View.OnTouchListener { v, event ->
+        if(isSelected) {
+            val parentView = v.parent.parent.parent as RelativeLayout
+            parentView.removeView(oldLink)
+            val link = LinkView(context)
+
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                    val coord = IntArray(2)
+                    v.getLocationOnScreen(coord)
+                    val activity = context as AppCompatActivity
+                    val toolbarView: View= activity.findViewById(R.id.toolbar)
+
+                    start = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+                }
+                MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
+                    link.start = start
+                    link.end = Coordinates((start.x + (event.rawX-oldFrameRawX)), (start.y + (event.rawY-oldFrameRawY)))
+                    oldLink = link
+                    parentView.addView(link)
+                }
+                MotionEvent.ACTION_UP -> {
+                    var otherAnchor : View? = null
+                    val x = (start.x + (event.rawX-oldFrameRawX)).toInt()
+                    val y = (start.y + (event.rawY-oldFrameRawY)).toInt()
+                    for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
+                        if(basicView != this && !basicView.isSelectedByOther) {
+                            if (isViewInBounds(basicView.anchorPoint0, x, y)) {
+                                otherAnchor = basicView.anchorPoint0
+                                break
+                            } else if (isViewInBounds(basicView.anchorPoint1, x, y)) {
+                                otherAnchor = basicView.anchorPoint1
+                                break
+                            } else if (isViewInBounds(basicView.anchorPoint2, x, y)) {
+                                otherAnchor = basicView.anchorPoint2
+                                break
+                            } else if (isViewInBounds(basicView.anchorPoint3, x, y)) {
+                                otherAnchor = basicView.anchorPoint3
+                                break
+                            }
+                        }
+                    }
+                    if(otherAnchor != null){
+                        link.start = start
+                        val coord = IntArray(2)
+                        otherAnchor.getLocationOnScreen(coord)
+                        val activity = context as AppCompatActivity
+                        val toolbarView: View= activity.findViewById(R.id.toolbar)
+                        link.end = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
+                        parentView.addView(link)
+                    }
+                    oldLink = null
+                }
+            }
+
+
+
+        }
+        true
+    }
+
+
+
+    private fun isViewInBounds(view: View, x: Int, y: Int): Boolean{
+        val activity = context as AppCompatActivity
+        val toolbarView: View= activity.findViewById(R.id.toolbar)
+        val parentView = view.parent.parent.parent as RelativeLayout
+        val outRect = Rect();
+        val location = IntArray(2);
+        view.getDrawingRect(outRect);
+        view.getLocationOnScreen(location);
+        outRect.offset((location[0] - parentView.x).toInt(), location[1] - toolbarView.measuredHeight - view.measuredWidth/2);
+        return outRect.contains(x, y);
+    }
+
+   /* private fun getPositionY(view : View): Int{
+        val activity = context as AppCompatActivity
+        val globalView: View = activity.findViewById(android.R.id.content)
+        val dm: DisplayMetrics = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getMetrics(dm)
+        var topOffset = dm.heightPixels - globalView.measuredHeight
+        val v: View= activity.findViewById(R.id.toolbar)
+        topOffset += v.measuredHeight
+        val coord = IntArray(2)
+        view.getLocationOnScreen(coord)
+        return coord[1] - topOffset
+    }
+    private fun getRelativePosition(view: View): Coordinates{
+        return Coordinates(getRelativeLeft(view).toDouble(), getRelativeTop(view).toDouble())
+    }
+
+    private fun getRelativeTop(myView: View): Int {
+        return if (myView.parent === myView.rootView)
+            myView.top
+        else
+            myView.top + getRelativeTop(myView.parent as View)
+    }
+
+    private fun getRelativeLeft(myView: View): Int {
+        return if (myView.parent === myView.rootView)
+            myView.left
+        else
+            myView.left + getRelativeLeft(myView.parent as View)
+    }*/
 
     private var onTouchListenerBody = View.OnTouchListener { v, event ->
         if(!isSelectedByOther) {

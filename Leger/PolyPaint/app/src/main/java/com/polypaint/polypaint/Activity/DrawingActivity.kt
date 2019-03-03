@@ -29,9 +29,11 @@ import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.View.ClassView
+import com.polypaint.polypaint.View.LinkView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
 import org.json.JSONObject
+import java.util.*
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -147,12 +149,17 @@ class DrawingActivity : AppCompatActivity(){
         basicElem.addView(viewToAdd)
         parent_relative_layout?.addView(basicElem)
 
+
+        val link = LinkView(this)
+        parent_relative_layout?.addView(link)
+
         return basicElem
     }
     private fun addBasicShapeOnCanevas() : BasicShape{
         var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
         //TODO : Request uuid
-        var basicShape = BasicShape("1", 0, "defaultShape1", shapeStyle, ArrayList<String?>())
+
+        var basicShape = BasicShape(UUID.randomUUID().toString(), 0, "defaultShape1", shapeStyle, ArrayList<String?>())
 
 
         ViewShapeHolder.getInstance().canevas.addShape(basicShape)
