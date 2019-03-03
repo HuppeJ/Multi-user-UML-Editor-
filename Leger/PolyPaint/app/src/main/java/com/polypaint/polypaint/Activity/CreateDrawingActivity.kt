@@ -14,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import co.zsmb.materialdrawerkt.builders.drawer
+import co.zsmb.materialdrawerkt.builders.footer
+import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
+import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
@@ -37,23 +40,30 @@ class CreateDrawingActivity: AppCompatActivity(){
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
-
-        /*drawer = drawer {
-            override fun onOptionsItemSelected(item: MenuItem): Boolean {
-                when (item.getItemId()) {
-                    android.R.id.home -> {
-                        onBackPressed();
-                        return true;
-                    }
-
-                    else -> {
-                        return super.onOptionsItemSelected(item)
-                    }
+        drawer = drawer {
+            primaryItem("Gallery") {
+                icon = R.drawable.message_rectangle_r
+                onClick { _ ->
+                    false
                 }
             }
+            primaryItem("Chat") {
+                icon = R.drawable.message_rectangle_r
+                onClick { _ ->
+                    val intent = Intent(this@CreateDrawingActivity, ChatActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                selectable = false
+            }
+            footer{
+                secondaryItem("Settings") {
+                    icon = R.drawable.message_rectangle_r
+                }
+            }
+
+            toolbar = activityToolbar
         }
-        drawer?.actionBarDrawerToggle?.isDrawerIndicatorEnabled = false
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)*/
 
 
         val radioPublic: RadioButton = findViewById(R.id.radio_public)
