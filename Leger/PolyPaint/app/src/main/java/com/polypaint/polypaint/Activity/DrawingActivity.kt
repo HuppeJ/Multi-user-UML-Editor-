@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
 import org.json.JSONObject
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -159,7 +160,7 @@ class DrawingActivity : AppCompatActivity(){
         var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
         //TODO : Request uuid
 
-        var basicShape = BasicShape(UUID.randomUUID().toString(), 0, "defaultShape1", shapeStyle, ArrayList<String?>())
+        var basicShape = BasicShape(UUID.randomUUID().toString(), 0, "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
 
 
         ViewShapeHolder.getInstance().canevas.addShape(basicShape)

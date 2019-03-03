@@ -4,25 +4,25 @@ import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageButton
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
 import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
-import com.polypaint.polypaint.Model.BasicShape
-import com.polypaint.polypaint.Model.Coordinates
+import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
 import kotlinx.android.synthetic.main.basic_element.view.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 open class BasicElementView: RelativeLayout {
@@ -75,23 +75,43 @@ open class BasicElementView: RelativeLayout {
             editButton.visibility = View.VISIBLE
             deleteButton.visibility = View.VISIBLE
             resizeButton.visibility = View.VISIBLE
-            anchorPoint0.visibility = View.VISIBLE
-            anchorPoint1.visibility = View.VISIBLE
-            anchorPoint2.visibility = View.VISIBLE
-            anchorPoint3.visibility = View.VISIBLE
+            setAnchorsVisible(true)
         }else{
             //first_line.text = "NoFocus"
             borderResizableLayout.setBackgroundResource(R.drawable.borders_white)
             editButton.visibility = View.INVISIBLE
             deleteButton.visibility = View.INVISIBLE
             resizeButton.visibility = View.INVISIBLE
-//            anchorPoint0.visibility = View.INVISIBLE
-//            anchorPoint1.visibility = View.INVISIBLE
-//            anchorPoint2.visibility = View.INVISIBLE
-//            anchorPoint3.visibility = View.INVISIBLE
+            setAnchorsVisible(false)
         }
         return super.setSelected(selected)
     }
+
+    private fun setAnchorsVisible(isVisible: Boolean){
+        if(isVisible){
+            anchorPoint0.visibility = View.VISIBLE
+            anchorPoint1.visibility = View.VISIBLE
+            anchorPoint2.visibility = View.VISIBLE
+            anchorPoint3.visibility = View.VISIBLE
+        } else {
+            anchorPoint0.visibility = View.INVISIBLE
+            anchorPoint1.visibility = View.INVISIBLE
+            anchorPoint2.visibility = View.INVISIBLE
+            anchorPoint3.visibility = View.INVISIBLE
+        }
+    }
+    /*private fun getRelativePosition(parent: ViewGroup, view: View): IntArray{
+        var relativePosition: IntArray = IntArray(2)
+        relativePosition[0] = view.left
+        relativePosition[1] = view.top
+        var currentParent: ViewGroup = view.parent as ViewGroup
+        while(currentParent != parent){
+            relativePosition[0] += currentParent.left
+            relativePosition[1] += currentParent.top
+            currentParent = currentParent.parent as ViewGroup
+        }
+        return relativePosition
+    }*/
 
     private var onTouchListenerAnchor = View.OnTouchListener { v, event ->
         if(isSelected) {
@@ -101,12 +121,18 @@ open class BasicElementView: RelativeLayout {
 
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                    for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
+                        if (basicView != this && !basicView.isSelectedByOther) {
+                            basicView.setAnchorsVisible(true)
+                        }
+                    }
                     val coord = IntArray(2)
                     v.getLocationOnScreen(coord)
                     val activity = context as AppCompatActivity
                     val toolbarView: View= activity.findViewById(R.id.toolbar)
 
                     start = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
+
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
                 }
@@ -117,41 +143,98 @@ open class BasicElementView: RelativeLayout {
                     parentView.addView(link)
                 }
                 MotionEvent.ACTION_UP -> {
+                    for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
+                        if (basicView != this && !basicView.isSelectedByOther) {
+                            basicView.setAnchorsVisible(false)
+                        }
+                    }
                     var otherAnchor : View? = null
+                    var anchorPointEnd: AnchorPoint? = null
+                    var otherBasicView: BasicElementView? = null
                     val x = (start.x + (event.rawX-oldFrameRawX)).toInt()
                     val y = (start.y + (event.rawY-oldFrameRawY)).toInt()
                     for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
                         if(basicView != this && !basicView.isSelectedByOther) {
+                            val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
                             if (isViewInBounds(basicView.anchorPoint0, x, y)) {
                                 otherAnchor = basicView.anchorPoint0
+                                otherBasicView = basicView
+                                if(basicShapeId != null){
+                                    anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.TOP.ordinal)
+                                }
                                 break
                             } else if (isViewInBounds(basicView.anchorPoint1, x, y)) {
                                 otherAnchor = basicView.anchorPoint1
+                                otherBasicView = basicView
+                                if(basicShapeId != null){
+                                    anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.RIGHT.ordinal)
+                                }
                                 break
                             } else if (isViewInBounds(basicView.anchorPoint2, x, y)) {
                                 otherAnchor = basicView.anchorPoint2
+                                otherBasicView = basicView
+                                if(basicShapeId != null){
+                                    anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.BOTTOM.ordinal)
+                                }
                                 break
                             } else if (isViewInBounds(basicView.anchorPoint3, x, y)) {
                                 otherAnchor = basicView.anchorPoint3
+                                otherBasicView = basicView
+                                if(basicShapeId != null){
+                                    anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.LEFT.ordinal)
+                                }
                                 break
                             }
                         }
                     }
-                    if(otherAnchor != null){
+                    if(otherAnchor != null && anchorPointEnd !=null && otherBasicView != null){
                         link.start = start
                         val coord = IntArray(2)
                         otherAnchor.getLocationOnScreen(coord)
                         val activity = context as AppCompatActivity
                         val toolbarView: View= activity.findViewById(R.id.toolbar)
                         link.end = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
-                        parentView.addView(link)
+
+
+                        val thisBasicViewId = ViewShapeHolder.getInstance().map[this]
+                        val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
+                        var anchorPointStart: AnchorPoint ?= null
+                        if(thisBasicViewId != null && otherBasicViewId != null) {
+                            when (v.id) {
+                                R.id.anchorPoint0 -> anchorPointStart =
+                                        AnchorPoint(thisBasicViewId, AnchorPoints.TOP.ordinal)
+                                R.id.anchorPoint1 -> anchorPointStart =
+                                        AnchorPoint(thisBasicViewId, AnchorPoints.RIGHT.ordinal)
+                                R.id.anchorPoint2 -> anchorPointStart =
+                                        AnchorPoint(thisBasicViewId, AnchorPoints.BOTTOM.ordinal)
+                                R.id.anchorPoint3 -> anchorPointStart =
+                                        AnchorPoint(thisBasicViewId, AnchorPoints.LEFT.ordinal)
+                            }
+
+                            if (anchorPointStart != null) {
+                                val path: ArrayList<Coordinates> = ArrayList()
+                                path.add(start)
+                                path.add(link.end)
+                                val linkShape: Link = Link(
+                                    UUID.randomUUID().toString(),
+                                    anchorPointStart,
+                                    anchorPointEnd,
+                                    0,
+                                    LinkStyle("#000", 5, 0),
+                                    path
+                                )
+                                ViewShapeHolder.getInstance().linkMap.forcePut(link, linkShape.id)
+                                ViewShapeHolder.getInstance().canevas.links.add(linkShape)
+                                ViewShapeHolder.getInstance().canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
+                                ViewShapeHolder.getInstance().canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
+                                parentView.addView(link)
+                            }
+                        }
+
                     }
                     oldLink = null
                 }
             }
-
-
-
         }
         true
     }
@@ -213,10 +296,52 @@ open class BasicElementView: RelativeLayout {
                     emitSelection()
                 }
                 MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
-                    this.x = this.x + (event.rawX - oldFrameRawX)
-                    this.y = this.y + (event.rawY - oldFrameRawY)
+                    val deltaX = event.rawX - oldFrameRawX
+                    val deltaY = event.rawY - oldFrameRawY
+                    this.x = this.x + deltaX
+                    this.y = this.y + deltaY
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
+
+                    val basicShapeId = ViewShapeHolder.getInstance().map[this]
+                    if(basicShapeId != null){
+                        val linksTo = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksTo
+                        if(linksTo != null){
+                            for(linkId in linksTo){
+                                if(linkId != null) {
+                                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                                    val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+                                    if (linkView != null && linkShape != null) {
+//                                        linkView.end.x += deltaX
+//                                        linkView.end.y += deltaY
+
+                                        linkShape.path.last().x += deltaX
+                                        linkShape.path.last().y += deltaY
+                                        linkView.requestLayout()
+                                    }
+                                }
+                            }
+                        }
+                        val linksFrom = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
+                        if(linksFrom != null){
+                            for(linkId in linksFrom){
+                                if(linkId != null) {
+                                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                                    val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+                                    if (linkView != null && linkShape != null) {
+//                                        linkView.start.x += deltaX
+//                                        linkView.start.y += deltaY
+
+                                        linkShape.path.first().x += deltaX
+                                        linkShape.path.first().y += deltaY
+                                        linkView.requestLayout()
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
                 }
                 MotionEvent.ACTION_UP -> {
                     first_line.text = "ActionUp"

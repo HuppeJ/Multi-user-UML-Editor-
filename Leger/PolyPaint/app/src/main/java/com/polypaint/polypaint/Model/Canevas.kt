@@ -12,6 +12,15 @@ class Canevas(var id: String, var name: String, var author: String, var owner: S
         links.add(link)
     }
 
+    fun findLink(id: String): Link?{
+        for(link in links){
+            if(link.id == id){
+                return link
+            }
+        }
+        return null
+    }
+
     fun findShape(id: String): BasicShape?{
         for(shape in shapes){
             if(shape.id == id){
