@@ -269,8 +269,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="175"/>
+            <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.RowSpan="2" BorderThickness="0,0,1,0" SnapsToDevicePixels="True"
@@ -283,10 +283,10 @@
                      ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,40"/>
 
         </Border>
-        <!--Logout button-->
+        <!--Back to gallery button-->
         <Button x:Name="LogoutButton" Margin="10,10,10,5"
-                Content="Logout"
-                Command="{Binding LogoutCommand}" Grid.Row="1"/>
+                Content="Back to Gallery"
+                Command="{Binding BackToGalleryCommand}" Grid.Row="1"/>
 
         <!--Messages-->
         <ItemsControl x:Name="MessagesItemsCtrl" Grid.Column="1" Margin="0,5,0,0" 

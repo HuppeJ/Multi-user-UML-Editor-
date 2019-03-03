@@ -13,11 +13,13 @@ using PolyPaint.Modeles;
 using PolyPaint.Utilitaires;
 using System.Windows.Input;
 using System.Reactive.Linq;
+using System.Windows.Controls;
 
 namespace PolyPaint.VueModeles
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private ConnectionService connectionService;
         private ChatService chatService;
         private IDialogService dialogService;
         private TaskFactory ctxTaskFactory;
@@ -29,17 +31,6 @@ namespace PolyPaint.VueModeles
             set
             {
                 _userName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _password;
-        public string password
-        {
-            get { return _password; }
-            set
-            {
-                _password = value;
                 OnPropertyChanged();
             }
         }
@@ -116,13 +107,24 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _connectCommand ?? (_connectCommand = new RelayCommand<object>(chatService.Connect, CanConnect));
+                return _connectCommand ?? (_connectCommand = new RelayCommand<object>(connectionService.Connect, CanConnect));
             }
         }
 
         private bool CanConnect(object o)
         {
-            return !IsConnected;// && UserName.Length >= 2;
+            return !IsConnected;
+        }
+        #endregion
+
+        #region Initialize Chat Command
+        private ICommand _initializeChatCommand;
+        public ICommand InitializeChatCommand
+        {
+            get
+            {
+                return _initializeChatCommand ?? (_initializeChatCommand = new RelayCommand<object>(chatService.Initialize));
+            }
         }
         #endregion
 
@@ -139,11 +141,15 @@ namespace PolyPaint.VueModeles
 
         private void Create(object o)
         {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
             chatService.CreateUser(username, password);
         }
 
         private bool CanCreate(object o)
         {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
             return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password) && IsConnected;// && UserName.Length >= 2;
         }
         #endregion
@@ -160,11 +166,15 @@ namespace PolyPaint.VueModeles
 
         private void Login(object o)
         {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
             chatService.LoginUser(username, password);
         }
 
         private bool CanLogin(object o)
         {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
             return !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password) && IsConnected;// && UserName.Length >= 2;
         }
         #endregion
@@ -183,7 +193,6 @@ namespace PolyPaint.VueModeles
         {
             UserMode = UserModes.Login;
             _isLoggedIn = false;
-            IsConnected = false;
             textMessage = string.Empty;
             _selectedRoom?.Chatter.Clear();
             chatService.Disconnect();
@@ -201,13 +210,29 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _createUserViewCommand ?? (_createUserViewCommand = new RelayCommand<Object>(CreateUserView));
+                return _createUserViewCommand ?? (_createUserViewCommand = new RelayCommand<Object>(GoToCreateUserView));
             }
         }
 
-        private void CreateUserView(object o)
+        private void GoToCreateUserView(object o)
         {
             UserMode = UserModes.CreateUser;
+        }
+        #endregion
+
+        #region DrawingViewCommand
+        private ICommand _drawingViewCommand;
+        public ICommand DrawingViewCommand
+        {
+            get
+            {
+                return _drawingViewCommand ?? (_drawingViewCommand = new RelayCommand<Object>(GoToDrawingView));
+            }
+        }
+
+        private void GoToDrawingView(object o)
+        {
+            UserMode = UserModes.Drawing;
         }
         #endregion
 
@@ -224,6 +249,22 @@ namespace PolyPaint.VueModeles
         private void BackToLogin(object o)
         {
             UserMode = UserModes.Login;
+        }
+        #endregion
+
+        #region BackToGalleryCommand
+        private ICommand _backToGalleryCommand;
+        public ICommand BackToGalleryCommand
+        {
+            get
+            {
+                return _backToGalleryCommand ?? (_backToGalleryCommand = new RelayCommand<Object>(BackToGallery));
+            }
+        }
+
+        private void BackToGallery(object o)
+        {
+            UserMode = UserModes.Gallery;
         }
         #endregion
 
@@ -296,11 +337,9 @@ namespace PolyPaint.VueModeles
         {
             if (isLoginSuccessful)
             {
-                //Console.WriteLine("log in from model to view");
-                UserMode = UserModes.Chat;
+                UserMode = UserModes.Gallery;
                 selectedRoom = rooms.First();
                 IsLoggedIn = true;
-                password = string.Empty;
             }
             else
             {
@@ -312,12 +351,13 @@ namespace PolyPaint.VueModeles
         public MainWindowViewModel(IDialogService diagSvc)
         {
             dialogService = diagSvc;
+            connectionService = new ConnectionService();
             chatService = new ChatService();
             ctxTaskFactory = new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext());
 
-            chatService.Connection += Connection;
-            chatService.UserCreation += UserCreation;
-            chatService.UserLogin += UserLogin;
+            connectionService.Connection += Connection;
+            connectionService.UserCreation += UserCreation;
+            connectionService.UserLogin += UserLogin;
             chatService.NewMessage += NewMessage;
 
             rooms.Add(new Room { name = "Everyone" });

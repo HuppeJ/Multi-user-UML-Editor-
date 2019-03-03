@@ -7,6 +7,10 @@ using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using Quobject.SocketIoClientDotNet.Client;
+using System.Windows.Input;
+using System.Windows;
+using System.Collections.ObjectModel;
+using PolyPaint.Enums;
 
 namespace PolyPaint.VueModeles
 {
@@ -23,29 +27,16 @@ namespace PolyPaint.VueModeles
 
         private ChatService chat = new ChatService();
 
-        private string _username;
-        public string username
-        {
-            get { return _username; }
-            set
-            {
-                _username = value;
-                ProprieteModifiee();
-            }
-        }
-        private string _password;
-        public string password
-        {
-            get { return _password; }
-            set
-            {
-                _password = value;
-                ProprieteModifiee();
-            }
-        }
-
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
+
+
+        public string SelectedStrokeType
+        {
+            get { return editeur.SelectedStrokeType; }
+            set { ProprieteModifiee(); }
+        }
+
 
         public string OutilSelectionne
         {
@@ -59,12 +50,6 @@ namespace PolyPaint.VueModeles
             set { editeur.CouleurSelectionnee = value; }
         }
 
-        public string PointeSelectionnee
-        {
-            get { return editeur.PointeSelectionnee; }
-            set { ProprieteModifiee(); }
-        }
-
         public int TailleTrait
         {
             get { return editeur.TailleTrait; }
@@ -72,6 +57,7 @@ namespace PolyPaint.VueModeles
         }
        
         public StrokeCollection Traits { get; set; }
+        public StrokeCollection SelectedStrokes { get; set; }
 
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<object> Empiler { get; set; }
@@ -79,16 +65,12 @@ namespace PolyPaint.VueModeles
         public RelayCommand<string> ChoisirPointe { get; set; }
         public RelayCommand<string> ChoisirOutil { get; set; }
         public RelayCommand<object> Reinitialiser { get; set; }
-
-        public RelayCommand<object> ConnectCommand { get; set; }
-        public RelayCommand<object> CreateUserCommand { get; set; }
-        public RelayCommand<object> LoginUserCommand { get; set; }
+        public RelayCommand<object> Rotate { get; set; }
 
 
-        private void UserCreated(User user)
-        {
-            Console.WriteLine("test");
-        }
+        public RelayCommand<string> ChooseStrokeTypeCommand { get; set; }
+
+
 
         /// <summary>
         /// Constructeur de VueModele
@@ -108,42 +90,20 @@ namespace PolyPaint.VueModeles
             AjusterPointe();
 
             Traits = editeur.traits;
+            SelectedStrokes = editeur.selectedStrokes;
             
             // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.            
             Empiler = new RelayCommand<object>(editeur.Empiler, editeur.PeutEmpiler);            
             Depiler = new RelayCommand<object>(editeur.Depiler, editeur.PeutDepiler);
             // Pour les commandes suivantes, il est toujours possible des les activer.
             // Donc, aucune vérification de type Peut"Action" à faire.
-            ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
             Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
+            Rotate = new RelayCommand<object>(editeur.Rotate);
 
-            ConnectCommand = new RelayCommand<object>(chat.Connect);
-            //CreateUserCommand = new RelayCommand<object>(chat.CreateUser);
-            //LoginUserCommand = new RelayCommand<object>(chat.LoginUser);
 
-        }
-
-        private void ConnectCommand2(string outil) 
-        {
-
-            Socket socket = IO.Socket("https://projet-3-228722.appspot.com");
-
-            socket.On(Socket.EVENT_CONNECT, () => {
-                Console.WriteLine("fasdf");
-            });
-
-            socket.On("hello", () => {
-                Console.WriteLine("fasdf");
-            });
-
-            // Connect to server
-            socket.Connect();
-
-            socket.Emit("test");
-
-            // disconnect from the server
-            socket.Close();
+            ChooseStrokeTypeCommand = new RelayCommand<string>(editeur.ChooseStrokeTypeCommand);
+            
 
         }
 
@@ -168,7 +128,11 @@ namespace PolyPaint.VueModeles
         /// Il indique quelle propriété a été modifiée dans le modèle.</param>
         private void EditeurProprieteModifiee(object sender, PropertyChangedEventArgs e)
         {     
-            if (e.PropertyName == "CouleurSelectionnee")
+            if (e.PropertyName == "SelectedStrokeType")
+            {
+                SelectedStrokeType = editeur.SelectedStrokeType;
+            }
+            else if (e.PropertyName == "CouleurSelectionnee")
             {
                 AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
             }                
@@ -176,11 +140,6 @@ namespace PolyPaint.VueModeles
             {
                 OutilSelectionne = editeur.OutilSelectionne;
             }                
-            else if (e.PropertyName == "PointeSelectionnee")
-            {
-                PointeSelectionnee = editeur.PointeSelectionnee;
-                AjusterPointe();
-            }
             else // e.PropertyName == "TailleTrait"
             {               
                 AjusterPointe();
@@ -194,9 +153,9 @@ namespace PolyPaint.VueModeles
         /// </summary>
         private void AjusterPointe()
         {
-            AttributsDessin.StylusTip = (editeur.PointeSelectionnee == "ronde") ? StylusTip.Ellipse : StylusTip.Rectangle;
-            AttributsDessin.Width = (editeur.PointeSelectionnee == "verticale") ? 1 : editeur.TailleTrait;
-            AttributsDessin.Height = (editeur.PointeSelectionnee == "horizontale") ? 1 : editeur.TailleTrait;
+            AttributsDessin.StylusTip = StylusTip.Ellipse;
+            AttributsDessin.Width = editeur.TailleTrait;
+            AttributsDessin.Height = editeur.TailleTrait;
         }
     }
 }

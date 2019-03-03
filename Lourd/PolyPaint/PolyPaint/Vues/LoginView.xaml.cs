@@ -26,28 +26,5 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
         }
-
-        //private void ConnectCommand(object sender, RoutedEventArgs e)
-        //{
-
-        //    Socket socket = IO.Socket("https://projet-3-228722.appspot.com");
-
-        //    socket.On(Socket.EVENT_CONNECT, () => {
-        //        Console.WriteLine("fasdf");
-        //    });
-
-        //    socket.On("hello", () => {
-        //        Console.WriteLine("fasdf");
-        //    });
-
-        //    // Connect to server
-        //    socket.Connect();
-
-        //    socket.Emit("test");
-
-        //    // disconnect from the server
-        //    socket.Close();
-
-        //}
     }
 }

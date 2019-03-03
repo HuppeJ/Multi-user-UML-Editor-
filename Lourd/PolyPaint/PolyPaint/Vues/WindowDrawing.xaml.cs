@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using PolyPaint.VueModeles;
-using PolyPaint.Vues;
+using PolyPaint;
+using System.Windows.Documents;
+using PolyPaint.CustomInk;
+using System.Windows.Ink;
 
-namespace PolyPaint
+namespace PolyPaint.Vues
 {
     /// <summary>
     /// Logique d'interaction pour WindowDrawing.xaml
     /// </summary>
-    public partial class WindowDrawing : Window
+    public partial class WindowDrawing : UserControl
     {
 
         public WindowDrawing()
@@ -38,13 +42,9 @@ namespace PolyPaint
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
         }
 
-        private void DupliquerSelection(object sender, RoutedEventArgs e)
-        {          
-            surfaceDessin.CopySelection();
-            surfaceDessin.Paste();
-        }
+        private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
-        private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutSelection();
+        private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
 
     }
 }

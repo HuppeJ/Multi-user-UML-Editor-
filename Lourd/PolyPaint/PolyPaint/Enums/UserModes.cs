@@ -9,6 +9,20 @@ namespace PolyPaint.Enums
     {
         Login,
         Chat,
-        CreateUser
+        CreateUser,
+        Gallery,
+        Drawing
+    }
+
+    public enum StrokeTypes
+    {
+        None,
+        Class,
+        Artifact,
+        Role,
+        Comment,
+        Activity,
+        Phase,
+        Relation
     }
 }

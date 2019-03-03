@@ -1,7 +1,12 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Ink;
+using System.Windows;
+using System.Windows.Ink;
+using System.Windows.Media;
+using PolyPaint.CustomInk;
 
 namespace PolyPaint.Modeles
 {
@@ -14,7 +19,16 @@ namespace PolyPaint.Modeles
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public StrokeCollection traits = new StrokeCollection();
+        public StrokeCollection selectedStrokes = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
+
+        // StrokeType selected
+        private string selectedStrokeType = "class";
+        public string SelectedStrokeType
+        {
+            get { return selectedStrokeType; }
+            set { selectedStrokeType = value; ProprieteModifiee(); }
+        }
 
         // Outil actif dans l'éditeur
         private string outilSelectionne = "crayon";
@@ -22,19 +36,6 @@ namespace PolyPaint.Modeles
         {
             get { return outilSelectionne; }
             set { outilSelectionne = value; ProprieteModifiee(); }
-        }
-
-        // Forme de la pointe du crayon
-        private string pointeSelectionnee = "ronde";
-        public string PointeSelectionnee
-        {
-            get { return pointeSelectionnee; }
-            set
-            {
-                OutilSelectionne = "crayon";
-                pointeSelectionnee = value;                                
-                ProprieteModifiee();
-            }
         }
 
         // Couleur des traits tracés par le crayon.
@@ -66,6 +67,8 @@ namespace PolyPaint.Modeles
                 ProprieteModifiee();
             }
         }
+
+        public static object StrokeType { get; private set; }
 
         /// <summary>
         /// Appelee lorsqu'une propriété d'Editeur est modifiée.
@@ -107,14 +110,27 @@ namespace PolyPaint.Modeles
             }
             catch { }         
         }
-        
-        // On assigne une nouvelle forme de pointe passée en paramètre.
-        public void ChoisirPointe(string pointe) => PointeSelectionnee = pointe;
 
         // L'outil actif devient celui passé en paramètre.
         public void ChoisirOutil(string outil) => OutilSelectionne = outil;
 
         // On vide la surface de dessin de tous ses traits.
         public void Reinitialiser(object o) => traits.Clear();
+
+        public void ChooseStrokeTypeCommand(string strokeType) {
+            // Automatically select crayon
+            OutilSelectionne = "crayon";
+            SelectedStrokeType = strokeType;
+            ProprieteModifiee();
+        }
+        
+        // Rotate selected strokes of 90 degrees
+        public void Rotate(object o)
+        {
+            foreach (CustomStroke stroke in selectedStrokes)
+            {
+                stroke.Rotate();
+            }
+        }
     }
 }
