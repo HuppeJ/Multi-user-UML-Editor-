@@ -1,24 +1,25 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as styles from './app.scss';
-import * as Redux from 'redux';
-import { RootReducers } from './reducers';
-import { Provider } from 'react-redux';
-import { WasteLookupAppConnected } from '../wasteLookupApp/wasteLookupAppConnected';
-import { IAppState } from './appState';
+import { TestingTool } from '../testingTool/TestingTool';
 
-export const AppStore: Redux.Store<IAppState> = Redux.createStore(RootReducers);
 
 class App extends React.Component {
+
+    constructor(props: any) {
+        super(props);
+
+
+
+    }
+
     render() {
         return (
-            <Provider store={AppStore}>
-                <div className={styles.flexContainer}>
-                    <div className={styles.flexItemCenter}>
-                        <WasteLookupAppConnected />
-                    </div>
+            <div className={styles.flexContainer}>
+                <div className={styles.flexItemCenter}>
+                    <TestingTool />
                 </div>
-            </Provider>
+            </div>
         );
     }
 }

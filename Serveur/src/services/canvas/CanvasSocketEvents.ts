@@ -116,7 +116,7 @@ export default class CanvasSocketEvents {
             socket.on("joinCanvasTest", function () {
                 socket.join(CanvasTestRoom);
                 console.log(`joinCanvasTest`, CanvasTestRoom);
-                io.emit("joinCanvasTestResponse", "joinedCanvasTestRoom");
+                io.to(CanvasTestRoom).emit("joinCanvasTestResponse", "joinedCanvasTestRoom");
             });
 
             socket.on("canvasUpdateTest", function (CanvasFormChanges: any) {

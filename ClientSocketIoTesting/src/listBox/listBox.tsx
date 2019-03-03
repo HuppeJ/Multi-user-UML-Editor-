@@ -5,31 +5,18 @@ import { IItemBoxProps, ItemBox } from '../itemBox/itemBox';
 export interface IListBoxProps {
     id?: string;
     items?: IItemBoxProps[];
-    noItemsMessage?: string;
-    favouritesCanBeAdded?: boolean;
-    favouritesCanBeRemoved?: boolean;
 }
 
 export class ListBox extends React.Component<IListBoxProps> {
-    static defaultProps: Partial<IListBoxProps> = {
-        id: "listBoxDefaultId",
-        items: [],
-        noItemsMessage: "No items.",
-        favouritesCanBeAdded: false,
-        favouritesCanBeRemoved: false
-    };
-
     private getItems(): React.ReactNode {
         const items = this.props.items.map(item => (
             <ItemBox
-                key={item.title}
+                key={item.eventName}
                 {...item}
-                favouritesCanBeAdded={this.props.favouritesCanBeAdded}
-                favouritesCanBeRemoved={this.props.favouritesCanBeRemoved} 
             />
         ));
 
-        return items.length > 0 ? items : <li className={styles.noItems}>{this.props.noItemsMessage}</li>;
+        return items.length > 0 ? items : <li className={styles.noItems}>No test tool</li>;
     }
 
     render() {

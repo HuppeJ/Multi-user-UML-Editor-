@@ -1,76 +1,69 @@
 import * as React from 'react';
 import * as styles from './itemBox.scss';
 
-export interface IItemBoxOwnProps {
-    title?: string;
-    description?: string;
-    favouritesCanBeAdded?: boolean;
-    favouritesCanBeRemoved?: boolean;
+export interface IItemBoxProps {
+    eventName: string;
+    roomEventToListenTo: string;
+    socket: any;
+    dataToSend?: any;
 }
-
-export interface IItemBoxStateProps {
-    favouritedItems?: IItemBoxOwnProps[];
-}
-
-export interface IItemBoxDispatchProps {
-    addFavourite?: (item: IItemBoxOwnProps) => void;
-    removeFavourite?: (item: IItemBoxOwnProps) => void;
-}
-
-export interface IItemBoxProps extends IItemBoxOwnProps, IItemBoxStateProps, IItemBoxDispatchProps {}
 
 export interface IItemBoxState {
-    isFavourited?: boolean;
+    response: any;
+    roomEventResponse: string;
 }
 
 export class ItemBox extends React.Component<IItemBoxProps, IItemBoxState> {
-    static defaultProps: Partial<IItemBoxProps> = {
-        title: '',
-        description: '',
-        favouritesCanBeAdded: false,
-        favouritesCanBeRemoved: false
-    };
 
     constructor(props: IItemBoxProps) {
         super(props);
-        this.state = { isFavourited: this.isFavourited() };
+        this.state = { 
+            response: "",
+            roomEventResponse: "",
+        };
     }
 
-    componentWillReceiveProps(newProps: IItemBoxProps) {
-        const isFavourited: boolean = newProps.favouritedItems.find(item => item.title === this.props.title) != null;
-        this.setState({ isFavourited });
+    componentDidMount() {
+        this.initialiseListener();
+
     }
 
-    private getDecodedDescriptions(): string {
-        let node: HTMLElement = document.createElement('div');
-        node.innerHTML = this.props.description;
-        return node.childNodes.length === 0 ? "" : node.childNodes[0].nodeValue;
-    }
+    private initialiseListener() {
+        this.props.socket.on(`${this.props.eventName}Response`, (data: any) => {
+            this.setState({response: data});
 
-    private onStarClick(): void {
-        if (this.state.isFavourited && this.props.favouritesCanBeRemoved) {
-            this.props.removeFavourite(this.props);
-        } else if (!this.state.isFavourited && this.props.favouritesCanBeAdded) {
-            this.props.addFavourite(this.props);
+        }); 
+
+        this.props.socket.on(`${this.props.roomEventToListenTo}`, (data: any) => {
+            this.setState({roomEventResponse: data});
+
+        }); 
+    }   
+
+    private onButtonClick(): void {
+        if (this.props.dataToSend) {
+            this.props.socket.emit(this.props.eventName, this.props.dataToSend)
+        } else {
+            this.props.socket.emit(this.props.eventName)
         }
     }
 
-    private isFavourited(): boolean {
-        return this.props.favouritedItems.find(item => item.title === this.props.title) != null;
-    }
-
     render() {
-        const starStyle = this.state.isFavourited ? styles.starSelected : styles.starUnselected;
-
         return (
             <div className={styles.container}>
-                <label className={`${styles.star} ${starStyle}`} onClick={() => this.onStarClick()}>
-                    ★
+                <label className={`${styles.star} ${styles.bold}`} onClick={() => this.onButtonClick()}>
+                    Trigger : {this.props.eventName}
                 </label>
-                <div className={styles.title}>
-                    {this.props.title}
+                <div className={styles.description} > 
+                    <div className={styles.bold}>  Response :</div> {this.state.response}
                 </div>
-                <div className={styles.description} dangerouslySetInnerHTML={{ __html: this.getDecodedDescriptions() }} /> 
+                <div className={styles.description}>
+                <div className={styles.bold}> Listen to event Room:</div> {this.props.roomEventToListenTo}
+                </div>
+                <div className={styles.description}>
+                <div className={styles.bold}> Response to event Room:</div> {this.state.roomEventResponse}
+                </div>
+
             </div>
         );
     }
