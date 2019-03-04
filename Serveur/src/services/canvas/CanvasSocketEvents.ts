@@ -1,6 +1,4 @@
 import * as SocketEvents from "../../constants/SocketEvents";
-import CanvasGallerySocketEvents from "./CanvasGallerySocketEvents";
-import CanvasEditionSocketEvents from "./CanvasEditionSocketEvents";
 import { ICanevas } from "./interfaces/interfaces";
 import CanvasManager from "./components/CanvasManager";
 
@@ -12,99 +10,88 @@ export default class CanvasSocketEvents {
             console.log(socket.id + " connected to Canvas server");
 
             // Save Canvas 
-            socket.on("createCanvasRoom", function (data: string) { 
-                try {
-                    const newCanvas: ICanevas = JSON.parse(data);
+            socket.on("createCanvasRoom", function (data: string) {
 
-                    const response = {
-                        isCreated: canvasManager.addCanvasRoom(newCanvas, socket.id)
-                    };
+                const newCanvas: ICanevas = JSON.parse(data);
 
-                    if (response.isCreated) {
-                        const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(newCanvas.name);
-                        socket.join(canvasRoomId);
-                        console.log(socket.id + " created  canvasRoom " + newCanvas.name);
-                        io.to(canvasRoomId).emit("canvasRoomCreated", canvasManager.getCanvasRooms());
-                    } else {
-                        console.log(socket.id + " failed to create canvasRoom " + newCanvas.name);
-                    }
-                    
-                    socket.emit("createCanvasRoomResponse", JSON.stringify(response));
-                } catch (e) {
-                    console.log("[error]","couldnt perform: createCanvasRoom :", e);
+                const response = {
+                    isCreated: canvasManager.addCanvasRoom(newCanvas, socket.id)
+                };
+
+                if (response.isCreated) {
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(newCanvas.name);
+                    socket.join(canvasRoomId);
+                    console.log(socket.id + " created  canvasRoom " + newCanvas.name);
+                    io.to(canvasRoomId).emit("canvasRoomCreated", canvasManager.getCanvasRooms());
+                } else {
+                    console.log(socket.id + " failed to create canvasRoom " + newCanvas.name);
                 }
+
+                socket.emit("createCanvasRoomResponse", JSON.stringify(response));
+
             });
 
-            socket.on("removeCanvasRoom", function (canvasName: string) { 
-                try {            
-                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
+            socket.on("removeCanvasRoom", function (canvasName: string) {
 
-                    const response = {
-                        isCanvasRoomRemoved: canvasManager.removeCanvasRoom(canvasRoomId)
-                    };
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
 
-                    if (response.isCanvasRoomRemoved) {
-                        io.to(canvasRoomId).emit("canvasRoomRemoved", canvasManager.getCanvasRooms());
-                        console.log(socket.id + " removed canvasRoom " + canvasName);
-                    } else {
-                        console.log(socket.id + " failed to remove canvasRoom " + canvasName);
-                    }
+                const response = {
+                    isCanvasRoomRemoved: canvasManager.removeCanvasRoom(canvasRoomId)
+                };
 
-                    socket.emit("removeCanvasRoomResponse", JSON.stringify(response));
-                    
-                    // TODO on gère cela là? 
-                    // io.sockets.clients(someRoom).forEach(function(s){
-                    //     s.leave(someRoom);
-                    // });
-                } catch (e) {
-                    console.log("[error]","couldnt perform: removeCanvasRoom :", e);
-                } 
-             });
-
-            socket.on("joinCanvasRoom", function (canvasName: string) { 
-                try {
-                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
-
-                    const response = {
-                        isCanvasRoomJoined: canvasManager.addUserToCanvasRoom(canvasRoomId, socket.id)
-                    };
-    
-                    if (response.isCanvasRoomJoined) {
-                        socket.join(canvasRoomId);
-                        console.log(socket.id + " joined canvasRoom " + canvasName);
-                    } else {
-                        console.log(socket.id + " failed to join canvasRoom " + canvasName);
-                    }
-    
-                    socket.emit("joinCanvasRoomResponse", JSON.stringify(response));
-                } catch (e) {
-                    console.log("[error]","couldnt perform: joinCanvasRoom :", e);
+                if (response.isCanvasRoomRemoved) {
+                    io.to(canvasRoomId).emit("canvasRoomRemoved", canvasManager.getCanvasRooms());
+                    console.log(socket.id + " removed canvasRoom " + canvasName);
+                } else {
+                    console.log(socket.id + " failed to remove canvasRoom " + canvasName);
                 }
+
+                socket.emit("removeCanvasRoomResponse", JSON.stringify(response));
+
+                // TODO on gère cela là? 
+                // io.sockets.clients(someRoom).forEach(function(s){
+                //     s.leave(someRoom);
+                // });
             });
 
-            socket.on("leaveCanvasRoom", function (canvasName: string) { 
-                try {
-                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
+            socket.on("joinCanvasRoom", function (canvasName: string) {
 
-                    const response = {
-                        isCanvasRoomLeaved: canvasManager.removeUserFromCanvasRoom(canvasRoomId, socket.id)
-                    };
-    
-                    if (response.isCanvasRoomLeaved) {
-                        socket.leave(canvasRoomId);
-                        console.log(socket.id + " leaved canvasRoom " + canvasName);
-                    } else {
-                        console.log(socket.id + " failed to leave canvasRoom " + canvasName);
-                    }
-    
-                    socket.emit("joinCanvasRoomResponse", JSON.stringify(response));
-                } catch (e) {
-                    console.log("[error]","couldnt perform: leaveCanvasRoom :", e);
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
+
+                const response = {
+                    isCanvasRoomJoined: canvasManager.addUserToCanvasRoom(canvasRoomId, socket.id)
+                };
+
+                if (response.isCanvasRoomJoined) {
+                    socket.join(canvasRoomId);
+                    console.log(socket.id + " joined canvasRoom " + canvasName);
+                } else {
+                    console.log(socket.id + " failed to join canvasRoom " + canvasName);
                 }
+
+                socket.emit("joinCanvasRoomResponse", JSON.stringify(response));
             });
 
-            socket.on("saveCanvas", function (data: any) { 
-               // TODO  
+            socket.on("leaveCanvasRoom", function (canvasName: string) {
+
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
+
+                const response = {
+                    isCanvasRoomLeaved: canvasManager.removeUserFromCanvasRoom(canvasRoomId, socket.id)
+                };
+
+                if (response.isCanvasRoomLeaved) {
+                    socket.leave(canvasRoomId);
+                    console.log(socket.id + " leaved canvasRoom " + canvasName);
+                } else {
+                    console.log(socket.id + " failed to leave canvasRoom " + canvasName);
+                }
+
+                socket.emit("joinCanvasRoomResponse", JSON.stringify(response));
+            });
+
+            socket.on("saveCanvas", function (data: any) {
+                // TODO  
             });
 
 
