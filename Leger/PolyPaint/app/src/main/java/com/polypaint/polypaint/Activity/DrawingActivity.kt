@@ -43,6 +43,9 @@ class DrawingActivity : AppCompatActivity(){
     private var drawer: Drawer? = null
     private var socket: Socket? = null
 
+    private var clipboard: BasicShape? = null
+    private var pileMemory: Stack<BasicShape> = Stack<BasicShape>()
+
     private fun defaultInit() : Canevas{
         return Canevas("default","default name","aa-author", "aa-owner",
                     2, null, ArrayList<BasicShape>(), ArrayList<Link>())
@@ -102,6 +105,10 @@ class DrawingActivity : AppCompatActivity(){
         duplicate_button.setOnClickListener{
             duplicateView()
         }
+        cut_button.setOnClickListener{
+            cutView()
+        }
+
 
         phase_button.setOnClickListener {
             syncCanevasFromLayout()
@@ -182,20 +189,41 @@ class DrawingActivity : AppCompatActivity(){
         val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
         for (view in list){
             if(view.isSelected && !view.isSelectedByOther){
-                view.isSelected = false
-                val shapeToDuplicate = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
-                if(shapeToDuplicate != null){
+                if(clipboard == null){
+                    view.isSelected = false
+                    val shapeToDuplicate = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
+                    if(shapeToDuplicate != null){
 
-                    val shapeDuplicated = shapeToDuplicate.copy()
-                    shapeDuplicated.id = UUID.randomUUID().toString()
-                    ViewShapeHolder.getInstance().canevas.addShape(shapeDuplicated)
-                    addOnCanevas(shapeDuplicated)
+                        val shapeDuplicated = shapeToDuplicate.copy()
+                        shapeDuplicated.id = UUID.randomUUID().toString()
+                        ViewShapeHolder.getInstance().canevas.addShape(shapeDuplicated)
+                        addOnCanevas(shapeDuplicated)
 
-                    emitAddForm(shapeDuplicated)
+                        emitAddForm(shapeDuplicated)
+                    }
+                }else{
+                    ViewShapeHolder.getInstance().canevas.addShape(clipboard!!)
+                    addOnCanevas(clipboard!!)
+                    emitAddForm(clipboard!!)
+                    clipboard = null
                 }
+
             }
         }
 
+    }
+
+    private fun cutView(){
+        val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
+        for (view in list){
+            if(view.isSelected && !view.isSelectedByOther){
+                clipboard = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
+                parent_relative_layout.removeView(view)
+                ViewShapeHolder.getInstance().remove(view)
+                //TODO: EMIT DELETE
+
+            }
+        }
     }
 
     private fun syncLayoutFromCanevas(){
