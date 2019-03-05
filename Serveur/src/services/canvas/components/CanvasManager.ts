@@ -16,7 +16,7 @@ export default class CanvasManager {
     public addCanvasRoom(newCanvas: ICanevas, socketId: any) {
         const canvasRoomId: string = this.getCanvasRoomIdFromName(newCanvas.name);
 
-        if (this.doesCanvasRoomExist(canvasRoomId)) {
+        if (this.canvasRooms.has(canvasRoomId)) {
             return false;
         }
 
@@ -24,10 +24,6 @@ export default class CanvasManager {
         canvasRoom.addUser(socketId);
         this.canvasRooms.set(canvasRoomId, canvasRoom);
         return true;
-    }
-
-    public doesCanvasRoomExist(canvasRoomId: string) {
-        return this.canvasRooms.has(canvasRoomId);
     }
 
     public addUserToCanvasRoom(canvasRoomId: string, socketId: any) {
@@ -54,7 +50,7 @@ export default class CanvasManager {
 
 
     public removeCanvasRoom(canvasRoomId: string) {
-        if (this.doesCanvasRoomExist(canvasRoomId)) {
+        if (this.canvasRooms.has(canvasRoomId)) {
             this.canvasRooms.delete(canvasRoomId);
             return true;
         }
@@ -63,8 +59,8 @@ export default class CanvasManager {
     }
 
     public isClientInCanvas(canvasRoomId: string, socketId: any) {
-        if (this.doesCanvasRoomExist(canvasRoomId)) {
-            const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (this.canvasRooms.has(canvasRoomId)) {
+            const canvasRoom = this.canvasRooms.get(canvasRoomId);
             return canvasRoom.hasUser(socketId);
         }
 
@@ -80,14 +76,15 @@ export default class CanvasManager {
     //     return false;
     // }
 
-    public getCanvasRooms() {
-        return JSON.stringify(Array.from(this.canvasRooms.keys()));
+    public getCanvasRooms() {  
+        return JSON.stringify( Array.from(this.canvasRooms) );      
+        // return JSON.stringify(Array.from(this.canvasRooms.keys()));
     }
 
     // TODO : Fonction pas testée... en fait il y a rien qui a vraiment été testé pour le moment ^^ 
     public getCanvasRoomFromSocketId(socketId: any): string {
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
-            if (canvasRoom.hasUser()) {
+            if (canvasRoom.hasUser(socketId)) {
                 return canvasRoomId;
             }
         }

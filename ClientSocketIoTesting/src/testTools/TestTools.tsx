@@ -21,11 +21,46 @@ export class TestTools extends React.Component<ITestToolsProps, ITestToolsState>
         this.initialiseTestTools();
     }
 
+    // TESTTOOLS TO ADD
     public initialiseTestTools() {
+        this.addTestTool("getServerState", "", this.props.socket);
+
+        this.addTestTool("createCanvasRoom", "canvasRoomCreated", this.props.socket, this.getMockCanvas("CanvasRoom1"));
+        this.addTestTool("createCanvasRoom", "canvasRoomCreated", this.props.socket, this.getMockCanvas("CanvasRoom2"));
+
+        this.addTestTool("removeCanvasRoom", "canvasRoomRemoved", this.props.socket, "CanvasRoom1");
+        this.addTestTool("removeCanvasRoom", "canvasRoomRemoved", this.props.socket, "CanvasRoom2");
+
+
+
+        this.addTestTool("joinCanvasRoom", "", this.props.socket, "CanvasRoom1");
+        this.addTestTool("joinCanvasRoom", "", this.props.socket, "CanvasRoom2");
+
+
+        this.addTestTool("leaveCanvasRoom", "", this.props.socket, "CanvasRoom1");
+
+
+ 
+
+
+
+
         this.addTestTool("joinCanvasTest", "", this.props.socket);
         this.addTestTool("canvasUpdateTest", "canvasUpdateTestResponse", this.props.socket, "dataToSendTEST");
     }
     
+    private getMockCanvas(name: string): string {
+        const newCanvas: any = {
+            id: "tempid",  
+            name: name,  
+            author: "string",  
+            owner: "string",  
+            accessibility: 1,
+            shapes: [],  
+            links: []
+        };
+        return JSON.stringify(newCanvas);
+    }
     public addTestTool(eventName: string, roomEventToListenTo: string, socket: any, dataToSend?: any) {
         this.state.items.push( {
             eventName: eventName,

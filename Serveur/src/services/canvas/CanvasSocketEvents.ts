@@ -11,7 +11,6 @@ export default class CanvasSocketEvents {
 
             // Save Canvas 
             socket.on("createCanvasRoom", function (data: string) {
-
                 const newCanvas: ICanevas = JSON.parse(data);
 
                 const response = {
@@ -20,6 +19,8 @@ export default class CanvasSocketEvents {
 
                 if (response.isCreated) {
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(newCanvas.name);
+                    // TODO il ne faudrait pas join la room automatiquement. 
+                    // Il faudrait mémoriser quels Canvas existent et créer les canvasRoom lorsqu'il y a un user de connecté
                     socket.join(canvasRoomId);
                     console.log(socket.id + " created  canvasRoom " + newCanvas.name);
                     io.to(canvasRoomId).emit("canvasRoomCreated", canvasManager.getCanvasRooms());
@@ -32,9 +33,8 @@ export default class CanvasSocketEvents {
             });
 
             socket.on("removeCanvasRoom", function (canvasName: string) {
-
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
-
+                
                 const response = {
                     isCanvasRoomRemoved: canvasManager.removeCanvasRoom(canvasRoomId)
                 };
@@ -48,14 +48,13 @@ export default class CanvasSocketEvents {
 
                 socket.emit("removeCanvasRoomResponse", JSON.stringify(response));
 
-                // TODO on gère cela là? 
+                // TODO on gère cela ici? 
                 // io.sockets.clients(someRoom).forEach(function(s){
                 //     s.leave(someRoom);
                 // });
             });
 
             socket.on("joinCanvasRoom", function (canvasName: string) {
-
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
 
                 const response = {
@@ -73,7 +72,6 @@ export default class CanvasSocketEvents {
             });
 
             socket.on("leaveCanvasRoom", function (canvasName: string) {
-
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
 
                 const response = {
@@ -87,7 +85,7 @@ export default class CanvasSocketEvents {
                     console.log(socket.id + " failed to leave canvasRoom " + canvasName);
                 }
 
-                socket.emit("joinCanvasRoomResponse", JSON.stringify(response));
+                socket.emit("leaveCanvasRoomResponse", JSON.stringify(response));
             });
 
             socket.on("saveCanvas", function (data: any) {
