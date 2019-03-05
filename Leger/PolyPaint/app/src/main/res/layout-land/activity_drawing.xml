@@ -36,6 +36,26 @@
                     android:layout_height="30dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView"/>
+            <Button
+                    android:id="@+id/duplicate_button"
+                    android:text="DUPLICATE"
+                    android:textSize="14dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:layout_width="140dp"
+                    android:layout_height="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/clear_canvas_button"/>
+            <Button
+                    android:id="@+id/cut_button"
+                    android:text="CUT"
+                    android:textSize="14dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:layout_width="140dp"
+                    android:layout_height="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/duplicate_button"/>
 
             <Button
                     android:id="@+id/add_button"
@@ -46,7 +66,7 @@
                     android:layout_width="140dp"
                     android:layout_height="30dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/clear_canvas_button"
+                    app:layout_constraintTop_toBottomOf="@+id/cut_button"
                     android:layout_marginTop="20dp"/>
             <Button
                     android:id="@+id/class_button"

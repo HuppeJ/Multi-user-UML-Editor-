@@ -43,7 +43,6 @@ class DrawingActivity : AppCompatActivity(){
     private var drawer: Drawer? = null
     private var socket: Socket? = null
 
-
     private fun defaultInit() : Canevas{
         return Canevas("default","default name","aa-author", "aa-owner",
                     2, null, ArrayList<BasicShape>(), ArrayList<Link>())
@@ -98,6 +97,10 @@ class DrawingActivity : AppCompatActivity(){
         clear_canvas_button.setOnClickListener {
             emitClearCanvas()
             parent_relative_layout?.removeAllViews()
+        }
+
+        duplicate_button.setOnClickListener{
+            duplicateView()
         }
 
         phase_button.setOnClickListener {
@@ -158,8 +161,6 @@ class DrawingActivity : AppCompatActivity(){
     }
     private fun addBasicShapeOnCanevas() : BasicShape{
         var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
-        //TODO : Request uuid
-
         var basicShape = BasicShape(UUID.randomUUID().toString(), 0, "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
 
 
@@ -176,6 +177,26 @@ class DrawingActivity : AppCompatActivity(){
         parent_relative_layout?.addView(classView)
     }
 
+    private fun duplicateView(){
+        //Copying list to avoid ConcurrentModificationException
+        val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
+        for (view in list){
+            if(view.isSelected && !view.isSelectedByOther){
+                view.isSelected = false
+                val shapeToDuplicate = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
+                if(shapeToDuplicate != null){
+
+                    val shapeDuplicated = shapeToDuplicate.copy()
+                    shapeDuplicated.id = UUID.randomUUID().toString()
+                    ViewShapeHolder.getInstance().canevas.addShape(shapeDuplicated)
+                    addOnCanevas(shapeDuplicated)
+
+                    emitAddForm(shapeDuplicated)
+                }
+            }
+        }
+
+    }
 
     private fun syncLayoutFromCanevas(){
         for (view in ViewShapeHolder.getInstance().map.keys){
