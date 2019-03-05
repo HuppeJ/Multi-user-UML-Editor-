@@ -43,8 +43,8 @@ class DrawingActivity : AppCompatActivity(){
     private var drawer: Drawer? = null
     private var socket: Socket? = null
 
-    private var clipboard: BasicShape? = null
-    private var pileMemory: Stack<BasicShape> = Stack<BasicShape>()
+    private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
+    private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
 
     private fun defaultInit() : Canevas{
         return Canevas("default","default name","aa-author", "aa-owner",
@@ -108,7 +108,12 @@ class DrawingActivity : AppCompatActivity(){
         cut_button.setOnClickListener{
             cutView()
         }
-
+        stack_button.setOnClickListener{
+            stackView()
+        }
+        unstack_button.setOnClickListener{
+            unstackView()
+        }
 
         phase_button.setOnClickListener {
             syncCanevasFromLayout()
@@ -185,14 +190,16 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun duplicateView(){
-        //Copying list to avoid ConcurrentModificationException
-        val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
-        for (view in list){
-            if(view.isSelected && !view.isSelectedByOther){
-                if(clipboard == null){
+        if(clipboard.isEmpty()){
+            //Copying list to avoid ConcurrentModificationException
+            val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
+            for (view in list){
+                if(view.isSelected && !view.isSelectedByOther) {
                     view.isSelected = false
-                    val shapeToDuplicate = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
-                    if(shapeToDuplicate != null){
+                    val shapeToDuplicate = ViewShapeHolder.getInstance().canevas.findShape(
+                        ViewShapeHolder.getInstance().map.getValue(view)
+                    )
+                    if (shapeToDuplicate != null) {
 
                         val shapeDuplicated = shapeToDuplicate.copy()
                         shapeDuplicated.id = UUID.randomUUID().toString()
@@ -201,31 +208,54 @@ class DrawingActivity : AppCompatActivity(){
 
                         emitAddForm(shapeDuplicated)
                     }
-                }else{
-                    ViewShapeHolder.getInstance().canevas.addShape(clipboard!!)
-                    addOnCanevas(clipboard!!)
-                    emitAddForm(clipboard!!)
-                    clipboard = null
                 }
-
             }
+        }else{
+            for(shape in clipboard){
+                ViewShapeHolder.getInstance().canevas.addShape(shape)
+                addOnCanevas(shape)
+                emitAddForm(shape)
+            }
+            clipboard.clear()
         }
-
     }
 
     private fun cutView(){
         val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
         for (view in list){
             if(view.isSelected && !view.isSelectedByOther){
-                clipboard = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
+                val shapeToCut = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
+                clipboard.add(shapeToCut!!)
+                emitDeleteForm(shapeToCut!!)
                 parent_relative_layout.removeView(view)
                 ViewShapeHolder.getInstance().remove(view)
-                //TODO: EMIT DELETE
-
             }
         }
     }
 
+    private fun stackView(){
+        val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
+        for (view in list){
+            if(view.isSelected && !view.isSelectedByOther){
+                val shapeToStack = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
+
+                stackBasicShape.push(shapeToStack)
+                emitDeleteForm(shapeToStack!!)
+
+                parent_relative_layout.removeView(view)
+                ViewShapeHolder.getInstance().remove(view)
+            }
+        }
+    }
+    private fun unstackView(){
+        try {
+            val shapeUnstacked = stackBasicShape.pop()
+            ViewShapeHolder.getInstance().canevas.addShape(shapeUnstacked)
+            addOnCanevas(shapeUnstacked)
+
+            emitAddForm(shapeUnstacked)
+        }catch (e : EmptyStackException){}
+    }
     private fun syncLayoutFromCanevas(){
         for (view in ViewShapeHolder.getInstance().map.keys){
             val basicShapeId:  String = ViewShapeHolder.getInstance().map.getValue(view)
@@ -268,7 +298,15 @@ class DrawingActivity : AppCompatActivity(){
 
     }
 
+    private fun emitDeleteForm(basicShape: BasicShape){
+        var obj: String =""
+        val gson = Gson()
+        val response: DrawingActivity.Response =DrawingActivity.Response(UserHolder.getInstance().username, basicShape)
+        obj = gson.toJson(response)
+        Log.d("emitingDelete", obj)
+        socket?.emit(SocketConstants.DELETE_FORMS, obj)
 
+    }
 
 
     public class Response(var username: String, var basicShape: BasicShape){}
