@@ -122,7 +122,12 @@
                         <Image Source="/Resources/rotate.png" />
                     </StackPanel>
                 </Button>-->
-                <Button x:Name="rotation" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Rotate}" Content="↻" FontSize="32" Foreground="Black"/>
+                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0" Command="{Binding Rotate}"
+                        BorderThickness="0">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/Resources/rotate.png"></ImageBrush>
+                    </Button.Background>
+                </Button>
                 <!--<xctk:ColorPicker x:Name="selecteurCouleur"                             
                   VerticalContentAlignment="Stretch"
                   Background="#00000000"
