@@ -36,7 +36,7 @@ namespace PolyPaint.Modeles
         }
 
         // Couleur des traits tracés par le crayon.
-        private string couleurSelectionnee = "Black";
+        /* private string couleurSelectionnee = "Black";
         public string CouleurSelectionnee
         {
             get { return couleurSelectionnee; }
@@ -48,10 +48,10 @@ namespace PolyPaint.Modeles
                 OutilSelectionne = "crayon";
                 ProprieteModifiee();
             }
-        }
+        } */
 
         // Grosseur des traits tracés par le crayon.
-        private int tailleTrait = 11;
+        /*private int tailleTrait = 11;
         public int TailleTrait
         {
             get { return tailleTrait; }
@@ -63,7 +63,7 @@ namespace PolyPaint.Modeles
                 OutilSelectionne = "crayon";
                 ProprieteModifiee();
             }
-        }
+        }*/
 
         public static object StrokeType { get; private set; }
 
