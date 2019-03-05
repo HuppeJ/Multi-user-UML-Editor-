@@ -8,7 +8,8 @@ export interface IBasicShape  {
     type: number,  // {Enum_ShapeTypes}
     name: string,  
     shapeStyle: IShapeStyle,  
-    links: string[]
+    linksTo: string[],
+    linksFrom: string[],
 } 
 
 export interface ICanevas { 
@@ -23,11 +24,6 @@ export interface ICanevas {
 } 
 
 export interface IClassShape extends IBasicShape {
-    id: string, 
-    type: number, // (Enum_ShapeTypes) 
-    name: string, 
-    shapeStyle: IShapeStyle, 
-    links: string[],  
     attributes: string[],  
     methods: string[]
 }
