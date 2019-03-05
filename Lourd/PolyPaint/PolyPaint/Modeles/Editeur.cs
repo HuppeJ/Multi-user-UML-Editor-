@@ -80,7 +80,7 @@ namespace PolyPaint.Modeles
         }
 
         // S'il y a au moins 1 trait sur la surface, il est possible d'exécuter Empiler.
-        public bool PeutEmpiler(object o) => (traits.Count > 0); 
+        public bool PeutEmpiler(object o) => (traits.Count > 0);
         // On retire le trait le plus récent de la surface de dessin et on le place sur une pile.
         public void Empiler(object o)
         {
@@ -88,7 +88,7 @@ namespace PolyPaint.Modeles
             {
                 Stroke trait = traits.Last();
                 traitsRetires.Add(trait);
-                traits.Remove(trait);               
+                traits.Remove(trait);
             }
             catch { }
 
@@ -105,11 +105,17 @@ namespace PolyPaint.Modeles
                 traits.Add(trait);
                 traitsRetires.Remove(trait);
             }
-            catch { }         
+            catch { }
         }
 
         // L'outil actif devient celui passé en paramètre.
-        public void ChoisirOutil(string outil) => OutilSelectionne = outil;
+        public void ChoisirOutil(string outil) {
+            OutilSelectionne = outil;
+            if (outil.Equals("efface_trait"))
+            {
+                SelectedStrokeType = "nothing";
+            }
+        }
 
         // On vide la surface de dessin de tous ses traits.
         public void Reinitialiser(object o) => traits.Clear();

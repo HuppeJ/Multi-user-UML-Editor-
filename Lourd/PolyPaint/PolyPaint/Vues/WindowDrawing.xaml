@@ -62,43 +62,31 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="CLASS_SHAPE" 
+                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="CLASS" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="CLASS_SHAPE">
-                    <!--<StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>-->
                 </Button>
-                <Button x:Name="Role" Width="40" Height="40" Margin="5" Padding="0,0" Content="ROLE" 
+                <Button x:Name="Role" Width="40" Height="40" Margin="5" Padding="0,0" Content="ROLE" FontSize="12" FontFamily="Calibri"  Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ROLE">
-                    <!--<StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>-->
                 </Button>
-                <Button x:Name="Artifact" Width="40" Height="40" Margin="5" Padding="0,0" Content="ARTIFACT" 
+                <Button x:Name="Artifact" Width="50" Height="40" Margin="5" Padding="0,0" Content="ARTIFACT" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ARTIFACT">
-                    <!--<StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>-->
                 </Button>
-                <Button x:Name="Activity" Width="40" Height="40" Margin="5" Padding="0,0" Content="ACTIVITY" 
+                <Button x:Name="Activity" Width="50" Height="40" Margin="5" Padding="0,0" Content="ACTIVITY" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ACTIVITY">
-                    <!--<StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>-->
                 </Button>
-                <Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
+                <!--<Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChoisirOutil}"
@@ -106,7 +94,7 @@
                     <StackPanel>
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>
-                </Button>
+                </Button>-->
                 <Button x:Name="efface_trait" Width="40" Height="40" Margin="5" Padding="0,0"
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -128,12 +116,13 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0"
+                <!--<Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0"
                     Command="{Binding Rotate}">
                     <StackPanel>
                         <Image Source="/Resources/rotate.png" />
                     </StackPanel>
-                </Button>
+                </Button>-->
+                <Button x:Name="rotation" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Rotate}" Content="↻" FontSize="32" Foreground="Black"/>
                 <!--<xctk:ColorPicker x:Name="selecteurCouleur"                             
                   VerticalContentAlignment="Stretch"
                   Background="#00000000"
