@@ -57,7 +57,7 @@ io.on('connection', (socket: any) => {
 
     socket.on('getServerState', function () {
         const response = {
-            canvasManager_canvasRooms: JSON.parse(canvasManager.getCanvasRooms())
+            canvasManager_canvasRooms: JSON.parse(canvasManager.getCanvasRoomsSERI())
         };
 
         socket.emit("getServerStateResponse", JSON.stringify(response));

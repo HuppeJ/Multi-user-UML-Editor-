@@ -1,12 +1,13 @@
 import CanvasRoom from "./CanvasRoom";
 import { ICanevas } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
+import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasManager {
-    private canvasRooms: any; // [key: canvasRoomId, value: canvasRoom]
+    private canvasRooms: Map<string, CanvasRoom>; // [key: canvasRoomId, value: canvasRoom]
 
     constructor() {
-        this.canvasRooms = new Map();
+        this.canvasRooms = new Map<string, CanvasRoom>();
     }
 
     public getCanvasRoomIdFromName(canvasName: string): string {
@@ -27,27 +28,24 @@ export default class CanvasManager {
     }
 
     public addUserToCanvasRoom(canvasRoomId: string, socketId: any) {
-        // TODO : vérifier que canvasRoom c'est pas une copie, mais bien une référence à l'objet se trouvant dans this.canvasRoom
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (canvasRoom && !canvasRoom.hasUser(socketId)) {
             canvasRoom.addUser(socketId);
             return true;
         }
-       
+
         return false;
     }
 
     public removeUserFromCanvasRoom(canvasRoomId: string, socketId: any) {
-        // TODO : vérifier que canvasRoom c'est pas une copie, mais bien une référence à l'objet se trouvant dans this.canvasRoom
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (canvasRoom && canvasRoom.hasUser(socketId)) {
             canvasRoom.removeUser(socketId);
             return true;
         }
-       
+
         return false;
     }
-
 
     public removeCanvasRoom(canvasRoomId: string) {
         if (this.canvasRooms.has(canvasRoomId)) {
@@ -67,21 +65,7 @@ export default class CanvasManager {
         return false;
     }
 
-    // public removeClientFromCanvas(canvasName: string, socketId: any) {
-    //     if(this.isClientInCanvas(canvasName, socketId)) {
-    //         let Canvas = this.canvasRooms.get(canvasName);
-    //         Canvas.removeUser(socketId);
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    public getCanvasRooms() {  
-        return JSON.stringify( Array.from(this.canvasRooms) );      
-        // return JSON.stringify(Array.from(this.canvasRooms.keys()));
-    }
-
-    // TODO : Fonction pas testée... en fait il y a rien qui a vraiment été testé pour le moment ^^ 
+    // TODO : Fonction pas testée... 
     public getCanvasRoomFromSocketId(socketId: any): string {
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
             if (canvasRoom.hasUser(socketId)) {
@@ -92,7 +76,21 @@ export default class CanvasManager {
         return null;
     }
 
-    // public getCanvasClients(canvasName: string) {
-    //     return JSON.stringify(this.canvasRooms.get(canvasName));
-    // }
+    public getCanvasRoomsSERI(): string {
+        return JSON.stringify({
+            canvasRooms: mapToObj(this.canvasRooms)
+        });
+    }
+
+    public getUsersInCanvasRoomSERI(canvasName: string) {
+        return JSON.stringify({
+            connectedUsers: JSON.parse(this.canvasRooms.get(canvasName).getConnectedUsersSERI())
+        });
+    }
+
+    toJSON() {
+        return Object.assign({}, this, {
+            canvasRooms: mapToObj(this.canvasRooms)
+        });
+    }
 }

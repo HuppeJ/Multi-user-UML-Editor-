@@ -23,7 +23,7 @@ export default class CanvasSocketEvents {
                     // Il faudrait mémoriser quels Canvas existent et créer les canvasRoom lorsqu'il y a un user de connecté
                     socket.join(canvasRoomId);
                     console.log(socket.id + " created  canvasRoom " + newCanvas.name);
-                    io.to(canvasRoomId).emit("canvasRoomCreated", canvasManager.getCanvasRooms());
+                    io.to(canvasRoomId).emit("canvasRoomCreated", canvasManager.getCanvasRoomsSERI());
                 } else {
                     console.log(socket.id + " failed to create canvasRoom " + newCanvas.name);
                 }
@@ -40,7 +40,7 @@ export default class CanvasSocketEvents {
                 };
 
                 if (response.isCanvasRoomRemoved) {
-                    io.to(canvasRoomId).emit("canvasRoomRemoved", canvasManager.getCanvasRooms());
+                    io.to(canvasRoomId).emit("canvasRoomRemoved", canvasManager.getCanvasRoomsSERI());
                     console.log(socket.id + " removed canvasRoom " + canvasName);
                 } else {
                     console.log(socket.id + " failed to remove canvasRoom " + canvasName);
