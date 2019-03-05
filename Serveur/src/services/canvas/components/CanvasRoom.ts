@@ -31,8 +31,40 @@ export default class CanvasRoom {
         });
     }
 
-    public addForm(form: any) {
-        this.canvas.shapes.push(form);
+    // On va probablement utiliser les , socketId: any pour log l<historique des modification
+    public addForm(form: any, socketId: any): boolean {
+        try {
+            this.canvas.shapes.push(form);
+            return true;
+        } catch (e) {
+            console.log("[Error] in addForm", e);
+            return false;
+        }
+    }
+
+    public updateForms(forms: any[], socketId: any): boolean {
+        try {
+            let formIsUpdated: boolean = false;
+
+            forms.forEach((form) => {
+                formIsUpdated = false;
+                this.canvas.shapes.forEach((shape, index) => {
+                    if (shape.id === form.id) {
+                        this.canvas.shapes[index] = form;
+                        formIsUpdated = true;
+                    }
+                });
+
+                if (!formIsUpdated) {
+                    throw new Error(`There is no form with the id: "${form.id}" in this canvas.`);
+                }
+            });
+
+            return true;
+        } catch (e) {
+            console.log("[Error] in updateForms", e);
+            return false;
+        }
     }
 
     // toJSON is automatically used by JSON.stringify

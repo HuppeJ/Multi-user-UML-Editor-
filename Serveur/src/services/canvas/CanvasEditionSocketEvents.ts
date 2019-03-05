@@ -1,7 +1,7 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { CanvasTestRoom } from "./CanvasSocketEvents";
 import CanvasManager from "./components/CanvasManager";
-import { ICreateFormData } from "./interfaces/interfaces";
+import { ICreateFormData, IUpdateFormsData } from "./interfaces/interfaces";
 
 export default class CanvasEditionSocketEvents {
     constructor(io: any, canvasManager: CanvasManager) {
@@ -16,21 +16,37 @@ export default class CanvasEditionSocketEvents {
                 };
 
                 if (response.isFormCreated) {
-                    console.log(socket.id + " created  form " + createFormData.form);
+                    console.log(socket.id + " created form " + createFormData.form);
                     io.to(canvasRoomId).emit("formCreated", createFormData.form);
-
-                    // TODO à enlever
-                    io.to(CanvasTestRoom).emit("formCreated", createFormData.form);
                 } else {
                     console.log(socket.id + " failed to create form " + createFormData.form);
                 }
 
                 socket.emit("createFormResponse", JSON.stringify(response));
+
+                // TODO à enlever
+                io.to(CanvasTestRoom).emit("formCreated", createFormData);
             });
 
-            socket.on("updateForms", function (data: any) {
-                console.log(`updateForms from ${socket.id}, response:`, data);
-                io.to(CanvasTestRoom).emit("formsUpdated", data);
+            socket.on("updateForms", function (updateFormsData: IUpdateFormsData) {
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(updateFormsData.canevasName);
+
+                const response = {
+                    areFormsUpdated: canvasManager.updateCanvasForms(canvasRoomId, updateFormsData.forms, socket.id)
+                };
+
+                if (response.areFormsUpdated) {
+                    console.log(socket.id + " updated forms " + updateFormsData.forms);
+                    io.to(canvasRoomId).emit("formsUpdated", updateFormsData.forms);
+                } else {
+                    console.log(socket.id + " failed to update forms " + updateFormsData.forms);
+                }
+
+                socket.emit("updateFormsResponse", JSON.stringify(response));
+
+
+                // TODO à enlever
+                io.to(CanvasTestRoom).emit("formsUpdated", updateFormsData);
             });
 
             socket.on("deleteForms", function (data: any) {

@@ -4,10 +4,16 @@ export interface IAnchorPoint {
 }
 
 export interface ICreateFormData {
+    // username: string, // ça serait plus simple d'avoir le username directement pour log les changements, mais je ne sais pas à quel point c'est compliqué que les clients nous l'envoient
     canevasName: string,  
-    form: any, // IBasicShape || IClassShape7§¼p-0
+    form: any, // IBasicShape || IClassShape
 }
 
+export interface IUpdateFormsData {
+    // username: string, // ça serait plus simple d'avoir le username directement pour log les changements, mais je ne sais pas à quel point c'est compliqué que les clients nous l'envoient
+    canevasName: string,  
+    forms: any[], // IBasicShape || IClassShape
+}
 
 export interface IBasicShape  { 
     id: string,  
