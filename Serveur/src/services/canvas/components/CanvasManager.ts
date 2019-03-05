@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { ICanevas } from "../interfaces/interfaces";
+import { ICanevas, ICreateFormData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -75,6 +75,32 @@ export default class CanvasManager {
 
         return null;
     }
+
+    public addFormToCanvas(canvasRoomId: string, form: any, socketId: any) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        canvasRoom.addForm(form);
+        return true;
+    }
+
+    // TODO : remove (version lorsqu'on ne reçoit pas le nom du canvas)
+    // public addFormToCanvas(form: any, socketId: any) {
+    //     const canvasRoomId: string = this.getCanvasRoomFromSocketId(socketId);
+    //     if (!canvasRoomId) {
+    //         return false;
+    //     }
+        
+    //     const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+    //     if (!canvasRoom) {
+    //         return false;
+    //     }
+
+    //     canvasRoom.addForm(form);
+    //     return true;
+    // }
 
     public getCanvasRoomsSERI(): string {
         return JSON.stringify({

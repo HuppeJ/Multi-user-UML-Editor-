@@ -56,8 +56,73 @@ export class TestTools extends React.Component<ITestToolsProps, ITestToolsState>
             author: "string",  
             owner: "string",  
             accessibility: 1,
-            shapes: [],  
-            links: []
+            shapes: {
+                id: "shape1",  
+                type: 1,  // {Enum_ShapeTypes}
+                name: "string",  
+                shapeStyle: { 
+                    coordinates: { 
+                        x: 0,  
+                        y: 0
+                    },  
+                    width: 0,  
+                    height: 0,  
+                    rotation: 0,  
+                    borderColor: "string",  
+                    borderStyle: 0, // {Enum_BorderTypes}, 
+                    backgroundColor: "string"
+                },  
+                linksTo: [{ 
+                    id: "string",  
+                    from: {
+                        formId: "string", 
+                        anchor: "number" // enum AnchorPoints
+                    },  
+                    to: {
+                        formId: "string", 
+                        anchor: "number" // enum AnchorPoints
+                    },  
+                    type: 0,  
+                    style: { 
+                        color: "string",  
+                        thickness: 0,  
+                        type: 0
+                    },  
+                    path: [{ 
+                        x: 0,  
+                        y: 0
+                    },{ 
+                        x: 0,  
+                        y: 0
+                    }]
+                }
+                ],
+                linksFrom: [{ 
+                    id: "string",  
+                    from: {
+                        formId: "string", 
+                        anchor: "number" // enum AnchorPoints
+                    },  
+                    to: {
+                        formId: "string", 
+                        anchor: "number" // enum AnchorPoints
+                    },  
+                    type: 0,  
+                    style: { 
+                        color: "string",  
+                        thickness: 0,  
+                        type: 0
+                    },  
+                    path: [{ 
+                        x: 0,  
+                        y: 0
+                    },{ 
+                        x: 0,  
+                        y: 0
+                    }]
+                }
+                ],
+            },  
         };
         return JSON.stringify(newCanvas);
     }

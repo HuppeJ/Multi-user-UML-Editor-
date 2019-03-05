@@ -1,15 +1,31 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { CanvasTestRoom } from "./CanvasSocketEvents";
 import CanvasManager from "./components/CanvasManager";
+import { ICreateFormData } from "./interfaces/interfaces";
 
 export default class CanvasEditionSocketEvents {
     constructor(io: any, canvasManager: CanvasManager) {
         io.on('connection', function (socket: any) {
 
             // Collaborative Basic Edition
-            socket.on("createForm", function (data: any) { // addForm ? 
-                console.log(`createForm from ${socket.id}, response:`, data);
-                io.to(CanvasTestRoom).emit("formCreated", data);
+            socket.on("createForm", function (createFormData: ICreateFormData) {
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(createFormData.canevasName);
+
+                const response = {
+                    isFormCreated: canvasManager.addFormToCanvas(canvasRoomId, createFormData.form, socket.id)
+                };
+
+                if (response.isFormCreated) {
+                    console.log(socket.id + " created  form " + createFormData.form);
+                    io.to(canvasRoomId).emit("formCreated", createFormData.form);
+
+                    // TODO à enlever
+                    io.to(CanvasTestRoom).emit("formCreated", createFormData.form);
+                } else {
+                    console.log(socket.id + " failed to create form " + createFormData.form);
+                }
+
+                socket.emit("createFormResponse", JSON.stringify(response));
             });
 
             socket.on("updateForms", function (data: any) {

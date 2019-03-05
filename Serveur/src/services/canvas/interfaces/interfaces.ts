@@ -3,13 +3,19 @@ export interface IAnchorPoint {
      anchor: number // enum AnchorPoints
 }
 
+export interface ICreateFormData {
+    canevasName: string,  
+    form: any, // IBasicShape || IClassShape7§¼p-0
+}
+
+
 export interface IBasicShape  { 
     id: string,  
     type: number,  // {Enum_ShapeTypes}
     name: string,  
     shapeStyle: IShapeStyle,  
-    linksTo: string[],
-    linksFrom: string[],
+    linksTo: ILink[],
+    linksFrom: ILink[],
 } 
 
 export interface ICanevas { 

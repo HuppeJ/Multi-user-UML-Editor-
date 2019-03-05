@@ -31,6 +31,10 @@ export default class CanvasRoom {
         });
     }
 
+    public addForm(form: any) {
+        this.canvas.shapes.push(form);
+    }
+
     // toJSON is automatically used by JSON.stringify
     toJSON() {
         return Object.assign({}, this, {

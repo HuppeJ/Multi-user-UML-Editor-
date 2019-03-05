@@ -9,10 +9,9 @@ export default class CanvasSocketEvents {
         io.on("connection", function (socket: any) {
             console.log(socket.id + " connected to Canvas server");
 
-            // Save Canvas 
             socket.on("createCanvasRoom", function (data: string) {
                 const newCanvas: ICanevas = JSON.parse(data);
-
+                
                 const response = {
                     isCreated: canvasManager.addCanvasRoom(newCanvas, socket.id)
                 };
@@ -29,7 +28,6 @@ export default class CanvasSocketEvents {
                 }
 
                 socket.emit("createCanvasRoomResponse", JSON.stringify(response));
-
             });
 
             socket.on("removeCanvasRoom", function (canvasName: string) {
