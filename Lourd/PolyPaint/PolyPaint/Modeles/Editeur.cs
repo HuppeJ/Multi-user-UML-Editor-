@@ -111,7 +111,7 @@ namespace PolyPaint.Modeles
         // L'outil actif devient celui passé en paramètre.
         public void ChoisirOutil(string outil) {
             OutilSelectionne = outil;
-            if (outil.Equals("efface_trait"))
+            if (outil.Equals("efface_trait") || outil.Equals("lasso"))
             {
                 SelectedStrokeType = "nothing";
             }

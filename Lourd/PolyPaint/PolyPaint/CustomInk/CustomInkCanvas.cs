@@ -76,6 +76,12 @@ namespace PolyPaint.CustomInk
                 case StrokeTypes.ROLE:
                     customStroke = new ActorStroke(e.Stroke.StylusPoints);
                     break;
+                case StrokeTypes.COMMENT:
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
+                    break;
+                case StrokeTypes.PHASE:
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
+                    break;
                 default:
                     customStroke = new ClassStroke(e.Stroke.StylusPoints);
                     break;
