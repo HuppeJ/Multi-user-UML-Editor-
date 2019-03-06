@@ -94,6 +94,42 @@ export default class CanvasManager {
         return canvasRoom.updateForms(forms, socketId);
     }
 
+    public deleteCanvasForms(canvasRoomId: string, forms: any[], socketId: any) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deleteForms(forms, socketId);
+    }
+
+    public selectCanvasForms(canvasRoomId: string, forms: any[], socketId: any) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.selectForms(forms, socketId);
+    }
+
+    public resizeCanvas(canvasRoomId: string, canvas: ICanevas, socketId: any) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.resize(canvas, socketId);
+    }
+
+    public reinitializeCanvas(canvasRoomId: string) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.reinitialize();
+    }
+
     public getCanvasRoomsSERI(): string {
         return JSON.stringify({
             canvasRooms: mapToObj(this.canvasRooms)

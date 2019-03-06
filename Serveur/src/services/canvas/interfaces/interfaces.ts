@@ -3,16 +3,21 @@ export interface IAnchorPoint {
      anchor: number // enum AnchorPoints
 }
 
-export interface ICreateFormData {
+export interface IEditFormData {
     // username: string, // ça serait plus simple d'avoir le username directement pour log les changements, mais je ne sais pas à quel point c'est compliqué que les clients nous l'envoient
     canevasName: string,  
     form: any, // IBasicShape || IClassShape
 }
 
-export interface IUpdateFormsData {
+export interface IEditFormsData {
     // username: string, // ça serait plus simple d'avoir le username directement pour log les changements, mais je ne sais pas à quel point c'est compliqué que les clients nous l'envoient
     canevasName: string,  
     forms: any[], // IBasicShape || IClassShape
+}
+
+export interface IEditCanevasData {
+    // username: string, // ça serait plus simple d'avoir le username directement pour log les changements, mais je ne sais pas à quel point c'est compliqué que les clients nous l'envoient
+    canevas: ICanevas,  
 }
 
 export interface IBasicShape  { 
@@ -32,7 +37,8 @@ export interface ICanevas {
     accessibility: number,  // {Enum_AccessibilityTypes},  
     password?: string,  
     shapes: IBasicShape[],  
-    links: ILink[]
+    links: ILink[],
+    dimensions: number[]
 } 
 
 export interface IClassShape extends IBasicShape {

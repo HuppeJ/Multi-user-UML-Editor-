@@ -1,11 +1,6 @@
 import { ICanevas } from "../interfaces/interfaces";
 import { mapToObj } from "../../../utils/mapToObj";
 
-export interface ICanvasRoom {
-
-}
-
-
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: socketId]
 
@@ -56,13 +51,87 @@ export default class CanvasRoom {
                 });
 
                 if (!formIsUpdated) {
-                    throw new Error(`There is no form with the id: "${form.id}" in this canvas.`);
+                    throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
                 }
             });
 
             return true;
         } catch (e) {
             console.log("[Error] in updateForms", e);
+            return false;
+        }
+    }
+
+    // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à delete
+    public deleteForms(forms: any[], socketId: any): boolean {
+        try {
+            let formIsDeleted: boolean = false;
+
+            forms.forEach((form) => {
+                formIsDeleted = false;
+                this.canvas.shapes = this.canvas.shapes.filter((shape) => {
+                    if (shape.id === form.id) {
+                        formIsDeleted = true;
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                if (!formIsDeleted) {
+                    throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
+                }
+            });
+
+            return true;
+        } catch (e) {
+            console.log("[Error] in deleteForms", e);
+            return false;
+        }
+    }
+
+    // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
+    public selectForms(forms: any[], socketId: any): boolean {
+        try {
+            let formIsSelected: boolean = false;
+
+            forms.forEach((form) => {
+                formIsSelected = false;
+                this.canvas.shapes.forEach((shape) => {
+                    if (shape.id === form.id) {
+                        formIsSelected = true;
+                    }
+                });
+
+                if (!formIsSelected) {
+                    throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
+                }
+            });
+
+            return true;
+        } catch (e) {
+            console.log("[Error] in selectForms", e);
+            return false;
+        }
+    }
+
+    public resize(canvas: ICanevas, socketId: any): boolean {
+        try {
+            this.canvas.dimensions = canvas.dimensions;
+            return true;
+        } catch (e) {
+            console.log("[Error] in reinitialize", e);
+            return false;
+        }
+    }
+
+    public reinitialize(): boolean {
+        try {
+            this.canvas.shapes = [];
+            this.canvas.links = [];
+            return true;
+        } catch (e) {
+            console.log("[Error] in reinitialize", e);
             return false;
         }
     }
