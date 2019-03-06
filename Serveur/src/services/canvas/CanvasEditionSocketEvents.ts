@@ -1,13 +1,16 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { CanvasTestRoom } from "./CanvasSocketEvents";
 import CanvasManager from "./components/CanvasManager";
-import { IEditFormData, IEditFormsData, IEditCanevasData } from "./interfaces/interfaces";
+import { IEditFormData, IEditFormsData, IEditCanevasData, IEditLinkData, IEditLinksData } from "./interfaces/interfaces";
 
 export default class CanvasEditionSocketEvents {
     constructor(io: any, canvasManager: CanvasManager) {
         io.on('connection', function (socket: any) {
 
-            // Collaborative Basic Edition
+            /***********************************************
+            * Events related to Forms
+            ************************************************/
+
             socket.on("createForm", function (data: IEditFormData) {
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
@@ -84,7 +87,7 @@ export default class CanvasEditionSocketEvents {
                 }
 
                 socket.emit("selectFormsResponse", JSON.stringify(response));
-                
+
                 // TODO remove
                 io.to(CanvasTestRoom).emit("formsSelected", data);
             });
@@ -104,9 +107,68 @@ export default class CanvasEditionSocketEvents {
                 }
 
                 socket.emit("deselectFormsResponse", JSON.stringify(response));
-                
+
             });
 
+            /***********************************************
+            * Events related to links
+            ************************************************/
+            socket.on("createLink", function (data: IEditLinkData) {
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+
+                const response = {
+                    isLinkCreated: canvasManager.addLinkToCanvas(canvasRoomId, data)
+                };
+
+                if (response.isLinkCreated) {
+                    console.log(socket.id + " created link " + data.link);
+                    io.to(canvasRoomId).emit("linkCreated", data);
+                } else {
+                    console.log(socket.id + " failed to create link " + data.link);
+                }
+
+                socket.emit("createLinkResponse", JSON.stringify(response));
+            });
+
+            socket.on("updateLinks", function (data: IEditLinksData) {
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+
+                const response = {
+                    areLinksUpdated: canvasManager.updateCanvasLinks(canvasRoomId, data)
+                };
+
+                if (response.areLinksUpdated) {
+                    console.log(socket.id + " updated links " + data.links);
+                    io.to(canvasRoomId).emit("linksUpdated", data);
+                } else {
+                    console.log(socket.id + " failed to update links " + data.links);
+                }
+
+                socket.emit("updateLinksResponse", JSON.stringify(response));
+            });
+
+            socket.on("deleteLinks", function (data: IEditLinksData) {
+                const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+
+                const response = {
+                    areLinksDeleted: canvasManager.deleteCanvasLinks(canvasRoomId, data)
+                };
+
+                if (response.areLinksDeleted) {
+                    console.log(socket.id + " deleted links " + data.links);
+                    io.to(canvasRoomId).emit("linksDeleted", data.links);
+                } else {
+                    console.log(socket.id + " failed to delete links " + data.links);
+                }
+
+                socket.emit("deleteLinksResponse", JSON.stringify(response));
+
+                io.to(CanvasTestRoom).emit("linksDeleted", data);
+            });
+
+            /***********************************************
+            * Events related to the Canvas
+            ************************************************/
             socket.on("reinitializeCanvas", function (data: IEditCanevasData) {
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
 
@@ -116,7 +178,7 @@ export default class CanvasEditionSocketEvents {
 
                 if (response.isCanvasReinitialized) {
                     console.log(socket.id + " reinitialize canvas " + data.canevas.name);
-                    // TODO Est-ce qu'on voudrait que le serveur renvoit un canevas de base (vide avec des dimessions prédéfinies)
+                    // TODO Est-ce qu'on voudrait que le serveur renvoit un canevas de base (vide avec des dimessions prédéfinies)?
                     io.to(canvasRoomId).emit("canvasReinitialized");
                 } else {
                     console.log(socket.id + " failed to reinitialized canvas " + data.canevas.name);

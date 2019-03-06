@@ -2,6 +2,11 @@
 * Interfaces for query parameters
 ************************************************/
 
+export interface IEditCanevasData {
+    username: string,
+    canevas: ICanevas,  
+}
+
 export interface IEditFormData {
     username: string,
     canevasName: string,  
@@ -14,9 +19,16 @@ export interface IEditFormsData {
     forms: any[], // IBasicShape || IClassShape
 }
 
-export interface IEditCanevasData {
+export interface IEditLinkData {
     username: string,
-    canevas: ICanevas,  
+    canevasName: string,  
+    link: ILink, 
+}
+
+export interface IEditLinksData {
+    username: string,
+    canevasName: string,  
+    links: ILink[],
 }
 
 

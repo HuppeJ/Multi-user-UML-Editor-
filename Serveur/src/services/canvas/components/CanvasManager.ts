@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { ICanevas, IEditFormsData } from "../interfaces/interfaces";
+import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -76,6 +76,9 @@ export default class CanvasManager {
         return null;
     }
 
+    /***********************************************
+    * Functions related to Forms
+    ************************************************/
     public addFormToCanvas(canvasRoomId: string, form: any, socketId: any) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
@@ -121,6 +124,42 @@ export default class CanvasManager {
         return canvasRoom.deselectForms(data);
     }
 
+
+    /***********************************************
+    * Functions related to Links
+    ************************************************/
+    public addLinkToCanvas(canvasRoomId: string, data: IEditLinkData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.addLink(data);
+    }
+
+    public updateCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.updateLinks(data);
+    }
+
+    public deleteCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deleteLinks(data);
+    }
+
+
+
+    /***********************************************
+    * Functions related to the Canvas
+    ************************************************/
     public resizeCanvas(canvasRoomId: string, canvas: ICanevas, socketId: any) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
@@ -139,6 +178,10 @@ export default class CanvasManager {
         return canvasRoom.reinitialize();
     }
 
+
+    /***********************************************
+    * Serialize / Deserialize
+    ************************************************/
     public getCanvasRoomsSERI(): string {
         return JSON.stringify({
             canvasRooms: mapToObj(this.canvasRooms)

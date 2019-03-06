@@ -1,5 +1,4 @@
-import { ICanevas, IEditFormsData } from "../interfaces/interfaces";
-import { mapToObj } from "../../../utils/mapToObj";
+import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData } from "../interfaces/interfaces";
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: socketId]
@@ -26,7 +25,9 @@ export default class CanvasRoom {
         });
     }
 
-    // On va probablement utiliser les , socketId: any pour log l<historique des modification
+    /***********************************************
+    * Functions related to Forms
+    ************************************************/
     public addForm(form: any, socketId: any): boolean {
         try {
             this.canvas.shapes.push(form);
@@ -115,31 +116,104 @@ export default class CanvasRoom {
         }
     }
 
-        // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
-        public deselectForms(data: IEditFormsData): boolean {
-            try {
-                let formIsDeselected: boolean = false;
-    
-                data.forms.forEach((form) => {
-                    formIsDeselected = false;
-                    this.canvas.shapes.forEach((shape) => {
-                        if (shape.id === form.id) {
-                            formIsDeselected = true;
-                        }
-                    });
-    
-                    if (!formIsDeselected) {
-                        throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
+    // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
+    public deselectForms(data: IEditFormsData): boolean {
+        try {
+            let formIsDeselected: boolean = false;
+
+            data.forms.forEach((form) => {
+                formIsDeselected = false;
+                this.canvas.shapes.forEach((shape) => {
+                    if (shape.id === form.id) {
+                        formIsDeselected = true;
                     }
                 });
-    
-                return true;
-            } catch (e) {
-                console.log("[Error] in selectForms", e);
-                return false;
-            }
-        }
 
+                if (!formIsDeselected) {
+                    throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
+                }
+            });
+
+            return true;
+        } catch (e) {
+            console.log("[Error] in selectForms", e);
+            return false;
+        }
+    }
+
+
+    /***********************************************
+    * Functions related to Links
+    ************************************************/
+    public addLink(data: IEditLinkData): boolean {
+        try {
+            // TODO : Check if linkTo and linkFrom point to existing forms?
+            // TODO : En ce moment on ne met pas à jour les linksTo: ILink[], linksFrom: ILink[], dans les IBasicShape
+            return true;
+        } catch (e) {
+            console.log("[Error] in addForm", e);
+            return false;
+        }
+    }
+
+    public updateLinks(data: IEditLinksData): boolean {
+        try {
+            // TODO : Check if linkTo and linkFrom point to existing forms?
+            // TODO : En ce moment on ne met pas à jour les linksTo: ILink[], linksFrom: ILink[], dans les IBasicShape
+            // let linkIsUpdated: boolean = false;
+            // data.links.forEach((newLink) => {
+            //     linkIsUpdated = false;
+            //     this.canvas.links.forEach((link, index) => {
+            //         if (newLink.id === link.id) {
+            //             this.canvas.links[index] = newLink;
+            //             linkIsUpdated = true;
+            //         }
+            //     });
+
+            //     if (!linkIsUpdated) {
+            //         throw new Error(`There is no form with the id: "${newLink.id}" in the canvas : "${this.canvas.name}".`);
+            //     }
+            // });
+
+            return true;
+        } catch (e) {
+            console.log("[Error] in updateForms", e);
+            return false;
+        }
+    }
+
+    // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à delete
+    public deleteLinks(data: IEditLinksData): boolean {
+        try {
+            // TODO : Check if linkTo and linkFrom point to existing forms?
+            // TODO : En ce moment on ne met pas à jour les linksTo: ILink[], linksFrom: ILink[], dans les IBasicShape
+            // let linkIsDeleted: boolean = false;
+            // data.links.forEach((newlink) => {
+            //     linkIsDeleted = false;
+            //     this.canvas.links = this.canvas.links.filter((link) => {
+            //         if (newlink.id === link.id) {
+            //             linkIsDeleted = true;
+            //             return false;
+            //         }
+
+            //         return true;
+            //     });
+
+            //     if (!linkIsDeleted) {
+            //         throw new Error(`There is no form with the id: "${newlink.id}" in the canvas : "${this.canvas.name}".`);
+            //     }
+            // });
+
+            return true;
+        } catch (e) {
+            console.log("[Error] in deleteForms", e);
+            return false;
+        }
+    }
+
+    /***********************************************
+    * Functions related to the Canvas
+    ************************************************/
     public resize(canvas: ICanevas, socketId: any): boolean {
         try {
             this.canvas.dimensions = canvas.dimensions;
