@@ -1,23 +1,32 @@
-export interface IAnchorPoint {
-     formId: string, 
-     anchor: number // enum AnchorPoints
-}
+/***********************************************
+* Interfaces for query parameters
+************************************************/
 
 export interface IEditFormData {
-    // username: string, // ça serait plus simple d'avoir le username directement pour log les changements, mais je ne sais pas à quel point c'est compliqué que les clients nous l'envoient
+    username: string,
     canevasName: string,  
     form: any, // IBasicShape || IClassShape
 }
 
 export interface IEditFormsData {
-    // username: string, // ça serait plus simple d'avoir le username directement pour log les changements, mais je ne sais pas à quel point c'est compliqué que les clients nous l'envoient
+    username: string,
     canevasName: string,  
     forms: any[], // IBasicShape || IClassShape
 }
 
 export interface IEditCanevasData {
-    // username: string, // ça serait plus simple d'avoir le username directement pour log les changements, mais je ne sais pas à quel point c'est compliqué que les clients nous l'envoient
+    username: string,
     canevas: ICanevas,  
+}
+
+
+/***********************************************
+* Interfaces for objects
+************************************************/
+
+export interface IAnchorPoint {
+    formId: string, 
+    anchor: number // enum AnchorPoints
 }
 
 export interface IBasicShape  { 

@@ -1,4 +1,4 @@
-import { ICanevas } from "../interfaces/interfaces";
+import { ICanevas, IEditFormsData } from "../interfaces/interfaces";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
@@ -114,6 +114,31 @@ export default class CanvasRoom {
             return false;
         }
     }
+
+        // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
+        public deselectForms(data: IEditFormsData): boolean {
+            try {
+                let formIsDeselected: boolean = false;
+    
+                data.forms.forEach((form) => {
+                    formIsDeselected = false;
+                    this.canvas.shapes.forEach((shape) => {
+                        if (shape.id === form.id) {
+                            formIsDeselected = true;
+                        }
+                    });
+    
+                    if (!formIsDeselected) {
+                        throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
+                    }
+                });
+    
+                return true;
+            } catch (e) {
+                console.log("[Error] in selectForms", e);
+                return false;
+            }
+        }
 
     public resize(canvas: ICanevas, socketId: any): boolean {
         try {

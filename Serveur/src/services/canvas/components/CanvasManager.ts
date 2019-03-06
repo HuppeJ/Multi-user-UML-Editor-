@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { ICanevas, ICreateFormData } from "../interfaces/interfaces";
+import { ICanevas, IEditFormsData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -110,6 +110,15 @@ export default class CanvasManager {
         }
 
         return canvasRoom.selectForms(forms, socketId);
+    }
+
+    public deselectCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deselectForms(data);
     }
 
     public resizeCanvas(canvasRoomId: string, canvas: ICanevas, socketId: any) {
