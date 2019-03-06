@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData, IEditFormData, IEditCanevasData } from "../interfaces/interfaces";
+import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData, IEditFormData, IEditCanevasData, IEditGalleryData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -11,43 +11,20 @@ export default class CanvasManager {
     }
 
     public getCanvasRoomIdFromName(canvasName: string): string {
-        return `${CANVAS_ROOM_ID}-${canvasName}`;
+        return `${CANVAS_ROOM_ID}_${canvasName}`;
     }
 
-    public addCanvasRoom(data: IEditCanevasData) {
-        const canvasRoomId: string = this.getCanvasRoomIdFromName(data.canevas.name);
-
+    public addCanvasRoom(canvasRoomId: string, data: IEditCanevasData) {
         if (this.canvasRooms.has(canvasRoomId)) {
             return false;
         }
 
         const canvasRoom = new CanvasRoom(data.canevas);
-        canvasRoom.addUser(data.username);
         this.canvasRooms.set(canvasRoomId, canvasRoom);
         return true;
     }
 
-    public addUserToCanvasRoom(canvasRoomId: string, socketId: any) {
-        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && !canvasRoom.hasUser(socketId)) {
-            canvasRoom.addUser(socketId);
-            return true;
-        }
-
-        return false;
-    }
-
-    public removeUserFromCanvasRoom(canvasRoomId: string, socketId: any) {
-        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && canvasRoom.hasUser(socketId)) {
-            canvasRoom.removeUser(socketId);
-            return true;
-        }
-
-        return false;
-    }
-
-    public removeCanvasRoom(canvasRoomId: string) {
+    public removeCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
         if (this.canvasRooms.has(canvasRoomId)) {
             this.canvasRooms.delete(canvasRoomId);
             return true;
@@ -56,19 +33,40 @@ export default class CanvasManager {
         return false;
     }
 
-    public isClientInCanvas(canvasRoomId: string, socketId: any) {
-        if (this.canvasRooms.has(canvasRoomId)) {
-            const canvasRoom = this.canvasRooms.get(canvasRoomId);
-            return canvasRoom.hasUser(socketId);
+    public addUserToCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (canvasRoom && !canvasRoom.hasUser(data.username)) {
+            canvasRoom.addUser(data.username);
+            return true;
         }
 
         return false;
     }
 
-    // TODO : Fonction pas testée... 
-    public getCanvasRoomFromSocketId(socketId: any): string {
+    public removeUserFromCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (canvasRoom && canvasRoom.hasUser(data.username)) {
+            canvasRoom.removeUser(data.username);
+            return true;
+        }
+
+        return false;
+    }
+
+    // TODO : Non utilisée et Fonction pas testée... 
+    public isUserInCanvas(canvasRoomId: string, unsername: string) {
+        if (this.canvasRooms.has(canvasRoomId)) {
+            const canvasRoom = this.canvasRooms.get(canvasRoomId);
+            return canvasRoom.hasUser(unsername);
+        }
+
+        return false;
+    }
+
+    // TODO : Non utilisée et Fonction pas testée... 
+    public getCanvasRoomFromSocketId(unsername: any): string {
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
-            if (canvasRoom.hasUser(socketId)) {
+            if (canvasRoom.hasUser(unsername)) {
                 return canvasRoomId;
             }
         }

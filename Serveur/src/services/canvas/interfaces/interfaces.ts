@@ -1,6 +1,10 @@
 /***********************************************
 * Interfaces for query parameters
 ************************************************/
+export interface IEditGalleryData {
+    username: string,
+    canevasName: string,  
+}
 
 export interface IEditCanevasData {
     username: string,
@@ -46,8 +50,8 @@ export interface IBasicShape  {
     type: number,  // {Enum_ShapeTypes}
     name: string,  
     shapeStyle: IShapeStyle,  
-    linksTo: ILink[],
-    linksFrom: ILink[],
+    linksTo: string[],
+    linksFrom: string[],
 } 
 
 export interface ICanevas { 
