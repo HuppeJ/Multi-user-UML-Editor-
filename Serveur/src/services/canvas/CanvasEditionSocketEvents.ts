@@ -15,12 +15,12 @@ export default class CanvasEditionSocketEvents {
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
-                    isFormCreated: canvasManager.addFormToCanvas(canvasRoomId, data.form, socket.id)
+                    isFormCreated: canvasManager.addFormToCanvas(canvasRoomId, data)
                 };
 
                 if (response.isFormCreated) {
                     console.log(socket.id + " created form " + data.form);
-                    io.to(canvasRoomId).emit("formCreated", data.form);
+                    io.to(canvasRoomId).emit("formCreated", data);
                 } else {
                     console.log(socket.id + " failed to create form " + data.form);
                 }
@@ -35,12 +35,12 @@ export default class CanvasEditionSocketEvents {
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
-                    areFormsUpdated: canvasManager.updateCanvasForms(canvasRoomId, data.forms, socket.id)
+                    areFormsUpdated: canvasManager.updateCanvasForms(canvasRoomId, data)
                 };
 
                 if (response.areFormsUpdated) {
                     console.log(socket.id + " updated forms " + data.forms);
-                    io.to(canvasRoomId).emit("formsUpdated", data.forms);
+                    io.to(canvasRoomId).emit("formsUpdated", data);
                 } else {
                     console.log(socket.id + " failed to update forms " + data.forms);
                 }
@@ -56,12 +56,12 @@ export default class CanvasEditionSocketEvents {
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
-                    areFormsDeleted: canvasManager.deleteCanvasForms(canvasRoomId, data.forms, socket.id)
+                    areFormsDeleted: canvasManager.deleteCanvasForms(canvasRoomId, data)
                 };
 
                 if (response.areFormsDeleted) {
                     console.log(socket.id + " deleted forms " + data.forms);
-                    io.to(canvasRoomId).emit("formsDeleted", data.forms);
+                    io.to(canvasRoomId).emit("formsDeleted", data);
                 } else {
                     console.log(socket.id + " failed to delete forms " + data.forms);
                 }
@@ -76,7 +76,7 @@ export default class CanvasEditionSocketEvents {
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
-                    areFormsSelected: canvasManager.selectCanvasForms(canvasRoomId, data.forms, socket.id)
+                    areFormsSelected: canvasManager.selectCanvasForms(canvasRoomId, data)
                 };
 
                 if (response.areFormsSelected) {
@@ -156,7 +156,7 @@ export default class CanvasEditionSocketEvents {
 
                 if (response.areLinksDeleted) {
                     console.log(socket.id + " deleted links " + data.links);
-                    io.to(canvasRoomId).emit("linksDeleted", data.links);
+                    io.to(canvasRoomId).emit("linksDeleted", data);
                 } else {
                     console.log(socket.id + " failed to delete links " + data.links);
                 }
@@ -195,13 +195,13 @@ export default class CanvasEditionSocketEvents {
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
 
                 const response = {
-                    isCanvasResized: canvasManager.resizeCanvas(canvasRoomId, data.canevas, socket.id)
+                    isCanvasResized: canvasManager.resizeCanvas(canvasRoomId, data)
                 };
 
                 if (response.isCanvasResized) {
                     console.log(socket.id + " resized canvas " + data.canevas);
                     // TODO Est-ce qu'on voudrait que le serveur renvoit un canevas de base (vide avec des dimessions prédéfinies)
-                    io.to(canvasRoomId).emit("canvasResized");
+                    io.to(canvasRoomId).emit("canvasResized", data);
                 } else {
                     console.log(socket.id + " failed to resize canvas " + data.canevas.name);
                 }

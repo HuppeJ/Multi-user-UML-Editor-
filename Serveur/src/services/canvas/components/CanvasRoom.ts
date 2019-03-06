@@ -1,4 +1,4 @@
-import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData } from "../interfaces/interfaces";
+import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData, IEditFormData, IEditCanevasData } from "../interfaces/interfaces";
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: socketId]
@@ -28,9 +28,9 @@ export default class CanvasRoom {
     /***********************************************
     * Functions related to Forms
     ************************************************/
-    public addForm(form: any, socketId: any): boolean {
+    public addForm(data: IEditFormData): boolean {
         try {
-            this.canvas.shapes.push(form);
+            this.canvas.shapes.push(data.form);
             return true;
         } catch (e) {
             console.log("[Error] in addForm", e);
@@ -38,11 +38,11 @@ export default class CanvasRoom {
         }
     }
 
-    public updateForms(forms: any[], socketId: any): boolean {
+    public updateForms(data: IEditFormsData): boolean {
         try {
             let formIsUpdated: boolean = false;
 
-            forms.forEach((form) => {
+            data.forms.forEach((form) => {
                 formIsUpdated = false;
                 this.canvas.shapes.forEach((shape, index) => {
                     if (shape.id === form.id) {
@@ -64,11 +64,11 @@ export default class CanvasRoom {
     }
 
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à delete
-    public deleteForms(forms: any[], socketId: any): boolean {
+    public deleteForms(data: IEditFormsData): boolean {
         try {
             let formIsDeleted: boolean = false;
 
-            forms.forEach((form) => {
+            data.forms.forEach((form) => {
                 formIsDeleted = false;
                 this.canvas.shapes = this.canvas.shapes.filter((shape) => {
                     if (shape.id === form.id) {
@@ -92,11 +92,11 @@ export default class CanvasRoom {
     }
 
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
-    public selectForms(forms: any[], socketId: any): boolean {
+    public selectForms(data: IEditFormsData): boolean {
         try {
             let formIsSelected: boolean = false;
 
-            forms.forEach((form) => {
+            data.forms.forEach((form) => {
                 formIsSelected = false;
                 this.canvas.shapes.forEach((shape) => {
                     if (shape.id === form.id) {
@@ -214,9 +214,9 @@ export default class CanvasRoom {
     /***********************************************
     * Functions related to the Canvas
     ************************************************/
-    public resize(canvas: ICanevas, socketId: any): boolean {
+    public resize(data: IEditCanevasData): boolean {
         try {
-            this.canvas.dimensions = canvas.dimensions;
+            this.canvas.dimensions = data.canevas.dimensions;
             return true;
         } catch (e) {
             console.log("[Error] in reinitialize", e);

@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData } from "../interfaces/interfaces";
+import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData, IEditFormData, IEditCanevasData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -79,40 +79,40 @@ export default class CanvasManager {
     /***********************************************
     * Functions related to Forms
     ************************************************/
-    public addFormToCanvas(canvasRoomId: string, form: any, socketId: any) {
+    public addFormToCanvas(canvasRoomId: string, data: IEditFormData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
         }
 
-        return canvasRoom.addForm(form, socketId);
+        return canvasRoom.addForm(data);
     }
 
-    public updateCanvasForms(canvasRoomId: string, forms: any[], socketId: any) {
+    public updateCanvasForms(canvasRoomId: string, data: IEditFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
         }
 
-        return canvasRoom.updateForms(forms, socketId);
+        return canvasRoom.updateForms(data);
     }
 
-    public deleteCanvasForms(canvasRoomId: string, forms: any[], socketId: any) {
+    public deleteCanvasForms(canvasRoomId: string, data: IEditFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
         }
 
-        return canvasRoom.deleteForms(forms, socketId);
+        return canvasRoom.deleteForms(data);
     }
 
-    public selectCanvasForms(canvasRoomId: string, forms: any[], socketId: any) {
+    public selectCanvasForms(canvasRoomId: string, data: IEditFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
         }
 
-        return canvasRoom.selectForms(forms, socketId);
+        return canvasRoom.selectForms(data);
     }
 
     public deselectCanvasForms(canvasRoomId: string, data: IEditFormsData) {
@@ -160,13 +160,13 @@ export default class CanvasManager {
     /***********************************************
     * Functions related to the Canvas
     ************************************************/
-    public resizeCanvas(canvasRoomId: string, canvas: ICanevas, socketId: any) {
+    public resizeCanvas(canvasRoomId: string, data: IEditCanevasData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
         }
 
-        return canvasRoom.resize(canvas, socketId);
+        return canvasRoom.resize(data);
     }
 
     public reinitializeCanvas(canvasRoomId: string) {
