@@ -1,5 +1,5 @@
 import * as SocketEvents from "../../constants/SocketEvents";
-import { ICanevas } from "./interfaces/interfaces";
+import { ICanevas, IEditCanevasData } from "./interfaces/interfaces";
 import CanvasManager from "./components/CanvasManager";
 
 export const CanvasTestRoom: string = "Canvas_test_room";
@@ -9,27 +9,28 @@ export default class CanvasSocketEvents {
         io.on("connection", function (socket: any) {
             console.log(socket.id + " connected to Canvas server");
 
-            socket.on("createCanvasRoom", function (data: string) {
-                const newCanvas: ICanevas = JSON.parse(data);
+            socket.on("createCanvasRoom", function (dataStr: string) {
+                const data: IEditCanevasData = JSON.parse(dataStr);
                 
                 const response = {
-                    isCreated: canvasManager.addCanvasRoom(newCanvas, socket.id)
+                    isCreated: canvasManager.addCanvasRoom(data)
                 };
 
                 if (response.isCreated) {
-                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(newCanvas.name);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
                     // TODO il ne faudrait pas join la room automatiquement. 
                     // Il faudrait mémoriser quels Canvas existent et créer les canvasRoom lorsqu'il y a un user de connecté
                     socket.join(canvasRoomId);
-                    console.log(socket.id + " created  canvasRoom " + newCanvas.name);
+                    console.log(socket.id + " created  canvasRoom " + data.canevas.name);
                     io.to(canvasRoomId).emit("canvasRoomCreated", canvasManager.getCanvasRoomsSERI());
                 } else {
-                    console.log(socket.id + " failed to create canvasRoom " + newCanvas.name);
+                    console.log(socket.id + " failed to create canvasRoom " + data.canevas.name);
                 }
 
                 socket.emit("createCanvasRoomResponse", JSON.stringify(response));
             });
 
+            // + username
             socket.on("removeCanvasRoom", function (canvasName: string) {
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
                 

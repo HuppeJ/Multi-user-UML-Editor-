@@ -10,8 +10,8 @@ export default class CanvasEditionSocketEvents {
             /***********************************************
             * Events related to Forms
             ************************************************/
-
-            socket.on("createForm", function (data: IEditFormData) {
+            socket.on("createForm", function (dataStr: string) {
+                const data: IEditFormData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
@@ -31,7 +31,8 @@ export default class CanvasEditionSocketEvents {
                 io.to(CanvasTestRoom).emit("formCreated", data);
             });
 
-            socket.on("updateForms", function (data: IEditFormsData) {
+            socket.on("updateForms", function (dataStr: string) {
+                const data: IEditFormsData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
@@ -52,7 +53,8 @@ export default class CanvasEditionSocketEvents {
                 io.to(CanvasTestRoom).emit("formsUpdated", data);
             });
 
-            socket.on("deleteForms", function (data: IEditFormsData) {
+            socket.on("deleteForms", function (dataStr: string) {
+                const data: IEditFormsData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
@@ -72,7 +74,8 @@ export default class CanvasEditionSocketEvents {
             });
 
             // TODO : Renvoyer des informations plus précises si nécessaire
-            socket.on("selectForms", function (data: IEditFormsData) {
+            socket.on("selectForms", function (dataStr: string) {
+                const data: IEditFormsData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
@@ -92,7 +95,8 @@ export default class CanvasEditionSocketEvents {
                 io.to(CanvasTestRoom).emit("formsSelected", data);
             });
 
-            socket.on("deselectForms", function (data: IEditFormsData) {
+            socket.on("deselectForms", function (dataStr: string) {
+                const data: IEditFormsData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
@@ -113,7 +117,8 @@ export default class CanvasEditionSocketEvents {
             /***********************************************
             * Events related to links
             ************************************************/
-            socket.on("createLink", function (data: IEditLinkData) {
+            socket.on("createLink", function (dataStr: string) {
+                const data: IEditLinkData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
@@ -130,7 +135,8 @@ export default class CanvasEditionSocketEvents {
                 socket.emit("createLinkResponse", JSON.stringify(response));
             });
 
-            socket.on("updateLinks", function (data: IEditLinksData) {
+            socket.on("updateLinks", function (dataStr: string) {
+                const data: IEditLinksData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
@@ -147,7 +153,8 @@ export default class CanvasEditionSocketEvents {
                 socket.emit("updateLinksResponse", JSON.stringify(response));
             });
 
-            socket.on("deleteLinks", function (data: IEditLinksData) {
+            socket.on("deleteLinks", function (dataStr: string) {
+                const data: IEditLinksData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                 const response = {
@@ -169,7 +176,8 @@ export default class CanvasEditionSocketEvents {
             /***********************************************
             * Events related to the Canvas
             ************************************************/
-            socket.on("reinitializeCanvas", function (data: IEditCanevasData) {
+            socket.on("reinitializeCanvas", function (dataStr: string) {
+                const data: IEditCanevasData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
 
                 const response = {
@@ -191,7 +199,8 @@ export default class CanvasEditionSocketEvents {
                 io.to(CanvasTestRoom).emit("canvasReinitialized", data);
             });
 
-            socket.on("canvasResized", function (data: IEditCanevasData) {
+            socket.on("canvasResized", function (dataStr: string) {
+                const data: IEditCanevasData = JSON.parse(dataStr);
                 const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
 
                 const response = {

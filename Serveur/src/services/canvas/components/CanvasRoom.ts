@@ -1,22 +1,22 @@
 import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData, IEditFormData, IEditCanevasData } from "../interfaces/interfaces";
 
 export default class CanvasRoom {
-    public connectedUsers: any;  // connectedUsers is a Set : [key: socketId]
+    public connectedUsers: any;  // connectedUsers is a Set : [key: username]
 
     constructor(public canvas: ICanevas) {
         this.connectedUsers = new Set();
     }
 
-    public addUser(socketId: any) {
-        this.connectedUsers.add(socketId);
+    public addUser(username: any) {
+        this.connectedUsers.add(username);
     }
 
-    public removeUser(socketId: any) {
-        this.connectedUsers.delete(socketId);
+    public removeUser(username: any) {
+        this.connectedUsers.delete(username);
     }
 
-    public hasUser(socketId: any) {
-        return this.connectedUsers.has(socketId);
+    public hasUser(username: any) {
+        return this.connectedUsers.has(username);
     }
 
     public getConnectedUsersSERI(): string {

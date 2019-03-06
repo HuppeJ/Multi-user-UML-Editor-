@@ -14,15 +14,15 @@ export default class CanvasManager {
         return `${CANVAS_ROOM_ID}-${canvasName}`;
     }
 
-    public addCanvasRoom(newCanvas: ICanevas, socketId: any) {
-        const canvasRoomId: string = this.getCanvasRoomIdFromName(newCanvas.name);
+    public addCanvasRoom(data: IEditCanevasData) {
+        const canvasRoomId: string = this.getCanvasRoomIdFromName(data.canevas.name);
 
         if (this.canvasRooms.has(canvasRoomId)) {
             return false;
         }
 
-        const canvasRoom = new CanvasRoom(newCanvas);
-        canvasRoom.addUser(socketId);
+        const canvasRoom = new CanvasRoom(data.canevas);
+        canvasRoom.addUser(data.username);
         this.canvasRooms.set(canvasRoomId, canvasRoom);
         return true;
     }
