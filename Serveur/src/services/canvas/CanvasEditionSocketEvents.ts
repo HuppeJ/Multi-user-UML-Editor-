@@ -133,6 +133,16 @@ export default class CanvasEditionSocketEvents {
                 }
             });
 
+            socket.on("getSelectedForms", function (canvasName: string) {
+                try {
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
+                    const selectedForms: string = canvasManager.getSelectedFormsInCanvasRoomSERI(canvasRoomId);
+                    socket.emit("selectedForms", selectedForms);
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
+
             /***********************************************
             * Events related to links
             ************************************************/

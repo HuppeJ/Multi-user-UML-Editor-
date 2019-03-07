@@ -180,6 +180,15 @@ export default class CanvasManager {
     /***********************************************
     * Serialize / Deserialize
     ************************************************/
+    public getSelectedFormsInCanvasRoomSERI(canvasRoomId: string): string {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return null;
+        }
+
+        return canvasRoom.getSelectedFormsSERI();
+    }
+
     public getCanvasRoomsSERI(): string {
         return JSON.stringify({
             canvasRooms: mapToObj(this.canvasRooms)

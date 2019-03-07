@@ -1,11 +1,13 @@
 import { ICanevas, IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditFormsData, IUpdateLinksData } from "../interfaces/interfaces";
+import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
-    public selectedForms: any;  // connectedUsers is a Set : [key: formId, value: username]
+    public selectedForms: any;  // connectedUsers is a Map : [key: formId, value: username]
 
     constructor(public canvas: ICanevas) {
         this.connectedUsers = new Set();
+        this.selectedForms = new Map<string, string>();
     }
 
     public addUser(username: any) {
@@ -99,19 +101,19 @@ export default class CanvasRoom {
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
     public selectForms(data: IEditFormsData): boolean {
         try {
-            let formIsSelected: boolean = false;
-
+            // If one form doesn't exist an Error will be thrown
+            this.doFormsExist(data);
+            
+            // Check if all forms are not selected, if a form is already selected throw an Error.
             data.formsId.forEach((formId) => {
-                formIsSelected = false;
-                this.canvas.shapes.forEach((shape) => {
-                    if (shape.id === formId) {
-                        formIsSelected = true;
-                    }
-                });
-
-                if (!formIsSelected) {
-                    throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
+                if (this.selectedForms.has(formId)) {
+                    throw new Error(`The form with the id: "${formId}" is already selected in the canvas : "${this.canvas.name}".`);
                 }
+            });
+
+            // If all forms are not selected, select them
+            data.formsId.forEach((formId) => {
+                this.selectedForms.set(formId, data.username);
             });
 
             return true;
@@ -121,22 +123,17 @@ export default class CanvasRoom {
         }
     }
 
+
+
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
     public deselectForms(data: IEditFormsData): boolean {
         try {
-            let formIsDeselected: boolean = false;
-
+            // If one form doesn't exist an Error will be thrown
+            this.doFormsExist(data);
+            
+            // Deselect all forms
             data.formsId.forEach((formId) => {
-                formIsDeselected = false;
-                this.canvas.shapes.forEach((shape) => {
-                    if (shape.id === formId) {
-                        formIsDeselected = true;
-                    }
-                });
-
-                if (!formIsDeselected) {
-                    throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
-                }
+                this.selectedForms.delete(formId, data.username);
             });
 
             return true;
@@ -243,11 +240,39 @@ export default class CanvasRoom {
         }
     }
 
+    /***********************************************
+    * Utils functions 
+    ************************************************/
+    private doFormsExist(data: IEditFormsData): boolean {
+        let formExist: boolean = false;
+
+        data.formsId.forEach((formId) => {
+            formExist = false;
+            this.canvas.shapes.forEach((shape) => {
+                if (shape.id === formId) {
+                    formExist = true;
+                }
+            });
+
+            if (!formExist) {
+                throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
+            }
+        });
+
+        return true;
+    }
+
     // toJSON is automatically used by JSON.stringify
     toJSON() {
         return Object.assign({}, this, {
             // convert fields that need converting
             connectedUsers: Array.from(this.connectedUsers)
+        });
+    }
+
+    public getSelectedFormsSERI(): string {
+        return JSON.stringify({
+            selectedForms: mapToObj(this.selectedForms)
         });
     }
 
