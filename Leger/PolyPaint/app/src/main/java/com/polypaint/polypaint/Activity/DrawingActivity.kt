@@ -159,11 +159,13 @@ class DrawingActivity : AppCompatActivity(){
         ViewShapeHolder.getInstance().map.put(view, shape.id)
 
         //EMIT
+        /*
         val gson = Gson()
         val response :Response = Response(UserHolder.getInstance().username, shape)
         val obj: String = gson.toJson(response)
         Log.d("sending", obj)
         socket?.emit(SocketConstants.CANVAS_UPDATE_TEST, obj)
+        */
         emitAddForm(shape)
 
         syncLayoutFromCanevas()
@@ -357,7 +359,6 @@ class DrawingActivity : AppCompatActivity(){
             Log.d("canvasUpdate", obj.username + obj.basicShape.name)
             runOnUiThread {
                 addOnCanevas(obj.basicShape)
-
             }
         }
 
@@ -440,6 +441,7 @@ class DrawingActivity : AppCompatActivity(){
         if(obj.username != UserHolder.getInstance().username) {
             Log.d("formsCreated", obj.username + obj.basicShape.name)
             runOnUiThread {
+                //ViewShapeHolder.getInstance().canevas.addShape(obj.basicShape)
                 addOnCanevas(obj.basicShape)
             }
         }

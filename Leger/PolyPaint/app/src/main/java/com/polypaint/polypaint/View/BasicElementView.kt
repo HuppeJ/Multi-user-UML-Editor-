@@ -389,7 +389,7 @@ open class BasicElementView: RelativeLayout {
                         val drawingActivity: DrawingActivity = activity as DrawingActivity
                         drawingActivity.syncCanevasFromLayout()
                     }
-
+                    emitUpdate()
                     pointerFinger1 = -1
                 }
                 MotionEvent.ACTION_POINTER_UP ->{
