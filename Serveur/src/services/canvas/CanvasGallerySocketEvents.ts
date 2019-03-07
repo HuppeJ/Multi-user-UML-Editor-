@@ -17,9 +17,12 @@ export default class CanvasGallerySocketEvents {
               //  socket.emit("temp", JSON.stringify(response)); 
             });
 
-            socket.on("getCanvas", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false }; 
-              //  socket.emit("temp", JSON.stringify(response)); 
+            socket.on("getCanvas", function () { 
+                try {
+                    socket.emit("getCanvasResponse", canvasManager.getCanvasRoomsSERI());
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
             });
 
         });
