@@ -1,60 +1,31 @@
 import CanvasRoom from "./CanvasRoom";
-import { ICanevas } from "../interfaces/interfaces";
+import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData, IEditFormData, IEditCanevasData, IEditGalleryData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
+import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasManager {
-    private canvasRooms: any; // [key: canvasRoomId, value: canvasRoom]
+    private canvasRooms: Map<string, CanvasRoom>; // [key: canvasRoomId, value: canvasRoom]
 
     constructor() {
-        this.canvasRooms = new Map();
+        this.canvasRooms = new Map<string, CanvasRoom>();
     }
 
     public getCanvasRoomIdFromName(canvasName: string): string {
-        return `${CANVAS_ROOM_ID}-${canvasName}`;
+        return `${CANVAS_ROOM_ID}_${canvasName}`;
     }
 
-    public addCanvasRoom(newCanvas: ICanevas, socketId: any) {
-        const canvasRoomId: string = this.getCanvasRoomIdFromName(newCanvas.name);
-
-        if (this.doesCanvasRoomExist(canvasRoomId)) {
+    public addCanvasRoom(canvasRoomId: string, data: IEditCanevasData) {
+        if (this.canvasRooms.has(canvasRoomId)) {
             return false;
         }
 
-        const canvasRoom = new CanvasRoom(newCanvas);
-        canvasRoom.addUser(socketId);
+        const canvasRoom = new CanvasRoom(data.canevas);
         this.canvasRooms.set(canvasRoomId, canvasRoom);
         return true;
     }
 
-    public doesCanvasRoomExist(canvasRoomId: string) {
-        return this.canvasRooms.has(canvasRoomId);
-    }
-
-    public addUserToCanvasRoom(canvasRoomId: string, socketId: any) {
-        // TODO : vérifier que canvasRoom c'est pas une copie, mais bien une référence à l'objet se trouvant dans this.canvasRoom
-        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && !canvasRoom.hasUser(socketId)) {
-            canvasRoom.addUser(socketId);
-            return true;
-        }
-       
-        return false;
-    }
-
-    public removeUserFromCanvasRoom(canvasRoomId: string, socketId: any) {
-        // TODO : vérifier que canvasRoom c'est pas une copie, mais bien une référence à l'objet se trouvant dans this.canvasRoom
-        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && canvasRoom.hasUser(socketId)) {
-            canvasRoom.removeUser(socketId);
-            return true;
-        }
-       
-        return false;
-    }
-
-
-    public removeCanvasRoom(canvasRoomId: string) {
-        if (this.doesCanvasRoomExist(canvasRoomId)) {
+    public removeCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
+        if (this.canvasRooms.has(canvasRoomId)) {
             this.canvasRooms.delete(canvasRoomId);
             return true;
         }
@@ -62,32 +33,40 @@ export default class CanvasManager {
         return false;
     }
 
-    public isClientInCanvas(canvasRoomId: string, socketId: any) {
-        if (this.doesCanvasRoomExist(canvasRoomId)) {
-            const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-            return canvasRoom.hasUser(socketId);
+    public addUserToCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (canvasRoom && !canvasRoom.hasUser(data.username)) {
+            canvasRoom.addUser(data.username);
+            return true;
         }
 
         return false;
     }
 
-    // public removeClientFromCanvas(canvasName: string, socketId: any) {
-    //     if(this.isClientInCanvas(canvasName, socketId)) {
-    //         let Canvas = this.canvasRooms.get(canvasName);
-    //         Canvas.removeUser(socketId);
-    //         return true;
-    //     }
-    //     return false;
-    // }
+    public removeUserFromCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (canvasRoom && canvasRoom.hasUser(data.username)) {
+            canvasRoom.removeUser(data.username);
+            return true;
+        }
 
-    public getCanvasRooms() {
-        return JSON.stringify(Array.from(this.canvasRooms.keys()));
+        return false;
     }
 
-    // TODO : Fonction pas testée... en fait il y a rien qui a vraiment été testé pour le moment ^^ 
-    public getCanvasRoomFromSocketId(socketId: any): string {
+    // TODO : Non utilisée et Fonction pas testée... 
+    public isUserInCanvas(canvasRoomId: string, unsername: string) {
+        if (this.canvasRooms.has(canvasRoomId)) {
+            const canvasRoom = this.canvasRooms.get(canvasRoomId);
+            return canvasRoom.hasUser(unsername);
+        }
+
+        return false;
+    }
+
+    // TODO : Non utilisée et Fonction pas testée... 
+    public getCanvasRoomFromSocketId(unsername: any): string {
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
-            if (canvasRoom.hasUser()) {
+            if (canvasRoom.hasUser(unsername)) {
                 return canvasRoomId;
             }
         }
@@ -95,7 +74,127 @@ export default class CanvasManager {
         return null;
     }
 
-    // public getCanvasClients(canvasName: string) {
-    //     return JSON.stringify(this.canvasRooms.get(canvasName));
-    // }
+    /***********************************************
+    * Functions related to Forms
+    ************************************************/
+    public addFormToCanvas(canvasRoomId: string, data: IEditFormData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.addForm(data);
+    }
+
+    public updateCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.updateForms(data);
+    }
+
+    public deleteCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deleteForms(data);
+    }
+
+    public selectCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.selectForms(data);
+    }
+
+    public deselectCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deselectForms(data);
+    }
+
+
+    /***********************************************
+    * Functions related to Links
+    ************************************************/
+    public addLinkToCanvas(canvasRoomId: string, data: IEditLinkData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.addLink(data);
+    }
+
+    public updateCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.updateLinks(data);
+    }
+
+    public deleteCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deleteLinks(data);
+    }
+
+
+
+    /***********************************************
+    * Functions related to the Canvas
+    ************************************************/
+    public resizeCanvas(canvasRoomId: string, data: IEditCanevasData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.resize(data);
+    }
+
+    public reinitializeCanvas(canvasRoomId: string) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.reinitialize();
+    }
+
+
+    /***********************************************
+    * Serialize / Deserialize
+    ************************************************/
+    public getCanvasRoomsSERI(): string {
+        return JSON.stringify({
+            canvasRooms: mapToObj(this.canvasRooms)
+        });
+    }
+
+    public getUsersInCanvasRoomSERI(canvasName: string) {
+        return JSON.stringify({
+            connectedUsers: JSON.parse(this.canvasRooms.get(canvasName).getConnectedUsersSERI())
+        });
+    }
+
+    toJSON() {
+        return Object.assign({}, this, {
+            canvasRooms: mapToObj(this.canvasRooms)
+        });
+    }
 }

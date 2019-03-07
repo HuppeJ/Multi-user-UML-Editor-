@@ -48,11 +48,21 @@ import CanvasEditionSocketEvents from './services/canvas/CanvasEditionSocketEven
 new CanvasEditionSocketEvents(io, canvasManager);
 
 // Set up the Socket.io communication system
-io.on('connection', (client: any) => {
+io.on('connection', (socket: any) => {
     // TODO : remove
-    client.on('test', function () {
-        client.emit('hello');
+    socket.on('test', function () {
+        socket.emit('hello');
     });
+
+
+    socket.on('getServerState', function () {
+        const response = {
+            canvasManager_canvasRooms: JSON.parse(canvasManager.getCanvasRoomsSERI())
+        };
+
+        socket.emit("getServerStateResponse", JSON.stringify(response));
+    });
+
 });
 
 const PORT = process.env.PORT;

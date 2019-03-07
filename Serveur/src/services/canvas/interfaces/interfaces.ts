@@ -1,6 +1,48 @@
+/***********************************************
+* Interfaces for query parameters
+************************************************/
+export interface IEditGalleryData {
+    username: string,
+    canevasName: string,  
+}
+
+export interface IEditCanevasData {
+    username: string,
+    canevas: ICanevas,  
+}
+
+export interface IEditFormData {
+    username: string,
+    canevasName: string,  
+    form: any, // IBasicShape || IClassShape
+}
+
+export interface IEditFormsData {
+    username: string,
+    canevasName: string,  
+    forms: any[], // IBasicShape || IClassShape
+}
+
+export interface IEditLinkData {
+    username: string,
+    canevasName: string,  
+    link: ILink, 
+}
+
+export interface IEditLinksData {
+    username: string,
+    canevasName: string,  
+    links: ILink[],
+}
+
+
+/***********************************************
+* Interfaces for objects
+************************************************/
+
 export interface IAnchorPoint {
-     formId: string, 
-     anchor: number // enum AnchorPoints
+    formId: string, 
+    anchor: number // enum AnchorPoints
 }
 
 export interface IBasicShape  { 
@@ -8,7 +50,8 @@ export interface IBasicShape  {
     type: number,  // {Enum_ShapeTypes}
     name: string,  
     shapeStyle: IShapeStyle,  
-    links: string[]
+    linksTo: string[],
+    linksFrom: string[],
 } 
 
 export interface ICanevas { 
@@ -19,15 +62,11 @@ export interface ICanevas {
     accessibility: number,  // {Enum_AccessibilityTypes},  
     password?: string,  
     shapes: IBasicShape[],  
-    links: ILink[]
+    links: ILink[],
+    dimensions: number[]
 } 
 
 export interface IClassShape extends IBasicShape {
-    id: string, 
-    type: number, // (Enum_ShapeTypes) 
-    name: string, 
-    shapeStyle: IShapeStyle, 
-    links: string[],  
     attributes: string[],  
     methods: string[]
 }
