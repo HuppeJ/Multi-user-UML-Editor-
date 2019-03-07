@@ -1,7 +1,8 @@
-import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData, IEditFormData, IEditCanevasData } from "../interfaces/interfaces";
+import { ICanevas, IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditFormsData, IUpdateLinksData } from "../interfaces/interfaces";
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
+    public selectedForms: any;  // connectedUsers is a Set : [key: formId, value: username]
 
     constructor(public canvas: ICanevas) {
         this.connectedUsers = new Set();
@@ -28,9 +29,13 @@ export default class CanvasRoom {
     /***********************************************
     * Functions related to Forms
     ************************************************/
-    public addForm(data: IEditFormData): boolean {
+    public addForm(data: IUpdateFormsData): boolean {
         try {
-            this.canvas.shapes.push(data.form);
+            if (data.forms.length !== 1) {
+                throw new Error(`You can only create one Form at a time.`);
+            }
+
+            this.canvas.shapes.push(data.forms[0]);
             return true;
         } catch (e) {
             console.log("[Error] in addForm", e);
@@ -38,7 +43,7 @@ export default class CanvasRoom {
         }
     }
 
-    public updateForms(data: IEditFormsData): boolean {
+    public updateForms(data: IUpdateFormsData): boolean {
         try {
             let formIsUpdated: boolean = false;
 
@@ -68,10 +73,10 @@ export default class CanvasRoom {
         try {
             let formIsDeleted: boolean = false;
 
-            data.forms.forEach((form) => {
+            data.formsId.forEach((formId) => {
                 formIsDeleted = false;
                 this.canvas.shapes = this.canvas.shapes.filter((shape) => {
-                    if (shape.id === form.id) {
+                    if (shape.id === formId) {
                         formIsDeleted = true;
                         return false;
                     }
@@ -80,7 +85,7 @@ export default class CanvasRoom {
                 });
 
                 if (!formIsDeleted) {
-                    throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
+                    throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
                 }
             });
 
@@ -96,16 +101,16 @@ export default class CanvasRoom {
         try {
             let formIsSelected: boolean = false;
 
-            data.forms.forEach((form) => {
+            data.formsId.forEach((formId) => {
                 formIsSelected = false;
                 this.canvas.shapes.forEach((shape) => {
-                    if (shape.id === form.id) {
+                    if (shape.id === formId) {
                         formIsSelected = true;
                     }
                 });
 
                 if (!formIsSelected) {
-                    throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
+                    throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
                 }
             });
 
@@ -121,16 +126,16 @@ export default class CanvasRoom {
         try {
             let formIsDeselected: boolean = false;
 
-            data.forms.forEach((form) => {
+            data.formsId.forEach((formId) => {
                 formIsDeselected = false;
                 this.canvas.shapes.forEach((shape) => {
-                    if (shape.id === form.id) {
+                    if (shape.id === formId) {
                         formIsDeselected = true;
                     }
                 });
 
                 if (!formIsDeselected) {
-                    throw new Error(`There is no form with the id: "${form.id}" in the canvas : "${this.canvas.name}".`);
+                    throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
                 }
             });
 
@@ -145,18 +150,21 @@ export default class CanvasRoom {
     /***********************************************
     * Functions related to Links
     ************************************************/
-    public addLink(data: IEditLinkData): boolean {
+    public addLink(data: IUpdateLinksData): boolean {
         try {
+            if (data.links.length !== 1) {
+                throw new Error(`You can only create one Link at a time.`);
+            }
             // TODO : Check if linkTo and linkFrom point to existing forms?
             // TODO : En ce moment on ne met pas à jour les linksTo: ILink[], linksFrom: ILink[], dans les IBasicShape
             return true;
         } catch (e) {
-            console.log("[Error] in addForm", e);
+            console.log("[Error] in addLink", e);
             return false;
         }
     }
 
-    public updateLinks(data: IEditLinksData): boolean {
+    public updateLinks(data: IUpdateLinksData): boolean {
         try {
             // TODO : Check if linkTo and linkFrom point to existing forms?
             // TODO : En ce moment on ne met pas à jour les linksTo: ILink[], linksFrom: ILink[], dans les IBasicShape
@@ -206,7 +214,7 @@ export default class CanvasRoom {
 
             return true;
         } catch (e) {
-            console.log("[Error] in deleteForms", e);
+            console.log("[Error] in deleteLinks", e);
             return false;
         }
     }
@@ -219,7 +227,7 @@ export default class CanvasRoom {
             this.canvas.dimensions = data.canevas.dimensions;
             return true;
         } catch (e) {
-            console.log("[Error] in reinitialize", e);
+            console.log("[Error] in resize", e);
             return false;
         }
     }

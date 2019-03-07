@@ -17,9 +17,9 @@ export default class CanvasGallerySocketEvents {
               //  socket.emit("temp", JSON.stringify(response)); 
             });
 
-            socket.on("getCanvas", function () { 
+            socket.on("getAllCanvas", function () { 
                 try {
-                    socket.emit("getCanvasResponse", canvasManager.getCanvasRoomsSERI());
+                    socket.emit("getAllCanvasResponse", canvasManager.getCanvasRoomsSERI());
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }

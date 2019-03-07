@@ -4,6 +4,7 @@
 export interface IEditGalleryData {
     username: string,
     canevasName: string,  
+    password?: string,
 }
 
 export interface IEditCanevasData {
@@ -11,29 +12,30 @@ export interface IEditCanevasData {
     canevas: ICanevas,  
 }
 
-export interface IEditFormData {
-    username: string,
-    canevasName: string,  
-    form: any, // IBasicShape || IClassShape
-}
-
-export interface IEditFormsData {
+export interface IUpdateFormsData {
     username: string,
     canevasName: string,  
     forms: any[], // IBasicShape || IClassShape
 }
 
-export interface IEditLinkData {
+export interface IEditFormsData {
     username: string,
     canevasName: string,  
-    link: ILink, 
+    formsId: string[],
+}
+
+export interface IUpdateLinksData {
+    username: string,
+    canevasName: string,  
+    links: ILink[],
 }
 
 export interface IEditLinksData {
     username: string,
     canevasName: string,  
-    links: ILink[],
+    linksId: string[],
 }
+
 
 
 /***********************************************

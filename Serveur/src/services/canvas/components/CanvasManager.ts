@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { ICanevas, IEditFormsData, IEditLinkData, IEditLinksData, IEditFormData, IEditCanevasData, IEditGalleryData } from "../interfaces/interfaces";
+import { ICanevas, IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditGalleryData, IEditFormsData, IUpdateLinksData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -77,7 +77,7 @@ export default class CanvasManager {
     /***********************************************
     * Functions related to Forms
     ************************************************/
-    public addFormToCanvas(canvasRoomId: string, data: IEditFormData) {
+    public addFormToCanvas(canvasRoomId: string, data: IUpdateFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -86,7 +86,7 @@ export default class CanvasManager {
         return canvasRoom.addForm(data);
     }
 
-    public updateCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+    public updateCanvasForms(canvasRoomId: string, data: IUpdateFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -126,7 +126,7 @@ export default class CanvasManager {
     /***********************************************
     * Functions related to Links
     ************************************************/
-    public addLinkToCanvas(canvasRoomId: string, data: IEditLinkData) {
+    public addLinkToCanvas(canvasRoomId: string, data: IUpdateLinksData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -135,7 +135,7 @@ export default class CanvasManager {
         return canvasRoom.addLink(data);
     }
 
-    public updateCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+    public updateCanvasLinks(canvasRoomId: string, data: IUpdateLinksData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
