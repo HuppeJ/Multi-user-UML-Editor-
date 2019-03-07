@@ -31,7 +31,7 @@ class Canevas(var id: String, var name: String, var author: String, var owner: S
     }
 
     fun updateShape(basicShape: BasicShape): Boolean{
-        for( i in 0 ..shapes.size){
+        for( i in 0 ..shapes.size-1){
             if(shapes[i].id == basicShape.id){
                 shapes[i] = basicShape
                 return true

@@ -441,7 +441,7 @@ class DrawingActivity : AppCompatActivity(){
         if(obj.username != UserHolder.getInstance().username) {
             Log.d("formsCreated", obj.username + obj.basicShape.name)
             runOnUiThread {
-                //ViewShapeHolder.getInstance().canevas.addShape(obj.basicShape)
+                ViewShapeHolder.getInstance().canevas.addShape(obj.basicShape)
                 addOnCanevas(obj.basicShape)
             }
         }
