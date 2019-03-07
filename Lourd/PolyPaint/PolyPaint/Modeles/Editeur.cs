@@ -16,8 +16,8 @@ namespace PolyPaint.Modeles
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public StrokeCollection traits = new StrokeCollection();
-        public StrokeCollection selectedStrokes = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
+        public StrokeCollection selectedStrokes = new StrokeCollection();
 
         // StrokeType selected
         private string selectedStrokeType = "CLASS_SHAPE";

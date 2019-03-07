@@ -29,6 +29,12 @@ namespace PolyPaint.VueModeles
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 
 
+        public StrokeCollection SelectedStrokes
+        {
+            get { return editeur.selectedStrokes; }
+            set { editeur.selectedStrokes = value; }
+        }
+
         public string SelectedStrokeType
         {
             get { return editeur.SelectedStrokeType; }
@@ -55,7 +61,6 @@ namespace PolyPaint.VueModeles
         }*/
        
         public StrokeCollection Traits { get; set; }
-        public StrokeCollection SelectedStrokes { get; set; }
 
         #region Commandes pour la vue
         // Commandes sur lesquelles la vue pourra se connecter.
@@ -96,8 +101,6 @@ namespace PolyPaint.VueModeles
             };
 
             Traits = editeur.traits;
-            
-            SelectedStrokes = editeur.selectedStrokes;
             
             // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.            
             Empiler = new RelayCommand<object>(editeur.Empiler, editeur.PeutEmpiler);            
@@ -156,7 +159,7 @@ namespace PolyPaint.VueModeles
             /* else if (e.PropertyName == "CouleurSelectionnee")
             {
                 AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
-            }  */              
+            }  */
             else //if (e.PropertyName == "OutilSelectionne")
             {
                 OutilSelectionne = editeur.OutilSelectionne;

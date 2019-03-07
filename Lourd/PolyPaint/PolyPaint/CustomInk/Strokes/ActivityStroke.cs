@@ -43,14 +43,16 @@ namespace PolyPaint.CustomInk
         {
             // à changer
             Matrix rotatingMatrix = new Matrix();
-            Rect bounds = this.GetBounds();
+            Rect bounds = GetBounds();
             double x = (bounds.Right + bounds.Left) / 2;
             double y = (bounds.Bottom + bounds.Top) / 2;
 
             Point rotatePoint = new Point(x, y);
 
             rotatingMatrix.RotateAt(90, rotatePoint.X, rotatePoint.Y);
-            this.Transform(rotatingMatrix, false);
+            Transform(rotatingMatrix, false);
+
+            Console.WriteLine("Rotation attempt activity");
         }
     }
 }

@@ -26,11 +26,17 @@ namespace PolyPaint.CustomInk
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
           "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("CLASS_SHAPE"));
         #endregion
-
+        /*
+        #region SelectedStrokes dependency property
+        
+        public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
+          "SelectedStrokes", typeof(StrokeCollection), typeof(CustomInkCanvas), new PropertyMetadata(new StrokeCollection(), new PropertyChangedCallback(OnSelectionChanged)));
+        #endregion
+        */
         #region SelectedStrokes dependency property
         public StrokeCollection SelectedStrokes
         {
-            get { return (StrokeCollection) GetValue(SelectedStrokesProperty); }
+            get { return (StrokeCollection)GetValue(SelectedStrokesProperty); }
             set { SetValue(SelectedStrokesProperty, value); }
         }
         public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
@@ -49,8 +55,13 @@ namespace PolyPaint.CustomInk
             //drawingService.UpdateStroke += UpdateStroke;
         }
 
-        protected override void OnSelectionChanged(EventArgs e) {
-            SelectedStrokes = this.GetSelectedStrokes();
+        protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
+            SelectedStrokes.Clear();
+            foreach (Stroke stroke in e.GetSelectedStrokes())
+            {
+                SelectedStrokes.Add(stroke);
+            }
+            base.OnSelectionChanging(e);
         }
 
         #region OnStrokeCollected
