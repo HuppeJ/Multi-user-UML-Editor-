@@ -36,6 +36,10 @@ open class BasicElementView: RelativeLayout {
     open var mMinimumHeight : Float = 100F
     var socket: Socket? = null
 
+    var pointerFinger1 : Int = -1
+    var pointerFinger2 : Int = -1
+
+    var fingersCoords : Array<Coordinates> = Array(4) { Coordinates(0.0,0.0) }
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -285,7 +289,7 @@ open class BasicElementView: RelativeLayout {
 
     private var onTouchListenerBody = View.OnTouchListener { v, event ->
         if(!isSelectedByOther) {
-            when (event.action) {
+            when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
@@ -294,6 +298,16 @@ open class BasicElementView: RelativeLayout {
                     parentView.dispatchSetSelected(false)
                     v.isSelected = true
                     emitSelection()
+
+                    pointerFinger1 = event.getPointerId(event.actionIndex)
+                }
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    first_line.text = "SecondFingerActionDown"
+                    pointerFinger2 = event.getPointerId(event.actionIndex)
+                    fingersCoords[0].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
+                    fingersCoords[0].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
+                    fingersCoords[1].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
+                    fingersCoords[1].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
                 }
                 MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
                     val deltaX = event.rawX - oldFrameRawX
@@ -302,6 +316,25 @@ open class BasicElementView: RelativeLayout {
                     this.y = this.y + deltaY
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
+
+                    if(pointerFinger1 != -1 && pointerFinger2 != -1) {
+                        fingersCoords[2].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
+                        fingersCoords[2].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
+                        fingersCoords[3].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
+                        fingersCoords[3].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
+                        //Calculate Angle
+                        val angle = calculateDeltaAngle()
+
+                        //Rotate
+                        rotation += angle.toInt()
+                        Log.d("Angle", ""+angle)
+
+                        //Save for next step
+                        fingersCoords[0].x = fingersCoords[2].x
+                        fingersCoords[0].y = fingersCoords[2].y
+                        fingersCoords[1].x = fingersCoords[3].x
+                        fingersCoords[1].y = fingersCoords[3].y
+                    }
 
                     val basicShapeId = ViewShapeHolder.getInstance().map[this]
                     if(basicShapeId != null){
@@ -350,12 +383,30 @@ open class BasicElementView: RelativeLayout {
                         val drawingActivity: DrawingActivity = activity as DrawingActivity
                         drawingActivity.syncCanevasFromLayout()
                     }
+
+                    pointerFinger1 = -1
+                }
+                MotionEvent.ACTION_POINTER_UP ->{
+                    pointerFinger2 = -1
                 }
             }
         }
         true
     }
+    private fun calculateDeltaAngle() : Float{
+        val angle1 : Double = Math.atan2( (fingersCoords[1].y - fingersCoords[0].y), (fingersCoords[1].x - fingersCoords[0].x))
+        val angle2 : Double = Math.atan2( (fingersCoords[3].y - fingersCoords[2].y), (fingersCoords[3].x - fingersCoords[2].x))
 
+        var angle = (Math.toDegrees(angle2 - angle1) % 360).toFloat()
+
+        if (angle < -180.0f){
+            angle += 360.0f
+        }else if (angle > 180.0f){
+            angle -= 360.0f
+        }
+
+        return angle
+    }
     private var onTouchListenerEditButton = View.OnTouchListener { v, event ->
         when(event.action){
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerEditButton"
