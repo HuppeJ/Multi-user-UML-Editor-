@@ -300,22 +300,25 @@ open class BasicElementView: RelativeLayout {
                     emitSelection()
 
                     pointerFinger1 = event.getPointerId(event.actionIndex)
+                    fingersCoords[0].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
+                    fingersCoords[0].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
                 }
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     first_line.text = "SecondFingerActionDown"
                     pointerFinger2 = event.getPointerId(event.actionIndex)
-                    fingersCoords[0].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
-                    fingersCoords[0].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
+
                     fingersCoords[1].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
                     fingersCoords[1].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
                 }
                 MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
+
                     val deltaX = event.rawX - oldFrameRawX
                     val deltaY = event.rawY - oldFrameRawY
                     this.x = this.x + deltaX
                     this.y = this.y + deltaY
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
+
 
                     if(pointerFinger1 != -1 && pointerFinger2 != -1) {
                         fingersCoords[2].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
@@ -327,7 +330,10 @@ open class BasicElementView: RelativeLayout {
 
                         //Rotate
                         rotation += angle.toInt()
-                        Log.d("Angle", ""+angle)
+
+                        //Log.d("Angle", ""+angle)
+                        //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
+                        //Log.d("ACTU COORD", ""+fingersCoords[2]+"::"+fingersCoords[3])
 
                         //Save for next step
                         fingersCoords[0].x = fingersCoords[2].x
@@ -387,6 +393,10 @@ open class BasicElementView: RelativeLayout {
                     pointerFinger1 = -1
                 }
                 MotionEvent.ACTION_POINTER_UP ->{
+                    pointerFinger2 = -1
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    pointerFinger1 = -1
                     pointerFinger2 = -1
                 }
             }

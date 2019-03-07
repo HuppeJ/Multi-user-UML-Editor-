@@ -22,6 +22,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
@@ -89,12 +90,12 @@ class DrawingActivity : AppCompatActivity(){
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         add_button.setOnClickListener {
-            addOnCanevas()
+            addOnCanevas(ShapeTypes.DEFAULT)
             //TODO: Send to all others the event here
         }
 
         class_button.setOnClickListener {
-            addClassViewOnCanevas()
+            addOnCanevas(ShapeTypes.CLASS_SHAPE)
         }
 
         clear_canvas_button.setOnClickListener {
@@ -139,54 +140,88 @@ class DrawingActivity : AppCompatActivity(){
         socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
     }
 
-    private fun addOnCanevas(){
-        val basicShape: BasicShape = addBasicShapeOnCanevas()
-        val basicElementView: BasicElementView = addBasicElementOnCanevas()
-        ViewShapeHolder.getInstance().map.put(basicElementView, basicShape.id)
+    private fun addOnCanevas(shapeType: ShapeTypes){
+        var shape: BasicShape = newShapeOnCanevas(ShapeTypes.DEFAULT)
+        var view: BasicElementView = newViewOnCanevas(ShapeTypes.DEFAULT)
 
+        when(shapeType){
+            ShapeTypes.DEFAULT -> {}
+            ShapeTypes.CLASS_SHAPE -> {
+                shape = newShapeOnCanevas(ShapeTypes.CLASS_SHAPE)
+                view = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
+            }
+        }
+        //addViewToLayout
+        parent_relative_layout?.addView(view)
+        //addShapeToCanevas
+        ViewShapeHolder.getInstance().canevas.addShape(shape)
+        //mapViewAndShapeId
+        ViewShapeHolder.getInstance().map.put(view, shape.id)
+
+        //EMIT
         val gson = Gson()
-        val response :Response = Response(UserHolder.getInstance().username, basicShape)
+        val response :Response = Response(UserHolder.getInstance().username, shape)
         val obj: String = gson.toJson(response)
         Log.d("sending", obj)
         socket?.emit(SocketConstants.CANVAS_UPDATE_TEST, obj)
-        emitAddForm(basicShape)
+        emitAddForm(shape)
 
         syncLayoutFromCanevas()
     }
 
     private fun addOnCanevas(basicShape: BasicShape){
-        ViewShapeHolder.getInstance().map.put(addBasicElementOnCanevas(), basicShape.id)
+        when(basicShape.type){
+            ShapeTypes.DEFAULT.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.CLASS_SHAPE.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+        }
+
         syncLayoutFromCanevas()
     }
 
-    private fun addBasicElementOnCanevas(): BasicElementView {
-        val basicElem = BasicElementView(this)
-        val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-        basicElem.addView(viewToAdd)
-        parent_relative_layout?.addView(basicElem)
-
-
-        val link = LinkView(this)
-        parent_relative_layout?.addView(link)
-
-        return basicElem
-    }
-    private fun addBasicShapeOnCanevas() : BasicShape{
+    private fun newShapeOnCanevas(shapeType: ShapeTypes) : BasicShape{
         var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
-        var basicShape = BasicShape(UUID.randomUUID().toString(), 0, "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+        var shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
 
+        when (shapeType) {
+            ShapeTypes.DEFAULT -> {}
+            ShapeTypes.CLASS_SHAPE -> {
+                shape = ClassShape(UUID.randomUUID().toString(), shapeType.value(), "classShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>(),ArrayList<String?>(), ArrayList<String?>())
+            }
+        }
 
-        ViewShapeHolder.getInstance().canevas.addShape(basicShape)
-
-        return basicShape
+        return shape
     }
 
-    private fun addClassViewOnCanevas(){
-        val classView = ClassView(this)
-        val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
-        classView.addView(viewToAdd)
+    private fun newViewOnCanevas(shapeType : ShapeTypes) : BasicElementView{
+        var viewType : BasicElementView = BasicElementView(this)
+        val viewContainer = inflater!!.inflate(R.layout.basic_element, null)
 
-        parent_relative_layout?.addView(classView)
+        when(shapeType){
+            ShapeTypes.DEFAULT->{
+                viewType = BasicElementView(this)
+
+                val link = LinkView(this)
+                parent_relative_layout?.addView(link)
+            }
+            ShapeTypes.CLASS_SHAPE->{
+                viewType = ClassView(this)
+            }
+        }
+        viewType.addView(viewContainer)
+
+        return viewType
     }
 
     private fun duplicateView(){
@@ -264,6 +299,7 @@ class DrawingActivity : AppCompatActivity(){
                 view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
                 view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                view.rotation = basicShape.shapeStyle.rotation.toFloat()
             }
         }
     }
@@ -275,6 +311,7 @@ class DrawingActivity : AppCompatActivity(){
             shape.shapeStyle.coordinates.y = (basicElem.y).toDouble()
             shape.shapeStyle.width = basicElem.borderResizableLayout.width.toDouble()
             shape.shapeStyle.height = basicElem.borderResizableLayout.height.toDouble()
+            shape.shapeStyle.rotation = basicElem.rotation.toDouble()
         }
 
     }
