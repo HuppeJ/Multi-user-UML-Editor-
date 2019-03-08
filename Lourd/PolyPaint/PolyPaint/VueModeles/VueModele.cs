@@ -109,7 +109,6 @@ namespace PolyPaint.VueModeles
             // Donc, aucune vérification de type Peut"Action" à faire.
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
             Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
-            Rotate = new RelayCommand<object>(editeur.Rotate);
 
 
             ChooseStrokeTypeCommand = new RelayCommand<string>(editeur.ChooseStrokeTypeCommand);

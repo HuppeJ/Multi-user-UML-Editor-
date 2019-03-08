@@ -134,7 +134,7 @@
                         <Image Source="/Resources/rotate.png" />
                     </StackPanel>
                 </Button>-->
-                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0" Command="{Binding Rotate}"
+                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0" Click="RotateSelection"
                         BorderThickness="0">
                     <Button.Background>
                         <ImageBrush ImageSource="/Resources/rotate.png"></ImageBrush>

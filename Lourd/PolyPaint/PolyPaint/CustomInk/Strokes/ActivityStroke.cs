@@ -33,26 +33,11 @@ namespace PolyPaint.CustomInk
             BitmapImage img = new BitmapImage();
             img.BeginInit();
             img.UriSource = new Uri("../../Resources/activity.png", UriKind.Relative);
+            img.Rotation = rotation;
             img.EndInit();
 
             drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
 
-        }
-
-        public override void Rotate()
-        {
-            // à changer
-            Matrix rotatingMatrix = new Matrix();
-            Rect bounds = GetBounds();
-            double x = (bounds.Right + bounds.Left) / 2;
-            double y = (bounds.Bottom + bounds.Top) / 2;
-
-            Point rotatePoint = new Point(x, y);
-
-            rotatingMatrix.RotateAt(90, rotatePoint.X, rotatePoint.Y);
-            Transform(rotatingMatrix, false);
-
-            Console.WriteLine("Rotation attempt activity");
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace PolyPaint.CustomInk
 {
@@ -120,7 +121,7 @@ namespace PolyPaint.CustomInk
         //private void AddStroke(CustomStroke newStroke)
         //{
         //    Console.WriteLine("add de vueModele en provenance du service :) ");
-            
+
         //    Strokes.Add(newStroke);
         //}
 
@@ -130,6 +131,29 @@ namespace PolyPaint.CustomInk
         //    // ne add pas le trait pour vrai..
         //    Strokes.Add(newStroke);
         //}
+
+        #region RotateStrokes
+        public void RotateStrokes()
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+
+            if (strokes.Count == 0)
+                return;
+
+            foreach (CustomStroke selectedStroke in strokes)
+            {
+                Rotation rotation = selectedStroke.rotation;
+                if (rotation.Equals(Rotation.Rotate270))
+                    rotation = Rotation.Rotate0;
+                else
+                    rotation += 1;
+                Stroke newStroke = selectedStroke.CloneRotated(rotation);
+                StrokeCollection newStrokes = new StrokeCollection();
+                newStrokes.Add(newStroke);
+                Strokes.Replace(selectedStroke, newStrokes);
+            }
+        }
+        #endregion
 
         #region PasteStrokes
         public void PasteStrokes()

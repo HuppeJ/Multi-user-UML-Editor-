@@ -126,14 +126,5 @@ namespace PolyPaint.Modeles
             SelectedStrokeType = strokeType;
             ProprieteModifiee();
         }
-        
-        // Rotate selected strokes of 90 degrees
-        public void Rotate(object o)
-        {
-            foreach (CustomStroke stroke in selectedStrokes)
-            {
-                stroke.Rotate();
-            }
-        }
     }
 }

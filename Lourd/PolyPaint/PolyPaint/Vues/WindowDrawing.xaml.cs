@@ -46,5 +46,7 @@ namespace PolyPaint.Vues
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
 
+        private void RotateSelection(object sender, RoutedEventArgs e) => surfaceDessin.RotateStrokes();
+
     }
 }
