@@ -75,24 +75,5 @@ namespace PolyPaint.Vues
         {
             (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
         }
-
-
-        // Alex pour savoir quand un stroke a ete ajoute
-        private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if ((DataContext as VueModele)?.OutilSelectionne == "crayon")
-            {
-                CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(
-                    (CustomStroke) surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1]
-                );
-                surfaceDessin.Select(new StrokeCollection{ newStroke });
-            }
-        }
-
-        private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
-        {
-            (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
-        }
-
     }
 }

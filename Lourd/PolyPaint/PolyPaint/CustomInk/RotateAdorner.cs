@@ -36,6 +36,7 @@ namespace PolyPaint.CustomInk
             : base(adornedElement)
         {
             stroke = strokeToRotate;
+
             visualChildren = new VisualCollection(this);
             rotateHandle = new Thumb();
             rotateHandle.Cursor = Cursors.SizeNWSE;
@@ -53,7 +54,8 @@ namespace PolyPaint.CustomInk
             visualChildren.Add(outline);
             visualChildren.Add(rotateHandle);
 
-            strokeBounds = ((Path) adornedElement).Data.Bounds;
+            //strokeBounds = ((Path) adornedElement).Data.Bounds;
+            strokeBounds = strokeToRotate.GetBounds();
         }
 
         /// <summary>
@@ -169,7 +171,10 @@ namespace PolyPaint.CustomInk
             //((CustomInkCanvas)ancestorCanvas).SelectedStrokes[0].Transform(mat, true);
             stroke.Transform(mat, true);
 
-            ((Path)AdornedElement).LayoutTransform = new RotateTransform(rotation.Angle - lastAngle, center.X, center.Y);
+            //((Path)AdornedElement).LayoutTransform = new RotateTransform(rotation.Angle - lastAngle, center.X, center.Y);
+
+            stroke.CloneRotated(rotation.Angle - lastAngle);
+            stroke.rotation = rotation.Angle - lastAngle;
 
             // Save the angle of the last rotation.
             lastAngle = rotation.Angle;

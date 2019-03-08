@@ -11,7 +11,7 @@ namespace PolyPaint.CustomInk
 {
     public abstract class CustomStroke : Stroke
     {
-        public int rotation = 0;
+        public double rotation = 0.0;
         public Guid guid;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)
@@ -66,7 +66,7 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
 
-        public CustomStroke CloneRotated(int rotation) {
+        public CustomStroke CloneRotated(double rotation) {
             CustomStroke newStroke = (CustomStroke)Clone();
             newStroke.rotation = rotation;
             return newStroke;
