@@ -1,9 +1,14 @@
 import Chatroom from "./Chatroom";
+import { CHAT_ROOM_ID } from "../../../constants/RoomID";
 
 export default class ChatroomManager {
     // mapping of all available chatrooms 
     // chatrooms est une Map : [key: chatroom.name, value: Chatroom]
     private chatrooms = new Map();
+
+    public getChatroomIdFromName(chatroomName: string): string {
+        return `${CHAT_ROOM_ID}-${chatroomName}`;
+    }
 
     public addChatroom(chatroomName: string, socketId: any) {
         if (!this.isChatroom(chatroomName)) {
@@ -54,8 +59,7 @@ export default class ChatroomManager {
     }
 
     public getChatrooms() {
-        let strKeys = JSON.stringify(Array.from(this.chatrooms.keys()));
-        return strKeys;
+        return JSON.stringify(Array.from(this.chatrooms.keys()));
     }
 
     public getChatroomClients(chatroomName: string) {

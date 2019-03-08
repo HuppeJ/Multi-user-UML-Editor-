@@ -27,6 +27,10 @@ const userAccountManager = new UserAccountManager(datastore);
 import ChatroomManager from "./services/chat/components/ChatroomManager";
 const chatroomManager = new ChatroomManager();
 
+import CanvasManager from "./services/canvas/components/CanvasManager";
+const canvasManager = new CanvasManager();
+
+
 // Initialise Socket Events
 import ChatSocketEvents from "./services/chat/ChatSocketEvents";
 new ChatSocketEvents(io, chatroomManager);
@@ -35,14 +39,30 @@ import AuthenticationSocketEvents from "./services/Authentication/Authentication
 new AuthenticationSocketEvents(io, userAccountManager);
 
 import CanvasSocketEvents from "./services/canvas/CanvasSocketEvents";
-new CanvasSocketEvents(io);
+new CanvasSocketEvents(io, canvasManager);
+
+import CanvasGallerySocketEvents from './services/canvas/CanvasGallerySocketEvents';
+new CanvasGallerySocketEvents(io, canvasManager);
+
+import CanvasEditionSocketEvents from './services/canvas/CanvasEditionSocketEvents';
+new CanvasEditionSocketEvents(io, canvasManager);
 
 // Set up the Socket.io communication system
-io.on('connection', (client: any) => {
+io.on('connection', (socket: any) => {
     // TODO : remove
-    client.on('test', function () {
-        client.emit('hello');
+    socket.on('test', function () {
+        socket.emit('hello');
     });
+
+
+    socket.on('getServerState', function () {
+        const response = {
+            canvasManager_canvasRooms: JSON.parse(canvasManager.getCanvasRoomsSERI())
+        };
+
+        socket.emit("getServerStateResponse", JSON.stringify(response));
+    });
+
 });
 
 const PORT = process.env.PORT;

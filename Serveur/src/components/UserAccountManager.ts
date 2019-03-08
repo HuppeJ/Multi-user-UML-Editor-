@@ -10,7 +10,6 @@ export default class UserAccountManager {
     this.datastore = datastore;
   }
 
-
   public async addUser(name: string, password: string) {
     const user = {
       username: name,
