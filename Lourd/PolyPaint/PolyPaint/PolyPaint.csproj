@@ -189,7 +189,17 @@
     <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\ConnectionService.cs" />
     <Compile Include="Services\DialogService.cs" />
+    <Compile Include="Services\DrawingService.cs" />
     <Compile Include="Services\IDialogService.cs" />
+    <Compile Include="Templates\AnchorPoint.cs" />
+    <Compile Include="Templates\BasicShape.cs" />
+    <Compile Include="Templates\Canvas.cs" />
+    <Compile Include="Templates\ClassShape.cs" />
+    <Compile Include="Templates\Coordinates.cs" />
+    <Compile Include="Templates\Link.cs" />
+    <Compile Include="Templates\LinkStyle.cs" />
+    <Compile Include="Templates\Room.cs" />
+    <Compile Include="Templates\ShapeStyle.cs" />
     <Compile Include="Utilitaires\BringNewItemIntoViewBehavior.cs" />
     <Compile Include="Utilitaires\ByteBitmapSourceConverter.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />

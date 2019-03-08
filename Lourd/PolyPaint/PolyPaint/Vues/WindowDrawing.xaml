@@ -197,9 +197,7 @@
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
                            StrokeType="{Binding SelectedStrokeType, UpdateSourceTrigger=PropertyChanged}"
                            />
-                
             </Border>
-
         </Grid>
     </DockPanel>
 </UserControl>

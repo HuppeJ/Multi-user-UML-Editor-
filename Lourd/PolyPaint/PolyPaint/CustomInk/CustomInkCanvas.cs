@@ -72,7 +72,6 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionChanged(EventArgs e) {
             SelectedStrokes = this.GetSelectedStrokes();
-        }
 
         protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
         {
