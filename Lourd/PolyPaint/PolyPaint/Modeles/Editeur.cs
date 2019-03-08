@@ -72,7 +72,7 @@ namespace PolyPaint.Modeles
             }
         }
 
-        internal StrokeCollection AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
+        internal CustomStroke AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
         {
             // Deja fait par le binding
             //traits.Add(selectedStroke);
@@ -82,7 +82,7 @@ namespace PolyPaint.Modeles
             StrokeCollection selectedStrokes = new StrokeCollection { selectedStroke };
             OutilSelectionne = "lasso";
 
-            return selectedStrokes;
+            return selectedStroke;
         }
 
         internal void AddStrokeFromService(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)

@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using PolyPaint.CustomInk;
 using System.Windows.Ink;
 using PolyPaint.Enums;
+using System.Windows.Shapes;
 
 namespace PolyPaint.Vues
 {
@@ -53,10 +54,10 @@ namespace PolyPaint.Vues
         {
             if ((DataContext as VueModele)?.OutilSelectionne == "crayon")
             {
-                StrokeCollection newStroke = (DataContext as VueModele).AddStrokeFromView(
+                CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(
                     (CustomStroke) surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1]
                 );
-                surfaceDessin.Select(newStroke);
+                surfaceDessin.Select(new StrokeCollection{ newStroke });
             }
         }
 
