@@ -17,12 +17,15 @@ import co.zsmb.materialdrawerkt.builders.drawer
 import co.zsmb.materialdrawerkt.builders.footer
 import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
 import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
+import com.github.nkzawa.socketio.client.Socket
 import com.mikepenz.materialdrawer.Drawer
+import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
 import java.util.*
 
 class CreateDrawingActivity: AppCompatActivity(){
@@ -103,6 +106,11 @@ class CreateDrawingActivity: AppCompatActivity(){
         isPasswordProtected = TextUtils.isEmpty(password)
 
         var canevas: Canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, null, ArrayList(), ArrayList())
+
+
+        val app = application as PolyPaint
+        val socket : Socket? = app.socket
+        socket?.emit(SocketConstants.CREATE_CANVAS)
 
 
         val intent = Intent(this, DrawingActivity::class.java)
