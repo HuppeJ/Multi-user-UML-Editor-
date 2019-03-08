@@ -45,8 +45,34 @@ namespace PolyPaint.Vues
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
-
+        
         private void RotateSelection(object sender, RoutedEventArgs e) => surfaceDessin.RotateStrokes();
+
+        // Alex pour savoir quand un stroke a ete ajoute
+        private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if ((DataContext as VueModele)?.OutilSelectionne == "crayon")
+            {
+                CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(
+                    (CustomStroke) surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1]
+                );
+                surfaceDessin.Select(new StrokeCollection{ newStroke });
+
+                Path path = new Path();
+                path.Data = newStroke.GetGeometry();
+                surfaceDessin.Children.Add(path);
+                //newStroke.GetWidenedPathGeometry();
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                //myAdornerLayer.Add(new AnchorPointAdorner(path));
+                myAdornerLayer.Add(new RotateAdorner(path, newStroke));
+
+            }
+        }
+
+        private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
+        }
 
     }
 }

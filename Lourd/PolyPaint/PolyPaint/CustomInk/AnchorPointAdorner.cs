@@ -30,5 +30,13 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomLeft, renderRadius, renderRadius);
             drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomRight, renderRadius, renderRadius);
         }
+
+        protected override Size MeasureOverride(Size constraint)
+        {
+            var result = base.MeasureOverride(constraint);
+            // ... add custom measure code here if desired ...
+            InvalidateVisual();
+            return result;
+        }
     }
 }
