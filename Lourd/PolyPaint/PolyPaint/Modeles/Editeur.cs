@@ -1,9 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Ink;
+using System.Windows.Input;
 using PolyPaint.CustomInk;
+using PolyPaint.Enums;
 
 namespace PolyPaint.Modeles
 {
@@ -18,6 +21,10 @@ namespace PolyPaint.Modeles
         public StrokeCollection traits = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
         public StrokeCollection selectedStrokes = new StrokeCollection();
+
+
+        public event EventHandler<CustomStroke> AddStrokeFromModel;
+
 
         // StrokeType selected
         private string selectedStrokeType = "CLASS_SHAPE";
@@ -64,6 +71,46 @@ namespace PolyPaint.Modeles
                 ProprieteModifiee();
             }
         }*/
+
+        internal CustomStroke AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
+        {
+            // Deja fait par le binding
+            //traits.Add(selectedStroke);
+
+            StrokeAdded(selectedStroke);
+
+            StrokeCollection selectedStrokes = new StrokeCollection { selectedStroke };
+            OutilSelectionne = "lasso";
+
+            return selectedStroke;
+        }
+
+        internal void AddStrokeFromService(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
+        {
+            // Il faudrait pouvoir verifier que le trait n'existe pas, ou pouvoir le modifier... on a acces au guid?
+            if (!isInTraits(selectedStroke))
+            {
+                traits.Add(selectedStroke);
+            }
+        }
+
+        private bool isInTraits(CustomStroke selectedStroke)
+        {
+            foreach(CustomStroke stroke in traits)
+            {
+                if(stroke.guid == selectedStroke.guid)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void StrokeAdded(CustomStroke stroke)
+        {
+            AddStrokeFromModel?.Invoke(this, stroke);
+        }
 
         public static object StrokeType { get; private set; }
 

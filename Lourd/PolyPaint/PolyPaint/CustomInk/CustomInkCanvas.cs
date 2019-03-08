@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -16,7 +17,8 @@ namespace PolyPaint.CustomInk
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
         private StrokeCollection clipboard;
-        private DrawingService drawingService;
+
+        public StylusPoint firstPoint;
 
         #region StrokeType dependency property
         public string StrokeType
@@ -50,10 +52,6 @@ namespace PolyPaint.CustomInk
             DynamicRenderer = customRenderer;
 
             clipboard = new StrokeCollection();
-            drawingService = new DrawingService();
-            //drawingService.Initialize(null);
-            //drawingService.AddStroke += AddStroke;
-            //drawingService.UpdateStroke += UpdateStroke;
         }
 
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
@@ -100,12 +98,14 @@ namespace PolyPaint.CustomInk
                
             }
             Strokes.Add(customStroke);
+            firstPoint = customStroke.StylusPoints[0];
+            SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
 
-            Coordinates coordinates = new Coordinates(customStroke.StylusPoints[0].X, customStroke.StylusPoints[0].Y);
-            ShapeStyle shapeStyle = new ShapeStyle();
-            shapeStyle.coordinates = coordinates;
+            //Coordinates coordinates = new Coordinates(customStroke.StylusPoints[0].X, customStroke.StylusPoints[0].Y);
+            //ShapeStyle shapeStyle = new ShapeStyle();
+            //shapeStyle.coordinates = coordinates;
 
-            drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>());
+            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>());
 
             // Visual visual = this.GetVisualChild(this.Children.Count - 1);
 

@@ -12,7 +12,7 @@ namespace PolyPaint.Services
     {
         public event Action<string> JoinCanvasRoom;
         public event Action<Stroke> AddStroke;
-        public event Action<Stroke> UpdateStroke;
+        public event Action<CustomStroke> UpdateStroke;
 
         public DrawingService()
         {
@@ -30,7 +30,7 @@ namespace PolyPaint.Services
                 //JoinCanvasRoom?.Invoke(joinCanvas);
             });
 
-            socket.On("canvasUpdateTestResponse", (data) =>
+            socket.On("CanvasUpdateTestResponse", (data) =>
             {
                 BasicShape updatedStroke = serializer.Deserialize<BasicShape>((string)data);
 
@@ -55,30 +55,30 @@ namespace PolyPaint.Services
                 links = links
             };
 
-            socket.Emit("canvasUpdateTest", serializer.Serialize(updatedShape));
+            socket.Emit("CanvasUpdateTest", serializer.Serialize(updatedShape));
         }
 
-        private Stroke createStroke(BasicShape basicShape)
+        private CustomStroke createStroke(BasicShape basicShape)
         {
             StylusPointCollection points = new StylusPointCollection();
             points.Add(new StylusPoint(basicShape.shapeStyle.coordinates.x, basicShape.shapeStyle.coordinates.y));
 
-            Stroke customStroke;
+            CustomStroke customStroke;
             StrokeTypes type = (StrokeTypes) basicShape.type;
 
             switch (type)
             {
                 case StrokeTypes.CLASS_SHAPE:
-                    customStroke = new ClassStroke(points);
+                    customStroke = new ClassStroke(basicShape, points);
                     break;
                 case StrokeTypes.ARTIFACT:
-                    customStroke = new ActivityStroke(points);
+                    customStroke = new ActivityStroke(basicShape, points);
                     break;
                 case StrokeTypes.ACTIVITY:
-                    customStroke = new ArtifactStroke(points);
+                    customStroke = new ArtifactStroke(basicShape, points);
                     break;
                 case StrokeTypes.ROLE:
-                    customStroke = new ActorStroke(points);
+                    customStroke = new ActorStroke(basicShape, points);
                     break;
                 //case StrokeTypes.COMMENT:
                 //    customStroke = new CommentStroke(points);
@@ -87,10 +87,11 @@ namespace PolyPaint.Services
                 //    customStroke = new PhaseStroke(points);
                 //    break;
                 default:
-                    customStroke = new ClassStroke(points);
+                    customStroke = new ClassStroke(basicShape, points);
                     break;
 
             }
+            customStroke.guid = Guid.Parse(basicShape.id);
 
             return customStroke;
         }

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using PolyPaint.CustomInk;
+using PolyPaint.Enums;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Templates;
@@ -71,7 +74,16 @@ namespace PolyPaint.VueModeles
         public RelayCommand<object> Reinitialiser { get; set; }
 
         public RelayCommand<object> Rotate { get; set; }
+
+        internal CustomStroke AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
+        {
+            return editeur.AddStrokeFromView(selectedStroke);
+        }
+
+
         public RelayCommand<string> ChooseStrokeTypeCommand { get; set; }
+        //Command for sending editor actions to server
+        public RelayCommand<CustomStroke> SendNewStrokeCommand { get; set; }
         #endregion
 
 
@@ -86,7 +98,7 @@ namespace PolyPaint.VueModeles
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
             drawingService = new DrawingService();
-            drawingService.AddStroke += AddStroke;
+            //drawingService.AddStroke += AddStroke;
             drawingService.UpdateStroke += UpdateStroke;
 
             // On initialise les attributs de dessin avec les valeurs de départ du modèle.
@@ -110,23 +122,52 @@ namespace PolyPaint.VueModeles
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
             Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
 
-
             ChooseStrokeTypeCommand = new RelayCommand<string>(editeur.ChooseStrokeTypeCommand);
-            
+
+
+            //Command for sending editor actions to server
+            SendNewStrokeCommand = new RelayCommand<CustomStroke>(SendNewStroke);
+            editeur.AddStrokeFromModel += OnStrokeCollectedEvent;
 
         }
-        
-        private void AddStroke(Stroke newStroke)
+
+        /// <summary>
+        ///     Handler for InkCanvas event
+        /// </summary>
+        public void OnStrokeCollectedEvent(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
-            Console.WriteLine("add de vueModele en provenance du service :) ");
-            editeur.traits.Add(newStroke);
+            SendNewStrokeCommand.Execute(e.Stroke);
         }
 
-        private void UpdateStroke(Stroke newStroke)
+        /// <summary>
+        ///     Handler for Editor event (unstack)
+        /// </summary>
+        public void OnStrokeCollectedEvent(object sender, Stroke stroke)
+        {
+            SendNewStrokeCommand.Execute(stroke);
+        }
+
+        public void SendNewStroke(CustomStroke stroke)
+        {
+            //drawingService.createStroke();
+            Coordinates coordinates = new Coordinates(stroke.StylusPoints[0].X, stroke.StylusPoints[0].Y);
+            ShapeStyle shapeStyle = new ShapeStyle();
+            shapeStyle.coordinates = coordinates;
+
+            drawingService.UpdateShape(stroke.guid.ToString(), 0, "strokeName", shapeStyle, new List<string>());
+        }
+
+        //private void AddStroke(Stroke newStroke)
+        //{
+        //    Console.WriteLine("add de vueModele en provenance du service :) ");
+        //    editeur.traits.Add(newStroke);
+        //}
+
+        private void UpdateStroke(CustomStroke newStroke)
         {
             Console.WriteLine("update de vueModele en provenance du service :) ");
             // ne add pas le trait pour vrai..
-            editeur.traits.Add(newStroke);
+            editeur.AddStrokeFromService(newStroke);
         }
 
 

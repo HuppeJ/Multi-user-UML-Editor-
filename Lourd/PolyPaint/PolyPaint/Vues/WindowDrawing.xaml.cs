@@ -9,6 +9,8 @@ using PolyPaint;
 using System.Windows.Documents;
 using PolyPaint.CustomInk;
 using System.Windows.Ink;
+using PolyPaint.Enums;
+using System.Windows.Shapes;
 
 namespace PolyPaint.Vues
 {
@@ -66,6 +68,24 @@ namespace PolyPaint.Vues
                 //myAdornerLayer.Add(new AnchorPointAdorner(path));
                 myAdornerLayer.Add(new RotateAdorner(path, newStroke));
 
+            }
+        }
+
+        private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
+        }
+
+
+        // Alex pour savoir quand un stroke a ete ajoute
+        private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if ((DataContext as VueModele)?.OutilSelectionne == "crayon")
+            {
+                CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(
+                    (CustomStroke) surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1]
+                );
+                surfaceDessin.Select(new StrokeCollection{ newStroke });
             }
         }
 
