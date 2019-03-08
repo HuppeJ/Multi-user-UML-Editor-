@@ -88,10 +88,23 @@ namespace PolyPaint.Modeles
         internal void AddStrokeFromService(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
         {
             // Il faudrait pouvoir verifier que le trait n'existe pas, ou pouvoir le modifier... on a acces au guid?
-            if (!traits.Contains(selectedStroke))
+            if (!isInTraits(selectedStroke))
             {
                 traits.Add(selectedStroke);
             }
+        }
+
+        private bool isInTraits(CustomStroke selectedStroke)
+        {
+            foreach(CustomStroke stroke in traits)
+            {
+                if(stroke.guid == selectedStroke.guid)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void StrokeAdded(CustomStroke stroke)

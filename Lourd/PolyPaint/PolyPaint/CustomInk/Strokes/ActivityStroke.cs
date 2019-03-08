@@ -5,12 +5,17 @@ using System.Windows;
 using System;
 using System.Windows.Media.Imaging;
 using System.Globalization;
+using PolyPaint.Templates;
 
 namespace PolyPaint.CustomInk
 {
     public class ActivityStroke : CustomStroke
     {
         public ActivityStroke(StylusPointCollection pts) : base(pts)
+        {
+        }
+
+        public ActivityStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
         {
         }
 

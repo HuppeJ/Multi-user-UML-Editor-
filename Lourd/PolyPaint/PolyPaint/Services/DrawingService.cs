@@ -69,16 +69,16 @@ namespace PolyPaint.Services
             switch (type)
             {
                 case StrokeTypes.CLASS_SHAPE:
-                    customStroke = new ClassStroke(points);
+                    customStroke = new ClassStroke(basicShape, points);
                     break;
                 case StrokeTypes.ARTIFACT:
-                    customStroke = new ActivityStroke(points);
+                    customStroke = new ActivityStroke(basicShape, points);
                     break;
                 case StrokeTypes.ACTIVITY:
-                    customStroke = new ArtifactStroke(points);
+                    customStroke = new ArtifactStroke(basicShape, points);
                     break;
                 case StrokeTypes.ROLE:
-                    customStroke = new ActorStroke(points);
+                    customStroke = new ActorStroke(basicShape, points);
                     break;
                 //case StrokeTypes.COMMENT:
                 //    customStroke = new CommentStroke(points);
@@ -87,10 +87,11 @@ namespace PolyPaint.Services
                 //    customStroke = new PhaseStroke(points);
                 //    break;
                 default:
-                    customStroke = new ClassStroke(points);
+                    customStroke = new ClassStroke(basicShape, points);
                     break;
 
             }
+            customStroke.guid = Guid.Parse(basicShape.id);
 
             return customStroke;
         }
