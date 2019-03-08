@@ -5,6 +5,7 @@ using System.Windows;
 using System;
 using System.Windows.Media.Imaging;
 using System.Globalization;
+using PolyPaint.Enums;
 using PolyPaint.Templates;
 
 namespace PolyPaint.CustomInk
@@ -13,10 +14,12 @@ namespace PolyPaint.CustomInk
     {
         public ActivityStroke(StylusPointCollection pts) : base(pts)
         {
+            type = (int)StrokeTypes.ACTIVITY;
         }
 
         public ActivityStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
         {
+            type = (int) StrokeTypes.ACTIVITY;
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
