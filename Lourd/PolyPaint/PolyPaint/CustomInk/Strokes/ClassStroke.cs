@@ -38,6 +38,16 @@ namespace PolyPaint.CustomInk
                 32,
                 Brushes.Black);
 
+            Rect bounds = GetBounds();
+            double x = (bounds.Right + bounds.Left) / 2;
+            double y = (bounds.Bottom + bounds.Top) / 2;
+
+            TransformGroup transform = new TransformGroup();
+
+            transform.Children.Add(new RotateTransform(rotation, x, y));
+
+            drawingContext.PushTransform(transform);
+
             drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
 

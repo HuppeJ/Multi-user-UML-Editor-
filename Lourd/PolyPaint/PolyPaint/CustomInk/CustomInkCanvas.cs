@@ -142,11 +142,11 @@ namespace PolyPaint.CustomInk
 
             foreach (CustomStroke selectedStroke in strokes)
             {
-                Rotation rotation = selectedStroke.rotation;
-                if (rotation.Equals(Rotation.Rotate270))
-                    rotation = Rotation.Rotate0;
+                int rotation = selectedStroke.rotation;
+                if (rotation.Equals(360))
+                    rotation = 0;
                 else
-                    rotation += 1;
+                    rotation += 10;
                 Stroke newStroke = selectedStroke.CloneRotated(rotation);
                 StrokeCollection newStrokes = new StrokeCollection();
                 newStrokes.Add(newStroke);

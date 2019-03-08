@@ -33,8 +33,17 @@ namespace PolyPaint.CustomInk
             BitmapImage img = new BitmapImage();
             img.BeginInit();
             img.UriSource = new Uri("../../Resources/activity.png", UriKind.Relative);
-            img.Rotation = rotation;
             img.EndInit();
+
+            Rect bounds = GetBounds();
+            double x = (bounds.Right + bounds.Left) / 2;
+            double y = (bounds.Bottom + bounds.Top) / 2;
+
+            TransformGroup transform = new TransformGroup();
+
+            transform.Children.Add(new RotateTransform(rotation, x, y));
+
+            drawingContext.PushTransform(transform);
 
             drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
 
