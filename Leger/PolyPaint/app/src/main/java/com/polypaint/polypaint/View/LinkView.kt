@@ -36,31 +36,27 @@ class LinkView: View{
     private fun initialise(){
         paint.color = Color.BLACK
         paint.strokeWidth = 5f
-        paint.style = Paint.Style.STROKE
+        paint.style = Paint.Style.FILL_AND_STROKE
     }
 
     override fun onDraw(canvas: Canvas){
+        val angle : Double = Math.atan2( (end.y - start.y), (end.x - start.x))
+        val angle2: Double =  angle -Math.PI/2
+
         val path: Path = Path()
         path.moveTo(start.x.toFloat(), start.y.toFloat())
         path.lineTo(end.x.toFloat(), end.y.toFloat())
-//        path.lineTo(end.x.toFloat() + 10f, end.y.toFloat()+10f)
-//        path.lineTo(start.x.toFloat() + 10f, start.y.toFloat()+10f)
-//        path.lineTo(start.x.toFloat(), start.y.toFloat())
+        path.lineTo(end.x.toFloat() + 10f * Math.cos(angle2).toFloat(), end.y.toFloat()+10f * Math.sin(angle2).toFloat())
+        path.lineTo(start.x.toFloat() + 10f * Math.cos(angle2).toFloat(), start.y.toFloat()+10f * Math.sin(angle2).toFloat())
+        path.lineTo(start.x.toFloat(), start.y.toFloat())
         path.close()
         canvas.drawPath(path, paint)
-
-
 
         rect = RectF()
         path.computeBounds(rect, true)
         Log.d("rect", rect.toString())
         region = Region()
         region.setPath(path, Region(rect.left.toInt(), rect.top.toInt(), rect.right.toInt(), rect.bottom.toInt()))
-        Log.d("contains", region.contains(0,0).toString())
-        Log.d("regionBound", region.bounds.toString())
-        Log.d("regionBoundaryPath", region.boundaryPath.isEmpty.toString())
-        //canvas.drawPath(region.boundaryPath, paint)
-       // canvas.drawLine(start.x.toFloat(), start.y.toFloat(), end.x.toFloat(), end.y.toFloat(), paint)
     }
 
     override fun onAttachedToWindow() {
@@ -81,7 +77,7 @@ class LinkView: View{
         Log.d("event", event.x.toString()+" "+ event.y.toString())
         Log.d("region", region.bounds.toString())
 
-        if(rect.contains(event.x, event.y)){
+        if(region.contains(event.x.toInt(), event.y.toInt())){
             val parentView = v.parent as RelativeLayout
             parentView.dispatchSetSelected(false)
             v.isSelected = true
