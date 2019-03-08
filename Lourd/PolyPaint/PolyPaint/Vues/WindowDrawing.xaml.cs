@@ -9,6 +9,7 @@ using PolyPaint;
 using System.Windows.Documents;
 using PolyPaint.CustomInk;
 using System.Windows.Ink;
+using PolyPaint.Enums;
 
 namespace PolyPaint.Vues
 {
@@ -45,6 +46,24 @@ namespace PolyPaint.Vues
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
+
+
+        // Alex pour savoir quand un stroke a ete ajoute
+        private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if ((DataContext as VueModele)?.OutilSelectionne == "crayon")
+            {
+                StrokeCollection newStroke = (DataContext as VueModele).AddStrokeFromView(
+                    (CustomStroke) surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1]
+                );
+                surfaceDessin.Select(newStroke);
+            }
+        }
+
+        private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
+        }
 
     }
 }

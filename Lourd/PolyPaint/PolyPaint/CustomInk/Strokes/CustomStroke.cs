@@ -11,9 +11,12 @@ namespace PolyPaint.CustomInk
 {
     public abstract class CustomStroke : Stroke
     {
+        public Guid guid;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
+            guid = Guid.NewGuid();
+
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             while (StylusPoints.Count > 1)
             {

@@ -191,7 +191,9 @@
                 </Border.Effect>
                 <customink:CustomInkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" x:Name="surfaceDessin" 
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                           
-                           MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"         
+                           MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"
+                           MouseUp="surfaceDessin_OnMouseUp"
+                                           StrokeCollected="OnStrokeCollected"
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            SelectedStrokes="{Binding SelectedStrokes}"
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
