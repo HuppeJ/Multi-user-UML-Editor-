@@ -2,15 +2,13 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Ink;
+using System.Windows.Input;
 using System.Windows.Media;
+using PolyPaint.CustomInk;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
+using PolyPaint.Templates;
 using PolyPaint.Utilitaires;
-using Quobject.SocketIoClientDotNet.Client;
-using System.Windows.Input;
-using System.Windows;
-using System.Collections.ObjectModel;
-using PolyPaint.Enums;
 
 namespace PolyPaint.VueModeles
 {
@@ -25,7 +23,7 @@ namespace PolyPaint.VueModeles
         public event PropertyChangedEventHandler PropertyChanged;
         private Editeur editeur = new Editeur();
 
-        private ChatService chat = new ChatService();
+        private DrawingService drawingService;
 
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
@@ -59,17 +57,17 @@ namespace PolyPaint.VueModeles
         public StrokeCollection Traits { get; set; }
         public StrokeCollection SelectedStrokes { get; set; }
 
-        // Commandes sur lesquels la vue pourra se connecter.
+        #region Commandes pour la vue
+        // Commandes sur lesquelles la vue pourra se connecter.
         public RelayCommand<object> Empiler { get; set; }
         public RelayCommand<object> Depiler { get; set; }
         public RelayCommand<string> ChoisirPointe { get; set; }
         public RelayCommand<string> ChoisirOutil { get; set; }
         public RelayCommand<object> Reinitialiser { get; set; }
+
         public RelayCommand<object> Rotate { get; set; }
-
-
         public RelayCommand<string> ChooseStrokeTypeCommand { get; set; }
-
+        #endregion
 
 
         /// <summary>
@@ -82,7 +80,9 @@ namespace PolyPaint.VueModeles
             // On écoute pour des changements sur le modèle. Lorsqu'il y en a, EditeurProprieteModifiee est appelée.
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
-            //chat.UserCreated += UserCreated;
+            drawingService = new DrawingService();
+            drawingService.AddStroke += AddStroke;
+            drawingService.UpdateStroke += UpdateStroke;
 
             // On initialise les attributs de dessin avec les valeurs de départ du modèle.
             AttributsDessin = new DrawingAttributes();            
@@ -90,6 +90,7 @@ namespace PolyPaint.VueModeles
             AjusterPointe();
 
             Traits = editeur.traits;
+            
             SelectedStrokes = editeur.selectedStrokes;
             
             // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.            
@@ -106,6 +107,20 @@ namespace PolyPaint.VueModeles
             
 
         }
+        
+        private void AddStroke(Stroke newStroke)
+        {
+            Console.WriteLine("add de vueModele en provenance du service :) ");
+            editeur.traits.Add(newStroke);
+        }
+
+        private void UpdateStroke(Stroke newStroke)
+        {
+            Console.WriteLine("update de vueModele en provenance du service :) ");
+            // ne add pas le trait pour vrai..
+            editeur.traits.Add(newStroke);
+        }
+
 
         /// <summary>
         /// Appelee lorsqu'une propriété de VueModele est modifiée.
@@ -157,5 +172,16 @@ namespace PolyPaint.VueModeles
             AttributsDessin.Width = editeur.TailleTrait;
             AttributsDessin.Height = editeur.TailleTrait;
         }
+
+        #region Initialize DrawingService Command
+        private ICommand _initializeDrawingCommand;
+        public ICommand InitializeDrawingCommand
+        {
+            get
+            {
+                return _initializeDrawingCommand ?? (_initializeDrawingCommand = new RelayCommand<object>(drawingService.Initialize));
+            }
+        }
+        #endregion
     }
 }

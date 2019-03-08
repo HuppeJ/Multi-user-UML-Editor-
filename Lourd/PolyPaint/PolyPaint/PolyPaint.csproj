@@ -193,7 +193,7 @@
     <Compile Include="Services\IDialogService.cs" />
     <Compile Include="Templates\AnchorPoint.cs" />
     <Compile Include="Templates\BasicShape.cs" />
-    <Compile Include="Templates\Canvas.cs" />
+    <Compile Include="Templates\Canevas.cs" />
     <Compile Include="Templates\ClassShape.cs" />
     <Compile Include="Templates\Coordinates.cs" />
     <Compile Include="Templates\Link.cs" />

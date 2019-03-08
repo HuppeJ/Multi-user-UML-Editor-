@@ -12,7 +12,6 @@ using PolyPaint.Enums;
 using PolyPaint.Modeles;
 using PolyPaint.Utilitaires;
 using System.Windows.Input;
-using System.Reactive.Linq;
 using System.Windows.Controls;
 
 namespace PolyPaint.VueModeles

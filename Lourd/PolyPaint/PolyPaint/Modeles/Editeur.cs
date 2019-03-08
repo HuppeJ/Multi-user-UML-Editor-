@@ -3,9 +3,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Ink;
-using System.Windows;
-using System.Windows.Ink;
-using System.Windows.Media;
 using PolyPaint.CustomInk;
 
 namespace PolyPaint.Modeles
@@ -23,7 +20,7 @@ namespace PolyPaint.Modeles
         private StrokeCollection traitsRetires = new StrokeCollection();
 
         // StrokeType selected
-        private string selectedStrokeType = "class";
+        private string selectedStrokeType = "CLASS_SHAPE";
         public string SelectedStrokeType
         {
             get { return selectedStrokeType; }
