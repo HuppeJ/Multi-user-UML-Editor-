@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using PolyPaint.Modeles;
-using Quobject.SocketIoClientDotNet.Client;
-using System.Web.Script.Serialization;
+using PolyPaint.Templates;
 
 namespace PolyPaint.Services
 {
     class ChatService : ConnectionService
     {
         public event Action<ChatMessageTemplate> NewMessage;
+        public event Action<RoomList> GetChatrooms;
 
         public ChatService()
         {
@@ -22,6 +23,16 @@ namespace PolyPaint.Services
 
                 NewMessage?.Invoke(message);
             });
+
+            socket.On("getChatroomsResponse", (data) =>
+            {
+                string[] rooms = serializer.Deserialize<string[]>((string)data);
+                RoomList roomList = new RoomList();
+                roomList.rooms = rooms;
+                GetChatrooms?.Invoke(roomList);
+            });
+
+            socket.Emit("createChatroom", "Room1");
         }
         
         public void SendMessage(string text, string sender, long timestamp)
@@ -33,6 +44,11 @@ namespace PolyPaint.Services
             };
 
             socket.Emit("sendMessage", serializer.Serialize(chatMessage));
+        }
+
+        public void RequestChatrooms()
+        {
+            socket.Emit("getChatrooms");
         }
     }
 }
