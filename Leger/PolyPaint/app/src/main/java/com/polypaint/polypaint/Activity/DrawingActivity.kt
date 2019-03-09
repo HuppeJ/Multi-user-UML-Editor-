@@ -210,8 +210,8 @@ class DrawingActivity : AppCompatActivity(){
             ShapeTypes.DEFAULT->{
                 viewType = BasicElementView(this)
 
-                val link = LinkView(this)
-                parent_relative_layout?.addView(link)
+//                val link = LinkView(this)
+//                parent_relative_layout?.addView(link)
             }
             ShapeTypes.CLASS_SHAPE->{
                 viewType = ClassView(this)
