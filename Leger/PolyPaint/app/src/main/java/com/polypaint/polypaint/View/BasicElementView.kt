@@ -20,6 +20,8 @@ import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
+import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
+import com.polypaint.polypaint.SocketReceptionModel.LinksUpdateEvent
 import kotlinx.android.synthetic.main.basic_element.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -227,10 +229,24 @@ open class BasicElementView: RelativeLayout {
                                     LinkStyle("#000", 5, 0),
                                     path
                                 )
+
+                                val username: String = UserHolder.getInstance().username
+                                val canevas: Canevas = ViewShapeHolder.getInstance().canevas
+                                val links: ArrayList<Link> = ArrayList()
+                                val formsToUpdate: ArrayList<BasicShape> = ArrayList()
+
+                                formsToUpdate.add(canevas.findShape(thisBasicViewId)!!)
+                                formsToUpdate.add(canevas.findShape(otherBasicViewId)!!)
+                                links.add(linkShape)
+
                                 ViewShapeHolder.getInstance().linkMap.forcePut(link, linkShape.id)
-                                ViewShapeHolder.getInstance().canevas.links.add(linkShape)
-                                ViewShapeHolder.getInstance().canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
-                                ViewShapeHolder.getInstance().canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
+                                canevas.links.add(linkShape)
+                                canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
+                                canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
+
+                                socket?.emit(SocketConstants.CREATE_LINK, LinksUpdateEvent(username, canevas.name, links))
+                                socket?.emit(SocketConstants.UPDATE_FORMS, FormsUpdateEvent(username, canevas.name, formsToUpdate))
+
                                 parentView.addView(link)
                             }
                         }
