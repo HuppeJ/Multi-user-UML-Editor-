@@ -223,6 +223,7 @@ open class BasicElementView: RelativeLayout {
                                 path.add(link.end)
                                 val linkShape: Link = Link(
                                     UUID.randomUUID().toString(),
+                                    "Link",
                                     anchorPointStart,
                                     anchorPointEnd,
                                     0,
@@ -244,8 +245,8 @@ open class BasicElementView: RelativeLayout {
                                 canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
                                 canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
 
-                                socket?.emit(SocketConstants.CREATE_LINK, LinksUpdateEvent(username, canevas.name, links))
-                                socket?.emit(SocketConstants.UPDATE_FORMS, FormsUpdateEvent(username, canevas.name, formsToUpdate))
+//                                socket?.emit(SocketConstants.CREATE_LINK, LinksUpdateEvent(username, canevas.name, links))
+//                                socket?.emit(SocketConstants.UPDATE_FORMS, FormsUpdateEvent(username, canevas.name, formsToUpdate))
 
                                 parentView.addView(link)
                             }

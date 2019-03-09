@@ -2,14 +2,18 @@ package com.polypaint.polypaint.View
 
 import android.content.Context
 import android.graphics.*
+import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
 import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Fragment.EditClassDialogFragment
+import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape
@@ -81,6 +85,17 @@ class LinkView: View{
             val parentView = v.parent as RelativeLayout
             parentView.dispatchSetSelected(false)
             v.isSelected = true
+
+            var activity: AppCompatActivity = context as AppCompatActivity
+
+            var dialog: DialogFragment = EditLinkDialogFragment()
+            var bundle: Bundle = Bundle()
+            bundle.putString("id", "asdfasg")
+            dialog.arguments = bundle
+
+            Log.d("****", dialog.arguments.toString())
+            dialog.show(activity.supportFragmentManager, "alllooooo")
+
             true
         }else{
             false
