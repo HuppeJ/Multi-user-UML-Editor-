@@ -68,6 +68,10 @@ namespace PolyPaint.CustomInk
 
         public CustomStroke CloneRotated(double rotation) {
             CustomStroke newStroke = (CustomStroke)Clone();
+
+            // Changer les bounds? Gi
+            //newStroke.GetBounds().Transform(rotation.Value);
+
             newStroke.rotation = rotation;
             return newStroke;
         }

@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 
 namespace PolyPaint.CustomInk
 {
-    class CustomInkCanvas : InkCanvas
+    public class CustomInkCanvas : InkCanvas
     {
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
@@ -61,6 +61,12 @@ namespace PolyPaint.CustomInk
                 SelectedStrokes.Add(stroke);
             }
             base.OnSelectionChanging(e);
+        }
+
+        protected override void OnSelectionMoving(InkCanvasSelectionEditingEventArgs e)
+        {
+            base.OnSelectionMoving(e);
+            this.Children.Clear();
         }
 
         #region OnStrokeCollected
@@ -151,6 +157,31 @@ namespace PolyPaint.CustomInk
                 StrokeCollection newStrokes = new StrokeCollection();
                 newStrokes.Add(newStroke);
                 Strokes.Replace(selectedStroke, newStrokes);
+            }
+        }
+        #endregion
+
+        #region RotateStrokesWithAngle
+        public void RotateStrokesWithAngle(double rotation)
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+
+            if (strokes.Count == 0)
+                return;
+
+            foreach (CustomStroke selectedStroke in strokes)
+            {
+                //double rotation = selectedStroke.rotation;
+                if (rotation.Equals(360))
+                    rotation = 0;
+                //else
+                //    rotation += 10;
+                Stroke newStroke = selectedStroke.CloneRotated(rotation);
+                StrokeCollection newStrokes = new StrokeCollection();
+                newStrokes.Add(newStroke);
+                Strokes.Replace(selectedStroke, newStrokes);
+
+                SelectedStrokes.Replace(selectedStroke, newStrokes);
             }
         }
         #endregion
