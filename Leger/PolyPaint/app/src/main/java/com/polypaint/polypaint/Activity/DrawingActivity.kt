@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import co.zsmb.materialdrawerkt.builders.drawer
@@ -17,9 +16,7 @@ import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
 import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.ShapeTypes
@@ -33,7 +30,6 @@ import com.polypaint.polypaint.View.ClassView
 import com.polypaint.polypaint.View.LinkView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
-import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -214,8 +210,8 @@ class DrawingActivity : AppCompatActivity(){
             ShapeTypes.DEFAULT->{
                 viewType = BasicElementView(this)
 
-                val link = LinkView(this)
-                parent_relative_layout?.addView(link)
+//                val link = LinkView(this)
+//                parent_relative_layout?.addView(link)
             }
             ShapeTypes.CLASS_SHAPE->{
                 viewType = ClassView(this)
@@ -324,7 +320,7 @@ class DrawingActivity : AppCompatActivity(){
         val obj: String = gson.toJson(response)
 
         Log.d("emitingClearCanvas", obj)
-        socket?.emit(SocketConstants.REINITIALISE_CANVAS, obj)
+        socket?.emit(SocketConstants.REINITIALIZE_CANVAS, obj)
     }
 
     private fun emitAddForm(basicShape: BasicShape){

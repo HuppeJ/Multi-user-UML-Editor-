@@ -20,6 +20,8 @@ import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
+import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
+import com.polypaint.polypaint.SocketReceptionModel.LinksUpdateEvent
 import kotlinx.android.synthetic.main.basic_element.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -221,16 +223,31 @@ open class BasicElementView: RelativeLayout {
                                 path.add(link.end)
                                 val linkShape: Link = Link(
                                     UUID.randomUUID().toString(),
+                                    "Link",
                                     anchorPointStart,
                                     anchorPointEnd,
                                     0,
                                     LinkStyle("#000", 5, 0),
                                     path
                                 )
+
+                                val username: String = UserHolder.getInstance().username
+                                val canevas: Canevas = ViewShapeHolder.getInstance().canevas
+                                val links: ArrayList<Link> = ArrayList()
+                                val formsToUpdate: ArrayList<BasicShape> = ArrayList()
+
+                                formsToUpdate.add(canevas.findShape(thisBasicViewId)!!)
+                                formsToUpdate.add(canevas.findShape(otherBasicViewId)!!)
+                                links.add(linkShape)
+
                                 ViewShapeHolder.getInstance().linkMap.forcePut(link, linkShape.id)
-                                ViewShapeHolder.getInstance().canevas.links.add(linkShape)
-                                ViewShapeHolder.getInstance().canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
-                                ViewShapeHolder.getInstance().canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
+                                canevas.links.add(linkShape)
+                                canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
+                                canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
+
+//                                socket?.emit(SocketConstants.CREATE_LINK, LinksUpdateEvent(username, canevas.name, links))
+//                                socket?.emit(SocketConstants.UPDATE_FORMS, FormsUpdateEvent(username, canevas.name, formsToUpdate))
+
                                 parentView.addView(link)
                             }
                         }
@@ -439,9 +456,35 @@ open class BasicElementView: RelativeLayout {
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
                 emitDelete()
                 val parentView = v.parent.parent.parent as RelativeLayout
-                parentView.removeView(this)
 
+                val shapeId: String? = ViewShapeHolder.getInstance().map[this]
+                val shape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(shapeId!!)
+                val linksFrom: ArrayList<String?>? = shape?.linksFrom?.clone() as ArrayList<String?>
+                val linksTo: ArrayList<String?>? = shape?.linksTo?.clone() as ArrayList<String?>
+
+                for(linkId: String? in linksFrom!! ) {
+                    Log.d("linkid", linkId)
+                    val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId!!)
+                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                    if(linkView != null){
+                        parentView.removeView(linkView)
+                    }
+                    ViewShapeHolder.getInstance().remove(link!!)
+                }
+
+                for(linkId: String? in linksTo!! ) {
+                    val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId!!)
+                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                    if(linkView != null){
+                        parentView.removeView(linkView)
+                    }
+                    ViewShapeHolder.getInstance().remove(link!!)
+                }
+
+                parentView.removeView(this)
                 ViewShapeHolder.getInstance().remove(this)
+
+
             }
         }
         true
