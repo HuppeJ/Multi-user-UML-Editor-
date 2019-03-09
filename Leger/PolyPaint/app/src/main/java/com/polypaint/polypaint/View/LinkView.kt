@@ -12,11 +12,14 @@ import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.Coordinates
+import com.polypaint.polypaint.Model.Link
 
 class LinkView: View{
     private var socket: Socket? = null
     private val paint: Paint = Paint()
+    var link: Link? = null
     var start: Coordinates = Coordinates(0.0,0.0)
     var end: Coordinates = Coordinates(0.0,0.0)
     var region: Region = Region()
@@ -24,6 +27,7 @@ class LinkView: View{
     var multiplicityFrom: TextView? = null
     var multiplicityTo: TextView? = null
     var nameView: TextView? = null
+    var dialog: DialogFragment? = null
 
     constructor(context: Context) : super(context) {
         initialise()
@@ -68,23 +72,26 @@ class LinkView: View{
         region = Region()
         region.setPath(path, Region(rect.left.toInt(), rect.top.toInt(), rect.right.toInt(), rect.bottom.toInt()))
 
-
+        val linkId: String? =ViewShapeHolder.getInstance().linkMap[this]
+        if(linkId!=null) {
+            link = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+        }
         multiplicityFrom = TextView(context)
         multiplicityFrom?.x = start.x.toFloat() +15
         multiplicityFrom?.y = start.y.toFloat()
-        multiplicityFrom?.setText("allooo")
+        multiplicityFrom?.setText(link?.from?.multiplicity)
         parent.addView(multiplicityFrom)
 
         multiplicityTo = TextView(context)
         multiplicityTo?.x = end.x.toFloat() +15
         multiplicityTo?.y = end.y.toFloat()
-        multiplicityTo?.setText("allooo")
+        multiplicityTo?.setText(link?.to?.multiplicity)
         parent.addView(multiplicityTo)
 
         nameView = TextView(context)
-        nameView?.x = end.x.toFloat() +15
-        nameView?.y = end.y.toFloat()
-        nameView?.setText("allooo")
+        nameView?.x =start.x.toFloat() + Math.abs(end.x.toFloat() - start.x.toFloat()) /2  +15
+        nameView?.y =start.y.toFloat() + Math.abs(end.y.toFloat() - start.y.toFloat()) /2
+        nameView?.setText(link?.name)
         parent.addView(nameView)
     }
 
@@ -126,13 +133,16 @@ class LinkView: View{
 
             var activity: AppCompatActivity = context as AppCompatActivity
 
-            var dialog: DialogFragment = EditLinkDialogFragment()
-            var bundle: Bundle = Bundle()
-            bundle.putString("id", "asdfasg")
-            dialog.arguments = bundle
+            if(dialog == null) {
+                dialog = EditLinkDialogFragment()
 
-            Log.d("****", dialog.arguments.toString())
-            dialog.show(activity.supportFragmentManager, "alllooooo")
+                var bundle: Bundle = Bundle()
+                bundle.putString("linkId", ViewShapeHolder.getInstance().linkMap[this])
+                dialog?.arguments = bundle
+
+                Log.d("****", dialog?.arguments.toString())
+                dialog?.show(activity.supportFragmentManager, "alllooooo")
+            }
 
             true
         }else{
