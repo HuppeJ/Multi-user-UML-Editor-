@@ -456,9 +456,35 @@ open class BasicElementView: RelativeLayout {
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
                 emitDelete()
                 val parentView = v.parent.parent.parent as RelativeLayout
-                parentView.removeView(this)
 
+                val shapeId: String? = ViewShapeHolder.getInstance().map[this]
+                val shape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(shapeId!!)
+                val linksFrom: ArrayList<String?>? = shape?.linksFrom?.clone() as ArrayList<String?>
+                val linksTo: ArrayList<String?>? = shape?.linksTo?.clone() as ArrayList<String?>
+
+                for(linkId: String? in linksFrom!! ) {
+                    Log.d("linkid", linkId)
+                    val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId!!)
+                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                    if(linkView != null){
+                        parentView.removeView(linkView)
+                    }
+                    ViewShapeHolder.getInstance().remove(link!!)
+                }
+
+                for(linkId: String? in linksTo!! ) {
+                    val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId!!)
+                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                    if(linkView != null){
+                        parentView.removeView(linkView)
+                    }
+                    ViewShapeHolder.getInstance().remove(link!!)
+                }
+
+                parentView.removeView(this)
                 ViewShapeHolder.getInstance().remove(this)
+
+
             }
         }
         true

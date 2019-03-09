@@ -28,16 +28,20 @@ class ViewShapeHolder(){
         canevas.shapes.remove(canevas.findShape(map.getValue(basicElementView)))
         map.remove(basicElementView)
     }
+    fun remove(link: Link){
+        val fromShape: BasicShape? = canevas.findShape(link.from.formId)
+        fromShape?.linksFrom?.remove(link.id)
+        val toShape: BasicShape? = canevas.findShape(link.to.formId)
+        toShape?.linksTo?.remove(link.id)
+        canevas.links.remove(link)
+
+        linkMap.inverse().remove(link.id)
+    }
     fun remove(linkView: LinkView){
-        canevas.links.remove(canevas.findLink(linkMap.getValue(linkView)))
-        for(shape in canevas.shapes){
-            for(link in shape.linksTo){
-                if(link == canevas.findLink(linkMap.getValue(linkView))?.id){
-                    shape.linksTo.remove(link)
-                }
-            }
+        val link: Link ?= canevas.findLink(linkMap.getValue(linkView))
+        if(link != null){
+            remove(link)
         }
-        linkMap.remove(linkView)
     }
     fun removeAll(){
         canevas.shapes.removeAll(canevas.shapes)
