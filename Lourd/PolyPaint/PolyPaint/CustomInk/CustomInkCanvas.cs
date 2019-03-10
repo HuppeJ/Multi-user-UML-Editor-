@@ -3,6 +3,7 @@ using PolyPaint.Services;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -56,13 +57,49 @@ namespace PolyPaint.CustomInk
             clipboard = new StrokeCollection();
         }
 
-        protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
+        protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e)
+        {
             SelectedStrokes.Clear();
             foreach (Stroke stroke in e.GetSelectedStrokes())
             {
                 SelectedStrokes.Add(stroke);
             }
-            base.OnSelectionChanging(e);
+            LinkStrokes(e);
+            //base.OnSelectionChanging(e);
+        }
+
+        private void LinkStrokes(InkCanvasSelectionChangingEventArgs e)
+        {
+            ReadOnlyCollection<UIElement> elems = e.GetSelectedElements();
+            StrokeCollection strokes = e.GetSelectedStrokes();
+
+            HashSet<UIElement> linkedElements = new HashSet<UIElement>(elems);
+            StrokeCollection linkedStrokes = new StrokeCollection(strokes);
+
+            foreach(CustomStroke stroke in strokes)
+            {
+                foreach(UIElement elem in this.Children)
+                {
+                    if(stroke.guid.ToString() == elem.Uid)
+                    {
+                        linkedElements.Add(elem);
+                    }
+                }
+            }
+
+            foreach (UIElement elem in elems)
+            {
+                foreach (CustomStroke stroke in this.Strokes)
+                {
+                    if (stroke.guid.ToString() == elem.Uid && !strokes.Contains(stroke) && !linkedStrokes.Contains(stroke))
+                    {
+                        linkedStrokes.Add(stroke);
+                    }
+                }
+            }
+
+            if(linkedElements.Count > elems.Count || linkedStrokes.Count > strokes.Count)
+                Select(linkedStrokes, linkedElements);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
@@ -109,7 +146,7 @@ namespace PolyPaint.CustomInk
             // Remove the original stroke and add a custom stroke.
             Strokes.Remove(e.Stroke);
 
-            Stroke customStroke;
+            CustomStroke customStroke;
             StrokeTypes strokeType = (StrokeTypes) Enum.Parse(typeof(StrokeTypes), StrokeType);
 
             switch (strokeType)
@@ -155,6 +192,23 @@ namespace PolyPaint.CustomInk
             // Pass the custom stroke to base class' OnStrokeCollected method.
             InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
             base.OnStrokeCollected(args);
+
+            AddTextBox(customStroke);
+        }
+
+        private void AddTextBox(CustomStroke stroke)
+        {
+            Point point = stroke.GetBounds().BottomLeft;
+            double x = point.X;
+            double y = point.Y;
+
+            CustomTextBox tb = new CustomTextBox();
+            tb.Text = stroke.name;
+            tb.Uid = stroke.guid.ToString();
+
+            this.Children.Add(tb);
+            InkCanvas.SetTop(tb, y);
+            InkCanvas.SetLeft(tb, x);
         }
         #endregion
 

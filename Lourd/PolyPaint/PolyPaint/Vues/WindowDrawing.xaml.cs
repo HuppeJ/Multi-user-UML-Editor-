@@ -90,25 +90,7 @@ namespace PolyPaint.Vues
 
         private void StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
-            AddTextBox(e);
             (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
-        }
-
-        private void AddTextBox(InkCanvasStrokeCollectedEventArgs e)
-        {
-            CustomStroke stroke = (CustomStroke)e.Stroke;
-            Point point = stroke.GetBounds().BottomLeft;
-            double x = point.X;
-            double y = point.Y;
-
-            TextBox tb = new TextBox();
-            tb.BorderThickness = new Thickness(0);
-            tb.Text = stroke.name;
-            tb.Uid = stroke.guid.ToString();
-
-            surfaceDessin.Children.Add(tb);
-            InkCanvas.SetTop(tb, y);
-            InkCanvas.SetLeft(tb, x);
         }
     }
 }

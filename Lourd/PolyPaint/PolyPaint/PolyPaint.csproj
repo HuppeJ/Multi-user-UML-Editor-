@@ -169,6 +169,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\RotateAdorner.cs" />
     <Compile Include="CustomInk\Strokes\ActivityStroke.cs" />
     <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
