@@ -1,6 +1,6 @@
 ﻿namespace PolyPaint.Templates
 {
-    class Room
+    class Chatroom
     {
         public string name { get; set; }
     }

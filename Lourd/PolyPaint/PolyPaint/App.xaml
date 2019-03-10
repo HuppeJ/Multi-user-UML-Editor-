@@ -8,7 +8,7 @@
              xmlns:views="clr-namespace:PolyPaint.Vues"
              xmlns:utils="clr-namespace:PolyPaint.Utilitaires"
              xmlns:enums="clr-namespace:PolyPaint.Enums"
-             StartupUri="Vues/WindowDrawing.xaml">
+             StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

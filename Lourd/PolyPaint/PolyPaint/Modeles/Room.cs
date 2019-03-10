@@ -22,5 +22,17 @@ namespace PolyPaint.Modeles
         }
 
         public Room() { Chatter = new ObservableCollection<ChatMessage>(); }
+
+        public override bool Equals(object obj)
+        {
+            var item = obj as Room;
+
+            if (item == null)
+            {
+                return false;
+            }
+
+            return this.name.Equals(item.name);
+        }
     }
 }

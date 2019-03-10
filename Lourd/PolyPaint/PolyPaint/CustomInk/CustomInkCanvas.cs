@@ -1,25 +1,35 @@
 ﻿using PolyPaint.Enums;
+using PolyPaint.Services;
+using PolyPaint.Templates;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace PolyPaint.CustomInk
 {
     class CustomInkCanvas : InkCanvas
     {
-        CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
-        StrokeCollection clipboard = new StrokeCollection();
+        private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
+        private StrokeCollection clipboard;
+
+        public StylusPoint firstPoint;
+
+        #region StrokeType dependency property
         public string StrokeType
         {
             get { return (string)GetValue(StrokeTypeProperty); }
             set { SetValue(StrokeTypeProperty, value); }
         }
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
-          "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("class"));
+          "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("CLASS_SHAPE"));
+        #endregion
 
+        #region SelectedStrokes dependency property
         public StrokeCollection SelectedStrokes
         {
             get { return (StrokeCollection) GetValue(SelectedStrokesProperty); }
@@ -27,23 +37,94 @@ namespace PolyPaint.CustomInk
         }
         public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
           "SelectedStrokes", typeof(StrokeCollection), typeof(CustomInkCanvas), new PropertyMetadata(new StrokeCollection()));
-       
+        #endregion
 
         public CustomInkCanvas() : base()
         {
             // Use the custom dynamic renderer on the custom InkCanvas.
             DynamicRenderer = customRenderer;
+
+            clipboard = new StrokeCollection();
         }
 
+        protected override void OnSelectionChanged(EventArgs e)
+        {
+            SelectedStrokes = this.GetSelectedStrokes();
+        }
+
+        #region OnStrokeCollected
+        protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
+        {
+            // Remove the original stroke and add a custom stroke.
+            Strokes.Remove(e.Stroke);
+
+            Stroke customStroke;
+            StrokeTypes strokeType = (StrokeTypes) Enum.Parse(typeof(StrokeTypes), StrokeType);
+
+            switch (strokeType)
+            {
+                case StrokeTypes.CLASS_SHAPE:
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
+                    break;
+                case StrokeTypes.ARTIFACT:
+                    customStroke = new ArtifactStroke(e.Stroke.StylusPoints);
+                    break;
+                case StrokeTypes.ACTIVITY:
+                    customStroke = new ActivityStroke(e.Stroke.StylusPoints);
+                    break;
+                case StrokeTypes.ROLE:
+                    customStroke = new ActorStroke(e.Stroke.StylusPoints);
+                    break;
+                default:
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
+                    break;
+               
+            }
+            Strokes.Add(customStroke);
+            firstPoint = customStroke.StylusPoints[0];
+            SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
+
+            //Coordinates coordinates = new Coordinates(customStroke.StylusPoints[0].X, customStroke.StylusPoints[0].Y);
+            //ShapeStyle shapeStyle = new ShapeStyle();
+            //shapeStyle.coordinates = coordinates;
+
+            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>());
+
+            // Visual visual = this.GetVisualChild(this.Children.Count - 1);
+
+            //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(visual);
+            //myAdornerLayer.Add(new AnchorPointAdorner(visual));
+
+            // Pass the custom stroke to base class' OnStrokeCollected method.
+            InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
+            base.OnStrokeCollected(args);
+        }
+        #endregion
+
+        //private void AddStroke(CustomStroke newStroke)
+        //{
+        //    Console.WriteLine("add de vueModele en provenance du service :) ");
+            
+        //    Strokes.Add(newStroke);
+        //}
+
+        //private void UpdateStroke(CustomStroke newStroke)
+        //{
+        //    Console.WriteLine("update de vueModele en provenance du service :) ");
+        //    // ne add pas le trait pour vrai..
+        //    Strokes.Add(newStroke);
+        //}
+
+        #region PasteStrokes
         public void PasteStrokes()
         {
             StrokeCollection strokes = GetSelectedStrokes();
 
-            if(strokes.Count == 0)
+            if (strokes.Count == 0)
             {
                 // strokes from clipboard will be pasted
                 strokes = clipboard;
-            } 
+            }
 
             foreach (Stroke stroke in strokes)
             {
@@ -59,7 +140,9 @@ namespace PolyPaint.CustomInk
                 Strokes.Add(newStroke);
             }
         }
+        #endregion
 
+        #region CutStrokes
         public void CutStrokes()
         {
             StrokeCollection selection = GetSelectedStrokes();
@@ -69,47 +152,6 @@ namespace PolyPaint.CustomInk
             // cut selection from canvas
             CutSelection();
         }
-
-        protected override void OnSelectionChanged(EventArgs e) {
-            SelectedStrokes = this.GetSelectedStrokes();
-        }
-
-        protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
-        {
-            // Remove the original stroke and add a custom stroke.
-            Strokes.Remove(e.Stroke);
-
-            Stroke customStroke;
-
-            switch (StrokeType)
-            {
-                case "artifact":
-                    customStroke = new ArtifactStroke(e.Stroke.StylusPoints);
-                    break;
-                case "activity":
-                    customStroke = new ActivityStroke(e.Stroke.StylusPoints);
-                    break;
-                case "actor":
-                    customStroke = new ActorStroke(e.Stroke.StylusPoints);
-                    break;
-                case "class":
-                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
-                    break;
-                default:
-                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
-                    break;
-               
-            }
-            Strokes.Add(customStroke);
-
-            // Visual visual = this.GetVisualChild(this.Children.Count - 1);
-
-            //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(visual);
-            //myAdornerLayer.Add(new AnchorPointAdorner(visual));
-
-            // Pass the custom stroke to base class' OnStrokeCollected method.
-            InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
-            base.OnStrokeCollected(args);
-        }
+        #endregion
     }
 }

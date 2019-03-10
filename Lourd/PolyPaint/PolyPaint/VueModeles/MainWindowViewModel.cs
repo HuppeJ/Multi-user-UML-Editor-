@@ -10,9 +10,9 @@ using System.Collections.ObjectModel;
 using PolyPaint.Services;
 using PolyPaint.Enums;
 using PolyPaint.Modeles;
+using PolyPaint.Templates;
 using PolyPaint.Utilitaires;
 using System.Windows.Input;
-using System.Reactive.Linq;
 using System.Windows.Controls;
 
 namespace PolyPaint.VueModeles
@@ -35,8 +35,8 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private ObservableCollection<Room> _rooms = new ObservableCollection<Room>();
-        public ObservableCollection<Room> rooms
+        private AsyncObservableCollection<Room> _rooms = new AsyncObservableCollection<Room>();
+        public AsyncObservableCollection<Room> rooms
         {
             get { return _rooms; }
             set
@@ -169,6 +169,7 @@ namespace PolyPaint.VueModeles
             var passwordBox = o as PasswordBox;
             var password = passwordBox.Password;
             chatService.LoginUser(username, password);
+            chatService.RequestChatrooms();
         }
 
         private bool CanLogin(object o)
@@ -301,14 +302,22 @@ namespace PolyPaint.VueModeles
                 isOriginNative = (message.sender == username)
             };
 
-
-            //Console.WriteLine("newMessage from modelView");
-
-
             if (!_selectedRoom.Chatter.Contains(cm)){
                 ctxTaskFactory.StartNew(() => _selectedRoom.Chatter.Add(cm)).Wait();
             }
 
+        }
+
+        private void GetChatrooms(RoomList chatrooms)
+        {
+            foreach(string room in chatrooms.rooms)
+            {
+                Room newRoom = new Room { name = room };
+                if(!rooms.Contains(newRoom))
+                {
+                    rooms.Add(newRoom);
+                }
+            }
         }
 
         private void Connection(bool isConnected)
@@ -359,6 +368,7 @@ namespace PolyPaint.VueModeles
             connectionService.UserCreation += UserCreation;
             connectionService.UserLogin += UserLogin;
             chatService.NewMessage += NewMessage;
+            chatService.GetChatrooms += GetChatrooms;
 
             rooms.Add(new Room { name = "Everyone" });
         }
