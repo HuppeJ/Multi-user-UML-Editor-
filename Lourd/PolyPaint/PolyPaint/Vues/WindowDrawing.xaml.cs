@@ -47,24 +47,50 @@ namespace PolyPaint.Vues
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
+        
+        private void RotateSelection(object sender, RoutedEventArgs e) => surfaceDessin.RotateStrokes();
 
-
-        // Alex pour savoir quand un stroke a ete ajoute
-        private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
+        private void RefreshChildren(object sender, RoutedEventArgs e)
         {
-            if ((DataContext as VueModele)?.OutilSelectionne == "crayon")
-            {
-                CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(
-                    (CustomStroke) surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1]
-                );
-                surfaceDessin.Select(new StrokeCollection{ newStroke });
-            }
+            // pcq click et command ne fonctionnent pas ensemble
+            var btn = sender as Button;
+            btn.Command.Execute(btn.CommandParameter);
+
+            surfaceDessin.RefreshChildren();
         }
 
-        private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        // Quand une nouvelle nouvelle stroke a ete ajoute
+        private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if ((DataContext as VueModele)?.OutilSelectionne == "crayon" && surfaceDessin.SelectedStrokes.Count > 0)
+            {
+                CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(
+                    (CustomStroke)surfaceDessin.SelectedStrokes[0]
+                );
+                surfaceDessin.Select(new StrokeCollection { newStroke });
+
+                Path path = new Path();
+                path.Data = newStroke.GetGeometry();
+                surfaceDessin.Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
+
+            }
+
+            // Pour que les boutons est la bonne couleur
+            (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
+        }
+
+        private void surfaceDessin_SelectionChanged(object sender, EventArgs e)
+        {
+            // TODO ajouter les appels au service pour "locker" l'objet dans le collaboratif 
+            // (avec surfaceDessin.SelectedStrokes)
+
+        }
+
+        private void StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
             (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
         }
-
     }
 }

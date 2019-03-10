@@ -26,8 +26,8 @@
                         <GradientStop Color="#FFE0E0E0" Offset="1"/>
                     </LinearGradientBrush>
                 </StackPanel.Background>
-                <Button x:Name="reinitialiser" HorizontalAlignment="Center" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Reinitialiser}" Content="♺" FontSize="15" Foreground="Black"/>
-                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Empiler}" Content="≚" FontSize="32" Foreground="Black"/>
+                <Button x:Name="reinitialiser" HorizontalAlignment="Center" Width="50" Height="50" Margin="5" Background="#00000000" Click="RefreshChildren" Command="{Binding Reinitialiser}" Content="♺" FontSize="15" Foreground="Black"/>
+                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Empiler}" Click="RefreshChildren" Content="≚" FontSize="32" Foreground="Black"/>
                 <Button x:Name="depiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Depiler}" Content="≙" FontSize="32" Foreground="Black"/>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
@@ -62,43 +62,43 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="CLASS_SHAPE" 
+                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="CLASS" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="CLASS_SHAPE">
-                    <!--<StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>-->
                 </Button>
-                <Button x:Name="Role" Width="40" Height="40" Margin="5" Padding="0,0" Content="ROLE" 
+                <Button AllowDrop="True" x:Name="Role" Width="40" Height="40" Margin="5" Padding="0,0" Content="ROLE" FontSize="12" FontFamily="Calibri"  Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ROLE">
-                    <!--<StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>-->
                 </Button>
-                <Button x:Name="Artifact" Width="40" Height="40" Margin="5" Padding="0,0" Content="ARTIFACT" 
+                <Button x:Name="Artifact" Width="50" Height="40" Margin="5" Padding="0,0" Content="ARTIFACT" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ARTIFACT">
-                    <!--<StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>-->
                 </Button>
-                <Button x:Name="Activity" Width="40" Height="40" Margin="5" Padding="0,0" Content="ACTIVITY" 
+                <Button x:Name="Activity" Width="50" Height="40" Margin="5" Padding="0,0" Content="ACTIVITY" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ACTIVITY">
-                    <!--<StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>-->
                 </Button>
-                <Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
+                <Button x:Name="Comment" Width="54" Height="40" Margin="5" Padding="0,0" Content="COMMENT" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="COMMENT">
+                </Button>
+                <Button x:Name="Phase" Width="40" Height="40" Margin="5" Padding="0,0" Content="PHASE" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="PHASE">
+                </Button>
+                <!--<Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChoisirOutil}"
@@ -106,7 +106,7 @@
                     <StackPanel>
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>
-                </Button>
+                </Button>-->
                 <Button x:Name="efface_trait" Width="40" Height="40" Margin="5" Padding="0,0"
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -128,13 +128,19 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0"
+                <!--<Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0"
                     Command="{Binding Rotate}">
                     <StackPanel>
                         <Image Source="/Resources/rotate.png" />
                     </StackPanel>
+                </Button>-->
+                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0" Click="RotateSelection"
+                        BorderThickness="0">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/Resources/rotate.png"></ImageBrush>
+                    </Button.Background>
                 </Button>
-                <xctk:ColorPicker x:Name="selecteurCouleur"                             
+                <!--<xctk:ColorPicker x:Name="selecteurCouleur"                             
                   VerticalContentAlignment="Stretch"
                   Background="#00000000"
                   ShowDropDownButton="False"
@@ -147,12 +153,12 @@
                   StandardButtonHeader="Standard"
                   RecentColorsHeader="Récemment utilisées"
                   UsingAlphaChannel="True"
-                  AdvancedButtonHeader="Personnalisé" />
-                <Slider Width="100" Height="26" Minimum="1" Maximum="50"
+                  AdvancedButtonHeader="Personnalisé" />-->
+                <!--<Slider Width="100" Height="26" Minimum="1" Maximum="50"
                         Value="{Binding TailleTrait, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         Margin="12"
                         Foreground="Gray"                        
-                        TickFrequency="10" TickPlacement="BottomRight" IsSnapToTickEnabled="False"/>
+                        TickFrequency="10" TickPlacement="BottomRight" IsSnapToTickEnabled="False"/>-->
             </StackPanel>
 
         </Border>
@@ -192,10 +198,11 @@
                 <customink:CustomInkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" x:Name="surfaceDessin" 
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                           
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"
+                                           SelectionChanged="surfaceDessin_SelectionChanged"
                            MouseUp="surfaceDessin_OnMouseUp"
-                                           StrokeCollected="OnStrokeCollected"
+                                           StrokeCollected="StrokeCollected"
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                           SelectedStrokes="{Binding SelectedStrokes}"
+                           SelectedStrokes="{Binding SelectedStrokes, Mode=OneTime}"
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
                            StrokeType="{Binding SelectedStrokeType, UpdateSourceTrigger=PropertyChanged}"
                            />

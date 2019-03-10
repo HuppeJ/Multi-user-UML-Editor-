@@ -17,9 +17,9 @@ namespace PolyPaint.CustomInk
             type = (int)StrokeTypes.ACTIVITY;
         }
 
-        public ActivityStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
+        public ActivityStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
         {
-            type = (int) StrokeTypes.ACTIVITY;
+            
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
@@ -43,22 +43,18 @@ namespace PolyPaint.CustomInk
             img.UriSource = new Uri("../../Resources/activity.png", UriKind.Relative);
             img.EndInit();
 
-            drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
-
-        }
-
-        public override void Rotate()
-        {
-            // à changer
-            Matrix rotatingMatrix = new Matrix();
-            Rect bounds = this.GetBounds();
+            Rect bounds = GetBounds();
             double x = (bounds.Right + bounds.Left) / 2;
             double y = (bounds.Bottom + bounds.Top) / 2;
 
-            Point rotatePoint = new Point(x, y);
+            TransformGroup transform = new TransformGroup();
 
-            rotatingMatrix.RotateAt(90, rotatePoint.X, rotatePoint.Y);
-            this.Transform(rotatingMatrix, false);
+            transform.Children.Add(new RotateTransform(rotation, x, y));
+
+            drawingContext.PushTransform(transform);
+
+            drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
+
         }
     }
 }

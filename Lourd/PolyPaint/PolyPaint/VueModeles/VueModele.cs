@@ -32,6 +32,12 @@ namespace PolyPaint.VueModeles
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 
 
+        public StrokeCollection SelectedStrokes
+        {
+            get { return editeur.selectedStrokes; }
+            set { editeur.selectedStrokes = value; }
+        }
+
         public string SelectedStrokeType
         {
             get { return editeur.SelectedStrokeType; }
@@ -45,20 +51,19 @@ namespace PolyPaint.VueModeles
             set { ProprieteModifiee(); }
         }        
         
-        public string CouleurSelectionnee
+        /* public string CouleurSelectionnee
         {
             get { return editeur.CouleurSelectionnee; }
             set { editeur.CouleurSelectionnee = value; }
-        }
+        } */
 
-        public int TailleTrait
+        /*public int TailleTrait
         {
             get { return editeur.TailleTrait; }
             set { editeur.TailleTrait = value; }
-        }
+        }*/
        
         public StrokeCollection Traits { get; set; }
-        public StrokeCollection SelectedStrokes { get; set; }
 
         #region Commandes pour la vue
         // Commandes sur lesquelles la vue pourra se connecter.
@@ -97,13 +102,17 @@ namespace PolyPaint.VueModeles
             drawingService.UpdateStroke += UpdateStroke;
 
             // On initialise les attributs de dessin avec les valeurs de départ du modèle.
-            AttributsDessin = new DrawingAttributes();            
-            AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
-            AjusterPointe();
+            AttributsDessin = new DrawingAttributes
+            {
+                Color = Color.FromRgb(0, 0, 0),
+                // AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
+                // AjusterPointe();
+                StylusTip = StylusTip.Rectangle,
+                Width = 5,
+                Height = 5
+            };
 
             Traits = editeur.traits;
-            
-            SelectedStrokes = editeur.selectedStrokes;
             
             // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.            
             Empiler = new RelayCommand<object>(editeur.Empiler, editeur.PeutEmpiler);            
@@ -112,7 +121,6 @@ namespace PolyPaint.VueModeles
             // Donc, aucune vérification de type Peut"Action" à faire.
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
             Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
-            Rotate = new RelayCommand<object>(editeur.Rotate);
 
             ChooseStrokeTypeCommand = new RelayCommand<string>(editeur.ChooseStrokeTypeCommand);
 
@@ -188,18 +196,18 @@ namespace PolyPaint.VueModeles
             {
                 SelectedStrokeType = editeur.SelectedStrokeType;
             }
-            else if (e.PropertyName == "CouleurSelectionnee")
+            /* else if (e.PropertyName == "CouleurSelectionnee")
             {
                 AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
-            }                
-            else if (e.PropertyName == "OutilSelectionne")
+            }  */
+            else //if (e.PropertyName == "OutilSelectionne")
             {
                 OutilSelectionne = editeur.OutilSelectionne;
-            }                
+            }  /*              
             else // e.PropertyName == "TailleTrait"
             {               
                 AjusterPointe();
-            }                
+            } */               
         }
 
         /// <summary>
@@ -207,12 +215,12 @@ namespace PolyPaint.VueModeles
         /// Pourquoi deux caractéristiques se retrouvent définies dans une même méthode? Parce que pour créer une pointe 
         /// horizontale ou verticale, on utilise une pointe carrée et on joue avec les tailles pour avoir l'effet désiré.
         /// </summary>
-        private void AjusterPointe()
+        /* private void AjusterPointe()
         {
             AttributsDessin.StylusTip = StylusTip.Ellipse;
             AttributsDessin.Width = editeur.TailleTrait;
             AttributsDessin.Height = editeur.TailleTrait;
-        }
+        } */
 
         #region Initialize DrawingService Command
         private ICommand _initializeDrawingCommand;
