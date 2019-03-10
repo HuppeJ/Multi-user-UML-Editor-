@@ -181,7 +181,9 @@ namespace PolyPaint.CustomInk
                 newStrokes.Add(newStroke);
                 Strokes.Replace(selectedStroke, newStrokes);
 
-                SelectedStrokes.Replace(selectedStroke, newStrokes);
+                //SelectedStrokes.Add(newStrokes); // non necessaire ajoute dedans avec le .Select
+                // Il faudrait tourner toutes les strokes avec le adorner. Puis selectionner apres le foreach ici
+                this.Select(newStrokes);
             }
         }
         #endregion

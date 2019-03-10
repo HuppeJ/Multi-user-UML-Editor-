@@ -72,25 +72,40 @@ namespace PolyPaint.Vues
             }
         }
 
-        // Pour savoir quand un stroke a ete ajoute
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)
         {
             // pcq nos strokes ne sont pas dans les dessins de toute facon. Va enlever les paths et leur adorners
-            surfaceDessin.Children.Clear();
+            //surfaceDessin.Children.Clear();
 
             if ((DataContext as VueModele)?.OutilSelectionne == "lasso" && surfaceDessin.SelectedStrokes.Count > 0)
             {
-                CustomStroke selectedStroke = (CustomStroke)surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1];
+                StrokeCollection selectedStrokes = new StrokeCollection();
 
-                Path path = new Path();
-                path.Data = selectedStroke.GetGeometry();
+                foreach (CustomStroke selectedStroke in surfaceDessin.SelectedStrokes)
+                {
+                    selectedStrokes.Add(selectedStroke);
+
+                    Path path = new Path();
+                    path.Data = selectedStroke.GetGeometry();
                 
-                surfaceDessin.Children.Add(path);
-                //newStroke.GetWidenedPathGeometry();
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                //myAdornerLayer.Add(new AnchorPointAdorner(path));
-                myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, surfaceDessin));
-                surfaceDessin.Select(new StrokeCollection { selectedStroke });
+                    surfaceDessin.Children.Add(path);
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                    myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, surfaceDessin));
+                }
+               
+                surfaceDessin.Select(selectedStrokes);
+
+                //CustomStroke selectedStroke = (CustomStroke)surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1];
+
+                //Path path = new Path();
+                //path.Data = selectedStroke.GetGeometry();
+
+                //surfaceDessin.Children.Add(path);
+                ////newStroke.GetWidenedPathGeometry();
+                //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                ////myAdornerLayer.Add(new AnchorPointAdorner(path));
+                //myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, surfaceDessin));
+                //surfaceDessin.Select(new StrokeCollection { selectedStroke });
             }
 
             //if ((DataContext as VueModele)?.OutilSelectionne == "crayon")

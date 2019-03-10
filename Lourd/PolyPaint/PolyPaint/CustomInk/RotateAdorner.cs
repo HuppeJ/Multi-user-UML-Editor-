@@ -62,7 +62,7 @@ namespace PolyPaint.CustomInk
 
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             outline.RenderTransform = rotation;
-
+            
             visualChildren.Add(outline);
             visualChildren.Add(rotateHandle);
 
