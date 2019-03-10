@@ -17,9 +17,9 @@ namespace PolyPaint.CustomInk
             type = (int)StrokeTypes.CLASS_SHAPE;
         }
 
-        public ClassStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
+        public ClassStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
         {
-            type = (int)StrokeTypes.CLASS_SHAPE;
+            
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)

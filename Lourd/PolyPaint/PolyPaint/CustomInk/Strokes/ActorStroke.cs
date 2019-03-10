@@ -17,9 +17,9 @@ namespace PolyPaint.CustomInk
             type = (int)StrokeTypes.ROLE;
         }
 
-        public ActorStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
+        public ActorStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
         {
-            type = (int)StrokeTypes.ROLE;
+            
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)

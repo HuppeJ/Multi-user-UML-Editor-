@@ -22,6 +22,7 @@ namespace PolyPaint.CustomInk
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
             guid = Guid.NewGuid();
+            name = "hello world";
 
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             while (StylusPoints.Count > 1)
@@ -31,6 +32,24 @@ namespace PolyPaint.CustomInk
             for (double i = lastPoint.X; i < 100 + lastPoint.X; i += 0.5)
             {
                 for (double j = lastPoint.Y; j < 100 + lastPoint.Y; j += 0.5)
+                {
+                    StylusPoints.Add(new StylusPoint(i, j));
+                }
+            }
+        }
+
+        public CustomStroke(StylusPointCollection pts, BasicShape basicShape) : base(pts)
+        {
+            guid = Guid.NewGuid();
+            name = basicShape.name;
+            type = basicShape.type;
+            shapeStyle = basicShape.shapeStyle;
+
+            Point point = new Point(shapeStyle.coordinates.x, shapeStyle.coordinates.y);
+
+            for (double i = point.X; i < shapeStyle.width + point.X; i += 0.5)
+            {
+                for (double j = point.Y; j < shapeStyle.height + point.Y; j += 0.5)
                 {
                     StylusPoints.Add(new StylusPoint(i, j));
                 }
