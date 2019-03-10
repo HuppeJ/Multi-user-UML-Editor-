@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:local="clr-namespace:PolyPaint.VueModeles"
              mc:Ignorable="d"              
              >
     <UserControl.Resources>
@@ -16,8 +17,16 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <local:VueModele x:Key="VueModele" />
         </ResourceDictionary>
     </UserControl.Resources>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger>
+            <i:InvokeCommandAction Command="{Binding Source={StaticResource VueModele}, 
+                          Path=InitializeDrawingCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 
     <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="336" Margin="200,60,200,41">
         <Grid>

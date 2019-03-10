@@ -2,7 +2,7 @@
 
 namespace PolyPaint.Templates
 {
-    class Link
+    public class Link
     {
         public string id { get; set; }
         public AnchorPoint from { get; set; }

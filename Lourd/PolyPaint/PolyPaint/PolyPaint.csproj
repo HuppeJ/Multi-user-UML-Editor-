@@ -189,6 +189,7 @@
     <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\ConnectionService.cs" />
     <Compile Include="Services\DialogService.cs" />
+    <Compile Include="Services\DrawingService.cs" />
     <Compile Include="Services\IDialogService.cs" />
     <Compile Include="Templates\AnchorPoint.cs" />
     <Compile Include="Templates\BasicShape.cs" />

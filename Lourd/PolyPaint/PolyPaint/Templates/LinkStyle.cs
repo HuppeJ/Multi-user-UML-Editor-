@@ -1,6 +1,6 @@
 ﻿namespace PolyPaint.Templates
 {
-    class LinkStyle
+    public class LinkStyle
     {
         public string color { get; set; }
         public int thickness { get; set; }
