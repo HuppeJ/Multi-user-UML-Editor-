@@ -43,6 +43,11 @@ class LinkView: View{
     }
 
     override fun onDraw(canvas: Canvas){
+        val linkId: String? =ViewShapeHolder.getInstance().linkMap[this]
+        if(linkId!=null) {
+            link = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+        }
+
         val parent = this.parent as RelativeLayout
         if(multiplicityFrom != null){
             parent.removeView(multiplicityFrom)
@@ -57,11 +62,16 @@ class LinkView: View{
         val angle : Double = Math.atan2( (end.y - start.y), (end.x - start.x))
         val angle2: Double =  angle -Math.PI/2
 
+        var thickness: Int = 10
+        if( link?.style?.thickness != null) {
+            thickness = link?.style?.thickness!!.toInt()
+        }
+
         val path: Path = Path()
         path.moveTo(start.x.toFloat(), start.y.toFloat())
         path.lineTo(end.x.toFloat(), end.y.toFloat())
-        path.lineTo(end.x.toFloat() + 10f * Math.cos(angle2).toFloat(), end.y.toFloat()+10f * Math.sin(angle2).toFloat())
-        path.lineTo(start.x.toFloat() + 10f * Math.cos(angle2).toFloat(), start.y.toFloat()+10f * Math.sin(angle2).toFloat())
+        path.lineTo(end.x.toFloat() + thickness.toFloat() * Math.cos(angle2).toFloat(), end.y.toFloat()+thickness.toFloat() * Math.sin(angle2).toFloat())
+        path.lineTo(start.x.toFloat() + thickness.toFloat() * Math.cos(angle2).toFloat(), start.y.toFloat()+thickness.toFloat() * Math.sin(angle2).toFloat())
         path.lineTo(start.x.toFloat(), start.y.toFloat())
         path.close()
         canvas.drawPath(path, paint)
@@ -72,10 +82,7 @@ class LinkView: View{
         region = Region()
         region.setPath(path, Region(rect.left.toInt(), rect.top.toInt(), rect.right.toInt(), rect.bottom.toInt()))
 
-        val linkId: String? =ViewShapeHolder.getInstance().linkMap[this]
-        if(linkId!=null) {
-            link = ViewShapeHolder.getInstance().canevas.findLink(linkId)
-        }
+
         multiplicityFrom = TextView(context)
         multiplicityFrom?.x = start.x.toFloat() +15
         multiplicityFrom?.y = start.y.toFloat()
@@ -117,7 +124,12 @@ class LinkView: View{
         if(selected){
             paint.color = Color.BLUE
         }else{
-            paint.color = Color.BLACK
+            when(link?.style?.color){
+                "BLACK"->paint.color = Color.BLACK
+                "GREEN"->paint.color = Color.GREEN
+                "YELLOW"->paint.color = Color.YELLOW
+            }
+
         }
         return super.setSelected(selected)
     }

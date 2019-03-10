@@ -227,7 +227,7 @@ open class BasicElementView: RelativeLayout {
                                     anchorPointStart,
                                     anchorPointEnd,
                                     3,
-                                    LinkStyle("#000", 5, 0),
+                                    LinkStyle("BLACK", 10, 0),
                                     path
                                 )
 
