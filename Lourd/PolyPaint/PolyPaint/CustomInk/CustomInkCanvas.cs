@@ -64,47 +64,13 @@ namespace PolyPaint.CustomInk
             {
                 SelectedStrokes.Add(stroke);
             }
-            LinkStrokes(e);
-            //base.OnSelectionChanging(e);
-        }
-
-        private void LinkStrokes(InkCanvasSelectionChangingEventArgs e)
-        {
-            ReadOnlyCollection<UIElement> elems = e.GetSelectedElements();
-            StrokeCollection strokes = e.GetSelectedStrokes();
-
-            HashSet<UIElement> linkedElements = new HashSet<UIElement>(elems);
-            StrokeCollection linkedStrokes = new StrokeCollection(strokes);
-
-            foreach(CustomStroke stroke in strokes)
-            {
-                foreach(UIElement elem in this.Children)
-                {
-                    if(stroke.guid.ToString() == elem.Uid)
-                    {
-                        linkedElements.Add(elem);
-                    }
-                }
-            }
-
-            foreach (UIElement elem in elems)
-            {
-                foreach (CustomStroke stroke in this.Strokes)
-                {
-                    if (stroke.guid.ToString() == elem.Uid && !strokes.Contains(stroke) && !linkedStrokes.Contains(stroke))
-                    {
-                        linkedStrokes.Add(stroke);
-                    }
-                }
-            }
-
-            if(linkedElements.Count > elems.Count || linkedStrokes.Count > strokes.Count)
-                Select(linkedStrokes, linkedElements);
+            
+            base.OnSelectionChanging(e);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
         {
-            base.OnSelectionChanged(e);
+            //base.OnSelectionChanged(e);
             RefreshChildren();
         }
 
@@ -341,6 +307,11 @@ namespace PolyPaint.CustomInk
                 Children.Add(path);
                 AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                 myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+            }
+
+            foreach (CustomStroke stroke in Strokes)
+            {
+                AddTextBox(stroke);
             }
 
             Select(selectedStrokes);

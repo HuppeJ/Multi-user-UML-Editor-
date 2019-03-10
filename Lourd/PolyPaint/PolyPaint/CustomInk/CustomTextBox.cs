@@ -11,5 +11,7 @@ namespace PolyPaint.CustomInk
             FontSize = 12;
             BorderThickness = new Thickness(0);
         }
+
+        //override move
     }
 }
