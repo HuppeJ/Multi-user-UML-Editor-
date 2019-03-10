@@ -50,7 +50,16 @@ namespace PolyPaint.Vues
         
         private void RotateSelection(object sender, RoutedEventArgs e) => surfaceDessin.RotateStrokes();
 
-        // Pour savoir quand un stroke a ete ajoute
+        private void RefreshChildren(object sender, RoutedEventArgs e)
+        {
+            // pcq click et command ne fonctionnent pas ensemble
+            var btn = sender as Button;
+            btn.Command.Execute(btn.CommandParameter);
+
+            surfaceDessin.RefreshChildren();
+        }
+
+        // Quand une nouvelle nouvelle stroke a ete ajoute
         private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             if ((DataContext as VueModele)?.OutilSelectionne == "crayon" && surfaceDessin.SelectedStrokes.Count > 0)
@@ -67,6 +76,9 @@ namespace PolyPaint.Vues
                 myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
 
             }
+
+            // Pour que les boutons est la bonne couleur
+            (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
         }
 
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)
@@ -76,7 +88,7 @@ namespace PolyPaint.Vues
 
         }
 
-        private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        private void StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
             (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
         }

@@ -68,7 +68,7 @@ namespace PolyPaint.CustomInk
         protected override void OnSelectionChanged(EventArgs e)
         {
             base.OnSelectionChanged(e);
-            refreshChildren();
+            RefreshChildren();
         }
 
         protected override void OnSelectionMoving(InkCanvasSelectionEditingEventArgs e)
@@ -79,7 +79,7 @@ namespace PolyPaint.CustomInk
         protected override void OnSelectionMoved(EventArgs e)
         {
             base.OnSelectionMoved(e);
-            refreshChildren();
+            RefreshChildren();
         }
 
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
@@ -90,7 +90,7 @@ namespace PolyPaint.CustomInk
         protected override void OnSelectionResized(EventArgs e)
         {
             base.OnSelectionResized(e);
-            refreshChildren();
+            RefreshChildren();
         }
 
         protected override void OnStrokeErased(RoutedEventArgs e)
@@ -232,6 +232,8 @@ namespace PolyPaint.CustomInk
                 strokes = clipboard;
             }
 
+            StrokeCollection newStrokes = new StrokeCollection();
+
             foreach (Stroke stroke in strokes)
             {
                 Stroke newStroke = stroke.Clone();
@@ -244,7 +246,10 @@ namespace PolyPaint.CustomInk
                 newStroke.Transform(translateMatrix, false);
 
                 Strokes.Add(newStroke);
+                newStrokes.Add(newStroke);
             }
+
+            Select(newStrokes);
         }
         #endregion
 
@@ -257,11 +262,14 @@ namespace PolyPaint.CustomInk
 
             // cut selection from canvas
             CutSelection();
+
+            // To delete the adorners
+            RefreshChildren();
         }
         #endregion
 
-        #region refreshChildren
-        private void refreshChildren()
+        #region RefreshChildren
+        public void RefreshChildren()
         {
             // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e
             //removeAdorners();
@@ -269,7 +277,7 @@ namespace PolyPaint.CustomInk
 
             StrokeCollection selectedStrokes = new StrokeCollection();
 
-            foreach (CustomStroke selectedStroke in SelectedStrokes)
+            foreach (CustomStroke selectedStroke in GetSelectedStrokes())
             {
                 selectedStrokes.Add(selectedStroke);
 

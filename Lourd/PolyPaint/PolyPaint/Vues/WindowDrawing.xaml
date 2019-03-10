@@ -26,8 +26,8 @@
                         <GradientStop Color="#FFE0E0E0" Offset="1"/>
                     </LinearGradientBrush>
                 </StackPanel.Background>
-                <Button x:Name="reinitialiser" HorizontalAlignment="Center" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Reinitialiser}" Content="♺" FontSize="15" Foreground="Black"/>
-                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Empiler}" Content="≚" FontSize="32" Foreground="Black"/>
+                <Button x:Name="reinitialiser" HorizontalAlignment="Center" Width="50" Height="50" Margin="5" Background="#00000000" Click="RefreshChildren" Command="{Binding Reinitialiser}" Content="♺" FontSize="15" Foreground="Black"/>
+                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Empiler}" Click="RefreshChildren" Content="≚" FontSize="32" Foreground="Black"/>
                 <Button x:Name="depiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Depiler}" Content="≙" FontSize="32" Foreground="Black"/>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
@@ -200,7 +200,7 @@
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"
                                            SelectionChanged="surfaceDessin_SelectionChanged"
                            MouseUp="surfaceDessin_OnMouseUp"
-                                           StrokeCollected="OnStrokeCollected"
+                                           StrokeCollected="StrokeCollected"
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            SelectedStrokes="{Binding SelectedStrokes, Mode=OneTime}"
                            DefaultDrawingAttributes="{Binding AttributsDessin, Mode=OneTime}"
