@@ -17,9 +17,9 @@ namespace PolyPaint.CustomInk
             type = (int)StrokeTypes.ROLE;
         }
 
-        public ActorStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
+        public ActorStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
         {
-            type = (int)StrokeTypes.ROLE;
+            
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
@@ -43,21 +43,19 @@ namespace PolyPaint.CustomInk
             img.UriSource = new Uri("../../Resources/actor.png", UriKind.Relative);
             img.EndInit();
 
-            drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
-
-        }
-
-        public override void Rotate()
-        {
-            // à changer
-            Matrix rotatingMatrix = new Matrix();
-            Rect bounds = this.GetBounds();
+            Rect bounds = GetBounds();
             double x = (bounds.Right + bounds.Left) / 2;
             double y = (bounds.Bottom + bounds.Top) / 2;
 
-            Point rotatePoint = new Point(x, y);
-            rotatingMatrix.RotateAt(90, rotatePoint.X, rotatePoint.Y);
-            this.Transform(rotatingMatrix, false);
+            TransformGroup transform = new TransformGroup();
+
+            transform.Children.Add(new RotateTransform(rotation, x, y));
+
+            drawingContext.PushTransform(transform);
+
+            drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
+
         }
+        
     }
 }
