@@ -8,10 +8,11 @@ using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace PolyPaint.CustomInk
 {
-    class CustomInkCanvas : InkCanvas
+    public class CustomInkCanvas : InkCanvas
     {
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
@@ -28,11 +29,17 @@ namespace PolyPaint.CustomInk
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
           "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("CLASS_SHAPE"));
         #endregion
-
+        /*
+        #region SelectedStrokes dependency property
+        
+        public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
+          "SelectedStrokes", typeof(StrokeCollection), typeof(CustomInkCanvas), new PropertyMetadata(new StrokeCollection(), new PropertyChangedCallback(OnSelectionChanged)));
+        #endregion
+        */
         #region SelectedStrokes dependency property
         public StrokeCollection SelectedStrokes
         {
-            get { return (StrokeCollection) GetValue(SelectedStrokesProperty); }
+            get { return (StrokeCollection)GetValue(SelectedStrokesProperty); }
             set { SetValue(SelectedStrokesProperty, value); }
         }
         public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
@@ -47,9 +54,19 @@ namespace PolyPaint.CustomInk
             clipboard = new StrokeCollection();
         }
 
-        protected override void OnSelectionChanged(EventArgs e)
+        protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
+            SelectedStrokes.Clear();
+            foreach (Stroke stroke in e.GetSelectedStrokes())
+            {
+                SelectedStrokes.Add(stroke);
+            }
+            base.OnSelectionChanging(e);
+        }
+
+        protected override void OnSelectionMoving(InkCanvasSelectionEditingEventArgs e)
         {
-            SelectedStrokes = this.GetSelectedStrokes();
+            base.OnSelectionMoving(e);
+            this.Children.Clear();
         }
 
         #region OnStrokeCollected
@@ -74,6 +91,12 @@ namespace PolyPaint.CustomInk
                     break;
                 case StrokeTypes.ROLE:
                     customStroke = new ActorStroke(e.Stroke.StylusPoints);
+                    break;
+                case StrokeTypes.COMMENT:
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
+                    break;
+                case StrokeTypes.PHASE:
+                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
                     break;
                 default:
                     customStroke = new ClassStroke(e.Stroke.StylusPoints);
@@ -104,7 +127,7 @@ namespace PolyPaint.CustomInk
         //private void AddStroke(CustomStroke newStroke)
         //{
         //    Console.WriteLine("add de vueModele en provenance du service :) ");
-            
+
         //    Strokes.Add(newStroke);
         //}
 
@@ -114,6 +137,56 @@ namespace PolyPaint.CustomInk
         //    // ne add pas le trait pour vrai..
         //    Strokes.Add(newStroke);
         //}
+
+        #region RotateStrokes
+        public void RotateStrokes()
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+
+            if (strokes.Count == 0)
+                return;
+
+            foreach (CustomStroke selectedStroke in strokes)
+            {
+                double rotation = selectedStroke.rotation;
+                if (rotation.Equals(360))
+                    rotation = 0;
+                else
+                    rotation += 10;
+                Stroke newStroke = selectedStroke.CloneRotated(rotation);
+                StrokeCollection newStrokes = new StrokeCollection();
+                newStrokes.Add(newStroke);
+                Strokes.Replace(selectedStroke, newStrokes);
+            }
+        }
+        #endregion
+
+        #region RotateStrokesWithAngle
+        public void RotateStrokesWithAngle(double rotation)
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+
+            if (strokes.Count == 0)
+                return;
+
+            foreach (CustomStroke selectedStroke in strokes)
+            {
+                //double rotation = selectedStroke.rotation;
+                if (rotation.Equals(360))
+                    rotation = 0;
+                //else
+                //    rotation += 10;
+                Stroke newStroke = selectedStroke.CloneRotated(rotation);
+                StrokeCollection newStrokes = new StrokeCollection();
+                newStrokes.Add(newStroke);
+                Strokes.Replace(selectedStroke, newStrokes);
+
+                //SelectedStrokes.Add(newStrokes); // non necessaire ajoute dedans avec le .Select
+                // Il faudrait tourner toutes les strokes avec le adorner. Puis selectionner apres le foreach ici
+                this.Select(newStrokes);
+            }
+        }
+        #endregion
 
         #region PasteStrokes
         public void PasteStrokes()

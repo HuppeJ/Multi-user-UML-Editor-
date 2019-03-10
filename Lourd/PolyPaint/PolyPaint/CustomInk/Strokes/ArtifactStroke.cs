@@ -42,22 +42,18 @@ namespace PolyPaint.CustomInk
             img.BeginInit();
             img.UriSource = new Uri("../../Resources/artefact.png", UriKind.Relative);
             img.EndInit();
-
-            drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
-        }
-
-        public override void Rotate()
-        {
-            // à changer
-            Matrix rotatingMatrix = new Matrix();
-            Rect bounds = this.GetBounds();
+            
+            Rect bounds = GetBounds();
             double x = (bounds.Right + bounds.Left) / 2;
             double y = (bounds.Bottom + bounds.Top) / 2;
 
-            Point rotatePoint = new Point(x, y);
+            TransformGroup transform = new TransformGroup();
+            
+            transform.Children.Add(new RotateTransform(rotation, x, y));
 
-            rotatingMatrix.RotateAt(90, rotatePoint.X, rotatePoint.Y);
-            this.Transform(rotatingMatrix, false);
+            drawingContext.PushTransform(transform);
+
+            drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
         }
        
     }

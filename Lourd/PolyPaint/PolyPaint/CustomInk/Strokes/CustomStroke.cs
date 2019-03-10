@@ -12,6 +12,7 @@ namespace PolyPaint.CustomInk
 {
     public abstract class CustomStroke : Stroke
     {
+        public double rotation = 0.0;
         public Guid guid;
         public string name;
         public int type;
@@ -70,7 +71,15 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
 
-        public abstract void Rotate();
+        public CustomStroke CloneRotated(double rotation) {
+            CustomStroke newStroke = (CustomStroke)Clone();
+
+            // Changer les bounds? Gi
+            //newStroke.GetBounds().Transform(rotation.Value);
+
+            newStroke.rotation = rotation;
+            return newStroke;
+        }
 
         protected Point GetTheLeftTopPoint()
         {
