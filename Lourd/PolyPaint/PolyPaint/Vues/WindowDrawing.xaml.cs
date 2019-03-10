@@ -58,15 +58,12 @@ namespace PolyPaint.Vues
                 CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(
                     (CustomStroke)surfaceDessin.SelectedStrokes[0]
                 );
-                surfaceDessin.SelectedStrokes = new StrokeCollection { newStroke };
                 surfaceDessin.Select(new StrokeCollection { newStroke });
 
                 Path path = new Path();
                 path.Data = newStroke.GetGeometry();
                 surfaceDessin.Children.Add(path);
-                //newStroke.GetWidenedPathGeometry();
                 AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                //myAdornerLayer.Add(new AnchorPointAdorner(path));
                 myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
 
             }
@@ -74,57 +71,9 @@ namespace PolyPaint.Vues
 
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)
         {
-            // pcq nos strokes ne sont pas dans les dessins de toute facon. Va enlever les paths et leur adorners
-            //surfaceDessin.Children.Clear();
+            // TODO ajouter les appels au service pour "locker" l'objet dans le collaboratif 
+            // (avec surfaceDessin.SelectedStrokes)
 
-            if ((DataContext as VueModele)?.OutilSelectionne == "lasso" && surfaceDessin.SelectedStrokes.Count > 0)
-            {
-                StrokeCollection selectedStrokes = new StrokeCollection();
-
-                foreach (CustomStroke selectedStroke in surfaceDessin.SelectedStrokes)
-                {
-                    selectedStrokes.Add(selectedStroke);
-
-                    Path path = new Path();
-                    path.Data = selectedStroke.GetGeometry();
-                
-                    surfaceDessin.Children.Add(path);
-                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                    myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, surfaceDessin));
-                }
-               
-                surfaceDessin.Select(selectedStrokes);
-
-                //CustomStroke selectedStroke = (CustomStroke)surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1];
-
-                //Path path = new Path();
-                //path.Data = selectedStroke.GetGeometry();
-
-                //surfaceDessin.Children.Add(path);
-                ////newStroke.GetWidenedPathGeometry();
-                //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                ////myAdornerLayer.Add(new AnchorPointAdorner(path));
-                //myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, surfaceDessin));
-                //surfaceDessin.Select(new StrokeCollection { selectedStroke });
-            }
-
-            //if ((DataContext as VueModele)?.OutilSelectionne == "crayon")
-            //{
-            //    CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(
-            //        (CustomStroke)surfaceDessin.SelectedStrokes[surfaceDessin.SelectedStrokes.Count - 1]
-            //    );
-            //    surfaceDessin.SelectedStrokes = new StrokeCollection { newStroke };
-            //    surfaceDessin.Select(new StrokeCollection { newStroke });
-
-            //    Path path = new Path();
-            //    path.Data = newStroke.GetGeometry();
-            //    surfaceDessin.Children.Add(path);
-            //    //newStroke.GetWidenedPathGeometry();
-            //    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-            //    //myAdornerLayer.Add(new AnchorPointAdorner(path));
-            //    myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
-
-            //}
         }
 
         private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
