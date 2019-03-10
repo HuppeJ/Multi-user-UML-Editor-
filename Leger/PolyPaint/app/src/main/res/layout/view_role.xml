@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        android:id="@+id/role_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        app:layout_constraintVertical_bias="0.498" xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                  android:layout_height="wrap_content"
+                                                  android:layout_marginTop="5dp"
+                                                  android:layout_marginLeft="5dp"
+                                                  android:layout_marginRight="5dp"
+                                                  app:layout_constraintTop_toTopOf="parent"
+                                                  android:id="@+id/linearLayoutCompat"
+                                                  app:layout_constraintBottom_toBottomOf="parent"
+                                                  app:layout_constraintVertical_bias="0.04"
+    >
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_delete"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/imageView"/>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                  android:layout_height="wrap_content"
+                                                  android:layout_marginLeft="5dp"
+                                                  android:layout_marginRight="5dp"
+                                                  android:background="@drawable/borders_view_class_2"
+                                                  app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat"
+                                                  android:id="@+id/linearLayoutCompat2"
+                                                  android:layout_marginTop="0dp"
+                                                  android:layout_below="@+id/linearLayoutCompat">
+        <TextView
+                android:id="@+id/class_attributes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:background="@android:color/transparent"
+                android:text="attributes"/>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</RelativeLayout>

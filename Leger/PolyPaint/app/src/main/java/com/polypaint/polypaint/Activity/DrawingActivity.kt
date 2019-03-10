@@ -27,6 +27,7 @@ import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.View.ClassView
+import com.polypaint.polypaint.View.ImageElementView
 import com.polypaint.polypaint.View.LinkView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
@@ -153,9 +154,10 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun addOnCanevas(shapeType: ShapeTypes){
-        var shape: BasicShape = newShapeOnCanevas(shapeType)
-        var view: BasicElementView = newViewOnCanevas(shapeType)
+        var shape = newShapeOnCanevas(shapeType)
+        var view = newViewOnCanevas(shapeType)
 
+        // TODO : Je pense qu'on peut enlever cette partie de code (J.H.)
         //when(shapeType){
         //    ShapeTypes.DEFAULT -> {}
         //    ShapeTypes.CLASS_SHAPE -> {
@@ -250,13 +252,13 @@ class DrawingActivity : AppCompatActivity(){
                 viewType = ClassView(this)
             }
             ShapeTypes.ARTIFACT -> {
-                viewType = BasicElementView(this)
+                viewType = ImageElementView(this, shapeType)
             }
             ShapeTypes.ACTIVITY -> {
-                viewType = BasicElementView(this)
+                viewType = ImageElementView(this, shapeType)
             }
             ShapeTypes.ROLE -> {
-                viewType = BasicElementView(this)
+                viewType = ImageElementView(this, shapeType)
             }
             ShapeTypes.COMMENT -> {
                 viewType = BasicElementView(this)
