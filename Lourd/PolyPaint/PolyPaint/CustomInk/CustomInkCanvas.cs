@@ -95,7 +95,6 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionChanged(EventArgs e)
         {
-            //this.EditingMode = InkCanvasEditingMode.Select;
             RefreshChildren();
             base.OnSelectionChanged(e);
         }

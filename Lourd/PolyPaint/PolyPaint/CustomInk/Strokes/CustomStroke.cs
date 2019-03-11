@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using System.Globalization;
 using PolyPaint.Templates;
 using System.Collections.Generic;
+using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk
 {
