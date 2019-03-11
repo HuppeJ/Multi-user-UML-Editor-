@@ -84,10 +84,7 @@ namespace PolyPaint.CustomInk
             {
                 return finalSize;
             }
-
-            //center = new Point(strokeBounds.X + strokeBounds.Width / 2,
-            //                   strokeBounds.Y + strokeBounds.Height / 2);
-
+            
             // The rectangle that determines the position of the Thumb.
             Rect handleRect = new Rect(strokeBounds.X,
                                   strokeBounds.Y - (strokeBounds.Height / 2 +
@@ -173,27 +170,13 @@ namespace PolyPaint.CustomInk
                 return;
             }
 
-            // Rotate the strokes to match the new angle.
-            Matrix mat = new Matrix();
-            mat.RotateAt(rotation.Angle - lastAngle, center.X, center.Y);
-            //AdornedStrokes.Transform(mat, true);
-
-            //DependencyObject ancestorCanvas = ((Path) AdornedElement).FindCommonVisualAncestor(visualChildren[0]);
-            //((CustomInkCanvas)ancestorCanvas).SelectedStrokes[0].Transform(mat, true);
-            //stroke.Transform(mat, true);
-
-            //((Path)AdornedElement).LayoutTransform = new RotateTransform(rotation.Angle - lastAngle, center.X, center.Y);
-
-            //stroke.CloneRotated(rotation.Angle - lastAngle);
-            //stroke.rotation = rotation.Angle - lastAngle;
-
             canvas.RotateStrokesWithAngle(rotation.Angle);
 
             // Save the angle of the last rotation.
             lastAngle = rotation.Angle;
 
             // Redraw rotateHandle.
-            this.InvalidateArrange();
+            InvalidateArrange();
         }
 
         /// <summary>

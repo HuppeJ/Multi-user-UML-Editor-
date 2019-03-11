@@ -74,7 +74,9 @@ namespace PolyPaint.Vues
                 surfaceDessin.Children.Add(path);
                 AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                 myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
+                myAdornerLayer.Add(new AnchorPointAdorner(path, newStroke, surfaceDessin));
 
+                Adorner[] ad = myAdornerLayer.GetAdorners(path);
             }
 
             // Pour que les boutons est la bonne couleur

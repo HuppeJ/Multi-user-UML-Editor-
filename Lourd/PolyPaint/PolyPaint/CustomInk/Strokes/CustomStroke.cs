@@ -12,7 +12,7 @@ namespace PolyPaint.CustomInk
 {
     public abstract class CustomStroke : Stroke
     {
-        public double rotation = 0.0;
+        public double rotation;
         public Guid guid;
         public string name;
         public int type;
@@ -36,6 +36,13 @@ namespace PolyPaint.CustomInk
                     StylusPoints.Add(new StylusPoint(i, j));
                 }
             }
+
+            // Quelle est la width?
+            // Les coordonnees sont bien celles du coin en haut a gauche?
+            double width = 100.0;
+            double height = 100.0;
+            double rotation = 0.0;
+            shapeStyle = new ShapeStyle(new Coordinates(lastPoint.X, lastPoint.Y), width, height, rotation);
         }
 
         public CustomStroke(StylusPointCollection pts, BasicShape basicShape) : base(pts)

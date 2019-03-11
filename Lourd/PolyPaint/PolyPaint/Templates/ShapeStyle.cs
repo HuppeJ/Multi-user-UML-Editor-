@@ -9,6 +9,15 @@
         public string borderColor { get; set; }
         public int borderStyle { get; set; }
         public string backgroundColor { get; set; }
-        
+
+        public ShapeStyle(){}
+
+        public ShapeStyle(Coordinates coordinates, double width, double height, double rotation) {
+            this.coordinates = coordinates;
+            this.width = width;
+            this.height = height;
+            this.rotation = rotation;
+        }
+
     }
 }

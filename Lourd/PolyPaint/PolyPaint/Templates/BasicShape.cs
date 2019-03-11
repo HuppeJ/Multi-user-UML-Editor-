@@ -8,6 +8,7 @@ namespace PolyPaint.Templates
         public int type { get; set; }
         public string name { get; set; }
         public ShapeStyle shapeStyle { get; set; }
-        public List<string> links { get; set; }
+        public List<string> linksTo { get; set; }
+        public List<string> linksFrom { get; set; }
     }
 }

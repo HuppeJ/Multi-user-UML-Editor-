@@ -23,6 +23,31 @@ namespace PolyPaint.CustomInk
 
         public StylusPoint firstPoint;
 
+        private bool isCreatingConnectionForm = false;
+        private Point firstPointToConnect;
+        #region createConnectionForm
+        public void createConnectionForm(CustomStroke stroke, int number, Point pointPosition)
+        {
+            Select(new StrokeCollection { stroke });
+
+            if (isCreatingConnectionForm)
+            {
+                Path connectionForm = new Path();
+                connectionForm.Stroke = Brushes.Black;
+                connectionForm.StrokeThickness = 1;
+                connectionForm.Data = new LineGeometry(firstPointToConnect, pointPosition);
+
+                Children.Add(connectionForm);
+            }
+            else
+            {
+                firstPointToConnect = pointPosition;
+            }
+
+            isCreatingConnectionForm = !isCreatingConnectionForm;
+        }
+        #endregion
+
         #region StrokeType dependency property
         public string StrokeType
         {
@@ -57,8 +82,8 @@ namespace PolyPaint.CustomInk
             clipboard = new StrokeCollection();
         }
 
-        protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e)
-        {
+        #region On.. event handlers
+        protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
             SelectedStrokes.Clear();
             foreach (Stroke stroke in e.GetSelectedStrokes())
             {
@@ -70,8 +95,9 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionChanged(EventArgs e)
         {
-            //base.OnSelectionChanged(e);
+            //this.EditingMode = InkCanvasEditingMode.Select;
             RefreshChildren();
+            base.OnSelectionChanged(e);
         }
 
         protected override void OnSelectionMoving(InkCanvasSelectionEditingEventArgs e)
@@ -105,6 +131,7 @@ namespace PolyPaint.CustomInk
         {
             base.OnStrokeErasing(e);
         }
+        #endregion
 
         #region OnStrokeCollected
         protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
@@ -144,16 +171,7 @@ namespace PolyPaint.CustomInk
             firstPoint = customStroke.StylusPoints[0];
             SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
 
-            //Coordinates coordinates = new Coordinates(customStroke.StylusPoints[0].X, customStroke.StylusPoints[0].Y);
-            //ShapeStyle shapeStyle = new ShapeStyle();
-            //shapeStyle.coordinates = coordinates;
-
-            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>());
-
-            // Visual visual = this.GetVisualChild(this.Children.Count - 1);
-
-            //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(visual);
-            //myAdornerLayer.Add(new AnchorPointAdorner(visual));
+            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>(), new List<string>());
 
             // Pass the custom stroke to base class' OnStrokeCollected method.
             InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
@@ -235,8 +253,7 @@ namespace PolyPaint.CustomInk
                 selectedNewStrokes.Add(newStrokes);
             }
 
-            //SelectedStrokes.Add(newStrokes); // non necessaire ajoute dedans avec le .Select
-            // Il faudrait tourner toutes les strokes avec le adorner. Puis selectionner apres le foreach ici
+            //SelectedStrokes.Add(newStrokes); // non necessaire, pcq le .Select les ajoute 
             Select(selectedNewStrokes);
         }
         #endregion
@@ -300,21 +317,38 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke selectedStroke in GetSelectedStrokes())
             {
                 selectedStrokes.Add(selectedStroke);
-
-                Path path = new Path();
-                path.Data = selectedStroke.GetGeometry();
-
-                Children.Add(path);
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                addAdorners(selectedStroke);
             }
 
             foreach (CustomStroke stroke in Strokes)
             {
                 AddTextBox(stroke);
+                addAnchorPoints(stroke);
             }
 
             Select(selectedStrokes);
+        }
+
+        private void addAdorners(CustomStroke selectedStroke)
+        {
+            Path path = new Path();
+            path.Data = selectedStroke.GetGeometry();
+
+            Children.Add(path);
+            AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+            myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+            myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+        }
+
+        // Tjrs avoir les anchorPoints? Laid.. gi
+        private void addAnchorPoints(CustomStroke selectedStroke)
+        {
+            Path path = new Path();
+            path.Data = selectedStroke.GetGeometry();
+
+            Children.Add(path);
+            AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+            myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
         }
 
         // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e
