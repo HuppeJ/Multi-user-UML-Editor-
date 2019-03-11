@@ -189,15 +189,14 @@ export default class CanvasManager {
         return canvasRoom.getSelectedFormsSERI();
     }
 
+    public getCanvasRoomSERI(canvasRoomId: string): string {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        return JSON.stringify(canvasRoom);
+    }
+
     public getCanvasRoomsSERI(): string {
         return JSON.stringify({
             canvasRooms: mapToObj(this.canvasRooms)
-        });
-    }
-
-    public getUsersInCanvasRoomSERI(canvasName: string) {
-        return JSON.stringify({
-            connectedUsers: JSON.parse(this.canvasRooms.get(canvasName).getConnectedUsersSERI())
         });
     }
 

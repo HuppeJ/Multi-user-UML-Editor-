@@ -266,6 +266,7 @@ export default class CanvasRoom {
     toJSON() {
         return Object.assign({}, this, {
             // convert fields that need converting
+            selectedForms: mapToObj(this.selectedForms),
             connectedUsers: Array.from(this.connectedUsers)
         });
     }
