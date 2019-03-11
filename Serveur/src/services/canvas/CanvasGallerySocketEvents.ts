@@ -8,13 +8,19 @@ export default class CanvasGallerySocketEvents {
             console.log(socket.id + " connected to Canvas GallerySocketEvents");
 
             // Canvas Gallery 
-            socket.on("getPublicCanvas", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false }; 
-              //  socket.emit("temp", JSON.stringify(response)); 
+            socket.on("getPublicCanvas", function (dataStr: string) { 
+                try {
+                    const data: IEditGalleryData = JSON.parse(dataStr);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+
+                    socket.emit("getCanvasResponse", canvasManager.getCanvasRoomSERI(canvasRoomId));
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
             });
 
-            socket.on("getPrivateCanvas", function (data: any) { 
-                const response = { data: data, isRequestSuccessul: false }; 
+            socket.on("getPrivateCanvas", function (dataStr: string) { 
+                //const response = { data: data, isRequestSuccessul: false }; 
               //  socket.emit("temp", JSON.stringify(response)); 
             });
 

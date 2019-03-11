@@ -44,7 +44,8 @@ export interface IEditLinksData {
 
 export interface IAnchorPoint {
     formId: string, 
-    anchor: number // enum AnchorPoints
+    anchor: number, // enum AnchorPoints
+    multiplicity: string
 }
 
 export interface IBasicShape  { 
@@ -80,6 +81,7 @@ export interface ICoordinates  {
 
 export interface ILink { 
     id: string,  
+    name: string,
     from: IAnchorPoint,  
     to: IAnchorPoint,  
     type: number,  

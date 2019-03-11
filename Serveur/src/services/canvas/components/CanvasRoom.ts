@@ -3,11 +3,13 @@ import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
-    public selectedForms: any;  // connectedUsers is a Map : [key: formId, value: username]
+    public selectedForms: any;  // selectedForms is a Map : [key: formId, value: username]
+    public selectedLinks: any;  // selectedLinks is a Map : [key: formId, value: username]
 
     constructor(public canvas: ICanevas) {
         this.connectedUsers = new Set();
         this.selectedForms = new Map<string, string>();
+        this.selectedLinks = new Map<string, string>();
     }
 
     public addUser(username: any) {
@@ -103,7 +105,7 @@ export default class CanvasRoom {
         try {
             // If one form doesn't exist an Error will be thrown
             this.doFormsExist(data);
-            
+
             // Check if all forms are not selected, if a form is already selected throw an Error.
             data.formsId.forEach((formId) => {
                 if (this.selectedForms.has(formId)) {
@@ -130,10 +132,10 @@ export default class CanvasRoom {
         try {
             // If one form doesn't exist an Error will be thrown
             this.doFormsExist(data);
-            
+
             // Deselect all forms
             data.formsId.forEach((formId) => {
-                this.selectedForms.delete(formId, data.username);
+                this.selectedForms.delete(formId);
             });
 
             return true;
@@ -216,6 +218,51 @@ export default class CanvasRoom {
         }
     }
 
+    // Note : Il ne faut pas qu'il y ait de dupliqué dans les links à selectionner
+    public selectLinks(data: IEditLinksData): boolean {
+        try {
+            // If one form doesn't exist an Error will be thrown
+            this.doLinksExist(data);
+
+            // Check if all links are not selected, if a form is already selected throw an Error.
+            data.linksId.forEach((linkId) => {
+                if (this.selectedLinks.has(linkId)) {
+                    throw new Error(`The form with the id: "${linkId}" is already selected in the canvas : "${this.canvas.name}".`);
+                }
+            });
+
+            // If all links are not selected, select them
+            data.linksId.forEach((formId) => {
+                this.selectedLinks.set(formId, data.username);
+            });
+
+            return true;
+        } catch (e) {
+            console.log("[Error] in selectLinks", e);
+            return false;
+        }
+    }
+
+
+
+    // Note : Il ne faut pas qu'il y ait de dupliqué dans les links à selectionner
+    public deselectLinks(data: IEditLinksData): boolean {
+        try {
+            // If one form doesn't exist an Error will be thrown
+            this.doLinksExist(data);
+
+            // Deselect all links
+            data.linksId.forEach((linkId) => {
+                this.selectedLinks.delete(linkId);
+            });
+
+            return true;
+        } catch (e) {
+            console.log("[Error] in selectLinks", e);
+            return false;
+        }
+    }
+
     /***********************************************
     * Functions related to the Canvas
     ************************************************/
@@ -256,6 +303,25 @@ export default class CanvasRoom {
 
             if (!formExist) {
                 throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
+            }
+        });
+
+        return true;
+    }
+
+    private doLinksExist(data: IEditLinksData): boolean {
+        let linkExist: boolean = false;
+
+        data.linksId.forEach((linkId) => {
+            linkExist = false;
+            this.canvas.links.forEach((link) => {
+                if (link.id === linkId) {
+                    linkExist = true;
+                }
+            });
+
+            if (!linkExist) {
+                throw new Error(`There is no link with the id: "${linkId}" in the canvas : "${this.canvas.name}".`);
             }
         });
 
