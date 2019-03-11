@@ -1,7 +1,7 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { CanvasTestRoom } from "./CanvasSocketEvents";
 import CanvasManager from "./components/CanvasManager";
-import { IUpdateFormsData, IEditCanevasData, IEditLinksData, IEditFormsData, IUpdateLinksData } from "./interfaces/interfaces";
+import { IUpdateFormsData, IEditCanevasData, IEditLinksData, IEditFormsData, IUpdateLinksData, IEditGalleryData } from "./interfaces/interfaces";
 
 export default class CanvasEditionSocketEvents {
     constructor(io: any, canvasManager: CanvasManager) {
@@ -284,7 +284,7 @@ export default class CanvasEditionSocketEvents {
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
 
                     const response = {
-                        isCanvasReinitialized: canvasManager.reinitializeCanvas(canvasRoomId)
+                        isCanvasReinitialized: canvasManager.reinitializeCanvas(canvasRoomId, data)
                     };
 
                     if (response.isCanvasReinitialized) {
@@ -304,8 +304,6 @@ export default class CanvasEditionSocketEvents {
                     console.log("[Error]: ", e);
                 }
             });
-
-            // TODO add : Select Canvas
 
             socket.on("resizeCanvas", function (dataStr: string) {
                 try {
@@ -332,6 +330,58 @@ export default class CanvasEditionSocketEvents {
                     console.log("[Error]: ", e);
                 }
             });
+
+            socket.on("selectCanvas", function (dataStr: string) {
+                try {
+                    const data: IEditGalleryData = JSON.parse(dataStr);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+
+                    const response = {
+                        isCanvasSelected: canvasManager.selectCanvas(canvasRoomId, data)
+                    };
+
+                    if (response.isCanvasSelected) {
+                        console.log(socket.id + " selected canvas " + data.canevasName);
+                        io.to(canvasRoomId).emit("canvasSelected", data);
+                    } else {
+                        console.log(socket.id + " failed to select canvas " + data.canevasName);
+                    }
+
+                    socket.emit("selectCanvasResponse", JSON.stringify(response));
+
+                    // TODO remove
+                    io.to(CanvasTestRoom).emit("canvasSelected", data);
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
+
+            socket.on("deselectCanvas", function (dataStr: string) {
+                try {
+                    const data: IEditGalleryData = JSON.parse(dataStr);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+
+                    const response = {
+                        isCanvasDeselected: canvasManager.deselectCanvas(canvasRoomId, data)
+                    };
+
+                    if (response.isCanvasDeselected) {
+                        console.log(socket.id + " deselected canvas " + data.canevasName);
+                        io.to(canvasRoomId).emit("canvasDeselected", data);
+                    } else {
+                        console.log(socket.id + " failed to deselect canvas " + data.canevasName);
+                    }
+
+                    socket.emit("deselectCanvasResponse", JSON.stringify(response));
+
+                    // TODO remove
+                    io.to(CanvasTestRoom).emit("canvasDeselected", data);
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
+
+            
 
         });
 

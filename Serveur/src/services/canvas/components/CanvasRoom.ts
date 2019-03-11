@@ -1,15 +1,17 @@
-import { ICanevas, IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditFormsData, IUpdateLinksData } from "../interfaces/interfaces";
+import { ICanevas, IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditFormsData, IUpdateLinksData, IEditGalleryData } from "../interfaces/interfaces";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
     public selectedForms: any;  // selectedForms is a Map : [key: formId, value: username]
     public selectedLinks: any;  // selectedLinks is a Map : [key: formId, value: username]
+    public canvasSelected: boolean;  // selectedLinks is a Map : [key: formId, value: username]
 
     constructor(public canvas: ICanevas) {
         this.connectedUsers = new Set();
         this.selectedForms = new Map<string, string>();
         this.selectedLinks = new Map<string, string>();
+        this.canvasSelected = false;
     }
 
     public addUser(username: any) {
@@ -276,13 +278,41 @@ export default class CanvasRoom {
         }
     }
 
-    public reinitialize(): boolean {
+    public reinitialize(data: IEditCanevasData): boolean {
         try {
             this.canvas.shapes = [];
             this.canvas.links = [];
             return true;
         } catch (e) {
             console.log("[Error] in reinitialize", e);
+            return false;
+        }
+    }
+
+    public selectCanvas(data: IEditGalleryData): boolean {
+        try {
+            if (this.canvasSelected) {
+                return false;
+            }
+
+            this.canvasSelected = true;
+            return true;
+        } catch (e) {
+            console.log("[Error] in selectCanvas", e);
+            return false;
+        }
+    }
+
+    public deselectCanvas(data: IEditGalleryData): boolean {
+        try {
+            if (this.canvasSelected) {
+                this.canvasSelected = false;
+                return true;
+            }
+
+            return false;
+        } catch (e) {
+            console.log("[Error] in selectCanvas", e);
             return false;
         }
     }

@@ -185,13 +185,31 @@ export default class CanvasManager {
         return canvasRoom.resize(data);
     }
 
-    public reinitializeCanvas(canvasRoomId: string) {
+    public reinitializeCanvas(canvasRoomId: string, data: IEditCanevasData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
         }
 
-        return canvasRoom.reinitialize();
+        return canvasRoom.reinitialize(data);
+    }
+
+    public selectCanvas(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.selectCanvas(data);
+    }
+
+    public deselectCanvas(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deselectCanvas(data);
     }
 
 
