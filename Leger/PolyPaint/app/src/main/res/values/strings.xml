@@ -9,4 +9,21 @@
         <item>Aggregation</item>
         <item>Composition</item>
     </string-array>
+
+    <string-array name="link_styles_array">
+        <item>Full</item>
+        <item>Doted</item>
+    </string-array>
+
+    <string-array name="link_thickness_array">
+        <item>10 px</item>
+        <item>15 px</item>
+        <item>20 px</item>
+    </string-array>
+
+    <string-array name="link_colors_array">
+        <item>Black</item>
+        <item>Green</item>
+        <item>Yellow</item>
+    </string-array>
 </resources>
