@@ -22,7 +22,7 @@ namespace PolyPaint.CustomInk
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
             guid = Guid.NewGuid();
-            name = "hello world";
+            name = "This is a stroke";
 
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             while (StylusPoints.Count > 1)

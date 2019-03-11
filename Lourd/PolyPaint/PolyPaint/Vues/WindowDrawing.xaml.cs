@@ -81,6 +81,24 @@ namespace PolyPaint.Vues
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
         }
 
+        // Bouton pour changer le texte de l'élément sélectionné
+        private void RenameSelection(object sender, RoutedEventArgs e)
+        {
+            StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
+            if(strokes.Count == 1)
+            {
+                popUp.IsOpen = true;
+            }
+        }
+
+        public void Rename(string text)
+        {
+            Console.WriteLine("dans renameSelection");
+            popUp.IsOpen = false;
+            CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = text;
+        }
+
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)
         {
             // TODO ajouter les appels au service pour "locker" l'objet dans le collaboratif 

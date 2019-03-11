@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"        
+        xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:Vues="clr-namespace:PolyPaint.Vues"
     xmlns:customink="clr-namespace:PolyPaint.CustomInk"
@@ -134,11 +134,9 @@
                         <Image Source="/Resources/rotate.png" />
                     </StackPanel>
                 </Button>-->
-                <Button x:Name="rotation" Width="40" Height="40" Margin="5" Padding="0,0" Click="RotateSelection"
+                <Button x:Name="changeText" Width="40" Height="40" Margin="5" Padding="0,0" Click="RenameSelection"
                         BorderThickness="0">
-                    <Button.Background>
-                        <ImageBrush ImageSource="/Resources/rotate.png"></ImageBrush>
-                    </Button.Background>
+                    txt
                 </Button>
                 <!--<xctk:ColorPicker x:Name="selecteurCouleur"                             
                   VerticalContentAlignment="Stretch"
@@ -162,7 +160,9 @@
             </StackPanel>
 
         </Border>
-
+        <Popup x:Name="popUp" Placement="Center">
+            <Vues:RenamePopup />
+        </Popup>
         <Border DockPanel.Dock="Bottom" Height="25" BorderThickness="0,0.75,0,0.75" BorderBrush="#77000000">
             <StackPanel Orientation="Horizontal" Background="#FFF0F0F0">
                 <Image Source="/Resources/position.png" Margin="5,5,5,5" VerticalAlignment="Center"/>
