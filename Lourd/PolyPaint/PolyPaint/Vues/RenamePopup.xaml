@@ -29,7 +29,7 @@
                 <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
                     <TextBox x:Name="TxtBox" Width="150" Margin="0,5"
                                  materialDesign:HintAssist.Hint="Enter text here"   
-                                 Text="{Binding Label, UpdateSourceTrigger=PropertyChanged}">
+                                 Text="{Binding Label, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     </TextBox>
                     <Button Content="Accept Changes" Margin="0,10,0,0" Click="Rename" Width="150"/>
                 </StackPanel>

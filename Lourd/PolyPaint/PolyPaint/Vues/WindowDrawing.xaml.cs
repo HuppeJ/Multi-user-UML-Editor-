@@ -93,7 +93,6 @@ namespace PolyPaint.Vues
 
         public void Rename(string text)
         {
-            Console.WriteLine("dans renameSelection");
             popUp.IsOpen = false;
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
