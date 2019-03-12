@@ -25,12 +25,15 @@ import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.ResponseModel.LinksUpdateResponse
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
 import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
 import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
+import com.polypaint.polypaint.SocketReceptionModel.LinksUpdateEvent
 import com.polypaint.polypaint.View.ClassView
 import com.polypaint.polypaint.View.ImageElementView
+import com.polypaint.polypaint.View.LinkView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
 import java.util.*
@@ -493,7 +496,25 @@ class DrawingActivity : AppCompatActivity(){
                 }
             }
         }
+    }
 
+    private var onLinksCreated: Emitter.Listener = Emitter.Listener {
+        Log.d("onLinksCreated", "alllooo")
+
+        val gson = Gson()
+        val obj: LinksUpdateEvent = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            for(link: Link in obj.links) {
+                Log.d("linksCreated", obj.username + link.name)
+                runOnUiThread {
+                    ViewShapeHolder.getInstance().canevas.addLink(link)
+                    val linkView: LinkView = LinkView(this)
+                    linkView.setLinkAndAnchors(link)
+                    ViewShapeHolder.getInstance().linkMap.forcePut(linkView, link.id)
+                    parent_relative_layout?.addView(linkView)
+                }
+            }
+        }
     }
 
     override fun onPause(){
