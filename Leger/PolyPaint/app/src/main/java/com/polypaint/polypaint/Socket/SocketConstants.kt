@@ -60,7 +60,7 @@ class SocketConstants{
         // Canvas creation
         const val CREATE_CANVAS: String = "createCanvas"
         const val CREATE_CANVAS_RESPONSE: String = "createCanvasResponse"
-        const val CANVAS_ROOM_CREATED: String = "canvasRoomCreated"
+        const val CANVAS_CREATED: String = "canvasCreated"
 
         // Canvas connection
         const val JOIN_CANVAS_ROOM: String = "joinCanvasRoom"
@@ -70,8 +70,8 @@ class SocketConstants{
 
         // Canvas deletion
         const val REMOVE_CANVAS: String = "removeCanvas"
-        const val REMOVE_CANVAS_ROOM_RESPONSE: String = "removeCanvasRoomResponse"
-        const val CANVAS_ROOM_REMOVED: String = "canvasRoomRemoved"
+        const val REMOVE_CANVAS_RESPONSE: String = "removeCanvasResponse"
+        const val CANVAS_REMOVED: String = "canvasRemoved"
 
         // Get existing canvas
         const val GET_ALL_CANVAS: String = "getAllCanvas"

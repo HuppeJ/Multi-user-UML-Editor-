@@ -560,11 +560,12 @@ open class BasicElementView: RelativeLayout {
 
     private fun createResponseObject(): String{
         val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(this))
-
+        val formsArray: ArrayList<BasicShape> = ArrayList()
         var obj: String =""
         if(basicShape !=null) {
+            formsArray.add(basicShape)
             val gson = Gson()
-            val response: DrawingActivity.Response =DrawingActivity.Response(UserHolder.getInstance().username, basicShape)
+            val response: FormsUpdateEvent = FormsUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, formsArray)
             obj = gson.toJson(response)
         }
         return obj
