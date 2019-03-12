@@ -150,6 +150,7 @@ class DrawingActivity : AppCompatActivity(){
         socket?.on(SocketConstants.FORMS_DELETED, onFormsDeleted)
         socket?.on(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
         socket?.on(SocketConstants.FORM_CREATED, onFormsCreated)
+        socket?.on(SocketConstants.LINK_CREATED, onLinkCreated)
 
         //socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
     }
@@ -498,14 +499,14 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
-    private var onLinksCreated: Emitter.Listener = Emitter.Listener {
-        Log.d("onLinksCreated", "alllooo")
+    private var onLinkCreated: Emitter.Listener = Emitter.Listener {
+        Log.d("onLinkCreated", "alllooo")
 
         val gson = Gson()
         val obj: LinksUpdateEvent = gson.fromJson(it[0].toString())
         if(obj.username != UserHolder.getInstance().username) {
             for(link: Link in obj.links) {
-                Log.d("linksCreated", obj.username + link.name)
+                Log.d("linkCreated", obj.username + link.name)
                 runOnUiThread {
                     ViewShapeHolder.getInstance().canevas.addLink(link)
                     val linkView: LinkView = LinkView(this)
