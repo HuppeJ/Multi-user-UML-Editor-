@@ -1,6 +1,7 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { ICanevas, IEditCanevasData, IEditGalleryData } from "./interfaces/interfaces";
 import CanvasManager from "./components/CanvasManager";
+import { POINT_CONVERSION_COMPRESSED } from "constants";
 
 export const CanvasTestRoom: string = "Canvas_test_room";
 
@@ -11,22 +12,26 @@ export default class CanvasSocketEvents {
 
             socket.on("createCanvas", function (dataStr: string) {
                 try {
+                    console.log(dataStr);
                     const data: IEditCanevasData = JSON.parse(dataStr);
+                    console.log(data);
+
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
     
                     const response = {
-                        isCreated: canvasManager.addCanvasRoom(canvasRoomId, data)
+                        isCreated: canvasManager.addCanvasRoom(canvasRoomId, data),
+                        canevasName: data.canevas.name
                     };
     
                     if (response.isCreated) {
                         // (broadcast)
-                        io.sockets.emit("canvasRoomCreated", canvasManager.getCanvasRoomsSERI());
+                        io.sockets.emit("canvasCreated", canvasManager.getCanvasRoomsSERI());
                         console.log(socket.id + " created  canvasRoom " + data.canevas.name);
                     } else {
                         console.log(socket.id + " failed to create canvasRoom " + data.canevas.name);
                     }
     
-                    socket.emit("createCanvasRoomResponse", JSON.stringify(response));
+                    socket.emit("createCanvasResponse", JSON.stringify(response));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -36,6 +41,7 @@ export default class CanvasSocketEvents {
             // TODO à compléter voir qu'est-ce qu'on fait lorsqu'il y a des utilisateurs dans une room
             socket.on("removeCanvas", function (dataStr: string) {
                 try {
+                    console.log(dataStr);
                     const data: IEditGalleryData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
     
@@ -50,13 +56,13 @@ export default class CanvasSocketEvents {
                         // });
     
                         // (broadcast)
-                        io.sockets.emit("canvasRoomRemoved", canvasManager.getCanvasRoomsSERI());
+                        io.sockets.emit("canvasRemoved", canvasManager.getCanvasRoomsSERI());
                         console.log(socket.id + " removed canvasRoom " + data.canevasName);
                     } else {
                         console.log(socket.id + " failed to remove canvasRoom " + data.canevasName);
                     }
     
-                    socket.emit("removeCanvasRoomResponse", JSON.stringify(response));
+                    socket.emit("removeCanvasResponse", JSON.stringify(response));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -64,11 +70,13 @@ export default class CanvasSocketEvents {
 
             socket.on("joinCanvasRoom", function (dataStr: string) {
                 try {
+                    console.log(dataStr);
                     const data: IEditGalleryData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
     
                     const response = {
-                        isCanvasRoomJoined: canvasManager.addUserToCanvasRoom(canvasRoomId, data)
+                        isCanvasRoomJoined: canvasManager.addUserToCanvasRoom(canvasRoomId, data),
+                        canevasName: data.canevasName
                     };
     
                     if (response.isCanvasRoomJoined) {
@@ -86,6 +94,7 @@ export default class CanvasSocketEvents {
 
             socket.on("leaveCanvasRoom", function (dataStr: string) {
                 try {
+                    console.log(dataStr);
                     const data: IEditGalleryData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
     
