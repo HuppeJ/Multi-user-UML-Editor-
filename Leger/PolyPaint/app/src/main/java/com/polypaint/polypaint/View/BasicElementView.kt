@@ -71,7 +71,7 @@ open class BasicElementView: RelativeLayout {
 
         var parent = this.parent as RelativeLayout
         parent.dispatchSetSelected(false)
-        isSelected = true
+        isSelected = false
     }
 
     override fun setSelected(selected: Boolean) {

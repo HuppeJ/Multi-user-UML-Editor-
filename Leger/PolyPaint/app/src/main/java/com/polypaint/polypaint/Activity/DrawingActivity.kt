@@ -44,6 +44,7 @@ class DrawingActivity : AppCompatActivity(){
 
     private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
     private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
+    
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate (savedInstanceState: Bundle?) {
