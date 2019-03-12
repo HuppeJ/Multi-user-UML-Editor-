@@ -27,7 +27,7 @@ namespace PolyPaint.CustomInk
         {
             //Background = Brushes.Blue;
             Point position = TransformToAncestor(canvas).Transform(new Point(0, 0));
-            canvas.createConnectionForm(stroke, number, position);
+            canvas.createLink(stroke, number, position);
 
             int i = 0;
         }

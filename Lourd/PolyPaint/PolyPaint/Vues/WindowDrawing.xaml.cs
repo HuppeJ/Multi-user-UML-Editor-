@@ -62,6 +62,13 @@ namespace PolyPaint.Vues
         // Quand une nouvelle nouvelle stroke a ete ajoute
         private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
+            Path connectionForm = new Path();
+            connectionForm.Stroke = Brushes.Black;
+            connectionForm.StrokeThickness = 1;
+            connectionForm.Data = new LineGeometry(new Point(0,0), new Point(100, 100));
+
+            surfaceDessin.Children.Add(connectionForm);
+
             if ((DataContext as VueModele)?.OutilSelectionne == "crayon" && surfaceDessin.SelectedStrokes.Count > 0)
             {
                 CustomStroke newStroke = (DataContext as VueModele).AddStrokeFromView(

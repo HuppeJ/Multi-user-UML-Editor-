@@ -1,8 +1,5 @@
 ﻿using PolyPaint.Enums;
-using PolyPaint.Services;
-using PolyPaint.Templates;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +7,6 @@ using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk
@@ -23,28 +19,32 @@ namespace PolyPaint.CustomInk
 
         public StylusPoint firstPoint;
 
-        private bool isCreatingConnectionForm = false;
-        private Point firstPointToConnect;
-        #region createConnectionForm
-        public void createConnectionForm(CustomStroke stroke, int number, Point pointPosition)
+        private int isCreatingLink = 0;
+        private Point firstPointToLink;
+        #region createLink
+        public void createLink(CustomStroke stroke, int number, Point pointPosition)
         {
             Select(new StrokeCollection { stroke });
-
-            if (isCreatingConnectionForm)
+            // beau cheat, pcq RefreshChildren est appele avant createConnectionForm
+            if (isCreatingLink == 2)
             {
-                Path connectionForm = new Path();
-                connectionForm.Stroke = Brushes.Black;
-                connectionForm.StrokeThickness = 1;
-                connectionForm.Data = new LineGeometry(firstPointToConnect, pointPosition);
+                Path link = new Path();
+                link.Stroke = Brushes.Black;
+                link.StrokeThickness = 1;
+                link.Data = new LineGeometry(firstPointToLink, pointPosition);
 
-                Children.Add(connectionForm);
+                link.IsHitTestVisible = false;
+
+                Children.Add(link);
+                isCreatingLink = 0;
             }
             else
             {
-                firstPointToConnect = pointPosition;
+                firstPointToLink = pointPosition;
+                addAnchorPoints();
+               isCreatingLink = 1;
             }
 
-            isCreatingConnectionForm = !isCreatingConnectionForm;
         }
         #endregion
 
@@ -89,14 +89,13 @@ namespace PolyPaint.CustomInk
             {
                 SelectedStrokes.Add(stroke);
             }
-            
             base.OnSelectionChanging(e);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
         {
-            RefreshChildren();
             base.OnSelectionChanged(e);
+            RefreshChildren();
         }
 
         protected override void OnSelectionMoving(InkCanvasSelectionEditingEventArgs e)
@@ -311,20 +310,30 @@ namespace PolyPaint.CustomInk
             //removeAdorners();
             Children.Clear();
 
+            if (isCreatingLink == 1)
+            {
+                isCreatingLink++;
+            } else
+            {
+                isCreatingLink = 0;
+            }
+            
             StrokeCollection selectedStrokes = new StrokeCollection();
 
+            // Add selection adorners to selectedStrokes
             foreach (CustomStroke selectedStroke in GetSelectedStrokes())
             {
                 selectedStrokes.Add(selectedStroke);
                 addAdorners(selectedStroke);
             }
 
+            // Add text boxes (names) to all strokes
             foreach (CustomStroke stroke in Strokes)
             {
                 AddTextBox(stroke);
             }
-
-            Select(selectedStrokes);
+            ReadOnlyCollection<UIElement> ah = GetSelectedElements();
+            Select(selectedStrokes, GetSelectedElements());
         }
 
         private void addAdorners(CustomStroke selectedStroke)
@@ -339,33 +348,48 @@ namespace PolyPaint.CustomInk
         }
 
         // Tjrs avoir les anchorPoints? Laid.. gi
-        private void addAnchorPoints(CustomStroke selectedStroke)
+        private void addAnchorPoints()
         {
-            Path path = new Path();
-            path.Data = selectedStroke.GetGeometry();
+            foreach (CustomStroke stroke in Strokes)
+            {
+                Path path = new Path();
+                path.Data = stroke.GetGeometry();
 
-            Children.Add(path);
-            AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-            myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                myAdornerLayer.Add(new AnchorPointAdorner(path, stroke, this));
+            }
         }
 
         // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e stroke ajoutee
         private void removeAdorners()
         {
-            List<UIElement> children = new List<UIElement>();
-
-            foreach (UIElement child in Children)
+            for(int i = 0; i < Children.Count; i++)
             {
-                if (child.GetType() == typeof(Path))
+                if (Children[i].GetType() == typeof(Path))
                 {
-                    children.Add(child);
+                    Children.RemoveAt(i);
                 }
-            }
+                else if (Children[i]?.GetType() == typeof(CustomTextBox))
+                {
+                    Children.RemoveAt(i);
+                }
 
-            foreach (UIElement child in children)
-            {
-                Children.Remove(child);
             }
+            //List<UIElement> children = new List<UIElement>();
+
+            //foreach (UIElement child in Children)
+            //{
+            //    if (child.GetType() == typeof(Path))
+            //    {
+            //        children.Add(child);
+            //    }
+            //}
+
+            //foreach (UIElement child in children)
+            //{
+            //    Children.Remove(child);
+            //}
         }
         #endregion
     }
