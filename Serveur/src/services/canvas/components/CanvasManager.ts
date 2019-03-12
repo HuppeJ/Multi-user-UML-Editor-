@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { ICanevas, IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditGalleryData, IEditFormsData, IUpdateLinksData } from "../interfaces/interfaces";
+import { IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditGalleryData, IEditFormsData, IUpdateLinksData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -153,6 +153,24 @@ export default class CanvasManager {
         return canvasRoom.deleteLinks(data);
     }
 
+    public selectCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.selectLinks(data);
+    }
+
+    public deselectCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deselectLinks(data);
+    }
+
 
 
     /***********************************************
@@ -167,13 +185,31 @@ export default class CanvasManager {
         return canvasRoom.resize(data);
     }
 
-    public reinitializeCanvas(canvasRoomId: string) {
+    public reinitializeCanvas(canvasRoomId: string, data: IEditCanevasData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
         }
 
-        return canvasRoom.reinitialize();
+        return canvasRoom.reinitialize(data);
+    }
+
+    public selectCanvas(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.selectCanvas(data);
+    }
+
+    public deselectCanvas(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.deselectCanvas(data);
     }
 
 
@@ -189,15 +225,42 @@ export default class CanvasManager {
         return canvasRoom.getSelectedFormsSERI();
     }
 
+    public getCanvasRoomSERI(canvasRoomId: string): string {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        return JSON.stringify(canvasRoom);
+    }
+
     public getCanvasRoomsSERI(): string {
         return JSON.stringify({
             canvasRooms: mapToObj(this.canvasRooms)
         });
     }
 
-    public getUsersInCanvasRoomSERI(canvasName: string) {
+    public getPublicCanvasSERI(): string {
+        const publicCanvasArray = [];
+
+        for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
+            if (canvasRoom.isCanvasPublic()) {
+                publicCanvasArray.push(canvasRoom);
+            }
+        }
+
         return JSON.stringify({
-            connectedUsers: JSON.parse(this.canvasRooms.get(canvasName).getConnectedUsersSERI())
+            publicCanvas: publicCanvasArray
+        });
+    }
+
+    public getPrivateCanvasSERI(username: string): string {
+        const privateCanvasArray = [];
+
+        for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
+            if (canvasRoom.isCanvasPrivate() && canvasRoom.isAuthorOfCanvase(username)) {
+                privateCanvasArray.push(canvasRoom);
+            }
+        }
+
+        return JSON.stringify({
+            privateCanvas: privateCanvasArray
         });
     }
 

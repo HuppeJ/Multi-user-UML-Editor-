@@ -27,6 +27,7 @@ import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.View.ClassView
+import com.polypaint.polypaint.View.ImageElementView
 import com.polypaint.polypaint.View.LinkView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
@@ -93,6 +94,21 @@ class DrawingActivity : AppCompatActivity(){
         class_button.setOnClickListener {
             addOnCanevas(ShapeTypes.CLASS_SHAPE)
         }
+        artefact_button.setOnClickListener {
+            addOnCanevas(ShapeTypes.ARTIFACT)
+        }
+        activity_button.setOnClickListener {
+            addOnCanevas(ShapeTypes.ACTIVITY)
+        }
+        role_button.setOnClickListener {
+            addOnCanevas(ShapeTypes.ROLE)
+        }
+        comment_button.setOnClickListener {
+            addOnCanevas(ShapeTypes.COMMENT)
+        }
+        phase_button.setOnClickListener {
+            addOnCanevas(ShapeTypes.PHASE)
+        }
 
         clear_canvas_button.setOnClickListener {
             emitClearCanvas()
@@ -112,10 +128,11 @@ class DrawingActivity : AppCompatActivity(){
             unstackView()
         }
 
-        phase_button.setOnClickListener {
+        sync_canevas_from_layout_button.setOnClickListener {
             syncCanevasFromLayout()
         }
-        free_text_button.setOnClickListener {
+
+        sync_layout_from_canevas.setOnClickListener {
             syncLayoutFromCanevas()
         }
     }
@@ -137,16 +154,19 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun addOnCanevas(shapeType: ShapeTypes){
-        var shape: BasicShape = newShapeOnCanevas(ShapeTypes.DEFAULT)
-        var view: BasicElementView = newViewOnCanevas(ShapeTypes.DEFAULT)
+        var shape = newShapeOnCanevas(shapeType)
+        var view = newViewOnCanevas(shapeType)
 
-        when(shapeType){
-            ShapeTypes.DEFAULT -> {}
-            ShapeTypes.CLASS_SHAPE -> {
-                shape = newShapeOnCanevas(ShapeTypes.CLASS_SHAPE)
-                view = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
-            }
-        }
+        // TODO : Je pense qu'on peut enlever cette partie de code (J.H.)
+        //when(shapeType){
+        //    ShapeTypes.DEFAULT -> {}
+        //    ShapeTypes.CLASS_SHAPE -> {
+        //        shape = newShapeOnCanevas(ShapeTypes.CLASS_SHAPE)
+        //        view = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
+        //    }
+        // }
+
+
         //addViewToLayout
         parent_relative_layout?.addView(view)
         //addShapeToCanevas
@@ -197,6 +217,21 @@ class DrawingActivity : AppCompatActivity(){
             ShapeTypes.CLASS_SHAPE -> {
                 shape = ClassShape(UUID.randomUUID().toString(), shapeType.value(), "classShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>(),ArrayList<String?>(), ArrayList<String?>())
             }
+            ShapeTypes.ARTIFACT -> {
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "artefactShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+            }
+            ShapeTypes.ACTIVITY -> {
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "activityShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+            }
+            ShapeTypes.ROLE -> {
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "roleShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+            }
+            ShapeTypes.COMMENT -> {
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "commentShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+            }
+            ShapeTypes.PHASE -> {
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "phaseShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+            }
         }
 
         return shape
@@ -215,6 +250,21 @@ class DrawingActivity : AppCompatActivity(){
             }
             ShapeTypes.CLASS_SHAPE->{
                 viewType = ClassView(this)
+            }
+            ShapeTypes.ARTIFACT -> {
+                viewType = ImageElementView(this, shapeType)
+            }
+            ShapeTypes.ACTIVITY -> {
+                viewType = ImageElementView(this, shapeType)
+            }
+            ShapeTypes.ROLE -> {
+                viewType = ImageElementView(this, shapeType)
+            }
+            ShapeTypes.COMMENT -> {
+                viewType = BasicElementView(this)
+            }
+            ShapeTypes.PHASE -> {
+                viewType = BasicElementView(this)
             }
         }
         viewType.addView(viewContainer)

@@ -130,8 +130,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/activity_button"/>
             <Button
-                    android:id="@+id/phase_button"
-                    android:text="PHASE"
+                    android:id="@+id/comment_button"
+                    android:text="COMMENT"
                     android:textSize="14dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
@@ -140,15 +140,35 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/role_button"/>
             <Button
-                    android:id="@+id/free_text_button"
-                    android:text="FREE TEXT"
+                    android:id="@+id/phase_button"
+                    android:text="PHASE"
                     android:textSize="14dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:layout_width="140dp"
                     android:layout_height="30dp"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comment_button"/>
+            <Button
+                    android:id="@+id/sync_canevas_from_layout_button"
+                    android:text="Sync Canvas from Layout"
+                    android:textSize="10dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:layout_width="140dp"
+                    android:layout_height="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/phase_button"/>
+            <Button
+                    android:id="@+id/sync_layout_from_canevas"
+                    android:text="sync layout From Canvas"
+                    android:textSize="10dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:layout_width="140dp"
+                    android:layout_height="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sync_canevas_from_layout_button"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

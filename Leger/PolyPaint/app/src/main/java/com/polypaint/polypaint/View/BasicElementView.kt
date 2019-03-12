@@ -321,7 +321,7 @@ open class BasicElementView: RelativeLayout {
                     fingersCoords[0].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
                 }
                 MotionEvent.ACTION_POINTER_DOWN -> {
-                    first_line.text = "SecondFingerActionDown"
+                    // first_line.text = "SecondFingerActionDown"
                     pointerFinger2 = event.getPointerId(event.actionIndex)
 
                     fingersCoords[1].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
@@ -400,7 +400,7 @@ open class BasicElementView: RelativeLayout {
 
                 }
                 MotionEvent.ACTION_UP -> {
-                    first_line.text = "ActionUp"
+                    // first_line.text = "ActionUp"
                     val activity: AppCompatActivity = context as AppCompatActivity
                     if (activity is DrawingActivity) {
                         val drawingActivity: DrawingActivity = activity as DrawingActivity
@@ -495,12 +495,11 @@ open class BasicElementView: RelativeLayout {
         //first_line.text = txt.toString() + "onTouchListenerResizeButton"
 
         when(event.action){
-            MotionEvent.ACTION_DOWN -> {first_line.text = "ActionDownResize"
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDownResize"
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> {
-                first_line.text = "ActionMoveResize"
                 val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
                 val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
 
@@ -510,7 +509,6 @@ open class BasicElementView: RelativeLayout {
                 oldFrameRawY = event.rawY
             }
             MotionEvent.ACTION_UP -> {
-                first_line.text = "ActionUpResize"
                 val activity: AppCompatActivity = context as AppCompatActivity
                 if(activity is DrawingActivity){
                     val drawingActivity : DrawingActivity = activity as DrawingActivity

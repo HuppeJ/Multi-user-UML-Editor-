@@ -44,7 +44,7 @@ namespace PolyPaint.Services
             socket.Emit("joinCanvasTest");
         }
 
-        public void UpdateShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> links)
+        public void UpdateShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> linksTo, List<string> linksFrom)
         {
             BasicShape updatedShape = new BasicShape()
             {
@@ -52,7 +52,8 @@ namespace PolyPaint.Services
                 type = type,
                 name = name,
                 shapeStyle = shapeStyle,
-                links = links
+                linksTo = linksTo,
+                linksFrom = linksFrom
             };
 
             socket.Emit("CanvasUpdateTest", serializer.Serialize(updatedShape));
