@@ -23,11 +23,6 @@ export default class CanvasGallerySocketEvents {
                 }
             });
 
-            socket.on("getPrivateCanvas", function (dataStr: string) { 
-                //const response = { data: data, isRequestSuccessul: false }; 
-              //  socket.emit("temp", JSON.stringify(response)); 
-            });
-
             socket.on("getCanvas", function (dataStr: string) { 
                 try {
                     const data: IEditGalleryData = JSON.parse(dataStr);
