@@ -45,11 +45,6 @@ class DrawingActivity : AppCompatActivity(){
     private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
     private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
 
-    private fun defaultInit() : Canevas{
-        return Canevas("default","default name","aa-author", "aa-owner",
-                    2, null, ArrayList<BasicShape>(), ArrayList<Link>())
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate (savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

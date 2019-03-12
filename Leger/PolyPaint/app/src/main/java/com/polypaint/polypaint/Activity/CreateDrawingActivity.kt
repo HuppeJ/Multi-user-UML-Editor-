@@ -157,7 +157,7 @@ class CreateDrawingActivity: AppCompatActivity(){
             Log.d("canvasCreated", "created" + canevas?.name)
             val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas?.name!!, canevas?.password!!)
             val sendObj = gson.toJson(galleryEditEvent)
-            Log.d("createObj", sendObj)
+            Log.d("joinObj", sendObj)
             socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
 
 

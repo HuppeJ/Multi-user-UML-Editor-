@@ -8,14 +8,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Model.Canevas
+import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.R
 
 
-class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, var user: String) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(){
+class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, var user: String, var listener: OnItemClickListener) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(){
 
     companion object {
         private const val VIEW_TYPE_PRIVATE = 1
         private const val VIEW_TYPE_PUBLIC = 2
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(canevas: Canevas)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
@@ -36,8 +41,8 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
     override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         val canevas = canevasList[position]
         when (holder.itemViewType) {
-            ImageListAdapter.VIEW_TYPE_PRIVATE -> (holder as ImageListAdapter.PrivateImageHolder).bind(canevas)
-            ImageListAdapter.VIEW_TYPE_PUBLIC -> (holder as ImageListAdapter.PublicImageHolder).bind(canevas)
+            ImageListAdapter.VIEW_TYPE_PRIVATE -> (holder as ImageListAdapter.PrivateImageHolder).bind(canevas, listener)
+            ImageListAdapter.VIEW_TYPE_PUBLIC -> (holder as ImageListAdapter.PublicImageHolder).bind(canevas, listener)
         }
     }
 
@@ -57,8 +62,8 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
         internal var timeText: TextView = itemView.findViewById(R.id.text_message_time) as TextView
         */
 
-        internal fun bind(canevas: Canevas) {
-
+        internal fun bind(canevas: Canevas, listener: OnItemClickListener) {
+            itemView.setOnClickListener { listener.onItemClick(canevas) }
             nameText.text = canevas.name
             //var rectangle: Drawable? = messageText.background
             //rectangle?.mutate()?.setColorFilter(R.color.colorOutlineSendMessage, PorterDuff.Mode.SRC_ATOP)
@@ -75,7 +80,8 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
         internal var imageView: ImageView = itemView.findViewById(R.id.canevas_preview) as ImageView
 
 
-        internal fun bind(canevas: Canevas) {
+        internal fun bind(canevas: Canevas, listener: OnItemClickListener) {
+            itemView.setOnClickListener { listener.onItemClick(canevas) }
             if(canevas.owner == user){
                 nameText.text = canevas.name + " owned by you"
             }else{
