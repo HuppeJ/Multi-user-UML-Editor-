@@ -32,6 +32,18 @@ export default class CanvasRoom {
         });
     }
 
+    public isCanvasPublic() {
+        return this.canvas.accessibility === 1; // Voir: enum AccessibilityTypes 
+    }
+
+    public isCanvasPrivate() {
+        return this.canvas.accessibility === 0; // Voir: enum AccessibilityTypes 
+    }
+
+    public isAuthorOfCanvase(username: string) {
+        return this.canvas.author === username;
+    }
+
     /***********************************************
     * Functions related to Forms
     ************************************************/

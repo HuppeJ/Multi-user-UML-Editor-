@@ -236,6 +236,34 @@ export default class CanvasManager {
         });
     }
 
+    public getPublicCanvasSERI(): string {
+        const publicCanvasArray = [];
+
+        for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
+            if (canvasRoom.isCanvasPublic()) {
+                publicCanvasArray.push(canvasRoom);
+            }
+        }
+
+        return JSON.stringify({
+            publicCanvas: publicCanvasArray
+        });
+    }
+
+    public getPrivateCanvasSERI(username: string): string {
+        const privateCanvasArray = [];
+
+        for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
+            if (canvasRoom.isCanvasPrivate() && canvasRoom.isAuthorOfCanvase(username)) {
+                privateCanvasArray.push(canvasRoom);
+            }
+        }
+
+        return JSON.stringify({
+            privateCanvas: privateCanvasArray
+        });
+    }
+
     toJSON() {
         return Object.assign({}, this, {
             canvasRooms: mapToObj(this.canvasRooms)

@@ -7,13 +7,17 @@ export default class CanvasGallerySocketEvents {
         io.on('connection', function (socket: any) {
             console.log(socket.id + " connected to Canvas GallerySocketEvents");
 
-            // Canvas Gallery 
-            socket.on("getPublicCanvas", function (dataStr: string) { 
+            socket.on("getPublicCanvas", function () { 
                 try {
-                    const data: IEditGalleryData = JSON.parse(dataStr);
-                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+                    socket.emit("getPublicCanvasResponse", canvasManager.getPublicCanvasSERI());
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
 
-                    socket.emit("getCanvasResponse", canvasManager.getCanvasRoomSERI(canvasRoomId));
+            socket.on("getPrivateCanvas", function (username: string) { 
+                try {
+                    socket.emit("getPrivateCanvasResponse", canvasManager.getPrivateCanvasSERI(username));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
