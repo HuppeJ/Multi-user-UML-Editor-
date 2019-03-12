@@ -1,6 +1,7 @@
 ﻿using PolyPaint.Enums;
 using PolyPaint.Services;
 using PolyPaint.Templates;
+using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,6 +21,7 @@ namespace PolyPaint.CustomInk
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
         private StrokeCollection clipboard;
+        private Templates.Canvas canvas;
 
         public StylusPoint firstPoint;
 
@@ -55,6 +57,11 @@ namespace PolyPaint.CustomInk
             DynamicRenderer = customRenderer;
 
             clipboard = new StrokeCollection();
+
+            canvas = new Templates.Canvas(Guid.NewGuid().ToString(), "newCanvas", ConnectionService.username,
+                ConnectionService.username, 1, null, new List<BasicShape>(), new List<Link>(), new int[] { 1, 1 });
+            DrawingService.CreateCanvas(canvas);
+            DrawingService.JoinCanvas("newCanvas");
         }
 
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e)
@@ -141,6 +148,7 @@ namespace PolyPaint.CustomInk
                
             }
             Strokes.Add(customStroke);
+            DrawingService.CreateShape(customStroke);
             firstPoint = customStroke.StylusPoints[0];
             SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
 

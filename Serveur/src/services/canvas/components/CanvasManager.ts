@@ -80,6 +80,7 @@ export default class CanvasManager {
     public addFormToCanvas(canvasRoomId: string, data: IUpdateFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
+            console.log("canvasRoom doesn't exist:" + canvasRoomId);
             return false;
         }
 

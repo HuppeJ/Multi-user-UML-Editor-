@@ -20,7 +20,7 @@ export default class CanvasSocketEvents {
     
                     const response = {
                         isCreated: canvasManager.addCanvasRoom(canvasRoomId, data),
-                        canevasName: data.canevas.name
+                        canvasName: data.canevas.name
                     };
     
                     if (response.isCreated) {
@@ -76,7 +76,7 @@ export default class CanvasSocketEvents {
     
                     const response = {
                         isCanvasRoomJoined: canvasManager.addUserToCanvasRoom(canvasRoomId, data),
-                        canevasName: data.canevasName
+                        canvasName: data.canevasName
                     };
     
                     if (response.isCanvasRoomJoined) {

@@ -3,6 +3,7 @@ using PolyPaint.Enums;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
+using System.Web.Script.Serialization;
 using System.Windows.Ink;
 using System.Windows.Input;
 
@@ -10,18 +11,20 @@ namespace PolyPaint.Services
 {
     class DrawingService: ConnectionService
     {
-        public event Action<string> JoinCanvasRoom;
-        public event Action<Stroke> AddStroke;
-        public event Action<CustomStroke> UpdateStroke;
+        public static event Action<string> JoinCanvasRoom;
+        public static event Action<Stroke> AddStroke;
+        public static event Action<CustomStroke> UpdateStroke;
+
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer();
+        public static string canvasName;
 
         public DrawingService()
         {
             
         }
 
-        public void Initialize(object o)
+        public static void Initialize(object o)
         {
-            socket.Emit("joinCanvasTest");
 
             socket.On("joinCanvasTestResponse", (data) =>
             {
@@ -36,15 +39,57 @@ namespace PolyPaint.Services
 
                 UpdateStroke?.Invoke(createStroke(updatedStroke));
             });
+
+            socket.On("createCanvasResponse", (data) =>
+            {
+                CreateCanvasResponse response = serializer.Deserialize<CreateCanvasResponse>((string)data);
+                if (response.isCreated)
+                {
+                    canvasName = response.canvasName;
+                }
+            });
+
+            socket.On("joinCanvasRoomResponse", (data) =>
+            {
+                JoinCanvasRoomResponse response = serializer.Deserialize<JoinCanvasRoomResponse>((string)data);
+                if (response.isCanvasRoomJoined)
+                {
+                    canvasName = response.canvasName;
+                }
+            });
+
+
+            socket.On("formCreated", (data) =>
+            {
+                UpdateFormsData response = serializer.Deserialize<UpdateFormsData>((string)data);
+                CustomStroke customStroke = createStroke(response.forms[0]);
+                AddStroke?.Invoke(customStroke);
+            });
         }
 
-        // TODO: Ajouter le nom de la room quand ça va être mis sur le serveur
-        public void JoinCanvas()
+        public static void CreateCanvas(Canvas canvas)
         {
-            socket.Emit("joinCanvasTest");
+            EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
+            socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
         }
 
-        public void UpdateShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> linksTo, List<string> linksFrom)
+        public static void JoinCanvas(string roomName)
+        {
+            EditGalleryData editGalleryData = new EditGalleryData(username, roomName);
+            socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
+        }
+
+        public static void CreateShape(CustomStroke customStroke)
+        {
+            BasicShape basicShape = customStroke.GetBasicShape();
+            List<BasicShape> forms = new List<BasicShape>();
+            forms.Add(basicShape);
+
+            UpdateFormsData updateFormsData = new UpdateFormsData(username, canvasName, forms);
+            socket.Emit("createForm", serializer.Serialize(updateFormsData));
+        }
+
+        public static void UpdateShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> linksTo, List<string> linksFrom)
         {
             BasicShape updatedShape = new BasicShape()
             {
@@ -59,10 +104,17 @@ namespace PolyPaint.Services
             socket.Emit("CanvasUpdateTest", serializer.Serialize(updatedShape));
         }
 
-        private CustomStroke createStroke(BasicShape basicShape)
+        private static CustomStroke createStroke(BasicShape basicShape)
         {
             StylusPointCollection points = new StylusPointCollection();
-            points.Add(new StylusPoint(basicShape.shapeStyle.coordinates.x, basicShape.shapeStyle.coordinates.y));
+            ShapeStyle st = new ShapeStyle();
+            st.coordinates = new Coordinates();
+            st.coordinates.x = 0;
+            st.coordinates.y = 0;
+            basicShape.shapeStyle = st;
+
+            StylusPoint point = new StylusPoint(basicShape.shapeStyle.coordinates.x, basicShape.shapeStyle.coordinates.y);
+            points.Add(point);
 
             CustomStroke customStroke;
             StrokeTypes type = (StrokeTypes) basicShape.type;

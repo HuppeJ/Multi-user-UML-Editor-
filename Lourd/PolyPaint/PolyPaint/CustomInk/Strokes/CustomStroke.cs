@@ -17,7 +17,8 @@ namespace PolyPaint.CustomInk
         public string name;
         public int type;
         public ShapeStyle shapeStyle;
-        public List<string> links;
+        public List<string> linksTo;
+        public List<string> linksFrom;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
@@ -134,6 +135,12 @@ namespace PolyPaint.CustomInk
                     tmpPoint = point;
             }
             return tmpPoint.ToPoint();
+        }
+
+        public BasicShape GetBasicShape()
+        {
+            BasicShape basicShape = new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
+            return basicShape;
         }
     }
 }
