@@ -11,7 +11,10 @@
              android:layout_width="match_parent"
              android:layout_height="?attr/actionBarSize" android:id="@+id/include"/>
 
-
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Your Gallery"
+              app:layout_constraintTop_toBottomOf="@+id/include"
+              android:layout_marginTop="16dp" app:layout_constraintStart_toStartOf="parent"
+              android:layout_marginLeft="16dp" android:layout_marginStart="16dp"/>
     <Button
             android:id="@+id/create_drawing_button"
             android:text="New drawing"
@@ -27,6 +30,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/include"/>
 
+    
     <TextView
             android:id="@+id/private_gallery_text"
             android:layout_width="wrap_content"
@@ -37,7 +41,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true" android:layout_row="0" android:layout_column="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include"/>
+            app:layout_constraintTop_toBottomOf="@+id/include" android:layout_marginTop="48dp"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"/>
     <androidx.recyclerview.widget.RecyclerView android:layout_width="150dp"
                                                android:layout_height="wrap_content"
                                                android:id="@+id/private_gallery_recycler_view"
@@ -46,11 +51,10 @@
                                                android:layout_toRightOf="@+id/private_gallery_text"
                                                android:layout_marginBottom="8dp"
                                                app:layout_constraintBottom_toBottomOf="parent"
-                                               app:layout_constraintTop_toTopOf="@+id/public_gallery_text"
-                                               app:layout_constraintVertical_bias="0.0"
                                                app:layout_constraintStart_toEndOf="@+id/private_gallery_text"
-                                               android:layout_marginStart="8dp"
-                                               android:layout_marginLeft="8dp"></androidx.recyclerview.widget.RecyclerView>
+                                               app:layout_constraintTop_toTopOf="@+id/private_gallery_text"
+                                               app:layout_constraintVertical_bias="0.0" android:layout_marginLeft="8dp"
+                                               android:layout_marginStart="8dp"></androidx.recyclerview.widget.RecyclerView>
     <TextView
             android:id="@+id/public_gallery_text"
             android:layout_width="wrap_content"
@@ -65,20 +69,20 @@
             android:layout_marginRight="8dp"
             app:layout_constraintEnd_toStartOf="@+id/create_drawing_button"
             app:layout_constraintStart_toEndOf="@+id/private_gallery_recycler_view" android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp" app:layout_constraintHorizontal_bias="0.4"/>
+            android:layout_marginLeft="8dp" app:layout_constraintHorizontal_bias="0.29"
+            android:layout_marginTop="48dp"/>
     <androidx.recyclerview.widget.RecyclerView android:layout_width="150dp"
                                                android:layout_height="wrap_content"
                                                android:id="@+id/public_gallery_recycler_view"
                                                android:layout_alignTop="@+id/public_gallery_text"
                                                android:layout_toEndOf="@+id/public_gallery_text"
                                                android:layout_toRightOf="@+id/public_gallery_text"
-                                               app:layout_constraintTop_toBottomOf="@+id/include"
                                                android:layout_marginBottom="8dp"
                                                app:layout_constraintBottom_toBottomOf="parent"
-                                               app:layout_constraintVertical_bias="0.0"
                                                app:layout_constraintStart_toEndOf="@+id/public_gallery_text"
-                                               android:layout_marginStart="4dp"
-                                               android:layout_marginLeft="4dp"></androidx.recyclerview.widget.RecyclerView>
+                                               app:layout_constraintTop_toTopOf="@+id/public_gallery_text"
+                                               app:layout_constraintVertical_bias="0.0" android:layout_marginLeft="8dp"
+                                               android:layout_marginStart="8dp"></androidx.recyclerview.widget.RecyclerView>
 
 
 
