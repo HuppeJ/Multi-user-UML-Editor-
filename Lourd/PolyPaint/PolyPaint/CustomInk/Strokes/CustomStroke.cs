@@ -43,7 +43,7 @@ namespace PolyPaint.CustomInk
             double width = 100.0;
             double height = 100.0;
             double rotation = 0.0;
-            shapeStyle = new ShapeStyle(new Coordinates(lastPoint.X, lastPoint.Y), width, height, rotation);
+            //shapeStyle = new ShapeStyle(new Coordinates(lastPoint.X, lastPoint.Y), width, height, rotation);
         }
 
         public CustomStroke(StylusPointCollection pts, BasicShape basicShape) : base(pts)
