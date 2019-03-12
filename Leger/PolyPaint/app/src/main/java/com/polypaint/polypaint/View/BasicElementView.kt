@@ -245,8 +245,19 @@ open class BasicElementView: RelativeLayout {
                                 canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
                                 canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
 
-//                                socket?.emit(SocketConstants.CREATE_LINK, LinksUpdateEvent(username, canevas.name, links))
-//                                socket?.emit(SocketConstants.UPDATE_FORMS, FormsUpdateEvent(username, canevas.name, formsToUpdate))
+                                //Log.d("createLink", linkShape)
+                                var linkObj: String =""
+                                val gson = Gson()
+                                val linkUpdate: LinksUpdateEvent = LinksUpdateEvent(username, canevas.name, links)
+                                linkObj = gson.toJson(linkUpdate)
+                                Log.d("emitingCreateLink", linkObj)
+
+                                var formsObj =""
+                                val fromsUpdate: FormsUpdateEvent = FormsUpdateEvent(username, canevas.name, formsToUpdate)
+                                formsObj = gson.toJson(fromsUpdate)
+                                Log.d("emitingUpdateForms", formsObj)
+                                socket?.emit(SocketConstants.CREATE_LINK, linkObj)
+                                socket?.emit(SocketConstants.UPDATE_FORMS, formsObj)
 
                                 parentView.addView(link)
                             }

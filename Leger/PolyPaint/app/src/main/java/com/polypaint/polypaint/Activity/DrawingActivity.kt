@@ -28,6 +28,7 @@ import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
 import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
+import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
 import com.polypaint.polypaint.View.ClassView
 import com.polypaint.polypaint.View.ImageElementView
 import kotlinx.android.synthetic.main.activity_drawing.*
@@ -44,7 +45,7 @@ class DrawingActivity : AppCompatActivity(){
 
     private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
     private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
-    
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate (savedInstanceState: Bundle?) {
@@ -506,6 +507,14 @@ class DrawingActivity : AppCompatActivity(){
         super.onPause()
     }
 
+    override fun onBackPressed() {
+        val gson = Gson()
+        val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, ViewShapeHolder.getInstance().canevas.password)
+        val sendObj = gson.toJson(galleryEditEvent)
+        Log.d("leaveObj", sendObj)
+        socket?.emit(SocketConstants.LEAVE_CANVAS_ROOM, sendObj)
+        super.onBackPressed()
+    }
     /*override fun onBackPressed() {
         socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
         socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)

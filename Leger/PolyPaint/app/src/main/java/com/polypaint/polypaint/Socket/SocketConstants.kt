@@ -48,6 +48,14 @@ class SocketConstants{
         const val DELETE_LINKS_RESPONSE: String = ""
         const val LINKS_DELETED: String = ""
 
+        const val SELECT_LINKS: String = "selectLinks"
+        const val SELECT_LINKS_RESPONSE: String = "selectLinksResponse"
+        const val LINKS_SELECTED: String = "linksSelected"
+
+        const val DESELECT_LINKS: String = "deselectLinks"
+        const val DESELECT_LINKS_RESPONSE: String = "deselectLinksResponse"
+        const val LINKS_DESELECTED: String = "linksDeselected"
+
         // Edition of the canvas
         const val REINITIALIZE_CANVAS: String = "reinitializeCanvas"
         const val REINITIALIZE_CANVAS_RESPONSE: String = "reinitializeCanvasResponse"
