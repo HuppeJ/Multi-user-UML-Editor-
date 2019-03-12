@@ -98,6 +98,10 @@ class GalleryActivity:AppCompatActivity(){
 
         adapterPrivate = ImageListAdapter(this, canevasPrivate, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{
             override fun onItemClick(canevas: Canevas) {
+
+                // TODO : pop the modal
+
+
                 selectedCanevas = canevas
                 val gson = Gson()
                 val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)
@@ -108,6 +112,8 @@ class GalleryActivity:AppCompatActivity(){
         })
         adapterPublic = ImageListAdapter(this, canevasPublic, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{
             override fun onItemClick(canevas: Canevas) {
+
+
                 selectedCanevas = canevas
                 val gson = Gson()
                 val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)

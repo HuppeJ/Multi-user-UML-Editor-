@@ -45,7 +45,7 @@ class LinkView: View{
     fun setLinkAndAnchors(link: Link){
         this.link = link
         this.start = link.path[0]
-        this.end = link.path[link.path.size]
+        this.end = link.path[link.path.size-1]
     }
 
     override fun onDraw(canvas: Canvas){
