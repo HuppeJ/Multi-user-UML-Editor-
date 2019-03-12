@@ -56,6 +56,7 @@ namespace PolyPaint.CustomInk
             drawingContext.PushTransform(transform);
 
             drawingContext.DrawText(formattedText, GetTheFirstPoint());
+
         }
 
     }

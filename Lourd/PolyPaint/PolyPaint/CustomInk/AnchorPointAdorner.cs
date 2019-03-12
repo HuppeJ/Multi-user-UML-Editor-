@@ -15,6 +15,7 @@ namespace PolyPaint.CustomInk
         Point center;
 
         RotateTransform rotation;
+        const int HANDLEMARGIN = 15;
 
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
@@ -30,8 +31,7 @@ namespace PolyPaint.CustomInk
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             strokeBounds = strokeToRotate.GetBounds();
-            center = new Point(strokeBounds.X + strokeBounds.Width / 2,
-                               strokeBounds.Y + strokeBounds.Height / 2);
+            center = stroke.GetCenter();
             rotation = new RotateTransform(stroke.rotation, center.X, center.Y);
 
             buttons = new List<CustomButton>();
@@ -44,10 +44,6 @@ namespace PolyPaint.CustomInk
             visualChildren = new VisualCollection(this);
             foreach(CustomButton button in buttons)
             {
-                // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-                button.RenderTransform = rotation;
-                //button.Height = 50;
-                //button.Width = 50;
                 button.Cursor = Cursors.SizeNWSE;
                 button.Width = 10;
                 button.Height = 10;
@@ -74,12 +70,12 @@ namespace PolyPaint.CustomInk
                 return finalSize;
             }
 
-            center = new Point(strokeBounds.X, strokeBounds.Y);
+            center = stroke.GetCenter();
 
-            ArrangeButton(0, 0, - strokeBounds.Height / 2);
-            ArrangeButton(1, strokeBounds.Width / 2, 0);
-            ArrangeButton(2, 0, strokeBounds.Height / 2);
-            ArrangeButton(3, - strokeBounds.Width / 2, 0);
+            ArrangeButton(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
+            ArrangeButton(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
+            ArrangeButton(2, 0, strokeBounds.Height / 2 + HANDLEMARGIN);
+            ArrangeButton(3, -(strokeBounds.Width / 2 + HANDLEMARGIN), 0);
 
             return finalSize;
         }
@@ -87,8 +83,8 @@ namespace PolyPaint.CustomInk
         private void ArrangeButton(int buttonNumber, double xOffset, double yOffset)
         {
             // The rectangle that determines the position of the Thumb.
-            Rect handleRect = new Rect(center.X + xOffset,
-                                  center.Y + yOffset,
+            Rect handleRect = new Rect(strokeBounds.X + xOffset,
+                                  strokeBounds.Y + yOffset,
                                   strokeBounds.Width,
                                   strokeBounds.Height);
 

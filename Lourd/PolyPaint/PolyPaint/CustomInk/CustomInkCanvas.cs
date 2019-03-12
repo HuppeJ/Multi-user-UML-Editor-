@@ -322,7 +322,6 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke stroke in Strokes)
             {
                 AddTextBox(stroke);
-                addAnchorPoints(stroke);
             }
 
             Select(selectedStrokes);
@@ -350,7 +349,7 @@ namespace PolyPaint.CustomInk
             myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
         }
 
-        // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e
+        // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e stroke ajoutee
         private void removeAdorners()
         {
             List<UIElement> children = new List<UIElement>();

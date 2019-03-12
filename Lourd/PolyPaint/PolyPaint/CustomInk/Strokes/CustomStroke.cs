@@ -20,6 +20,18 @@ namespace PolyPaint.CustomInk
         public ShapeStyle shapeStyle;
         public List<string> links;
 
+        public Point GetCenter()
+        {
+            Rect strokeBounds = GetBounds();
+            
+            Point leftTopPoint = GetTheLeftTopPoint();
+            Point rightBottomPoint = GetTheRightBottomPoint();
+            Point center = new Point(strokeBounds.X + strokeBounds.Width / 2, strokeBounds.Y + strokeBounds.Height / 2);
+                //new Point((leftTopPoint.X + rightBottomPoint.X) /2, (leftTopPoint.Y + rightBottomPoint.Y) / 2);
+
+            return center;
+        }
+
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
             guid = Guid.NewGuid();
