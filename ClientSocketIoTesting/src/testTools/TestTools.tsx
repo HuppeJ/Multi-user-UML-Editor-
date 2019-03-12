@@ -28,20 +28,20 @@ export class TestTools extends React.Component<ITestToolsProps, ITestToolsState>
     public initialiseTestTools() {
         this.addTestTool("getServerState", "", this.props.socket);
 
-        // this.addTestTool("createCanvas", "canvasRoomCreated", this.props.socket, this.getMockCanvas_IEditCanevasData("CanvasRoom1"));
-        // this.addTestTool("createCanvas", "canvasRoomCreated", this.props.socket, this.getMockCanvas_IEditCanevasData("CanvasRoom2"));
+        this.addTestTool("createCanvas", "canvasRoomCreated", this.props.socket, this.getMockCanvas_IEditCanevasData("CanvasRoom1"));
+        this.addTestTool("createCanvas", "canvasRoomCreated", this.props.socket, this.getMockCanvas_IEditCanevasData("CanvasRoom2"));
 
-        // this.addTestTool("removeCanvas", "canvasRoomRemoved", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom1"));
+        this.addTestTool("removeCanvas", "canvasRoomRemoved", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom1"));
         // this.addTestTool("removeCanvas", "canvasRoomRemoved", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom2"));
 
 
 
-        // this.addTestTool("joinCanvasRoom", "", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom1"));
+        this.addTestTool("joinCanvasRoom", "", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom1"));
         // this.addTestTool("joinCanvasRoom", "", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom2"));
         // this.addTestTool("joinCanvasRoom", "", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom3"));
 
 
-        // this.addTestTool("leaveCanvasRoom", "", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom1"));
+        this.addTestTool("leaveCanvasRoom", "", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom1"));
         // this.addTestTool("leaveCanvasRoom", "", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom2"));
         // this.addTestTool("leaveCanvasRoom", "", this.props.socket, this.getMockCanvas_IEditGalleryData("CanvasRoom3"));
 

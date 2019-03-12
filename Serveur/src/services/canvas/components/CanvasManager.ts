@@ -241,7 +241,7 @@ export default class CanvasManager {
 
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
             if (canvasRoom.isCanvasPublic()) {
-                publicCanvasArray.push(canvasRoom);
+                publicCanvasArray.push(canvasRoom.canvas);
             }
         }
 
@@ -255,7 +255,7 @@ export default class CanvasManager {
 
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
             if (canvasRoom.isCanvasPrivate() && canvasRoom.isAuthorOfCanvase(username)) {
-                privateCanvasArray.push(canvasRoom);
+                privateCanvasArray.push(canvasRoom.canvas);
             }
         }
 
