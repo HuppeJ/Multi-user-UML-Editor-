@@ -62,6 +62,12 @@ class SocketConstants{
         const val CREATE_CANVAS_RESPONSE: String = "createCanvasResponse"
         const val CANVAS_ROOM_CREATED: String = "canvasRoomCreated"
 
+        // Canvas connection
+        const val JOIN_CANVAS_ROOM: String = "joinCanvasRoom"
+        const val JOIN_CANVAS_ROOM_RESPONSE: String = "joinCanvasRoomResponse"
+        const val LEAVE_CANVAS_ROOM: String = "leaveCanvasRoom"
+        const val LEAVE_CANVAS_ROOM_RESPONSE: String = "leaveCanvasRoomResponse"
+
         // Canvas deletion
         const val REMOVE_CANVAS: String = "removeCanvas"
         const val REMOVE_CANVAS_ROOM_RESPONSE: String = "removeCanvasRoomResponse"

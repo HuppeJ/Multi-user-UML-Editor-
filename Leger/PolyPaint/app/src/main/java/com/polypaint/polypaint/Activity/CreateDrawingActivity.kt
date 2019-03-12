@@ -17,15 +17,23 @@ import co.zsmb.materialdrawerkt.builders.drawer
 import co.zsmb.materialdrawerkt.builders.footer
 import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
 import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
+import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
+import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.Gson
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.ResponseModel.CanvasCreationResponse
+import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
 import com.polypaint.polypaint.Socket.SocketConstants
+import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
+import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
 import java.util.*
 
 class CreateDrawingActivity: AppCompatActivity(){
@@ -34,6 +42,8 @@ class CreateDrawingActivity: AppCompatActivity(){
     private var isPasswordProtected: Boolean = false
     private var nameView: EditText? = null
     private var passwordView: EditText? = null
+    private var canevas: Canevas? = null
+    private var socket: Socket? = null
 
     override fun onCreate (savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,17 +115,20 @@ class CreateDrawingActivity: AppCompatActivity(){
         var password = passwordView?.text.toString().trim()
         isPasswordProtected = TextUtils.isEmpty(password)
 
-        var canevas: Canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, null, ArrayList(), ArrayList())
+        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, null, ArrayList(), ArrayList())
 
 
         val app = application as PolyPaint
-        val socket : Socket? = app.socket
-        socket?.emit(SocketConstants.CREATE_CANVAS)
+        socket = app.socket
+        val gson = Gson()
+        if(canevas != null) {
+            val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, canevas!!)
+            val sendObj = gson.toJson(canvasEvent)
+            Log.d("createObj", sendObj)
+            socket?.emit(SocketConstants.CREATE_CANVAS, sendObj)
+            socket?.on(SocketConstants.CREATE_CANVAS_RESPONSE, onCreateCanvasResponse)
+        }
 
-
-        val intent = Intent(this, DrawingActivity::class.java)
-        intent.putExtra("canevas", canevas)
-        startActivity(intent)
 
 //
 //        var dialog: DialogFragment = EditClassDialogFragment()
@@ -126,9 +139,35 @@ class CreateDrawingActivity: AppCompatActivity(){
 //        Log.d("****", dialog.arguments.toString())
 //        dialog.show(supportFragmentManager, "alllooooo")
 
+    }
 
+    private var onCreateCanvasResponse: Emitter.Listener = Emitter.Listener {
+        Log.d("onCreateCanvasResponse", "alllooo")
 
+        val gson = Gson()
+        val obj: CanvasCreationResponse = gson.fromJson(it[0].toString())
+        if(obj.isCreated) {
+            Log.d("canvasCreated", "created" + canevas?.name)
+            val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas?.name!!, canevas?.password!!)
+            val sendObj = gson.toJson(galleryEditEvent)
+            Log.d("createObj", sendObj)
+            socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
+            socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
 
+        }
+    }
+
+    private var onJoinCanvasResponse: Emitter.Listener = Emitter.Listener {
+        Log.d("onJoinCanvasResponse", "alllooo")
+
+        val gson = Gson()
+        val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
+        if(obj.isCanvasRoomJoined) {
+            Log.d("canvasJoined", "created" + canevas?.name)
+            val intent = Intent(this, DrawingActivity::class.java)
+            intent.putExtra("canevas", canevas)
+            startActivity(intent)
+        }
     }
 
 }
