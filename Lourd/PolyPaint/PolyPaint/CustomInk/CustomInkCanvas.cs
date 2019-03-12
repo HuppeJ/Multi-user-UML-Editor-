@@ -1,5 +1,7 @@
 ﻿using PolyPaint.Enums;
+using PolyPaint.Templates;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,38 +15,70 @@ namespace PolyPaint.CustomInk
 {
     public class CustomInkCanvas : InkCanvas
     {
+        public List<Link> links = new List<Link>();
+
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
         private StrokeCollection clipboard;
 
         public StylusPoint firstPoint;
-
         private int isCreatingLink = 0;
-        private Point firstPointToLink;
+
         #region createLink
-        public void createLink(CustomStroke stroke, int number, Point pointPosition)
+        public void createLink(CustomStroke stroke, int anchor, Point pointPosition)
         {
             Select(new StrokeCollection { stroke });
-            // beau cheat, pcq RefreshChildren est appele avant createConnectionForm
+            // cheat, pcq RefreshChildren est appele avant createConnectionForm
             if (isCreatingLink == 2)
             {
-                Path link = new Path();
-                link.Stroke = Brushes.Black;
-                link.StrokeThickness = 1;
-                link.Data = new LineGeometry(firstPointToLink, pointPosition);
+                Path path = new Path();
+                path.Stroke = Brushes.Black;
+                path.StrokeThickness = 1;
+                Point firstPointToLink = links[links.Count - 1].GetFromPoint(this.Strokes);
+                    //stroke.GetAnchorPoint(anchor);
+                path.Data = new LineGeometry(firstPointToLink, pointPosition);
 
-                link.IsHitTestVisible = false;
 
-                Children.Add(link);
+                links[links.Count - 1].path.Add(new Coordinates(pointPosition.X, pointPosition.Y));
+                links[links.Count - 1].to = new AnchorPoint(stroke.guid.ToString(), anchor, "0");
+
+                Children.Add(path);
                 isCreatingLink = 0;
+                refreshLinks();
             }
             else
             {
-                firstPointToLink = pointPosition;
+                Link newLink = new Link(pointPosition, stroke.guid.ToString(), anchor);
+                links.Add(newLink);
+                
                 addAnchorPoints();
-               isCreatingLink = 1;
+                isCreatingLink = 1;
             }
 
+        }
+
+        public void refreshLinks()
+        {
+            if (isCreatingLink != 2)
+            {
+                foreach (Link link in links)
+                {
+                    Point fromPoint = link.GetFromPoint(this.Strokes);
+                    Point toPoint = link.GetToPoint(this.Strokes);
+                    // mettre a jour les positions des points
+                    link.path.Clear();
+                    link.path.Add(new Coordinates(fromPoint.X, fromPoint.Y));
+                    link.path.Add(new Coordinates(toPoint.X, toPoint.Y));
+
+                    // redessiner les liens
+                    Path path = new Path();
+                    path.Stroke = Brushes.Black;
+                    path.StrokeThickness = 1;
+                    path.Data = new LineGeometry(fromPoint, toPoint);
+
+                    Children.Add(path);
+                }
+            }
         }
         #endregion
 
@@ -57,13 +91,6 @@ namespace PolyPaint.CustomInk
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
           "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("CLASS_SHAPE"));
         #endregion
-        /*
-        #region SelectedStrokes dependency property
-        
-        public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
-          "SelectedStrokes", typeof(StrokeCollection), typeof(CustomInkCanvas), new PropertyMetadata(new StrokeCollection(), new PropertyChangedCallback(OnSelectionChanged)));
-        #endregion
-        */
         #region SelectedStrokes dependency property
         public StrokeCollection SelectedStrokes
         {
@@ -332,7 +359,11 @@ namespace PolyPaint.CustomInk
             {
                 AddTextBox(stroke);
             }
-            ReadOnlyCollection<UIElement> ah = GetSelectedElements();
+
+            // refresh all the links
+            refreshLinks();
+
+            ReadOnlyCollection<UIElement> ahhh = GetSelectedElements();
             Select(selectedStrokes, GetSelectedElements());
         }
 

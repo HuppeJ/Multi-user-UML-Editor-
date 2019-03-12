@@ -18,19 +18,8 @@ namespace PolyPaint.CustomInk
         public string name;
         public int type;
         public ShapeStyle shapeStyle;
-        public List<string> links;
-
-        public Point GetCenter()
-        {
-            Rect strokeBounds = GetBounds();
-            
-            Point leftTopPoint = GetTheLeftTopPoint();
-            Point rightBottomPoint = GetTheRightBottomPoint();
-            Point center = new Point(strokeBounds.X + strokeBounds.Width / 2, strokeBounds.Y + strokeBounds.Height / 2);
-                //new Point((leftTopPoint.X + rightBottomPoint.X) /2, (leftTopPoint.Y + rightBottomPoint.Y) / 2);
-
-            return center;
-        }
+        public List<string> linksTo;
+        public List<string> linksFrom;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
@@ -60,7 +49,7 @@ namespace PolyPaint.CustomInk
 
         public CustomStroke(StylusPointCollection pts, BasicShape basicShape) : base(pts)
         {
-            guid = Guid.NewGuid();
+            guid = new Guid(basicShape.id);
             name = basicShape.name;
             type = basicShape.type;
             shapeStyle = basicShape.shapeStyle;
@@ -74,6 +63,48 @@ namespace PolyPaint.CustomInk
                     StylusPoints.Add(new StylusPoint(i, j));
                 }
             }
+        }
+
+        public Point GetCenter()
+        {
+            Rect strokeBounds = GetBounds();
+            
+            Point leftTopPoint = GetTheLeftTopPoint();
+            Point rightBottomPoint = GetTheRightBottomPoint();
+            Point center = new Point(strokeBounds.X + strokeBounds.Width / 2, strokeBounds.Y + strokeBounds.Height / 2);
+                //new Point((leftTopPoint.X + rightBottomPoint.X) /2, (leftTopPoint.Y + rightBottomPoint.Y) / 2);
+
+            return center;
+        }
+
+        public Point GetAnchorPoint(int anchorNumber)
+        {
+            Point point;
+            double xCenter = GetCenter().X;
+            double yCenter = GetCenter().Y;
+            double margin = 15;
+            double halfWidth = GetBounds().Width / 2 + margin;
+            double halfHeight = GetBounds().Height / 2 + margin;
+
+            // gi AJOUTER LE ROTATE sur les bounds? creer
+
+            switch(anchorNumber)
+            {
+                case 0:
+                    point = new Point(xCenter, yCenter - halfWidth);
+                    break;
+                case 1:
+                    point = new Point(xCenter + halfHeight, yCenter);
+                    break;
+                case 2:
+                    point = new Point(xCenter, yCenter + halfWidth);
+                    break;
+                default:
+                    point = new Point(xCenter - halfHeight, yCenter);
+                    break;
+            }
+
+            return point;
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
