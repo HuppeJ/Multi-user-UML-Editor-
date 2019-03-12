@@ -134,10 +134,7 @@
                         <Image Source="/Resources/rotate.png" />
                     </StackPanel>
                 </Button>-->
-                <Button x:Name="changeText" Width="40" Height="40" Margin="5" Padding="0,0" Click="RenameSelection"
-                        BorderThickness="0">
-                    txt
-                </Button>
+
                 <!--<xctk:ColorPicker x:Name="selecteurCouleur"                             
                   VerticalContentAlignment="Stretch"
                   Background="#00000000"

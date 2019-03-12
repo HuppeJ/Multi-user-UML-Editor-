@@ -74,7 +74,7 @@ namespace PolyPaint.Vues
                 surfaceDessin.Children.Add(path);
                 AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                 myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
-
+                myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
             }
 
             // Pour que les boutons est la bonne couleur
@@ -82,7 +82,7 @@ namespace PolyPaint.Vues
         }
 
         // Bouton pour changer le texte de l'élément sélectionné
-        private void RenameSelection(object sender, RoutedEventArgs e)
+        public void RenameSelection()
         {
             StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
             if(strokes.Count == 1)
@@ -96,6 +96,7 @@ namespace PolyPaint.Vues
             popUp.IsOpen = false;
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
+            surfaceDessin.RefreshChildren();
         }
 
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)

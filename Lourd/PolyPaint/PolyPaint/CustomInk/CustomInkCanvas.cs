@@ -307,6 +307,7 @@ namespace PolyPaint.CustomInk
                 Children.Add(path);
                 AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                 myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
             }
 
             foreach (CustomStroke stroke in Strokes)
