@@ -381,7 +381,7 @@ export default class CanvasRoom {
 
     public getSelectedFormsSERI(): string {
         return JSON.stringify({
-            selectedForms: mapToObj(this.selectedForms)
+            selectedForms: Array.from(this.selectedForms.keys())
         });
     }
 
