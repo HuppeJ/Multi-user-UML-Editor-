@@ -170,7 +170,8 @@ namespace PolyPaint.CustomInk
                 double x = point.X;
                 double y = point.Y;
 
-                ClassTextBox sp = new ClassTextBox();
+                ClassStroke classStroke = (ClassStroke)stroke;
+                ClassTextBox sp = new ClassTextBox(classStroke.name, classStroke.attributes, classStroke.methods);
                 this.Children.Add(sp);
                 InkCanvas.SetTop(sp, y);
                 InkCanvas.SetLeft(sp, x);

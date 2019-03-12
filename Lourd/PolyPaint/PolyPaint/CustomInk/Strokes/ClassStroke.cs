@@ -7,19 +7,26 @@ using System.Windows.Media.Imaging;
 using System.Globalization;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
+using System.Collections.Generic;
 
 namespace PolyPaint.CustomInk
 {
     public class ClassStroke : CustomStroke
     {
+        public List<string> attributes;
+        public List<string> methods;
+
         public ClassStroke(StylusPointCollection pts) : base(pts)
         {
             type = (int)StrokeTypes.CLASS_SHAPE;
+            attributes = new List<string>();
+            methods = new List<string>();
         }
 
-        public ClassStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
+        public ClassStroke(ClassShape classShape, StylusPointCollection pts) : base(pts, classShape)
         {
-            
+            attributes = classShape.attributes;
+            methods = classShape.methods;
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
@@ -44,6 +51,5 @@ namespace PolyPaint.CustomInk
 
             drawingContext.PushTransform(transform);
         }
-
     }
 }

@@ -11,6 +11,7 @@ using PolyPaint.CustomInk;
 using System.Windows.Ink;
 using PolyPaint.Enums;
 using System.Windows.Shapes;
+using System.Collections.Generic;
 
 namespace PolyPaint.Vues
 {
@@ -87,15 +88,35 @@ namespace PolyPaint.Vues
             StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
             if(strokes.Count == 1)
             {
-                popUp.IsOpen = true;
+                if (((CustomStroke)strokes[0]).type == (int)StrokeTypes.CLASS_SHAPE)
+                {
+                    popUpClass.IsOpen = true;
+                }
+                else
+                {
+                    popUpName.IsOpen = true;
+                }
             }
         }
 
         public void Rename(string text)
         {
-            popUp.IsOpen = false;
+            popUpName.IsOpen = false;
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
+            surfaceDessin.RefreshChildren();
+        }
+
+        public void Rename(string className, string attributes, string methods)
+        {
+            popUpClass.IsOpen = false;
+            ClassStroke stroke = (ClassStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = className;
+            stroke.attributes = new List<string>();
+            stroke.attributes.Add(attributes);
+            stroke.methods = new List<string>();
+            stroke.methods.Add(methods);
+
             surfaceDessin.RefreshChildren();
         }
 

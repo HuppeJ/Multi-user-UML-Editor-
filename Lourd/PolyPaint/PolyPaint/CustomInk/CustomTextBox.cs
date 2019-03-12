@@ -9,6 +9,8 @@ namespace PolyPaint.CustomInk
         {
             FontSize = 12;
             BorderThickness = new Thickness(0);
+            TextWrapping = TextWrapping.Wrap;
+            AcceptsReturn = true;
         }
 
         public CustomTextBox(string name) : base()
@@ -16,6 +18,10 @@ namespace PolyPaint.CustomInk
             FontSize = 12;
             Text = name;
             BorderThickness = new Thickness(1);
+            Width = 150;
+            MaxWidth = 150;
+            TextWrapping = TextWrapping.Wrap;
+            AcceptsReturn = true;
         }
     }
 }
