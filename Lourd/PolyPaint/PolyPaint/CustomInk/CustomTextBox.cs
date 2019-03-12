@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace PolyPaint.CustomInk
@@ -12,6 +11,11 @@ namespace PolyPaint.CustomInk
             BorderThickness = new Thickness(0);
         }
 
-        //override move
+        public CustomTextBox(string name) : base()
+        {
+            FontSize = 12;
+            Text = name;
+            BorderThickness = new Thickness(1);
+        }
     }
 }

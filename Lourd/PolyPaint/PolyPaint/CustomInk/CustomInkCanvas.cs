@@ -164,17 +164,31 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
-            Point point = stroke.GetBounds().BottomLeft;
-            double x = point.X;
-            double y = point.Y;
+            if(stroke.type == (int) StrokeTypes.CLASS_SHAPE)
+            {
+                Point point = stroke.GetBounds().TopLeft;
+                double x = point.X;
+                double y = point.Y;
 
-            CustomTextBox tb = new CustomTextBox();
-            tb.Text = stroke.name;
-            tb.Uid = stroke.guid.ToString();
+                ClassTextBox sp = new ClassTextBox();
+                this.Children.Add(sp);
+                InkCanvas.SetTop(sp, y);
+                InkCanvas.SetLeft(sp, x);
+            }
+            else
+            {
+                Point point = stroke.GetBounds().BottomLeft;
+                double x = point.X;
+                double y = point.Y;
 
-            this.Children.Add(tb);
-            InkCanvas.SetTop(tb, y);
-            InkCanvas.SetLeft(tb, x);
+                CustomTextBox tb = new CustomTextBox();
+                tb.Text = stroke.name;
+                tb.Uid = stroke.guid.ToString();
+
+                this.Children.Add(tb);
+                InkCanvas.SetTop(tb, y);
+                InkCanvas.SetLeft(tb, x);
+            }
         }
         #endregion
 

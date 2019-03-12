@@ -33,17 +33,6 @@ namespace PolyPaint.CustomInk
                 throw new ArgumentNullException("drawingAttributes");
             }
             DrawingAttributes originalDa = drawingAttributes.Clone();
-            SolidColorBrush brush2 = new SolidColorBrush(drawingAttributes.Color);
-            brush2.Freeze();
-            // drawingContext.DrawRectangle(brush2, null, new Rect(GetTheLeftTopPoint(), GetTheRightBottomPoint()));
-
-            FormattedText formattedText = new FormattedText(
-                "Hello",
-                CultureInfo.GetCultureInfo("en-us"),
-                FlowDirection.LeftToRight,
-                new Typeface("Verdana"),
-                32,
-                Brushes.Black);
 
             Rect bounds = GetBounds();
             double x = (bounds.Right + bounds.Left) / 2;
@@ -54,8 +43,6 @@ namespace PolyPaint.CustomInk
             transform.Children.Add(new RotateTransform(rotation, x, y));
 
             drawingContext.PushTransform(transform);
-
-            drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
 
     }

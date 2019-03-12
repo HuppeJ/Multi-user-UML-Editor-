@@ -169,6 +169,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\EditionAdorner.cs" />
     <Compile Include="CustomInk\EditionButton.cs" />
