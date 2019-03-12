@@ -1,3 +1,3 @@
 package com.polypaint.polypaint.SocketReceptionModel
 
-class FormsGetSelectedEvent(var canvasName: String)
+class FormsGetSelectedEvent(var canevasName: String)
