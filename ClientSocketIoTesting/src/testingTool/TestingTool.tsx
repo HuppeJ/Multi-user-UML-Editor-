@@ -20,7 +20,7 @@ export class TestingTool extends React.Component<ITestingToolProps> {
 
     public initialiseSocket() {
         // CONNECT TO 
-        const socketTemp = io.connect('http://localhost:8080');
+        const socketTemp = io.connect('http://localhost:5020');
         // const socketTemp = io.connect('https://projet-3-228722.appspot.com/');
         this.socket = socketTemp;
     }
