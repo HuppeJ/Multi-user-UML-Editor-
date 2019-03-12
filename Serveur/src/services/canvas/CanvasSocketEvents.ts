@@ -72,12 +72,17 @@ export default class CanvasSocketEvents {
                 try {
                     console.log(dataStr);
                     const data: IEditGalleryData = JSON.parse(dataStr);
+                    console.log(data);
+
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
     
                     const response = {
                         isCanvasRoomJoined: canvasManager.addUserToCanvasRoom(canvasRoomId, data),
                         canvasName: data.canevasName
                     };
+
+                    console.log(JSON.stringify(response));
+
     
                     if (response.isCanvasRoomJoined) {
                         socket.join(canvasRoomId);

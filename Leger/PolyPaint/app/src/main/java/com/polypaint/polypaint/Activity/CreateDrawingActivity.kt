@@ -51,6 +51,9 @@ class CreateDrawingActivity: AppCompatActivity(){
 
         setContentView(R.layout.activity_create_drawing)
 
+        val app = application as PolyPaint
+        socket = app.socket
+
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
         drawer = drawer {
@@ -96,6 +99,11 @@ class CreateDrawingActivity: AppCompatActivity(){
             createDrawing()
         }
 
+
+
+        socket?.on(SocketConstants.CREATE_CANVAS_RESPONSE, onCreateCanvasResponse)
+        socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+
         /*val ft = supportFragmentManager.beginTransaction()
         //ft.add(R.id.list_container, RoomsListFragment())
         ft.add(R.id.details_container, MessageListFragment(), MessageListFragment.TAG)
@@ -115,18 +123,17 @@ class CreateDrawingActivity: AppCompatActivity(){
         var password = passwordView?.text.toString().trim()
         isPasswordProtected = TextUtils.isEmpty(password)
 
-        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, null, ArrayList(), ArrayList())
+        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, password, ArrayList(), ArrayList())
 
 
-        val app = application as PolyPaint
-        socket = app.socket
+
         val gson = Gson()
         if(canevas != null) {
             val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, canevas!!)
             val sendObj = gson.toJson(canvasEvent)
             Log.d("createObj", sendObj)
             socket?.emit(SocketConstants.CREATE_CANVAS, sendObj)
-            socket?.on(SocketConstants.CREATE_CANVAS_RESPONSE, onCreateCanvasResponse)
+
         }
 
 
@@ -150,9 +157,9 @@ class CreateDrawingActivity: AppCompatActivity(){
             Log.d("canvasCreated", "created" + canevas?.name)
             val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas?.name!!, canevas?.password!!)
             val sendObj = gson.toJson(galleryEditEvent)
-            Log.d("createObj", sendObj)
+            Log.d("joinObj", sendObj)
             socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
-            socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+
 
         }
     }

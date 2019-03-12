@@ -23,7 +23,7 @@
         <EditText
                 android:id="@+id/edittext_server_url"
 
-                android:text="https://10.200.22.65:8080"
+                android:text="http://10.200.22.65:5020"
 
                 android:hint="Server url"
                 android:background="@android:color/transparent"

@@ -169,7 +169,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
+    <Compile Include="CustomInk\EditionAdorner.cs" />
+    <Compile Include="CustomInk\EditionButton.cs" />
     <Compile Include="CustomInk\RotateAdorner.cs" />
     <Compile Include="CustomInk\Strokes\ActivityStroke.cs" />
     <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
@@ -218,6 +221,9 @@
     </Compile>
     <Compile Include="Vues\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\ClassPopup.xaml.cs">
+      <DependentUpon>ClassPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\DrawingChatView.xaml.cs">
       <DependentUpon>DrawingChatView.xaml</DependentUpon>
@@ -295,6 +301,10 @@
     <Page Include="Vues\ChatView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\ClassPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vues\DrawingChatView.xaml">
       <SubType>Designer</SubType>

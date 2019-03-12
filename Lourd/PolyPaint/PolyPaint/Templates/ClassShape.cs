@@ -2,13 +2,8 @@
 
 namespace PolyPaint.Templates
 {
-    class ClassShape
+    public class ClassShape : BasicShape
     {
-        public string id { get; set; }
-        public int type { get; set; }
-        public string name { get; set; }
-        public ShapeStyle shapeStyle { get; set; }
-        public List<string> links { get; set; }
         public List<string> attributes { get; set; }
         public List<string> methods { get; set; }
 
@@ -16,13 +11,14 @@ namespace PolyPaint.Templates
         {
         }
 
-        public ClassShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> links, List<string> attributes, List<string> methods)
+        public ClassShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> linksTo, List<string> linksFrom, List<string> attributes, List<string> methods)
         {
             this.id = id;
             this.type = type;
             this.name = name;
             this.shapeStyle = shapeStyle;
-            this.links = links;
+            this.linksTo = linksTo;
+            this.linksFrom = linksFrom;
             this.attributes = attributes;
             this.methods = methods;
         }
