@@ -213,7 +213,7 @@ namespace PolyPaint.VueModeles
 
         private void AddStroke(Stroke stroke)
         {
-            editeur.traits.Add(stroke);
+            editeur.AddStrokeFromService((CustomStroke)stroke);
         }
 
         /// <summary>

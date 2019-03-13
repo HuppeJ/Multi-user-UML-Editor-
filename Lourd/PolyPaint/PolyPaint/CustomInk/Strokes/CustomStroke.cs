@@ -25,26 +25,32 @@ namespace PolyPaint.CustomInk
             guid = Guid.NewGuid();
             name = "This is a stroke";
 
-            int width = 100;
-            if (type == 0) width = 150;
-
             Point lastPoint = pts[pts.Count - 1].ToPoint();
+            Coordinates coordinates = new Coordinates(lastPoint.X, lastPoint.Y);
+
+            shapeStyle = new ShapeStyle(coordinates,100,100,0,"black",0,"none");
+
+            if (type == 0) shapeStyle.width = 150;
+
+
             while (StylusPoints.Count > 1)
             {
                 StylusPoints.RemoveAt(0);
             }
-            for (double i = lastPoint.X; i < width + lastPoint.X; i += 0.5)
+            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
             {
-                for (double j = lastPoint.Y; j < 100 + lastPoint.Y; j += 0.5)
+                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
                 {
                     StylusPoints.Add(new StylusPoint(i, j));
                 }
             }
+            linksTo = new List<string>();
+            linksFrom = new List<string>();
         }
 
         public CustomStroke(StylusPointCollection pts, BasicShape basicShape) : base(pts)
         {
-            guid = Guid.NewGuid();
+            guid = Guid.Parse(basicShape.id);
             name = basicShape.name;
             type = basicShape.type;
             shapeStyle = basicShape.shapeStyle;

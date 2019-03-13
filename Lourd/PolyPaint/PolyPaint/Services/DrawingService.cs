@@ -107,11 +107,6 @@ namespace PolyPaint.Services
         private static CustomStroke createStroke(BasicShape basicShape)
         {
             StylusPointCollection points = new StylusPointCollection();
-            ShapeStyle st = new ShapeStyle();
-            st.coordinates = new Coordinates();
-            st.coordinates.x = 0;
-            st.coordinates.y = 0;
-            basicShape.shapeStyle = st;
 
             StylusPoint point = new StylusPoint(basicShape.shapeStyle.coordinates.x, basicShape.shapeStyle.coordinates.y);
             points.Add(point);
@@ -125,10 +120,10 @@ namespace PolyPaint.Services
                     customStroke = new ClassStroke((ClassShape)basicShape, points);
                     break;
                 case StrokeTypes.ARTIFACT:
-                    customStroke = new ActivityStroke(basicShape, points);
+                    customStroke = new ArtifactStroke(basicShape, points);
                     break;
                 case StrokeTypes.ACTIVITY:
-                    customStroke = new ArtifactStroke(basicShape, points);
+                    customStroke = new ActivityStroke(basicShape, points);
                     break;
                 case StrokeTypes.ROLE:
                     customStroke = new ActorStroke(basicShape, points);

@@ -128,7 +128,6 @@ export default class CanvasSocketEvents {
                 }
             });
 
-
             // [**************************************************
             // Temporary for testing
 
