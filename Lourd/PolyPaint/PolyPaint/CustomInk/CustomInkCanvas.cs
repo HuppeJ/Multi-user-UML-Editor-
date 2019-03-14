@@ -1,8 +1,8 @@
-﻿using PolyPaint.Enums;
+﻿using PolyPaint.CustomInk.Strokes;
+using PolyPaint.Enums;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -28,55 +28,56 @@ namespace PolyPaint.CustomInk
         public void createLink(CustomStroke stroke, int anchor, Point pointPosition)
         {
             Select(new StrokeCollection { stroke });
-            // cheat, pcq RefreshChildren est appele avant createConnectionForm
+
             if (isCreatingLink == 2)
             {
-                Path path = new Path();
-                path.Stroke = Brushes.Black;
-                path.StrokeThickness = 1;
-                Point firstPointToLink = links[links.Count - 1].GetFromPoint(this.Strokes);
-                    //stroke.GetAnchorPoint(anchor);
-                path.Data = new LineGeometry(firstPointToLink, pointPosition);
-
+                Point firstPointToLink = links[links.Count - 1].GetPoint(0);
 
                 links[links.Count - 1].path.Add(new Coordinates(pointPosition.X, pointPosition.Y));
                 links[links.Count - 1].to = new AnchorPoint(stroke.guid.ToString(), anchor, "0");
 
-                Children.Add(path);
+                Strokes.Add(new LinkStroke(links[links.Count - 1], new StylusPointCollection { new StylusPoint(firstPointToLink.X, firstPointToLink.Y) }));
+
                 isCreatingLink = 0;
-                refreshLinks();
             }
             else
             {
                 Link newLink = new Link(pointPosition, stroke.guid.ToString(), anchor);
                 links.Add(newLink);
-                
+
                 addAnchorPoints();
                 isCreatingLink = 1;
             }
 
         }
 
-        public void refreshLinks()
+        public void RefreshLinks()
         {
+            // A cause de ca que je ne peux pas selectionner le lien je crois :( gi
             if (isCreatingLink != 2)
             {
                 foreach (Link link in links)
                 {
                     Point fromPoint = link.GetFromPoint(this.Strokes);
                     Point toPoint = link.GetToPoint(this.Strokes);
-                    // mettre a jour les positions des points
-                    link.path.Clear();
-                    link.path.Add(new Coordinates(fromPoint.X, fromPoint.Y));
+                    // mettre a jour les positions des points initial et final
+                    link.path.RemoveAt(0);
+                    link.path.Insert(0, new Coordinates(fromPoint.X, fromPoint.Y));
+                    link.path.RemoveAt(link.path.Count - 1);
                     link.path.Add(new Coordinates(toPoint.X, toPoint.Y));
-
+                    
                     // redessiner les liens
-                    Path path = new Path();
-                    path.Stroke = Brushes.Black;
-                    path.StrokeThickness = 1;
-                    path.Data = new LineGeometry(fromPoint, toPoint);
+                    for(int i = 0; i < Strokes.Count; i++)
+                    {
+                        if(Strokes[i].GetType() == typeof(LinkStroke))
+                        {
+                            Strokes.Replace(
+                                    Strokes[i],
+                                    new StrokeCollection { new LinkStroke(link, new StylusPointCollection { new StylusPoint(0, 0) }) }
+                                );
+                        }
+                    }
 
-                    Children.Add(path);
                 }
             }
         }
@@ -134,6 +135,7 @@ namespace PolyPaint.CustomInk
         {
             base.OnSelectionMoved(e);
             RefreshChildren();
+            RefreshLinks();
         }
 
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
@@ -145,6 +147,7 @@ namespace PolyPaint.CustomInk
         {
             base.OnSelectionResized(e);
             RefreshChildren();
+            RefreshLinks();
         }
 
         protected override void OnStrokeErased(RoutedEventArgs e)
@@ -187,6 +190,9 @@ namespace PolyPaint.CustomInk
                 case StrokeTypes.PHASE:
                     customStroke = new ClassStroke(e.Stroke.StylusPoints);
                     break;
+                case StrokeTypes.LINK:
+                    customStroke = new LinkStroke(e.Stroke.StylusPoints);
+                    break;
                 default:
                     customStroke = new ClassStroke(e.Stroke.StylusPoints);
                     break;
@@ -201,7 +207,7 @@ namespace PolyPaint.CustomInk
             // Pass the custom stroke to base class' OnStrokeCollected method.
             InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
             base.OnStrokeCollected(args);
-
+            
             AddTextBox(customStroke);
         }
 
@@ -235,20 +241,6 @@ namespace PolyPaint.CustomInk
             }
         }
         #endregion
-
-        //private void AddStroke(CustomStroke newStroke)
-        //{
-        //    Console.WriteLine("add de vueModele en provenance du service :) ");
-
-        //    Strokes.Add(newStroke);
-        //}
-
-        //private void UpdateStroke(CustomStroke newStroke)
-        //{
-        //    Console.WriteLine("update de vueModele en provenance du service :) ");
-        //    // ne add pas le trait pour vrai..
-        //    Strokes.Add(newStroke);
-        //}
 
         #region RotateStrokes
         public void RotateStrokes()
@@ -376,10 +368,9 @@ namespace PolyPaint.CustomInk
             }
 
             // refresh all the links
-            refreshLinks();
+            //refreshLinks();
 
-            ReadOnlyCollection<UIElement> ahhh = GetSelectedElements();
-            Select(selectedStrokes, GetSelectedElements());
+            Select(selectedStrokes);
         }
 
         private void addAdorners(CustomStroke selectedStroke)
@@ -389,13 +380,16 @@ namespace PolyPaint.CustomInk
 
             Children.Add(path);
             AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-            myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
-            myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
             myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+
+            if (selectedStroke.GetType() != typeof(LinkStroke))
+            {
+                myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+            }
 
         }
 
-        // Tjrs avoir les anchorPoints? Laid.. gi
         private void addAnchorPoints()
         {
             foreach (CustomStroke stroke in Strokes)

@@ -3,6 +3,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Collections.Generic;
+using PolyPaint.Templates;
 
 namespace PolyPaint.CustomInk
 {
@@ -77,7 +78,19 @@ namespace PolyPaint.CustomInk
             ArrangeButton(2, 0, strokeBounds.Height / 2 + HANDLEMARGIN);
             ArrangeButton(3, -(strokeBounds.Width / 2 + HANDLEMARGIN), 0);
 
+            //stroke.anchorPoints.Clear();
+            //AddAnchorPointsToStroke();
+
             return finalSize;
+        }
+
+        private void AddAnchorPointsToStroke()
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                Point position = buttons[i].TransformToAncestor(canvas).Transform(new Point(0, 0));
+                (stroke as ShapeStroke).anchorPoints.Add(new Point(position.X, position.Y));
+            }
         }
 
         private void ArrangeButton(int buttonNumber, double xOffset, double yOffset)
