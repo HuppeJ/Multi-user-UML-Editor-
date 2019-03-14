@@ -50,9 +50,6 @@ class LoginActivity:Activity(){
         socket?.connect() // TODO : Vérifier si on peut l'enlever parce que IO.socket le fait déjà
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
-        // TODO remove, it's temporary for testing
-        socket?.emit(SocketConstants.RESET_SERVER_STATE)
-
         setContentView(R.layout.activity_login)
 
 
@@ -70,6 +67,12 @@ class LoginActivity:Activity(){
         var createUserButton: Button = findViewById(R.id.create_user_button)
         createUserButton.setOnClickListener {
             createUser()
+        }
+
+        // TODO remove, it's temporary for testing
+        var resetServerButton: Button = findViewById(R.id.reset_server_state)
+        resetServerButton.setOnClickListener {
+            resetServer()
         }
 
         socket?.on(SocketConstants.LOGIN_USER_RESPONSE, onLogin)
@@ -124,6 +127,11 @@ class LoginActivity:Activity(){
         val intent = Intent(this, CreateUserActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
         startActivity(intent)
+    }
+
+    // TODO remove, it's temporary for testing
+    private fun resetServer(){
+        socket?.emit(SocketConstants.RESET_SERVER_STATE)
     }
 
     private var onLogin: Emitter.Listener = Emitter.Listener{
