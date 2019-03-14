@@ -1,21 +1,35 @@
+import { IEditChatroomData, IMessageData } from "../../canvas/interfaces/interfaces";
+
 export default class Chatroom {
     private chatroomName: string = "";
-    private users: any = null; // [key: socketId]
+    private author: string = "";
+    private connectedUsers: any = null; // [key: username]
 
-    constructor(name: string) {
-        this.chatroomName = name;
-        this.users = new Set();
+    constructor(data: IEditChatroomData) {
+        this.chatroomName = data.chatroomName;
+        this.author = data.username;
+        this.connectedUsers = new Set();
     }
 
-    public addUser(socketId: any) {
-        this.users.add(socketId);
+    public sendMessage(data: IMessageData) {
+        return this.connectedUsers.has(data.username);
     }
 
-    public removeUser(socketId: any) {
-        this.users.delete(socketId);
+    public addUser(username: string) {
+        this.connectedUsers.add(username);
     }
 
-    public hasUser(socketId: any) {
-        return this.users.has(socketId);
+    public removeUser(username: string) {
+        this.connectedUsers.delete(username);
+    }
+
+    public hasUser(username: string) {
+        return this.connectedUsers.has(username);
+    }
+
+    public getConnectedUsersSERI(): string {
+        return JSON.stringify({
+            connectedUsers: Array.from(this.connectedUsers)
+        });
     }
 }

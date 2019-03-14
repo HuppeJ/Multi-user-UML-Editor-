@@ -30,17 +30,18 @@ export interface IEditLinksData {
     linksId: string[],
 }
 
-export interface IChatroomEditData {
+export interface IEditChatroomData {
     username: string,
     chatroomName: string,  
     // password: string, ?
 }
 
-// vérifier format
+// TODO: vérifier format
 export interface IMessageData {
     username: string,
     chatroomName: string,
     createdAt: string,
+    message: string,
 }
 
 /***********************************************

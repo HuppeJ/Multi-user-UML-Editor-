@@ -1,3 +1,9 @@
+
+
+//////////////////////////////////////////
+// CES CONSTANTES NE SONT PLUS UTILISÉES
+//////////////////////////////////////////
+
 export const CREATE_USER: string = "createUser";
 
 export const CREATE_USER_RESPONSE: string =  "createUserResponse";

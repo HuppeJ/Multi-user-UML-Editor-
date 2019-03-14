@@ -1,105 +1,152 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import ChatroomManager from "./components/ChatroomManager";
-import { IChatroomEditData } from "../canvas/interfaces/interfaces";
-
-
-// TODO : ATTENTION AUX  const chatroomId: string = chatroomManager.getChatroomIdFromName(roomName);
+import { IEditChatroomData, IMessageData } from "../canvas/interfaces/interfaces";
 
 export default class ChatSocketEvents {
     constructor(io: any, chatroomManager: ChatroomManager) {
         io.on('connection', function (socket: any) {
-            console.log(socket.id + " connected on the server");
 
-            socket.on(SocketEvents.CREATE_CHATROOM, function (dataStr: string) {
-                const data: IChatroomEditData = JSON.parse(dataStr);
+            socket.on("createChatroom", function (dataStr: string) {
+                try {
+                    const data: IEditChatroomData = JSON.parse(dataStr);
+                    const chatroomId: string = chatroomManager.getChatroomIdFromName(data.chatroomName);
 
-                const chatroomId: string = chatroomManager.getChatroomIdFromName(data.chatroomName);
+                    const response = {
+                        isCreated: chatroomManager.addChatroom(chatroomId, data),
+                        chatroomName: data.chatroomName
+                    };
 
-                const response = {
-                    isCreated: chatroomManager.addChatroom(chatroomId, socket.id),
-                    chatroomName: data.chatroomName,
-                };
+                    if (response.isCreated) {
+                        // (broadcast)
+                        io.sockets.emit("canvasCreated", chatroomManager.getChatroomsSERI());
+                        console.log(socket.id + " created  chatroom " + data.chatroomName);
+                    } else {
+                        console.log(socket.id + " failed to create chatroom " + data.chatroomName);
+                    }
 
-                if (response.isCreated) {
-                    console.log(socket.id + " created chatroom " + data.chatroomName);
-                    // (broadcast)
-                    io.sockets.emit("createChatroomResponse", chatroomManager.getChatrooms());
-                } else {
-                    console.log(socket.id + " failed to create chatroom " + data.chatroomName);
-                }
-
-                socket.emit(SocketEvents.CREATE_CHATROOM_RESPONSE, JSON.stringify(response));
-            });
-
-            socket.on(SocketEvents.JOIN_CHATROOM, function () {
-                const defaultChatroom = "default_room";
-                socket.join(defaultChatroom);
-
-                if (chatroomManager.addChatroom(defaultChatroom, socket.id)) {
-                    io.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
-                } else {
-                    chatroomManager.addUserToChatroom(defaultChatroom, socket.id);
-                    socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, defaultChatroom);
+                    socket.emit("createChatResponse", JSON.stringify(response));
+                } catch (e) {
+                    console.log("[Error]: ", e);
                 }
             });
 
-            socket.on(SocketEvents.JOIN_SPECIFIC_CHATROOM, function (roomName: string) {
-                const response = {
-                    roomName: roomName,
-                    isJoined: chatroomManager.addUserToChatroom(roomName, socket.id)
-                };
 
-                if (response.isJoined) {
-                    const chatroomId: string = chatroomManager.getChatroomIdFromName(roomName);
-                    socket.join(chatroomId);
-                    console.log(socket.id + " joined chatroom " + roomName);
-                } else {
-                    console.log(socket.id + " failed to join chatroom " + roomName);
+            socket.on("removeChatroom", function (dataStr: string) {
+                try {
+                    const data: IEditChatroomData = JSON.parse(dataStr);
+                    const chatroomId: string = chatroomManager.getChatroomIdFromName(data.chatroomName);
+
+                    const response = {
+                        isChatroomRemoved: chatroomManager.removeChatroom(chatroomId, data)
+                    };
+
+                    if (response.isChatroomRemoved) {
+                        // TODO on gère cela ici? 
+                        // io.sockets.clients(someroom).forEach(function(s){
+                        //     s.leave(someroom);
+                        // });
+
+                        // (broadcast)
+                        io.sockets.emit("canvasRemoved", chatroomManager.getChatroomsSERI());
+                        console.log(socket.id + " removed chatroom " + data.chatroomName);
+                    } else {
+                        console.log(socket.id + " failed to remove chatroom " + data.chatroomName);
+                    }
+
+                    socket.emit("removeChatResponse", JSON.stringify(response));
+                } catch (e) {
+                    console.log("[Error]: ", e);
                 }
-
-                socket.emit(SocketEvents.JOIN_CHATROOM_RESPONSE, JSON.stringify(response));
             });
 
-            // TODO : Est-ce que nous avons besoin de cet event?
-            socket.on(SocketEvents.LEAVE_SPECIFIC_CHATROOM, function (roomName: string) {
-                const response = {
-                    roomName: roomName,
-                    isJoined: chatroomManager.removeClientFromChatroom(roomName, socket.id)
-                };
+            socket.on("joinChatroom", function (dataStr: string) {
+                try {
+                    const data: IEditChatroomData = JSON.parse(dataStr);
+                    const chatroomId: string = chatroomManager.getChatroomIdFromName(data.chatroomName);
 
-                if (response.isJoined) {
-                    socket.leave(roomName);
-                    console.log(socket.id + " left chatroom " + roomName);
-                } else {
-                    console.log(socket.id + " failed to leave chatroom " + roomName);
+                    const response = {
+                        isChatroomJoined: chatroomManager.addUserToChatroom(chatroomId, data),
+                        chatroomName: data.chatroomName
+                    };
+
+                    if (response.isChatroomJoined) {
+                        socket.join(chatroomId);
+                        console.log(socket.id + " joined chatroom " + data.chatroomName);
+                    } else {
+                        console.log(socket.id + " failed to join chatroom " + data.chatroomName);
+                    }
+
+                    socket.emit("joinChatroomResponse", JSON.stringify(response));
+                } catch (e) {
+                    console.log("[Error]: ", e);
                 }
-
-                socket.emit(SocketEvents.LEAVE_CHATROOM_RESPONSE, JSON.stringify(response));
-
             });
 
-            socket.on(SocketEvents.SEND_MESSAGE, function (messageDataStr: any) {
-                const messageData = JSON.parse(messageDataStr);
+            socket.on("leaveChatroom", function (dataStr: string) {
+                try {
+                    const data: IEditChatroomData = JSON.parse(dataStr);
+                    const chatroomId: string = chatroomManager.getChatroomIdFromName(data.chatroomName);
 
-                const date = new Date();
-                const timestamp = date.getTime();
+                    const response = {
+                        isChatroomLeaved: chatroomManager.removeUserFromChatroom(chatroomId, data)
+                    };
 
-                messageData.createdAt = timestamp;
-                const response = JSON.stringify(messageData);
+                    if (response.isChatroomLeaved) {
+                        socket.leave(chatroomId);
+                        console.log(socket.id + " leaved chatroom " + data.chatroomName);
+                    } else {
+                        console.log(socket.id + " failed to leave chatroom " + data.chatroomName);
+                    }
 
-                console.log(`SEND_MESSAGE, response:`, response);
-
-                io.to('default_room').emit(SocketEvents.MESSAGE_SENT, response);
+                    socket.emit("leaveChatroomResponse", JSON.stringify(response));
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
             });
 
-            socket.on(SocketEvents.GET_CHATROOMS, function () {
-                console.log("Sending the chatrooms on the server: " + chatroomManager.getChatrooms());
-                socket.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatrooms());
+            socket.on("sendMessage", function (dataStr: string) {
+                try {
+                    const data: IMessageData = JSON.parse(dataStr);
+                    const chatroomId: string = chatroomManager.getChatroomIdFromName(data.chatroomName);
+
+                    // Update timestamp
+                    const date = new Date();
+                    data.createdAt = date.getTime().toString();
+
+                    const response = {
+                        isMessageSent: chatroomManager.sendMessage(chatroomId, data)
+                    };
+
+                    if (response.isMessageSent) {
+                        console.log(socket.id + " send message " + data.message + "in chatroom " + data.chatroomName);
+                        io.to(chatroomId).emit("messageSent", JSON.stringify(data));
+                    } else {
+                        console.log(socket.id + " failed to send message " + data.message);
+                    }
+
+                    socket.emit("sendMessageResponse", JSON.stringify(response));
+
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
             });
 
-            socket.on(SocketEvents.GET_CHATROOM_CLIENTS, function (roomName: string) {
-                console.log("Sending the chatroom " + roomName + " clients: " + chatroomManager.getChatroomClients(roomName));
-                socket.emit(SocketEvents.GET_CHATROOM_CLIENTS_RESPONSE, chatroomManager.getChatroomClients(roomName));
+
+            socket.on("getChatrooms", function () {
+                console.log("Sending the chatrooms on the server: " + chatroomManager.getChatroomsSERI());
+                socket.emit(SocketEvents.GET_CHATROOMS_RESPONSE, chatroomManager.getChatroomsSERI());
+            });
+
+
+            socket.on("getClientsInChatroom", function (dataStr: string) {
+                try {
+                    const data: IEditChatroomData = JSON.parse(dataStr);
+                    const chatroomId: string = chatroomManager.getChatroomIdFromName(data.chatroomName);
+                    console.log("Sending the chatroom " + data.chatroomName + " clients: " + chatroomManager.getChatroomClients(chatroomId));
+                    socket.emit("getClientsInChatroomResponse", chatroomManager.getChatroomClients(chatroomId));
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
             });
 
             socket.on('disconnect', function () {
