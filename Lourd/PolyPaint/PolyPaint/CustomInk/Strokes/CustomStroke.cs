@@ -44,7 +44,6 @@ namespace PolyPaint.CustomInk
 
             // Quelle est la width?
             // Les coordonnees sont bien celles du coin en haut a gauche?
-            double width = 100.0;
             double height = 100.0;
             double rotation = 0.0;
             //shapeStyle = new ShapeStyle(new Coordinates(lastPoint.X, lastPoint.Y), width, height, rotation);
