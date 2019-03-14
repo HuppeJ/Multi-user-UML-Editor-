@@ -139,6 +139,17 @@ namespace PolyPaint.CustomInk
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
         {
             base.OnSelectionResizing(e);
+
+            // Update selected strokes height and width
+            StrokeCollection strokes = GetSelectedStrokes();
+            double heightRatio = e.NewRectangle.Height / e.OldRectangle.Height;
+            double widthRatio = e.NewRectangle.Width / e.OldRectangle.Width;
+
+            foreach(CustomStroke stroke in strokes)
+            {
+                stroke.shapeStyle.width *= widthRatio;
+                stroke.shapeStyle.height *= heightRatio;
+            }
         }
 
         protected override void OnSelectionResized(EventArgs e)
@@ -214,7 +225,7 @@ namespace PolyPaint.CustomInk
                 double y = point.Y;
 
                 ClassStroke classStroke = (ClassStroke)stroke;
-                ClassTextBox sp = new ClassTextBox(classStroke.name, classStroke.attributes, classStroke.methods);
+                ClassTextBox sp = new ClassTextBox(classStroke);
                 this.Children.Add(sp);
                 InkCanvas.SetTop(sp, y);
                 InkCanvas.SetLeft(sp, x);

@@ -25,18 +25,20 @@ namespace PolyPaint.CustomInk
         {
             guid = Guid.NewGuid();
             name = "This is a stroke";
+            shapeStyle = new ShapeStyle();
 
-            int width = 100;
-            if (type == 0) width = 150;
+            shapeStyle.height = 100;
+            shapeStyle.width = 100;
+            if (type == 0) shapeStyle.width = 175;
 
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             while (StylusPoints.Count > 1)
             {
                 StylusPoints.RemoveAt(0);
             }
-            for (double i = lastPoint.X; i < width + lastPoint.X; i += 0.5)
+            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
             {
-                for (double j = lastPoint.Y; j < 100 + lastPoint.Y; j += 0.5)
+                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
                 {
                     StylusPoints.Add(new StylusPoint(i, j));
                 }
