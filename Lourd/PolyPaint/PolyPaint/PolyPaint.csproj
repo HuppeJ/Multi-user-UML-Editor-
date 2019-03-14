@@ -200,6 +200,7 @@
     <Compile Include="Templates\AnchorPoint.cs" />
     <Compile Include="Templates\BasicShape.cs" />
     <Compile Include="Templates\Canvas.cs" />
+    <Compile Include="Templates\CanvasSocketCommunication.cs" />
     <Compile Include="Templates\ClassShape.cs" />
     <Compile Include="Templates\Coordinates.cs" />
     <Compile Include="Templates\Link.cs" />
@@ -348,6 +349,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Connected Services\" />
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

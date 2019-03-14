@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -25,8 +26,6 @@ namespace PolyPaint.VueModeles
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private Editeur editeur = new Editeur();
-
-        private DrawingService drawingService;
 
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
@@ -96,10 +95,9 @@ namespace PolyPaint.VueModeles
         {
             // On écoute pour des changements sur le modèle. Lorsqu'il y en a, EditeurProprieteModifiee est appelée.
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
-
-            drawingService = new DrawingService();
-            //drawingService.AddStroke += AddStroke;
-            drawingService.UpdateStroke += UpdateStroke;
+            
+            // DrawingService.AddStroke += AddStroke;
+            // drawingService.UpdateStroke += UpdateStroke;
 
             // On initialise les attributs de dessin avec les valeurs de départ du modèle.
             AttributsDessin = new DrawingAttributes
@@ -128,7 +126,6 @@ namespace PolyPaint.VueModeles
             //Command for sending editor actions to server
             SendNewStrokeCommand = new RelayCommand<CustomStroke>(SendNewStroke);
             editeur.AddStrokeFromModel += OnStrokeCollectedEvent;
-
         }
 
         /// <summary>
@@ -154,8 +151,9 @@ namespace PolyPaint.VueModeles
             ShapeStyle shapeStyle = new ShapeStyle();
             shapeStyle.coordinates = coordinates;
 
-            drawingService.UpdateShape(stroke.guid.ToString(), stroke.type, "strokeName", shapeStyle, new List<string>(), new List<string>());
+            DrawingService.UpdateShape(stroke.guid.ToString(), stroke.type, "strokeName", shapeStyle, new List<string>(), new List<string>());
         }
+
 
         //private void AddStroke(Stroke newStroke)
         //{
@@ -209,6 +207,13 @@ namespace PolyPaint.VueModeles
                 AjusterPointe();
             } */               
         }
+        
+        /*
+        private void AddStroke(Stroke stroke)
+        {
+            editeur.AddStrokeFromService((CustomStroke)stroke);
+        }
+        */
 
         /// <summary>
         /// C'est ici qu'est défini la forme de la pointe, mais aussi sa taille (TailleTrait).
@@ -228,7 +233,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _initializeDrawingCommand ?? (_initializeDrawingCommand = new RelayCommand<object>(drawingService.Initialize));
+                return _initializeDrawingCommand ?? (_initializeDrawingCommand = new RelayCommand<object>(DrawingService.Initialize));
             }
         }
         #endregion

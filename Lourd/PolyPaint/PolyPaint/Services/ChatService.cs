@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Script.Serialization;
 using PolyPaint.Modeles;
 using PolyPaint.Templates;
 
@@ -9,6 +10,7 @@ namespace PolyPaint.Services
     {
         public event Action<ChatMessageTemplate> NewMessage;
         public event Action<RoomList> GetChatrooms;
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer();
 
         public ChatService()
         {

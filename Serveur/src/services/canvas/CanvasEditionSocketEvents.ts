@@ -21,7 +21,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.isFormCreated) {
                         console.log(socket.id + " created form " + data.forms[0]);
-                        io.to(canvasRoomId).emit("formCreated", data);
+                        io.to(canvasRoomId).emit("formCreated", JSON.stringify(data));
                     } else {
                         console.log(socket.id + " failed to create form " + data.forms[0]);
                     }
