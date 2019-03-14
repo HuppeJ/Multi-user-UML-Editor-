@@ -29,15 +29,16 @@ export class ItemBox extends React.Component<IItemBoxProps, IItemBoxState> {
 
     private initialiseListener() {
         this.props.socket.on(`${this.props.eventName}Response`, (data: any) => {
-            this.setState({ response: data });
+            // this.setState({ response: data });
             console.log(`${this.props.eventName}Response`);
             const temp = JSON.parse(data);
             console.log(temp);
         });
 
         this.props.socket.on(`${this.props.roomEventToListenTo}`, (data: any) => {
-            this.setState({ roomEventResponse: data });
             const temp = JSON.parse(data);
+
+            // this.setState({ roomEventResponse: JSON.stringify(temp) });
             console.log(`${this.props.roomEventToListenTo}`);
             console.log(temp);
         });

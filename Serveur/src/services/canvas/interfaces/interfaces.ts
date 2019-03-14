@@ -18,12 +18,6 @@ export interface IUpdateFormsData {
     forms: any[], // IBasicShape || IClassShape
 }
 
-export interface IEditFormsData {
-    username: string,
-    canevasName: string,  
-    formsId: string[],
-}
-
 export interface IUpdateLinksData {
     username: string,
     canevasName: string,  
