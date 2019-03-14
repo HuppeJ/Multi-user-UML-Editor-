@@ -10,11 +10,10 @@ export default class ChatroomManager {
         return `${CHAT_ROOM_ID}-${chatroomName}`;
     }
 
-    public addChatroom(chatroomName: string, socketId: any) {
-        if (!this.isChatroom(chatroomName)) {
-            const chatroom = new Chatroom(chatroomName);
-            chatroom.addUser(socketId);
-            this.chatrooms.set(chatroomName, chatroom);
+    public addChatroom(chatroomId: string, socketId: any) {
+        if (!this.isChatroom(chatroomId)) {
+            const chatroom = new Chatroom(chatroomId);
+            this.chatrooms.set(chatroomId, chatroom);
             return true;
         }
         return false;
