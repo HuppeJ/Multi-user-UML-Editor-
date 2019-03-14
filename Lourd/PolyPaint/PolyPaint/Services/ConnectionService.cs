@@ -17,7 +17,7 @@ namespace PolyPaint.Services
 
         protected JavaScriptSerializer serializer;
         //private string url = "https://projet-3-228722.appspot.com";
-        private static string url = "http://localhost:8080";
+        private static string url = "http://localhost:5020";
         protected static Socket socket;
 
         public ConnectionService()
