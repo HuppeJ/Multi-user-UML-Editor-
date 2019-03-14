@@ -24,7 +24,7 @@ namespace PolyPaint.VueModeles
         private IDialogService dialogService;
         private TaskFactory ctxTaskFactory;
 
-        private string _userName = "aa";
+        private string _userName = "g";
         public string username
         {
             get { return _userName; }
