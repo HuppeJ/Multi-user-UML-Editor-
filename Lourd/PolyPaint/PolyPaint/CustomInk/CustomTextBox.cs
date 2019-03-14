@@ -13,13 +13,13 @@ namespace PolyPaint.CustomInk
             AcceptsReturn = true;
         }
 
-        public CustomTextBox(string name) : base()
+        public CustomTextBox(string name, double width, double height) : base()
         {
             FontSize = 12;
             Text = name;
             BorderThickness = new Thickness(1);
-            Width = 150;
-            MaxWidth = 150;
+            Width = width;
+            Height = height;
             TextWrapping = TextWrapping.Wrap;
             AcceptsReturn = true;
         }

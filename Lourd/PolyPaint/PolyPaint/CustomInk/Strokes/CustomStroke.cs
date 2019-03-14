@@ -30,9 +30,7 @@ namespace PolyPaint.CustomInk
             Coordinates coordinates = new Coordinates(lastPoint.X, lastPoint.Y);
 
             shapeStyle = new ShapeStyle(coordinates,100,100,0,"black",0,"none");
-
             if (type == 0) shapeStyle.width = 150;
-
 
             while (StylusPoints.Count > 1)
             {
