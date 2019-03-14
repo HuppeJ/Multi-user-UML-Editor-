@@ -4,7 +4,7 @@ import { mapToObj } from "../../../utils/mapToObj";
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
     public selectedForms: any;  // selectedForms is a Map : [key: formId, value: username]
-    public selectedLinks: any;  // selectedLinks is a Map : [key: formId, value: username]
+    public selectedLinks: any;  // selectedLinks is a Map : [key: linkId, value: username]
     public canvasSelected: boolean;  // selectedLinks is a Map : [key: formId, value: username]
 
     constructor(public canvas: ICanevas) {

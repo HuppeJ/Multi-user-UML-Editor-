@@ -45,7 +45,7 @@ export default class CanvasGallerySocketEvents {
                     const data: IEditGalleryData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
-                    socket.emit("getCanvasResponse", canvasManager.getCanvasRoomSERI(canvasRoomId));
+                    socket.emit("getCanvasResponse", canvasManager.getCanvasSERI(canvasRoomId));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }

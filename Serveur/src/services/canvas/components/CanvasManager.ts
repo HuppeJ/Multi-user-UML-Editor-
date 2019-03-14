@@ -239,9 +239,11 @@ export default class CanvasManager {
         return canvasRoom.getSelectedFormsSERI();
     }
 
-    public getCanvasRoomSERI(canvasRoomId: string): string {
+    public getCanvasSERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        return JSON.stringify(canvasRoom);
+        return JSON.stringify({
+            canvas: canvasRoom.canvas
+        });
     }
 
     public getCanvasRoomsSERI(): string {
