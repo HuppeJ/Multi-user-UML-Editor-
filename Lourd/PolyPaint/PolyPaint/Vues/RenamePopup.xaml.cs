@@ -28,10 +28,9 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
             DataContext = this;
-            windowDrawing = Parent as WindowDrawing;
         }
 
-        private string _label = "Enter your new text";
+        private string _label = "";
         public string Label
         {
             get { return _label; }
@@ -57,6 +56,8 @@ namespace PolyPaint.Vues
             {
                 windowDrawing.Rename(_label);
             }
+            _label = "";
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));
         }
 
         protected void NotifyPropertyChanged(string info)

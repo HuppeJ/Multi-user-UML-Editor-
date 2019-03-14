@@ -7,19 +7,26 @@ using System.Windows.Media.Imaging;
 using System.Globalization;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
+using System.Collections.Generic;
 
 namespace PolyPaint.CustomInk
 {
     public class ClassStroke : CustomStroke
     {
+        public List<string> attributes;
+        public List<string> methods;
+
         public ClassStroke(StylusPointCollection pts) : base(pts)
         {
             type = (int)StrokeTypes.CLASS_SHAPE;
+            attributes = new List<string>();
+            methods = new List<string>();
         }
 
-        public ClassStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
+        public ClassStroke(ClassShape classShape, StylusPointCollection pts) : base(pts, classShape)
         {
-            
+            attributes = classShape.attributes;
+            methods = classShape.methods;
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
@@ -33,17 +40,6 @@ namespace PolyPaint.CustomInk
                 throw new ArgumentNullException("drawingAttributes");
             }
             DrawingAttributes originalDa = drawingAttributes.Clone();
-            SolidColorBrush brush2 = new SolidColorBrush(drawingAttributes.Color);
-            brush2.Freeze();
-            // drawingContext.DrawRectangle(brush2, null, new Rect(GetTheLeftTopPoint(), GetTheRightBottomPoint()));
-
-            FormattedText formattedText = new FormattedText(
-                "Hello",
-                CultureInfo.GetCultureInfo("en-us"),
-                FlowDirection.LeftToRight,
-                new Typeface("Verdana"),
-                32,
-                Brushes.Black);
 
             Rect bounds = GetBounds();
             double x = (bounds.Right + bounds.Left) / 2;
@@ -54,10 +50,6 @@ namespace PolyPaint.CustomInk
             transform.Children.Add(new RotateTransform(rotation, x, y));
 
             drawingContext.PushTransform(transform);
-
-            drawingContext.DrawText(formattedText, GetTheFirstPoint());
-
         }
-
     }
 }

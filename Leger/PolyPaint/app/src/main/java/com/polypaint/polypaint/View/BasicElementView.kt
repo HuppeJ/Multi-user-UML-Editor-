@@ -71,7 +71,7 @@ open class BasicElementView: RelativeLayout {
 
         var parent = this.parent as RelativeLayout
         parent.dispatchSetSelected(false)
-        isSelected = true
+        isSelected = false
     }
 
     override fun setSelected(selected: Boolean) {
@@ -245,8 +245,19 @@ open class BasicElementView: RelativeLayout {
                                 canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
                                 canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
 
-//                                socket?.emit(SocketConstants.CREATE_LINK, LinksUpdateEvent(username, canevas.name, links))
-//                                socket?.emit(SocketConstants.UPDATE_FORMS, FormsUpdateEvent(username, canevas.name, formsToUpdate))
+                                //Log.d("createLink", linkShape)
+                                var linkObj: String =""
+                                val gson = Gson()
+                                val linkUpdate: LinksUpdateEvent = LinksUpdateEvent(username, canevas.name, links)
+                                linkObj = gson.toJson(linkUpdate)
+                                Log.d("emitingCreateLink", linkObj)
+
+                                var formsObj =""
+                                val fromsUpdate: FormsUpdateEvent = FormsUpdateEvent(username, canevas.name, formsToUpdate)
+                                formsObj = gson.toJson(fromsUpdate)
+                                Log.d("emitingUpdateForms", formsObj)
+                                socket?.emit(SocketConstants.CREATE_LINK, linkObj)
+                                socket?.emit(SocketConstants.UPDATE_FORMS, formsObj)
 
                                 parentView.addView(link)
                             }
@@ -374,6 +385,7 @@ open class BasicElementView: RelativeLayout {
                                         linkShape.path.last().x += deltaX
                                         linkShape.path.last().y += deltaY
                                         linkView.requestLayout()
+
                                     }
                                 }
                             }
@@ -391,6 +403,7 @@ open class BasicElementView: RelativeLayout {
                                         linkShape.path.first().x += deltaX
                                         linkShape.path.first().y += deltaY
                                         linkView.requestLayout()
+
                                     }
                                 }
                             }
@@ -407,6 +420,8 @@ open class BasicElementView: RelativeLayout {
                         drawingActivity.syncCanevasFromLayout()
                     }
                     emitUpdate()
+                    emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksFrom!!)
+                    emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksTo!!)
                     pointerFinger1 = -1
                 }
                 MotionEvent.ACTION_POINTER_UP ->{
@@ -532,7 +547,7 @@ open class BasicElementView: RelativeLayout {
     }
 
     private fun emitUpdate(){
-        val response: String = this.createResponseObject()
+        val response: String = this.createFormsUpdateEvent()
 
         if(response !="") {
             Log.d("emitingUpdate", response)
@@ -541,7 +556,7 @@ open class BasicElementView: RelativeLayout {
     }
 
     private fun emitSelection(){
-        val response: String = this.createResponseObject()
+        val response: String = this.createFormsUpdateEvent()
 
         if(response !="") {
             Log.d("emitingSelection", response)
@@ -550,7 +565,7 @@ open class BasicElementView: RelativeLayout {
     }
 
     private fun emitDelete(){
-        val response: String = this.createResponseObject()
+        val response: String = this.createFormsUpdateEvent()
 
         if(response !="") {
             Log.d("emitingDelete", response)
@@ -558,16 +573,40 @@ open class BasicElementView: RelativeLayout {
         }
     }
 
-    private fun createResponseObject(): String{
+    private fun createFormsUpdateEvent(): String{
         val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(this))
-
+        val formsArray: ArrayList<BasicShape> = ArrayList()
         var obj: String =""
         if(basicShape !=null) {
+            formsArray.add(basicShape)
             val gson = Gson()
-            val response: DrawingActivity.Response =DrawingActivity.Response(UserHolder.getInstance().username, basicShape)
+            val response: FormsUpdateEvent = FormsUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, formsArray)
             obj = gson.toJson(response)
         }
         return obj
+    }
+
+    private fun createLinksUpdateEvent(linksArray: ArrayList<Link>): String{
+        var obj: String =""
+        if(!linksArray.isEmpty()) {
+            val gson = Gson()
+            val response: LinksUpdateEvent = LinksUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, linksArray)
+            obj = gson.toJson(response)
+        }
+        return obj
+    }
+
+    private fun emitLinkUpdate(linksIdArray: ArrayList<String?>){
+        val linksArray = ArrayList<Link>()
+        for(id in linksIdArray) {
+            linksArray.add(ViewShapeHolder.getInstance().canevas.findLink(id!!)!!)
+        }
+        val response: String = this.createLinksUpdateEvent(linksArray)
+
+        if(response !="") {
+            Log.d("emitingUpdateLinks", response)
+            socket?.emit(SocketConstants.UPDATE_LINKS, response)
+        }
     }
 
 }
