@@ -47,9 +47,11 @@ class LoginActivity:Activity(){
             throw RuntimeException(e)
         }
         socket = app.socket
-        socket?.connect()
+        socket?.connect() // TODO : Vérifier si on peut l'enlever parce que IO.socket le fait déjà
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
+        // TODO remove, it's temporary for testing
+        socket?.emit(SocketConstants.RESET_SERVER_STATE)
 
         setContentView(R.layout.activity_login)
 

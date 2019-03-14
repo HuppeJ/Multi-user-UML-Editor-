@@ -10,6 +10,11 @@ export default class CanvasManager {
         this.canvasRooms = new Map<string, CanvasRoom>();
     }
 
+    public resetServerState(): boolean {
+        this.canvasRooms.clear();
+        return true;
+    }
+
     public getCanvasRoomIdFromName(canvasName: string): string {
         return `${CANVAS_ROOM_ID}_${canvasName}`;
     }

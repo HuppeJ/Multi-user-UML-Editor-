@@ -10,6 +10,18 @@ export default class CanvasSocketEvents {
         io.on("connection", function (socket: any) {
             console.log(socket.id + " connected to Canvas server");
 
+            socket.on("resetServerState", function () {
+                try {
+                    const response = {
+                        isStateReset: canvasManager.resetServerState()
+                    };
+    
+                    socket.emit("resetServerStateResponse", JSON.stringify(response));
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
+
             socket.on("createCanvas", function (dataStr: string) {
                 try {
                     console.log(dataStr);
