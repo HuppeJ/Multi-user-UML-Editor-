@@ -146,7 +146,7 @@ namespace PolyPaint.CustomInk
             return tmpPoint.ToPoint();
         }
 
-        public BasicShape GetBasicShape()
+        public virtual BasicShape GetBasicShape()
         {
             BasicShape basicShape = new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
             return basicShape;

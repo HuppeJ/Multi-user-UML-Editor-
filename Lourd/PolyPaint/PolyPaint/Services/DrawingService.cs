@@ -4,15 +4,18 @@ using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace PolyPaint.Services
 {
     class DrawingService: ConnectionService
     {
         public static event Action<string> JoinCanvasRoom;
-        public static event Action<Stroke> AddStroke;
+        public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<CustomStroke> UpdateStroke;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -63,11 +66,12 @@ namespace PolyPaint.Services
             {
                 UpdateFormsData response = serializer.Deserialize<UpdateFormsData>((string)data);
                 CustomStroke customStroke = createStroke(response.forms[0]);
-                AddStroke?.Invoke(customStroke);
+                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
+                Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             });
         }
 
-        public static void CreateCanvas(Canvas canvas)
+        public static void CreateCanvas(Templates.Canvas canvas)
         {
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
             socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
