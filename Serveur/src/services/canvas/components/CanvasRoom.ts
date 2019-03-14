@@ -44,6 +44,10 @@ export default class CanvasRoom {
         return this.canvas.author === username;
     }
 
+    public isPasswordValid(data: IEditGalleryData) {
+        return this.canvas.password === data.password;
+    }
+
     /***********************************************
     * Functions related to Forms
     ************************************************/

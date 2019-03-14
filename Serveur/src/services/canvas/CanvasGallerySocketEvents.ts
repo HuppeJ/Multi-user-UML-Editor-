@@ -7,6 +7,23 @@ export default class CanvasGallerySocketEvents {
         io.on('connection', function (socket: any) {
             console.log(socket.id + " connected to Canvas GallerySocketEvents");
 
+            socket.on("accessCanvas", function (dataStr: string) { 
+                try {
+                    const data: IEditGalleryData = JSON.parse(dataStr);
+
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+    
+                    const response = {
+                        isPasswordValid: canvasManager.accessCanvas(canvasRoomId, data),
+                        canvasName: data.canevasName
+                    };
+    
+                    socket.emit("accessCanvasResponse", JSON.stringify(response));    
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
+
             socket.on("getPublicCanvas", function () { 
                 try {
                     socket.emit("getPublicCanvasResponse", canvasManager.getPublicCanvasSERI());

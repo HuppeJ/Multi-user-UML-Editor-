@@ -10,13 +10,22 @@ export default class CanvasManager {
         this.canvasRooms = new Map<string, CanvasRoom>();
     }
 
+    public getCanvasRoomIdFromName(canvasName: string): string {
+        return `${CANVAS_ROOM_ID}_${canvasName}`;
+    }
+
     public resetServerState(): boolean {
         this.canvasRooms.clear();
         return true;
     }
 
-    public getCanvasRoomIdFromName(canvasName: string): string {
-        return `${CANVAS_ROOM_ID}_${canvasName}`;
+    public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.isPasswordValid(data);
     }
 
     public addCanvasRoom(canvasRoomId: string, data: IEditCanevasData) {
