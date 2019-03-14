@@ -115,6 +115,7 @@ namespace PolyPaint.CustomInk
                 ConnectionService.username, 1, null, new List<BasicShape>(), new List<Link>(), new int[] { 1, 1 });
             DrawingService.CreateCanvas(canvas);
             DrawingService.JoinCanvas("newCanvas");
+
             DrawingService.AddStroke += OnRemoteStroke;
         }
 
