@@ -2,8 +2,10 @@ package com.polypaint.polypaint.Activity
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.drawable.shapes.Shape
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -23,10 +25,7 @@ import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Fragment.EnterDrawingPasswordDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
-import com.polypaint.polypaint.Model.BasicShape
-import com.polypaint.polypaint.Model.Canevas
-import com.polypaint.polypaint.Model.Link
-import com.polypaint.polypaint.Model.Room
+import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -145,7 +144,11 @@ class GalleryActivity:AppCompatActivity(){
 
     private fun requestPrivateCanevas(){
         canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", ArrayList<BasicShape>(), ArrayList<Link>()))
-        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", ArrayList<BasicShape>(), ArrayList<Link>()))
+        val bShapes : ArrayList<BasicShape> = ArrayList<BasicShape>()
+        val sStyle : ShapeStyle = ShapeStyle(Coordinates(0.0,0.0),300.0,300.0,0.0,"white",0,"white")
+        var bShape : BasicShape = BasicShape("idS1", 10, "defaults1", sStyle,ArrayList<String?>(), ArrayList<String?>())
+        bShapes.add(bShape)
+        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", bShapes, ArrayList<Link>()))
         canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"abc", ArrayList<BasicShape>(), ArrayList<Link>()))
 
     }

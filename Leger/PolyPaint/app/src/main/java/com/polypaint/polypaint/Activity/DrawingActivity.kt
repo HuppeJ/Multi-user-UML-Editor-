@@ -37,6 +37,7 @@ import com.polypaint.polypaint.View.ImageElementView
 import com.polypaint.polypaint.View.LinkView
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
+import kotlinx.android.synthetic.main.item_drawing.*
 import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -89,6 +90,8 @@ class DrawingActivity : AppCompatActivity(){
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
+        initializeViewFromCanevas()
+
         add_button.setOnClickListener {
             addOnCanevas(ShapeTypes.DEFAULT)
         }
@@ -138,9 +141,19 @@ class DrawingActivity : AppCompatActivity(){
         sync_layout_from_canevas.setOnClickListener {
             syncLayoutFromCanevas()
         }
+
+
     }
 
+    private fun initializeViewFromCanevas(){
+        //Shape
+        Log.d("init",ViewShapeHolder.getInstance().canevas.name)
+        for(shape in ViewShapeHolder.getInstance().canevas.shapes){
+            addOnCanevas(shape)
+        }
+        //TODO: LINKS
 
+    }
     override fun onResume() {
         super.onResume()
         val app = application as PolyPaint
