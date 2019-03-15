@@ -515,13 +515,79 @@ open class BasicElementView: RelativeLayout {
                 oldFrameRawY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> {
-                val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
-                val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
+                val deltaX = event.rawX - oldFrameRawX
+                val deltaY = event.rawY - oldFrameRawY
+                val newWidth = borderResizableLayout.width + deltaX
+                val newHeight = borderResizableLayout.height + deltaY
 
                 resize(newWidth.toInt(), newHeight.toInt())
 
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
+
+
+
+                val basicShapeId = ViewShapeHolder.getInstance().map[this]
+                if(basicShapeId != null){
+                    val linksTo = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksTo
+                    if(linksTo != null){
+                        for(linkId in linksTo){
+                            if(linkId != null) {
+                                val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                                val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+                                if (linkView != null && linkShape != null) {
+//                                        linkView.end.x += deltaX
+//                                        linkView.end.y += deltaY
+                                    when (linkShape.to.anchor){
+                                        AnchorPoints.LEFT.ordinal->linkShape.path.last().y += deltaY / 2
+                                        AnchorPoints.TOP.ordinal->linkShape.path.last().x +=deltaX / 2
+                                        AnchorPoints.RIGHT.ordinal->{
+                                            linkShape.path.last().x += deltaX
+                                            linkShape.path.last().y += deltaY / 2
+                                        }
+                                        AnchorPoints.BOTTOM.ordinal ->{
+                                            linkShape.path.last().x += deltaX / 2
+                                            linkShape.path.last().y += deltaY
+                                        }
+                                    }
+                                    linkView.requestLayout()
+                                }
+                            }
+                        }
+                    }
+                    val linksFrom = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
+                    if(linksFrom != null){
+                        for(linkId in linksFrom){
+                            if(linkId != null) {
+                                val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                                val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+                                if (linkView != null && linkShape != null) {
+//                                        linkView.start.x += deltaX
+//                                        linkView.start.y += deltaY
+
+                                    when (linkShape.to.anchor){
+                                        AnchorPoints.LEFT.ordinal->linkShape.path.first().y += deltaY / 2
+                                        AnchorPoints.TOP.ordinal->linkShape.path.first().x +=deltaX / 2
+                                        AnchorPoints.RIGHT.ordinal -> {
+                                            linkShape.path.first().x += deltaX
+                                            linkShape.path.first().y += deltaY / 2
+                                        }
+                                        AnchorPoints.BOTTOM.ordinal ->{
+                                            linkShape.path.first().x += deltaX / 2
+                                            linkShape.path.first().y += deltaY
+                                        }
+                                    }
+                                    linkView.requestLayout()
+
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+
             }
             MotionEvent.ACTION_UP -> {
                 val activity: AppCompatActivity = context as AppCompatActivity
