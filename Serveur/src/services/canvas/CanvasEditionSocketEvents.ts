@@ -29,7 +29,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("createFormResponse", JSON.stringify(response));
 
                     // TODO à enlever
-                    io.to(CanvasTestRoom).emit("formCreated", data);
+                    io.to(CanvasTestRoom).emit("formCreated", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -46,7 +46,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areFormsUpdated) {
                         console.log(socket.id + " updated forms " + data.forms);
-                        io.to(canvasRoomId).emit("formsUpdated", data);
+                        io.to(canvasRoomId).emit("formsUpdated", dataStr);
                     } else {
                         console.log(socket.id + " failed to update forms " + data.forms);
                     }
@@ -55,7 +55,7 @@ export default class CanvasEditionSocketEvents {
 
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("formsUpdated", data);
+                    io.to(CanvasTestRoom).emit("formsUpdated", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -98,7 +98,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areFormsSelected) {
                         console.log(socket.id + " selected forms " + data.forms);
-                        io.to(canvasRoomId).emit("formsSelected", data);
+                        io.to(canvasRoomId).emit("formsSelected", dataStr);
                     } else {
                         console.log(socket.id + " failed to select forms " + data.forms);
                     }
@@ -106,7 +106,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("selectFormsResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("formsSelected", data);
+                    io.to(CanvasTestRoom).emit("formsSelected", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -123,7 +123,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areFormsDeselected) {
                         console.log(socket.id + " deselected forms " + data.forms);
-                        io.to(canvasRoomId).emit("formsDeselected", data);
+                        io.to(canvasRoomId).emit("formsDeselected", dataStr);
                     } else {
                         console.log(socket.id + " failed to deselect forms " + data.forms);
                     }
@@ -131,7 +131,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("deselectFormsResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("formsDeselected", data);
+                    io.to(CanvasTestRoom).emit("formsDeselected", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -161,7 +161,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.isLinkCreated) {
                         console.log(socket.id + " created link " + data.links[0]);
-                        io.to(canvasRoomId).emit("linkCreated", data);
+                        io.to(canvasRoomId).emit("linkCreated", dataStr);
                     } else {
                         console.log(socket.id + " failed to create link " + data.links[0]);
                     }
@@ -169,7 +169,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("createLinkResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("linkCreated", data);
+                    io.to(CanvasTestRoom).emit("linkCreated", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -186,7 +186,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areLinksUpdated) {
                         console.log(socket.id + " updated links " + data.links);
-                        io.to(canvasRoomId).emit("linksUpdated", data);
+                        io.to(canvasRoomId).emit("linksUpdated", dataStr);
                     } else {
                         console.log(socket.id + " failed to update links " + data.links);
                     }
@@ -194,7 +194,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("updateLinksResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("linksUpdated", data);
+                    io.to(CanvasTestRoom).emit("linksUpdated", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -211,7 +211,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areLinksDeleted) {
                         console.log(socket.id + " deleted links " + data.linksId);
-                        io.to(canvasRoomId).emit("linksDeleted", data);
+                        io.to(canvasRoomId).emit("linksDeleted", dataStr);
                     } else {
                         console.log(socket.id + " failed to delete links " + data.linksId);
                     }
@@ -219,7 +219,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("deleteLinksResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("linksDeleted", data);
+                    io.to(CanvasTestRoom).emit("linksDeleted", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -236,7 +236,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areLinksSelected) {
                         console.log(socket.id + " selected links " + data.linksId);
-                        io.to(canvasRoomId).emit("linksSelected", data);
+                        io.to(canvasRoomId).emit("linksSelected", dataStr);
                     } else {
                         console.log(socket.id + " failed to select links " + data.linksId);
                     }
@@ -244,7 +244,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("selectLinksResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("linksSelected", data);
+                    io.to(CanvasTestRoom).emit("linksSelected", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -261,7 +261,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areLinksDeselected) {
                         console.log(socket.id + " deselected links " + data.linksId);
-                        io.to(canvasRoomId).emit("linksDeselected", data);
+                        io.to(canvasRoomId).emit("linksDeselected", dataStr);
                     } else {
                         console.log(socket.id + " failed to deselect links " + data.linksId);
                     }
@@ -269,7 +269,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("deselectLinksResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("linksDeselected", data);
+                    io.to(CanvasTestRoom).emit("linksDeselected", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -299,7 +299,7 @@ export default class CanvasEditionSocketEvents {
 
 
                     // TODO à enlever
-                    io.to(CanvasTestRoom).emit("canvasReinitialized", data);
+                    io.to(CanvasTestRoom).emit("canvasReinitialized", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -317,7 +317,7 @@ export default class CanvasEditionSocketEvents {
                     if (response.isCanvasResized) {
                         console.log(socket.id + " resized canvas " + data.canevas);
                         // TODO Est-ce qu'on voudrait que le serveur renvoit un canevas de base (vide avec des dimessions prédéfinies)
-                        io.to(canvasRoomId).emit("canvasResized", data);
+                        io.to(canvasRoomId).emit("canvasResized", dataStr);
                     } else {
                         console.log(socket.id + " failed to resize canvas " + data.canevas.name);
                     }
@@ -325,7 +325,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("resizeCanvasResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("canvasResized", data);
+                    io.to(CanvasTestRoom).emit("canvasResized", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -342,7 +342,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.isCanvasSelected) {
                         console.log(socket.id + " selected canvas " + data.canevasName);
-                        io.to(canvasRoomId).emit("canvasSelected", data);
+                        io.to(canvasRoomId).emit("canvasSelected", dataStr);
                     } else {
                         console.log(socket.id + " failed to select canvas " + data.canevasName);
                     }
@@ -350,7 +350,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("selectCanvasResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("canvasSelected", data);
+                    io.to(CanvasTestRoom).emit("canvasSelected", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -367,7 +367,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.isCanvasDeselected) {
                         console.log(socket.id + " deselected canvas " + data.canevasName);
-                        io.to(canvasRoomId).emit("canvasDeselected", data);
+                        io.to(canvasRoomId).emit("canvasDeselected", dataStr);
                     } else {
                         console.log(socket.id + " failed to deselect canvas " + data.canevasName);
                     }
@@ -375,7 +375,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("deselectCanvasResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("canvasDeselected", data);
+                    io.to(CanvasTestRoom).emit("canvasDeselected", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
