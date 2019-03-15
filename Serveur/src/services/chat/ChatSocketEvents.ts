@@ -18,13 +18,13 @@ export default class ChatSocketEvents {
 
                     if (response.isCreated) {
                         // (broadcast)
-                        io.sockets.emit("canvasCreated", chatroomManager.getChatroomsSERI());
+                        io.sockets.emit("chatroomCreated", chatroomManager.getChatroomsSERI());
                         console.log(socket.id + " created  chatroom " + data.chatroomName);
                     } else {
                         console.log(socket.id + " failed to create chatroom " + data.chatroomName);
                     }
 
-                    socket.emit("createChatResponse", JSON.stringify(response));
+                    socket.emit("createChatroomResponse", JSON.stringify(response));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -47,13 +47,13 @@ export default class ChatSocketEvents {
                         // });
 
                         // (broadcast)
-                        io.sockets.emit("canvasRemoved", chatroomManager.getChatroomsSERI());
+                        io.sockets.emit("chatroomRemoved", chatroomManager.getChatroomsSERI());
                         console.log(socket.id + " removed chatroom " + data.chatroomName);
                     } else {
                         console.log(socket.id + " failed to remove chatroom " + data.chatroomName);
                     }
 
-                    socket.emit("removeChatResponse", JSON.stringify(response));
+                    socket.emit("removeChatroomResponse", JSON.stringify(response));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -142,8 +142,8 @@ export default class ChatSocketEvents {
                 try {
                     const data: IEditChatroomData = JSON.parse(dataStr);
                     const chatroomId: string = chatroomManager.getChatroomIdFromName(data.chatroomName);
-                    console.log("Sending the chatroom " + data.chatroomName + " clients: " + chatroomManager.getChatroomClients(chatroomId));
-                    socket.emit("getClientsInChatroomResponse", chatroomManager.getChatroomClients(chatroomId));
+                    console.log("Sending the chatroom " + data.chatroomName + " clients: " + chatroomManager.getChatroomClientsSERI(chatroomId));
+                    socket.emit("getClientsInChatroomResponse", chatroomManager.getChatroomClientsSERI(chatroomId));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }

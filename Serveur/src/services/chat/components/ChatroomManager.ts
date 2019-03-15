@@ -59,11 +59,18 @@ export default class ChatroomManager {
 
     public getChatroomsSERI(): string {
         return JSON.stringify({
-            canvasRooms: JSON.stringify(Array.from(this.chatrooms.keys()))
+            chatrooms: JSON.stringify(Array.from(this.chatrooms.keys()))
         });
     }
 
-    public getChatroomClients(chatroomName: string) {
-        return JSON.stringify(this.chatrooms.get(chatroomName));
+    public getChatroomClientsSERI(chatroomId: string) {
+        const chatroom: Chatroom = this.chatrooms.get(chatroomId);
+        if (chatroom) {
+            return chatroom.getConnectedUsersSERI();
+        }
+
+        return JSON.stringify({
+            connectedUsers: ""
+        });;
     }
 }
