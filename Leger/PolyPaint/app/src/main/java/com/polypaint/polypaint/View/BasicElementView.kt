@@ -545,14 +545,14 @@ open class BasicElementView: RelativeLayout {
 //                                        linkView.end.x += deltaX
 //                                        linkView.end.y += deltaY
                                     when (linkShape.to.anchor){
-                                        AnchorPoints.LEFT.ordinal->linkShape.path.last().y += deltaY / 2
-                                        AnchorPoints.TOP.ordinal->linkShape.path.last().x +=deltaX / 2
+                                        AnchorPoints.LEFT.ordinal->linkShape.path.last().y += deltaY / 2f
+                                        AnchorPoints.TOP.ordinal->linkShape.path.last().x +=deltaX / 2f
                                         AnchorPoints.RIGHT.ordinal->{
                                             linkShape.path.last().x += deltaX
-                                            linkShape.path.last().y += deltaY / 2
+                                            linkShape.path.last().y += deltaY / 2f
                                         }
                                         AnchorPoints.BOTTOM.ordinal ->{
-                                            linkShape.path.last().x += deltaX / 2
+                                            linkShape.path.last().x += deltaX / 2f
                                             linkShape.path.last().y += deltaY
                                         }
                                     }
@@ -572,14 +572,14 @@ open class BasicElementView: RelativeLayout {
 //                                        linkView.start.y += deltaY
 
                                     when (linkShape.from.anchor){
-                                        AnchorPoints.LEFT.ordinal->linkShape.path.first().y += deltaY / 2
-                                        AnchorPoints.TOP.ordinal->linkShape.path.first().x +=deltaX / 2
+                                        AnchorPoints.LEFT.ordinal->linkShape.path.first().y += deltaY / 2f
+                                        AnchorPoints.TOP.ordinal->linkShape.path.first().x +=deltaX / 2f
                                         AnchorPoints.RIGHT.ordinal -> {
                                             linkShape.path.first().x += deltaX
-                                            linkShape.path.first().y += deltaY / 2
+                                            linkShape.path.first().y += deltaY / 2f
                                         }
                                         AnchorPoints.BOTTOM.ordinal ->{
-                                            linkShape.path.first().x += deltaX / 2
+                                            linkShape.path.first().x += deltaX / 2f
                                             linkShape.path.first().y += deltaY
                                         }
                                     }
