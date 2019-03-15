@@ -27,9 +27,6 @@ namespace PolyPaint.VueModeles
         public event PropertyChangedEventHandler PropertyChanged;
         private Editeur editeur = new Editeur();
 
-        private DrawingService drawingService;
-        private Templates.Canvas canvas;
-
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 
@@ -99,7 +96,7 @@ namespace PolyPaint.VueModeles
             // On écoute pour des changements sur le modèle. Lorsqu'il y en a, EditeurProprieteModifiee est appelée.
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
             
-            DrawingService.AddStroke += AddStroke;
+            // DrawingService.AddStroke += AddStroke;
             // drawingService.UpdateStroke += UpdateStroke;
 
             // On initialise les attributs de dessin avec les valeurs de départ du modèle.
@@ -210,11 +207,13 @@ namespace PolyPaint.VueModeles
                 AjusterPointe();
             } */               
         }
-
+        
+        /*
         private void AddStroke(Stroke stroke)
         {
             editeur.AddStrokeFromService((CustomStroke)stroke);
         }
+        */
 
         /// <summary>
         /// C'est ici qu'est défini la forme de la pointe, mais aussi sa taille (TailleTrait).

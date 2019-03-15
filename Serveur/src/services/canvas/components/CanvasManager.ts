@@ -14,6 +14,20 @@ export default class CanvasManager {
         return `${CANVAS_ROOM_ID}_${canvasName}`;
     }
 
+    public resetServerState(): boolean {
+        this.canvasRooms.clear();
+        return true;
+    }
+
+    public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.isPasswordValid(data);
+    }
+
     public addCanvasRoom(canvasRoomId: string, data: IEditCanevasData) {
         if (this.canvasRooms.has(canvasRoomId)) {
             return false;
@@ -226,9 +240,11 @@ export default class CanvasManager {
         return canvasRoom.getSelectedFormsSERI();
     }
 
-    public getCanvasRoomSERI(canvasRoomId: string): string {
+    public getCanvasSERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        return JSON.stringify(canvasRoom);
+        return JSON.stringify({
+            canvas: canvasRoom.canvas
+        });
     }
 
     public getCanvasRoomsSERI(): string {

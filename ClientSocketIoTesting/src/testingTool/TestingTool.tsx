@@ -22,6 +22,8 @@ export class TestingTool extends React.Component<ITestingToolProps> {
         // CONNECT TO 
         const socketTemp = io.connect('http://localhost:5020');
         // const socketTemp = io.connect('https://projet-3-228722.appspot.com/');
+        //const socketTemp = io.connect('https://10.200.22.65:5020/');
+
         this.socket = socketTemp;
     }
 

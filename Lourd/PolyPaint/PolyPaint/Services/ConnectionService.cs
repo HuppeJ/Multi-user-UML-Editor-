@@ -14,7 +14,7 @@ namespace PolyPaint.Services
         public static event Action ConnectionReconnecting;
         public static event Action ConnectionReconnected;
         public static event Action ConnectionClosed;
-
+        
         public static string username;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();

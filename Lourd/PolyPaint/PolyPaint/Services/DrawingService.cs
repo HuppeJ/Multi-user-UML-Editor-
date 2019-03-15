@@ -1,18 +1,22 @@
-﻿using PolyPaint.CustomInk;
+﻿using Newtonsoft.Json.Linq;
+using PolyPaint.CustomInk;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace PolyPaint.Services
 {
     class DrawingService: ConnectionService
     {
         public static event Action<string> JoinCanvasRoom;
-        public static event Action<Stroke> AddStroke;
+        public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<CustomStroke> UpdateStroke;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -61,13 +65,14 @@ namespace PolyPaint.Services
 
             socket.On("formCreated", (data) =>
             {
-                UpdateFormsData response = serializer.Deserialize<UpdateFormsData>((string)data);
+                dynamic response = JObject.Parse((string)data);
                 CustomStroke customStroke = createStroke(response.forms[0]);
-                AddStroke?.Invoke(customStroke);
+                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
+                Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             });
         }
 
-        public static void CreateCanvas(Canvas canvas)
+        public static void CreateCanvas(Templates.Canvas canvas)
         {
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
             socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
@@ -104,29 +109,29 @@ namespace PolyPaint.Services
             socket.Emit("CanvasUpdateTest", serializer.Serialize(updatedShape));
         }
 
-        private static CustomStroke createStroke(BasicShape basicShape)
+        private static CustomStroke createStroke(dynamic shape)
         {
             StylusPointCollection points = new StylusPointCollection();
 
-            StylusPoint point = new StylusPoint(basicShape.shapeStyle.coordinates.x, basicShape.shapeStyle.coordinates.y);
+            StylusPoint point = new StylusPoint((double)shape.shapeStyle.coordinates.x, (double)shape.shapeStyle.coordinates.y);
             points.Add(point);
 
             CustomStroke customStroke;
-            StrokeTypes type = (StrokeTypes) basicShape.type;
+            StrokeTypes type = (StrokeTypes) shape.type;
 
             switch (type)
             {
                 case StrokeTypes.CLASS_SHAPE:
-                    customStroke = new ClassStroke((ClassShape)basicShape, points);
+                    customStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
                     break;
                 case StrokeTypes.ARTIFACT:
-                    customStroke = new ArtifactStroke(basicShape, points);
+                    customStroke = new ArtifactStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 case StrokeTypes.ACTIVITY:
-                    customStroke = new ActivityStroke(basicShape, points);
+                    customStroke = new ActivityStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 case StrokeTypes.ROLE:
-                    customStroke = new ActorStroke(basicShape, points);
+                    customStroke = new ActorStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 //case StrokeTypes.COMMENT:
                 //    customStroke = new CommentStroke(points);
@@ -135,11 +140,11 @@ namespace PolyPaint.Services
                 //    customStroke = new PhaseStroke(points);
                 //    break;
                 default:
-                    customStroke = new ClassStroke((ClassShape)basicShape, points);
+                    customStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
                     break;
 
             }
-            customStroke.guid = Guid.Parse(basicShape.id);
+            customStroke.guid = Guid.Parse((string)shape.id);
 
             return customStroke;
         }

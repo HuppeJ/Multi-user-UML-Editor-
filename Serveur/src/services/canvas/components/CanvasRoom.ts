@@ -4,7 +4,7 @@ import { mapToObj } from "../../../utils/mapToObj";
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
     public selectedForms: any;  // selectedForms is a Map : [key: formId, value: username]
-    public selectedLinks: any;  // selectedLinks is a Map : [key: formId, value: username]
+    public selectedLinks: any;  // selectedLinks is a Map : [key: linkId, value: username]
     public canvasSelected: boolean;  // selectedLinks is a Map : [key: formId, value: username]
 
     constructor(public canvas: ICanevas) {
@@ -14,15 +14,15 @@ export default class CanvasRoom {
         this.canvasSelected = false;
     }
 
-    public addUser(username: any) {
+    public addUser(username: string) {
         this.connectedUsers.add(username);
     }
 
-    public removeUser(username: any) {
+    public removeUser(username: string) {
         this.connectedUsers.delete(username);
     }
 
-    public hasUser(username: any) {
+    public hasUser(username: string) {
         return this.connectedUsers.has(username);
     }
 
@@ -42,6 +42,10 @@ export default class CanvasRoom {
 
     public isAuthorOfCanvase(username: string) {
         return this.canvas.author === username;
+    }
+
+    public isPasswordValid(data: IEditGalleryData) {
+        return this.canvas.password === data.password;
     }
 
     /***********************************************
