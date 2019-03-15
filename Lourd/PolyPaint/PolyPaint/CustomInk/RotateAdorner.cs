@@ -171,7 +171,6 @@ namespace PolyPaint.CustomInk
 
             canvas.RotateStrokesWithAngle(rotation.Angle);
 
-
             // Save the angle of the last rotation.
             lastAngle = rotation.Angle;
 

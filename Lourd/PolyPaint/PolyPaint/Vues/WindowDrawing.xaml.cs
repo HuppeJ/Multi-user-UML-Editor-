@@ -12,6 +12,7 @@ using System.Windows.Ink;
 using PolyPaint.Enums;
 using System.Windows.Shapes;
 using System.Collections.Generic;
+using PolyPaint.CustomInk.Strokes;
 
 namespace PolyPaint.Vues
 {
@@ -69,16 +70,40 @@ namespace PolyPaint.Vues
                     (CustomStroke)surfaceDessin.SelectedStrokes[0]
                 );
                 surfaceDessin.Select(new StrokeCollection { newStroke });
-
-                Path path = new Path();
-                path.Data = newStroke.GetGeometry();
-                surfaceDessin.Children.Add(path);
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
-                myAdornerLayer.Add(new AnchorPointAdorner(path, newStroke, surfaceDessin));
-                Adorner[] ad = myAdornerLayer.GetAdorners(path);
-                myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
+                if (newStroke.GetType() != typeof(LinkStroke))
+                {
+                    Path path = new Path();
+                    path.Data = newStroke.GetGeometry();
+                    surfaceDessin.Children.Add(path);
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                    myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
+                    myAdornerLayer.Add(new AnchorPointAdorner(path, newStroke, surfaceDessin));
+                    Adorner[] ad = myAdornerLayer.GetAdorners(path);
+                    myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
+                }
             }
+
+            // when is updating a link (a link is selected && an achor point has been clicked before)
+            //if ((DataContext as VueModele)?.OutilSelectionne == "lasso" && surfaceDessin.isCreatingLink == 2)
+            //{
+                
+            //    link.path.RemoveAt(0);
+            //    link.path.Insert(0, new Coordinates(fromPoint.X, fromPoint.Y));
+            //    link.path.RemoveAt(link.path.Count - 1);
+            //    link.path.Add(new Coordinates(toPoint.X, toPoint.Y));
+
+            //    // redessiner les liens
+            //    for (int i = 0; i < Strokes.Count; i++)
+            //    {
+            //        if (Strokes[i].GetType() == typeof(LinkStroke))
+            //        {
+            //            Strokes.Replace(
+            //                    Strokes[i],
+            //                    new StrokeCollection { new LinkStroke(new Guid(link.id), link, new StylusPointCollection { new StylusPoint(0, 0) }) }
+            //                );
+            //        }
+            //    }
+            //}
 
             // Pour que les boutons est la bonne couleur
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");

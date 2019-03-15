@@ -3,13 +3,13 @@ using System.Windows.Controls;
 
 namespace PolyPaint.CustomInk
 {
-    public class CustomButton : Button
+    public class LinkStrokeButton : Button
     {
         public CustomStroke stroke;
         public CustomInkCanvas canvas;
         public int number;
 
-        public CustomButton(CustomStroke stroke, CustomInkCanvas canvas, int number) : base()
+        public LinkStrokeButton(CustomStroke stroke, CustomInkCanvas canvas, int number) : base()
         {
             this.stroke = stroke;
             this.canvas = canvas;
@@ -20,8 +20,8 @@ namespace PolyPaint.CustomInk
         {
             //Background = Brushes.Blue;
             Point position = TransformToAncestor(canvas).Transform(new Point(0, 0));
-            canvas.createLink(stroke, number, position);
+            canvas.updateLink(stroke, number, position);
         }
-        
+
     }
 }

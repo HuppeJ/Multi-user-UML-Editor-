@@ -3,13 +3,14 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Collections.Generic;
-using PolyPaint.Templates;
+using PolyPaint.CustomInk.Strokes;
+using System.Windows.Controls;
 
 namespace PolyPaint.CustomInk
 {
     class AnchorPointAdorner : Adorner
     {
-        List<CustomButton> buttons;
+        List<Button> buttons;
         VisualCollection visualChildren;
 
         // The center of the strokes.
@@ -24,36 +25,50 @@ namespace PolyPaint.CustomInk
 
         public CustomInkCanvas canvas;
 
-        public AnchorPointAdorner(UIElement adornedElement, CustomStroke strokeToRotate, CustomInkCanvas actualCanvas)
+        public AnchorPointAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
-            stroke = strokeToRotate;
+            stroke = customStroke;
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = strokeToRotate.GetBounds();
+            strokeBounds = customStroke.GetBounds();
             center = stroke.GetCenter();
             rotation = new RotateTransform(stroke.rotation, center.X, center.Y);
 
-            buttons = new List<CustomButton>();
-            buttons.Add(new CustomButton(stroke, canvas, 0));
-            buttons.Add(new CustomButton(stroke, canvas, 1));
-            buttons.Add(new CustomButton(stroke, canvas, 2));
-            buttons.Add(new CustomButton(stroke, canvas, 3));
+            buttons = new List<Button>();
+            // Pour une ShapeStroke
+            if (customStroke.GetType() != typeof(LinkStroke))
+            {
+                buttons.Add(new CustomButton(stroke, canvas, 0));
+                buttons.Add(new CustomButton(stroke, canvas, 1));
+            
+                buttons.Add(new CustomButton(stroke, canvas, 2));
+                buttons.Add(new CustomButton(stroke, canvas, 3));
+            }
+            else //LinkStroke
+            {
+                buttons.Add(new LinkStrokeButton(stroke, canvas, 0));
+                buttons.Add(new LinkStrokeButton(stroke, canvas, 1));
+            }
 
 
             visualChildren = new VisualCollection(this);
-            foreach(CustomButton button in buttons)
+            foreach(Button button in buttons)
             {
                 button.Cursor = Cursors.SizeNWSE;
                 button.Width = 10;
                 button.Height = 10;
-                button.Background = Brushes.Red;
+                if (stroke.GetType() == typeof(LinkStroke))
+                {
+                    button.Background = Brushes.DarkRed;
+                }
+                button.Background = Brushes.IndianRed;
                 
                 visualChildren.Add(button);
             }
 
-            strokeBounds = strokeToRotate.GetBounds();
+            strokeBounds = customStroke.GetBounds();
         }
 
         /// <summary>
@@ -73,10 +88,18 @@ namespace PolyPaint.CustomInk
 
             center = stroke.GetCenter();
 
-            ArrangeButton(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
-            ArrangeButton(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
-            ArrangeButton(2, 0, strokeBounds.Height / 2 + HANDLEMARGIN);
-            ArrangeButton(3, -(strokeBounds.Width / 2 + HANDLEMARGIN), 0);
+            if (stroke.GetType() != typeof(LinkStroke))
+            {
+                ArrangeButton(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
+                ArrangeButton(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
+                ArrangeButton(2, 0, strokeBounds.Height / 2 + HANDLEMARGIN);
+                ArrangeButton(3, -(strokeBounds.Width / 2 + HANDLEMARGIN), 0);
+            }
+            else if((stroke as LinkStroke).path.Count > 1) { 
+
+                ArrangeButton(0, center.X - (stroke as LinkStroke).path[0].x, center.Y - (stroke as LinkStroke).path[0].y);
+                ArrangeButton(1, center.X - (stroke as LinkStroke).path[1].x, center.Y - (stroke as LinkStroke).path[1].y);
+            }
 
             //stroke.anchorPoints.Clear();
             //AddAnchorPointsToStroke();

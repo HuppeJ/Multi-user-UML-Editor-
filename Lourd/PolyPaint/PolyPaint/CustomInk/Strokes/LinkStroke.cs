@@ -35,7 +35,7 @@ namespace PolyPaint.CustomInk.Strokes
             to = new AnchorPoint();
             type = (int)StrokeTypes.LINK;
             style = new LinkStyle();
-            path = new List<Coordinates> { };
+            path = new List<Coordinates>();
 
             StylusPoint firstPoint = pts[0];
             StylusPoint lastPoint = pts[pts.Count - 1];
@@ -47,15 +47,22 @@ namespace PolyPaint.CustomInk.Strokes
             double xStep = x / nbOfPoints;
             
 
-            // garder uniquement le dernier point
+            // garder uniquement le premier point
             while (StylusPoints.Count > 1)
             {
-                StylusPoints.RemoveAt(0);
+                StylusPoints.RemoveAt(1);
             }
-            for (int i = 0; i < nbOfPoints; i++)
+            path.Add(new Coordinates(StylusPoints[0].X, StylusPoints[0].Y));
+
+            for (int i = 1; i <= nbOfPoints; i++)
             {
                 StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
+                if(i == nbOfPoints)
+                {
+                    path.Add(new Coordinates(StylusPoints[nbOfPoints].X, StylusPoints[nbOfPoints].Y));
+                }
             }
+
 
         }
 
@@ -96,6 +103,8 @@ namespace PolyPaint.CustomInk.Strokes
             }
             StylusPoints.RemoveAt(0);
         }
+        
+        //public bool 
 
         // ON DOIT FAIRE LA ROTATION DUN LINKSTROKE??? gi
         #region rotation
