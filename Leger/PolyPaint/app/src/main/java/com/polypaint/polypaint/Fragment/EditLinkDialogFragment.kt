@@ -17,6 +17,9 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
     var color: String = ""
     var thickness: Int = 0
     var style: Int = 0
+    var nameView: EditText? = null
+    var multiplicityFrom: EditText? = null
+    var multiplicityTo: EditText? = null
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -62,9 +65,9 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
             val thicknessSpinner: Spinner = view.findViewById(R.id.link_thickness_spinner)
             val styleSpinner: Spinner = view.findViewById(R.id.link_style_spinner)
 
-            val nameView: EditText = view.findViewById(R.id.link_name_text)
-            val multiplicityFrom: EditText = view.findViewById(R.id.link_multiplicity_from_text)
-            val multiplicityTo: EditText = view.findViewById(R.id.link_multiplicity_to_text)
+            nameView = view.findViewById(R.id.link_name_text)
+            multiplicityFrom = view.findViewById(R.id.link_multiplicity_from_text)
+            multiplicityTo = view.findViewById(R.id.link_multiplicity_to_text)
 
             setAdapter(typeSpinner, R.array.link_types_array)
             setAdapter(colorSpinner, R.array.link_colors_array)
@@ -76,9 +79,9 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
             thicknessSpinner.onItemSelectedListener = this
             styleSpinner.onItemSelectedListener = this
 
-            nameView.setText(link?.name)
-            multiplicityFrom.setText(link?.from?.multiplicity)
-            multiplicityTo.setText(link?.to?.multiplicity)
+            nameView?.setText(link?.name)
+            multiplicityFrom?.setText(link?.from?.multiplicity)
+            multiplicityTo?.setText(link?.to?.multiplicity)
 
             Log.d("linkType", link?.type.toString())
             Log.d("linkColor", link?.style?.color)
@@ -99,22 +102,28 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
 
             builder.setView(view)
                 .setPositiveButton("Close") { dialog, id ->
-                    link?.name = nameView.text.trim().toString()
-                    Log.d("type", type.toString())
-                    link?.type = type
-                    link?.from?.multiplicity = multiplicityFrom.text.trim().toString()
-                    link?.to?.multiplicity = multiplicityTo.text.trim().toString()
-                    link?.style?.color = color
-                    link?.style?.thickness = thickness
-                    link?.style?.type = style
 
-                    ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.invalidate()
-                    ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.requestLayout()
-                    ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.dialog = null
                 }
             // Create the AlertDialog object and return it
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
+    }
+
+    override fun onDestroy() {
+        link?.name = nameView?.text?.trim().toString()
+        Log.d("type", type.toString())
+        link?.type = type
+        link?.from?.multiplicity = multiplicityFrom?.text?.trim().toString()
+        link?.to?.multiplicity = multiplicityTo?.text?.trim().toString()
+        link?.style?.color = color
+        link?.style?.thickness = thickness
+        link?.style?.type = style
+
+        ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.invalidate()
+        ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.requestLayout()
+        ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.dialog = null
+
+        super.onDestroy()
     }
 
     private fun setAdapter(spinner: Spinner, array: Int){
