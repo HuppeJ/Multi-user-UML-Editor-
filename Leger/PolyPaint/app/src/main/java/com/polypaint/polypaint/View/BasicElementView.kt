@@ -515,22 +515,22 @@ open class BasicElementView: RelativeLayout {
                 oldFrameRawY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> {
-                var deltaX = event.rawX - oldFrameRawX
-                var deltaY = event.rawY - oldFrameRawY
+                var deltaX: Int = (event.rawX - oldFrameRawX).toInt()
+                var deltaY: Int = (event.rawY - oldFrameRawY).toInt()
                 val newWidth = borderResizableLayout.width + deltaX
                 val newHeight = borderResizableLayout.height + deltaY
 
-                resize(newWidth.toInt(), newHeight.toInt())
+                resize(newWidth, newHeight)
 
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
 
 
                 if(newWidth < mMinimumWidth){
-                    deltaX = 0f
+                    deltaX = 0
                 }
                 if(newHeight < mMinimumHeight){
-                    deltaY = 0f
+                    deltaY = 0
                 }
 
                 val basicShapeId = ViewShapeHolder.getInstance().map[this]
