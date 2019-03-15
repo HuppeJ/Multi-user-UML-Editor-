@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/text_1"
+              android:text="This drawing session is protected by a password. Please enter it below." android:layout_marginTop="0dp"
+              android:layout_alignParentTop="true" android:layout_alignParentStart="true"
+              android:layout_marginLeft="0dp" android:layout_marginStart="0dp" android:layout_alignParentLeft="true"/>
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/password"
+              android:text="Password :" tools:layout_editor_absoluteY="30dp" tools:layout_editor_absoluteX="0dp"
+              android:layout_marginTop="30dp" android:layout_below="@+id/text_1" android:layout_alignParentStart="true"
+              android:layout_marginLeft="0dp" android:layout_marginStart="0dp" android:layout_alignParentLeft="true"/>
+    <EditText
+            android:id="@+id/password_text"
+            android:hint="Password"
+            android:background="@android:color/transparent"
+            android:inputType="textPassword"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:maxLines="6" android:layout_toEndOf="@+id/password" android:layout_toRightOf="@+id/password"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp" android:layout_marginTop="29dp"
+            android:layout_below="@+id/text_1"/>
+</RelativeLayout>
