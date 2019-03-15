@@ -17,6 +17,7 @@ namespace PolyPaint.Services
     {
         public static event Action<string> JoinCanvasRoom;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
+        public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<CustomStroke> UpdateStroke;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -66,9 +67,26 @@ namespace PolyPaint.Services
             socket.On("formCreated", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
-                CustomStroke customStroke = createStroke(response.forms[0]);
-                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
-                Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+                if (!username.Equals((string)response.username))
+                {
+                    CustomStroke customStroke = createStroke(response.forms[0]);
+                    InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
+                    Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+                }
+            });
+
+            socket.On("formsDeleted", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    StrokeCollection strokes = new StrokeCollection();
+                    foreach (dynamic shape in response.forms)
+                    {
+                        strokes.Add(createStroke(shape));
+                    }
+                    Application.Current.Dispatcher.Invoke(new Action(() => { RemoveStrokes(strokes); }), DispatcherPriority.ContextIdle);
+                }
             });
         }
 
@@ -86,12 +104,35 @@ namespace PolyPaint.Services
 
         public static void CreateShape(CustomStroke customStroke)
         {
-            BasicShape basicShape = customStroke.GetBasicShape();
-            List<BasicShape> forms = new List<BasicShape>();
-            forms.Add(basicShape);
+            StrokeCollection strokes = new StrokeCollection();
+            strokes.Add(customStroke);
+            socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(strokes)));
+        }
 
-            UpdateFormsData updateFormsData = new UpdateFormsData(username, canvasName, forms);
-            socket.Emit("createForm", serializer.Serialize(updateFormsData));
+        public static void RemoveShapes(StrokeCollection strokes)
+        {
+            socket.Emit("deleteForms", serializer.Serialize(createUpdateFormsData(strokes)));
+        }
+
+        public static void SelectShapes(StrokeCollection strokes)
+        {
+            socket.Emit("selectForms", serializer.Serialize(createUpdateFormsData(strokes)));
+        }
+
+        public static void DeselectShapes(StrokeCollection strokes)
+        {
+            socket.Emit("deselectForms", serializer.Serialize(createUpdateFormsData(strokes)));
+        }
+
+        private static UpdateFormsData createUpdateFormsData(StrokeCollection strokes)
+        {
+            List<BasicShape> forms = new List<BasicShape>();
+            foreach (CustomStroke customStroke in strokes)
+            {
+                forms.Add(customStroke.GetBasicShape());
+            }
+
+            return new UpdateFormsData(username, canvasName, forms);
         }
 
         public static void UpdateShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> linksTo, List<string> linksFrom)

@@ -117,6 +117,7 @@ namespace PolyPaint.CustomInk
             DrawingService.JoinCanvas("newCanvas");
 
             DrawingService.AddStroke += OnRemoteStroke;
+            DrawingService.RemoveStrokes += OnRemoveStrokes;
         }
 
         #region On.. event handlers
@@ -164,6 +165,9 @@ namespace PolyPaint.CustomInk
 
         protected override void OnStrokeErasing(InkCanvasStrokeErasingEventArgs e)
         {
+            StrokeCollection strokes = new StrokeCollection();
+            strokes.Add(e.Stroke);
+            DrawingService.RemoveShapes(strokes);
             base.OnStrokeErasing(e);
         }
         #endregion
@@ -172,8 +176,22 @@ namespace PolyPaint.CustomInk
         {
             CustomStroke stroke = (CustomStroke)e.Stroke;
             Strokes.Add(stroke);
-
             AddTextBox(stroke);
+        }
+
+        private void OnRemoveStrokes(StrokeCollection strokes)
+        {
+            foreach (CustomStroke stroke in strokes)
+            {
+                foreach (CustomStroke stroke2 in Strokes)
+                {
+                    if(stroke.guid.Equals(stroke2.guid))
+                    {
+                        Strokes.Remove(stroke2);
+                        break;
+                    }
+                }
+            }
         }
 
         private CustomStroke CreateStroke(StylusPointCollection pts, InkCanvasStrokeCollectedEventArgs e, StrokeTypes strokeType)

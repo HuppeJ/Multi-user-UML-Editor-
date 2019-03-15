@@ -72,7 +72,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areFormsDeleted) {
                         console.log(socket.id + " deleted forms " + data.forms);
-                        io.to(canvasRoomId).emit("formsDeleted", data);
+                        io.to(canvasRoomId).emit("formsDeleted", dataStr);
                     } else {
                         console.log(socket.id + " failed to delete forms " + data.forms);
                     }
@@ -80,7 +80,7 @@ export default class CanvasEditionSocketEvents {
                     socket.emit("deleteFormsResponse", JSON.stringify(response));
 
                     // TODO remove
-                    io.to(CanvasTestRoom).emit("formsDeleted", data);
+                    io.to(CanvasTestRoom).emit("formsDeleted", dataStr);
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
