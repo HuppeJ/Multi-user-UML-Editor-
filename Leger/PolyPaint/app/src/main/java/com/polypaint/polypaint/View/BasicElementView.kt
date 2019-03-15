@@ -529,7 +529,7 @@ open class BasicElementView: RelativeLayout {
                 if(newWidth < mMinimumWidth){
                     deltaX = 0f
                 }
-                if(newHeight >= mMinimumHeight){
+                if(newHeight < mMinimumHeight){
                     deltaY = 0f
                 }
 
