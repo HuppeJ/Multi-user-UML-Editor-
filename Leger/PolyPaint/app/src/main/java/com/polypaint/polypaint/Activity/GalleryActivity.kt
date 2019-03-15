@@ -103,21 +103,24 @@ class GalleryActivity:AppCompatActivity(){
             override fun onItemClick(canevas: Canevas) {
 
                 // TODO : pop the modal
-                var activity: AppCompatActivity = this@GalleryActivity as AppCompatActivity
-                var dialog: DialogFragment = EnterDrawingPasswordDialogFragment()
-                var bundle: Bundle = Bundle()
-                bundle.putString("id", "asdfasg")
-                dialog.arguments = bundle
+                if(canevas.password != "") {
+                    var activity: AppCompatActivity = this@GalleryActivity as AppCompatActivity
+                    var dialog: DialogFragment = EnterDrawingPasswordDialogFragment()
+                    var bundle: Bundle = Bundle()
+                    bundle.putString("password", canevas.password)
+                    dialog.arguments = bundle
 
-                Log.d("****", dialog.arguments.toString())
-                dialog.show(activity.supportFragmentManager, "enterPasswordDialog")
-
-                selectedCanevas = canevas
-                val gson = Gson()
-                val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)
-                val sendObj = gson.toJson(galleryEditEvent)
-                Log.d("joinObj", sendObj)
-                socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
+                    Log.d("****", dialog.arguments.toString())
+                    dialog.show(activity.supportFragmentManager, "enterPasswordDialog")
+                }else {
+                    selectedCanevas = canevas
+                    val gson = Gson()
+                    val galleryEditEvent: GalleryEditEvent =
+                        GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)
+                    val sendObj = gson.toJson(galleryEditEvent)
+                    Log.d("joinObj", sendObj)
+                    socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
+                }
             }
         })
         adapterPublic = ImageListAdapter(this, canevasPublic, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{

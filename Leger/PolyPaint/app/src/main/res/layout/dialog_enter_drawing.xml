@@ -4,7 +4,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
@@ -23,9 +24,15 @@
             android:hint="Password"
             android:background="@android:color/transparent"
             android:inputType="textPassword"
-            android:layout_width="100dp"
+            android:layout_width="249dp"
             android:layout_height="wrap_content"
             android:maxLines="6" android:layout_toEndOf="@+id/password" android:layout_toRightOf="@+id/password"
             android:layout_marginLeft="16dp" android:layout_marginStart="16dp" android:layout_marginTop="29dp"
             android:layout_below="@+id/text_1"/>
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/password_button"
+            android:text="Enter" android:layout_toEndOf="@+id/password_text"
+            android:layout_toRightOf="@+id/password_text" android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp" android:layout_marginTop="22dp" android:layout_below="@+id/text_1"/>
 </RelativeLayout>
