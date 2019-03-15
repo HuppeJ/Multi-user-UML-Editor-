@@ -565,7 +565,7 @@ open class BasicElementView: RelativeLayout {
 //                                        linkView.start.x += deltaX
 //                                        linkView.start.y += deltaY
 
-                                    when (linkShape.to.anchor){
+                                    when (linkShape.from.anchor){
                                         AnchorPoints.LEFT.ordinal->linkShape.path.first().y += deltaY / 2
                                         AnchorPoints.TOP.ordinal->linkShape.path.first().x +=deltaX / 2
                                         AnchorPoints.RIGHT.ordinal -> {
