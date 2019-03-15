@@ -1,7 +1,7 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { CanvasTestRoom } from "./CanvasSocketEvents";
 import CanvasManager from "./components/CanvasManager";
-import { IUpdateFormsData, IEditCanevasData, IEditLinksData, IEditFormsData, IUpdateLinksData, IEditGalleryData } from "./interfaces/interfaces";
+import { IEditCanevasData, IEditLinksData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from "./interfaces/interfaces";
 
 export default class CanvasEditionSocketEvents {
     constructor(io: any, canvasManager: CanvasManager) {
@@ -21,7 +21,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.isFormCreated) {
                         console.log(socket.id + " created form " + data.forms[0]);
-                        io.to(canvasRoomId).emit("formCreated", data);
+                        io.to(canvasRoomId).emit("formCreated", JSON.stringify(data));
                     } else {
                         console.log(socket.id + " failed to create form " + data.forms[0]);
                     }
@@ -63,7 +63,7 @@ export default class CanvasEditionSocketEvents {
 
             socket.on("deleteForms", function (dataStr: string) {
                 try {
-                    const data: IEditFormsData = JSON.parse(dataStr);
+                    const data: IUpdateFormsData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                     const response = {
@@ -71,10 +71,10 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areFormsDeleted) {
-                        console.log(socket.id + " deleted forms " + data.formsId);
+                        console.log(socket.id + " deleted forms " + data.forms);
                         io.to(canvasRoomId).emit("formsDeleted", data);
                     } else {
-                        console.log(socket.id + " failed to delete forms " + data.formsId);
+                        console.log(socket.id + " failed to delete forms " + data.forms);
                     }
 
                     socket.emit("deleteFormsResponse", JSON.stringify(response));
@@ -89,7 +89,7 @@ export default class CanvasEditionSocketEvents {
             // TODO : Renvoyer des informations plus précises si nécessaire
             socket.on("selectForms", function (dataStr: string) {
                 try {
-                    const data: IEditFormsData = JSON.parse(dataStr);
+                    const data: IUpdateFormsData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                     const response = {
@@ -97,10 +97,10 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areFormsSelected) {
-                        console.log(socket.id + " selected forms " + data.formsId);
+                        console.log(socket.id + " selected forms " + data.forms);
                         io.to(canvasRoomId).emit("formsSelected", data);
                     } else {
-                        console.log(socket.id + " failed to select forms " + data.formsId);
+                        console.log(socket.id + " failed to select forms " + data.forms);
                     }
 
                     socket.emit("selectFormsResponse", JSON.stringify(response));
@@ -114,7 +114,7 @@ export default class CanvasEditionSocketEvents {
 
             socket.on("deselectForms", function (dataStr: string) {
                 try {
-                    const data: IEditFormsData = JSON.parse(dataStr);
+                    const data: IUpdateFormsData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                     const response = {
@@ -122,10 +122,10 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areFormsDeselected) {
-                        console.log(socket.id + " deselected forms " + data.formsId);
+                        console.log(socket.id + " deselected forms " + data.forms);
                         io.to(canvasRoomId).emit("formsDeselected", data);
                     } else {
-                        console.log(socket.id + " failed to deselect forms " + data.formsId);
+                        console.log(socket.id + " failed to deselect forms " + data.forms);
                     }
 
                     socket.emit("deselectFormsResponse", JSON.stringify(response));

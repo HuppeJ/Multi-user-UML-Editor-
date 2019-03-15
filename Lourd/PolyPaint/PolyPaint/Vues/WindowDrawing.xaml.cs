@@ -11,6 +11,7 @@ using PolyPaint.CustomInk;
 using System.Windows.Ink;
 using PolyPaint.Enums;
 using System.Windows.Shapes;
+using System.Collections.Generic;
 
 namespace PolyPaint.Vues
 {
@@ -74,7 +75,7 @@ namespace PolyPaint.Vues
                 surfaceDessin.Children.Add(path);
                 AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                 myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
-
+                myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
             }
 
             // Pour que les boutons est la bonne couleur
@@ -82,21 +83,41 @@ namespace PolyPaint.Vues
         }
 
         // Bouton pour changer le texte de l'élément sélectionné
-        private void RenameSelection(object sender, RoutedEventArgs e)
+        public void RenameSelection()
         {
             StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
             if(strokes.Count == 1)
             {
-                popUp.IsOpen = true;
+                if (((CustomStroke)strokes[0]).type == (int)StrokeTypes.CLASS_SHAPE)
+                {
+                    popUpClass.IsOpen = true;
+                }
+                else
+                {
+                    popUpName.IsOpen = true;
+                }
             }
         }
 
         public void Rename(string text)
         {
-            Console.WriteLine("dans renameSelection");
-            popUp.IsOpen = false;
+            popUpName.IsOpen = false;
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
+            surfaceDessin.RefreshChildren();
+        }
+
+        public void Rename(string className, string attributes, string methods)
+        {
+            popUpClass.IsOpen = false;
+            ClassStroke stroke = (ClassStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = className;
+            stroke.attributes = new List<string>();
+            stroke.attributes.Add(attributes);
+            stroke.methods = new List<string>();
+            stroke.methods.Add(methods);
+
+            surfaceDessin.RefreshChildren();
         }
 
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)

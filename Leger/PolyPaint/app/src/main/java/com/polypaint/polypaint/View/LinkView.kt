@@ -42,6 +42,12 @@ class LinkView: View{
         paint.style = Paint.Style.FILL_AND_STROKE
     }
 
+    fun setLinkAndAnchors(link: Link){
+        this.link = link
+        this.start = link.path[0]
+        this.end = link.path[link.path.size-1]
+    }
+
     override fun onDraw(canvas: Canvas){
         val linkId: String? =ViewShapeHolder.getInstance().linkMap[this]
         if(linkId!=null) {

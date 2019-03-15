@@ -11,7 +11,7 @@ import com.polypaint.polypaint.View.LinkView
 class ViewShapeHolder(){
     var map: BiMap<BasicElementView, String> = HashBiMap.create()
     var linkMap : BiMap<LinkView, String> = HashBiMap.create()
-    var canevas : Canevas = Canevas("default","default name","aa-author", "aa-owner", 2, null, ArrayList<BasicShape>(), ArrayList<Link>())
+    var canevas : Canevas = Canevas("default","default name","aa-author", "aa-owner", 2, "", ArrayList<BasicShape>(), ArrayList<Link>())
     companion object {
         private val viewShapeHolder: ViewShapeHolder = ViewShapeHolder()
 

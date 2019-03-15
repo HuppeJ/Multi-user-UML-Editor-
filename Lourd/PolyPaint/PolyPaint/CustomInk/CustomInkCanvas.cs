@@ -1,6 +1,7 @@
 ﻿using PolyPaint.Enums;
 using PolyPaint.Services;
 using PolyPaint.Templates;
+using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,6 +21,7 @@ namespace PolyPaint.CustomInk
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
         private StrokeCollection clipboard;
+        private Templates.Canvas canvas;
 
         public StylusPoint firstPoint;
 
@@ -55,6 +57,11 @@ namespace PolyPaint.CustomInk
             DynamicRenderer = customRenderer;
 
             clipboard = new StrokeCollection();
+
+            canvas = new Templates.Canvas(Guid.NewGuid().ToString(), "newCanvas", ConnectionService.username,
+                ConnectionService.username, 1, null, new List<BasicShape>(), new List<Link>(), new int[] { 1, 1 });
+            DrawingService.CreateCanvas(canvas);
+            DrawingService.JoinCanvas("newCanvas");
         }
 
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e)
@@ -141,6 +148,7 @@ namespace PolyPaint.CustomInk
                
             }
             Strokes.Add(customStroke);
+            DrawingService.CreateShape(customStroke);
             firstPoint = customStroke.StylusPoints[0];
             SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
 
@@ -164,17 +172,32 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
-            Point point = stroke.GetBounds().BottomLeft;
-            double x = point.X;
-            double y = point.Y;
+            if(stroke.type == (int) StrokeTypes.CLASS_SHAPE)
+            {
+                Point point = stroke.GetBounds().TopLeft;
+                double x = point.X;
+                double y = point.Y;
 
-            CustomTextBox tb = new CustomTextBox();
-            tb.Text = stroke.name;
-            tb.Uid = stroke.guid.ToString();
+                ClassStroke classStroke = (ClassStroke)stroke;
+                ClassTextBox sp = new ClassTextBox(classStroke.name, classStroke.attributes, classStroke.methods);
+                this.Children.Add(sp);
+                InkCanvas.SetTop(sp, y);
+                InkCanvas.SetLeft(sp, x);
+            }
+            else
+            {
+                Point point = stroke.GetBounds().BottomLeft;
+                double x = point.X;
+                double y = point.Y;
 
-            this.Children.Add(tb);
-            InkCanvas.SetTop(tb, y);
-            InkCanvas.SetLeft(tb, x);
+                CustomTextBox tb = new CustomTextBox();
+                tb.Text = stroke.name;
+                tb.Uid = stroke.guid.ToString();
+
+                this.Children.Add(tb);
+                InkCanvas.SetTop(tb, y);
+                InkCanvas.SetLeft(tb, x);
+            }
         }
         #endregion
 
@@ -307,6 +330,7 @@ namespace PolyPaint.CustomInk
                 Children.Add(path);
                 AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                 myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
             }
 
             foreach (CustomStroke stroke in Strokes)
