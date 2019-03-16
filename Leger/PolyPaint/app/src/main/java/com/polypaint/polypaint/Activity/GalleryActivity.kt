@@ -2,11 +2,14 @@ package com.polypaint.polypaint.Activity
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.drawable.shapes.Shape
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
 import co.zsmb.materialdrawerkt.builders.drawer
 import co.zsmb.materialdrawerkt.builders.footer
 import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
@@ -19,11 +22,10 @@ import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Adapter.ImageListAdapter
 import com.polypaint.polypaint.Adapter.RoomsListAdapter
 import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Fragment.EditClassDialogFragment
+import com.polypaint.polypaint.Fragment.EnterDrawingPasswordDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
-import com.polypaint.polypaint.Model.BasicShape
-import com.polypaint.polypaint.Model.Canevas
-import com.polypaint.polypaint.Model.Link
-import com.polypaint.polypaint.Model.Room
+import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -56,13 +58,13 @@ class GalleryActivity:AppCompatActivity(){
 
         drawer = drawer {
             primaryItem("Gallery") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_picture
                 onClick { _ ->
                     false
                 }
             }
             primaryItem("Chat") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_chat
                 onClick { _ ->
                     val intent = Intent(this@GalleryActivity, ChatActivity::class.java)
                     startActivity(intent)
@@ -72,7 +74,7 @@ class GalleryActivity:AppCompatActivity(){
             }
             footer{
                 secondaryItem("Settings") {
-                    icon = R.drawable.message_rectangle_r
+                    icon = R.drawable.ic_settings
                 }
             }
 
@@ -98,28 +100,50 @@ class GalleryActivity:AppCompatActivity(){
 
         adapterPrivate = ImageListAdapter(this, canevasPrivate, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{
             override fun onItemClick(canevas: Canevas) {
-
-                // TODO : pop the modal
-
-
                 selectedCanevas = canevas
-                val gson = Gson()
-                val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)
-                val sendObj = gson.toJson(galleryEditEvent)
-                Log.d("joinObj", sendObj)
-                socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
+
+                if(canevas.password != "") {
+                    var activity: AppCompatActivity = this@GalleryActivity as AppCompatActivity
+                    var dialog: DialogFragment = EnterDrawingPasswordDialogFragment()
+                    var bundle: Bundle = Bundle()
+                    bundle.putSerializable("canevas", selectedCanevas)
+                    dialog.arguments = bundle
+
+                    Log.d("****", dialog.arguments.toString())
+                    dialog.show(activity.supportFragmentManager, "enterPasswordDialog")
+                }else {
+
+                    val gson = Gson()
+                    val galleryEditEvent: GalleryEditEvent =
+                        GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)
+                    val sendObj = gson.toJson(galleryEditEvent)
+                    Log.d("joinObj", sendObj)
+                    socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
+                }
             }
         })
         adapterPublic = ImageListAdapter(this, canevasPublic, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{
             override fun onItemClick(canevas: Canevas) {
 
 
-                selectedCanevas = canevas
-                val gson = Gson()
-                val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)
-                val sendObj = gson.toJson(galleryEditEvent)
-                Log.d("joinObj", sendObj)
-                socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
+                if(canevas.password != "") {
+                    var activity: AppCompatActivity = this@GalleryActivity as AppCompatActivity
+                    var dialog: DialogFragment = EnterDrawingPasswordDialogFragment()
+                    var bundle: Bundle = Bundle()
+                    bundle.putSerializable("canevas", selectedCanevas)
+                    dialog.arguments = bundle
+
+                    Log.d("****", dialog.arguments.toString())
+                    dialog.show(activity.supportFragmentManager, "enterPasswordDialog")
+                }else {
+
+                    val gson = Gson()
+                    val galleryEditEvent: GalleryEditEvent =
+                        GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)
+                    val sendObj = gson.toJson(galleryEditEvent)
+                    Log.d("joinObj", sendObj)
+                    socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
+                }
             }
         })
 
@@ -132,13 +156,14 @@ class GalleryActivity:AppCompatActivity(){
 
     private fun requestPrivateCanevas(){
         canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", ArrayList<BasicShape>(), ArrayList<Link>()))
-        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", ArrayList<BasicShape>(), ArrayList<Link>()))
+        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"",  ArrayList<BasicShape>(), ArrayList<Link>()))
+        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"abc", ArrayList<BasicShape>(), ArrayList<Link>()))
 
     }
 
     private fun requestPublicCanevas(){
         canevasPublic.add(Canevas("ID","qwe","AUTHOR","aa",1,"", ArrayList<BasicShape>(), ArrayList<Link>()))
-        canevasPublic.add(Canevas("ID","qwe","AUTHOR","p",1,"", ArrayList<BasicShape>(), ArrayList<Link>()))
+        canevasPublic.add(Canevas("ID","qwe","AUTHOR","p",1,"abc", ArrayList<BasicShape>(), ArrayList<Link>()))
 
     }
 

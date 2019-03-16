@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#008577</color>  <!-- 0,133,119 | 008577-->
+    <color name="colorPrimaryDark">#00574B</color> <!-- 0,87,75 | 00574B-->
     <color name="colorAccent">#64B5F6</color>
     <color name="colorSendMessage">#BBDEFB</color>
     <color name="colorOutlineSendMessage">#64B5F6</color>
     <color name="colorReceivedMessage">#EFEBE9</color>
     <color name="colorOutlineReceivedMessage">#BCAAA4</color>
     <color name="colorOutlineButtonDrawing">#333333</color>
+
+    <color name="colorGreyAccent">#505050</color>
+    <color name="colorShadow">#CABBBBBB</color>
 
 </resources>

@@ -86,6 +86,7 @@ open class BasicElementView: ConstraintLayout {
             deleteButton.visibility = View.VISIBLE
             resizeButton.visibility = View.VISIBLE
             setAnchorsVisible(true)
+            emitSelection()
         }else{
             //first_line.text = "NoFocus"
             borderResizableLayout.setBackgroundResource(R.drawable.borders_white)
@@ -329,7 +330,7 @@ open class BasicElementView: ConstraintLayout {
                     val parentView = v.parent as RelativeLayout
                     parentView.dispatchSetSelected(false)
                     v.isSelected = true
-                    emitSelection()
+                    //emitSelection()
 
                     pointerFinger1 = event.getPointerId(event.actionIndex)
                     fingersCoords[0].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
@@ -473,9 +474,9 @@ open class BasicElementView: ConstraintLayout {
                     ViewShapeHolder.getInstance().remove(link!!)
                 }
 
+                ViewShapeHolder.getInstance().stackShapeCreatedId.remove(ViewShapeHolder.getInstance().map.getValue(this))
                 parentView.removeView(this)
                 ViewShapeHolder.getInstance().remove(this)
-
 
             }
         }
