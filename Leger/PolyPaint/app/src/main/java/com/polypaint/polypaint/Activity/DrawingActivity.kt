@@ -63,13 +63,13 @@ class DrawingActivity : AppCompatActivity(){
         setSupportActionBar(activityToolbar)
         drawer = drawer {
             primaryItem("Gallery") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_picture
                 onClick { _ ->
                     false
                 }
             }
             primaryItem("Chat") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_chat
                 onClick { _ ->
                     val intent = Intent(this@DrawingActivity, ChatActivity::class.java)
                     startActivity(intent)
@@ -79,7 +79,7 @@ class DrawingActivity : AppCompatActivity(){
             }
             footer{
                 secondaryItem("Settings") {
-                    icon = R.drawable.message_rectangle_r
+                    icon = R.drawable.ic_settings
                 }
             }
 
@@ -87,6 +87,7 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
+        canevas_title.text = ViewShapeHolder.getInstance().canevas.name
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -134,24 +135,18 @@ class DrawingActivity : AppCompatActivity(){
             unstackView()
         }
 
-        sync_canevas_from_layout_button.setOnClickListener {
-            syncCanevasFromLayout()
-        }
-
-        sync_layout_from_canevas.setOnClickListener {
-            syncLayoutFromCanevas()
-        }
-
-
     }
 
     private fun initializeViewFromCanevas(){
         //Shape
-        Log.d("init",ViewShapeHolder.getInstance().canevas.name)
-        for(shape in ViewShapeHolder.getInstance().canevas.shapes){
-            addOnCanevas(shape)
+        if(ViewShapeHolder.getInstance().canevas != null){
+            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
+            for(shape in ViewShapeHolder.getInstance().canevas.shapes){
+                addOnCanevas(shape)
+            }
+            //TODO: LINKS
+
         }
-        //TODO: LINKS
 
     }
     override fun onResume() {

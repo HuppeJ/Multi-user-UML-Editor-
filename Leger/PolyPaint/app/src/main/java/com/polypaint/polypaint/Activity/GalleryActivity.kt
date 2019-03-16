@@ -58,13 +58,13 @@ class GalleryActivity:AppCompatActivity(){
 
         drawer = drawer {
             primaryItem("Gallery") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_picture
                 onClick { _ ->
                     false
                 }
             }
             primaryItem("Chat") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_chat
                 onClick { _ ->
                     val intent = Intent(this@GalleryActivity, ChatActivity::class.java)
                     startActivity(intent)
@@ -74,7 +74,7 @@ class GalleryActivity:AppCompatActivity(){
             }
             footer{
                 secondaryItem("Settings") {
-                    icon = R.drawable.message_rectangle_r
+                    icon = R.drawable.ic_settings
                 }
             }
 
@@ -144,11 +144,7 @@ class GalleryActivity:AppCompatActivity(){
 
     private fun requestPrivateCanevas(){
         canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", ArrayList<BasicShape>(), ArrayList<Link>()))
-        val bShapes : ArrayList<BasicShape> = ArrayList<BasicShape>()
-        val sStyle : ShapeStyle = ShapeStyle(Coordinates(0.0,0.0),300.0,300.0,0.0,"white",0,"white")
-        var bShape : BasicShape = BasicShape("idS1", 10, "defaults1", sStyle,ArrayList<String?>(), ArrayList<String?>())
-        bShapes.add(bShape)
-        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", bShapes, ArrayList<Link>()))
+        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"",  ArrayList<BasicShape>(), ArrayList<Link>()))
         canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"abc", ArrayList<BasicShape>(), ArrayList<Link>()))
 
     }

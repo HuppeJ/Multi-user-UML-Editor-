@@ -46,7 +46,7 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
 
         drawer = drawer {
             primaryItem("Gallery") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_picture
                 onClick { _ ->
                     val intent = Intent(this@ChatActivity, GalleryActivity::class.java)
                     startActivity(intent)
@@ -54,7 +54,7 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
                 }
             }
             primaryItem("Chat") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_chat
                 onClick { _ ->
                     false
                 }
@@ -62,7 +62,7 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
 
             footer{
                 secondaryItem("Settings") {
-                    icon = R.drawable.message_rectangle_r
+                    icon = R.drawable.ic_settings
                 }
             }
 

@@ -59,6 +59,7 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
 
         internal var nameText: TextView = itemView.findViewById(R.id.canevas_name_text) as TextView
         internal var lockImage: ImageView = itemView.findViewById(R.id.lock) as ImageView
+        internal var imageView: ImageView = itemView.findViewById(R.id.canevas_preview) as ImageView
         /*
         internal var timeText: TextView = itemView.findViewById(R.id.text_message_time) as TextView
         */
@@ -66,6 +67,9 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
         internal fun bind(canevas: Canevas, listener: OnItemClickListener) {
             itemView.setOnClickListener { listener.onItemClick(canevas) }
             nameText.text = canevas.name
+            imageView.setImageResource(R.drawable.ic_picture)
+            imageView.layoutParams.width = 100
+            imageView.layoutParams.height = 100
             if(canevas.password != ""){
                 lockImage.setImageResource(R.drawable.ic_padlock)
             }
