@@ -4,13 +4,12 @@ using PolyPaint.Templates;
 using System.Collections.Generic;
 using PolyPaint.Enums;
 using System.Windows;
+using System.Windows.Ink;
 
 namespace PolyPaint.CustomInk.Strokes
 {
     public class LinkStroke : CustomStroke
     {
-        private Link link;
-
         public AnchorPoint from { get; set; }
         public AnchorPoint to { get; set; }
         public LinkStyle style { get; set; }
@@ -65,45 +64,85 @@ namespace PolyPaint.CustomInk.Strokes
 
 
         }
-
-        public LinkStroke(Link link, StylusPointCollection dummyPtsForBaseConstructor) : base(dummyPtsForBaseConstructor)
+        
+        public LinkStroke(Point pointFrom, string formId, int anchor, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
         {
-            guid = Guid.NewGuid();
-            createLink(link);
-        }
-
-        public LinkStroke(Guid guid, Link existingLink, StylusPointCollection dummyPtsForBaseConstructor) : base(dummyPtsForBaseConstructor)
-        {
-            this.guid = guid;
-            createLink(existingLink);
-        }
-
-        private void createLink(Link link)
-        {
-            name = link.name;
-            from = link.from;
-            to = link.to;
+            guid = new Guid();
+            name = "";
+            from = new AnchorPoint(formId, anchor, "0");
+            to = new AnchorPoint();
             type = (int)StrokeTypes.LINK;
-            style = link.style;
-            path = link.path;
+            style = new LinkStyle();
+            path = new List<Coordinates>();
+            path.Add(new Coordinates(pointFrom.X, pointFrom.Y));            
+        }
 
+        public void addStylusPointsToLink()
+        {
             Point firstPoint = new Point(path[0].x, path[0].y);
             Point lastPoint = new Point(path[path.Count - 1].x, path[path.Count - 1].y);
             double y = lastPoint.Y - firstPoint.Y;
             double x = lastPoint.X - firstPoint.X;
 
-            double nbOfPoints = Math.Floor(Math.Pow(x, 2) + Math.Pow(y, 2));
+            double nbOfPoints = Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
             double yStep = y / nbOfPoints;
             double xStep = x / nbOfPoints;
 
-
+            // garder uniquement le premier point
+            while (StylusPoints.Count > 1)
+            {
+                StylusPoints.RemoveAt(1);
+            }
             for (int i = 1; i < nbOfPoints; i++)
             {
                 StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
             }
             StylusPoints.RemoveAt(0);
         }
-        
+
+        public void addToPointToLink(Point pointTo, string formId, int anchor)
+        {
+            path.Add(new Coordinates(pointTo.X, pointTo.Y));
+            to = new AnchorPoint(formId, anchor, "0");
+
+            addStylusPointsToLink();
+        }
+
+        public Point GetFromPoint(StrokeCollection strokes)
+        {
+            CustomStroke fromStroke;
+            Point point = new Point();
+
+            foreach (CustomStroke stroke in strokes)
+            {
+                if (stroke.guid.ToString() == this.from.formId)
+                {
+                    fromStroke = stroke;
+                    point = (fromStroke as ShapeStroke).GetAnchorPoint(this.from.anchor);
+                    //point = (fromStroke as ShapeStroke).anchorPoints[from.anchor];
+                }
+            }
+
+            return point;
+        }
+
+        public Point GetToPoint(StrokeCollection strokes)
+        {
+            CustomStroke fromStroke;
+            Point point = new Point();
+
+            foreach (CustomStroke stroke in strokes)
+            {
+                if (stroke.guid.ToString() == this.to.formId)
+                {
+                    fromStroke = stroke;
+                    point = (fromStroke as ShapeStroke).GetAnchorPoint(this.to.anchor);
+                }
+            }
+
+            return point;
+        }
+
         //public bool 
 
         // ON DOIT FAIRE LA ROTATION DUN LINKSTROKE??? gi

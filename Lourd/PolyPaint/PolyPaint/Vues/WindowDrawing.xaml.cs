@@ -13,6 +13,7 @@ using PolyPaint.Enums;
 using System.Windows.Shapes;
 using System.Collections.Generic;
 using PolyPaint.CustomInk.Strokes;
+using PolyPaint.Templates;
 
 namespace PolyPaint.Vues
 {
@@ -83,27 +84,17 @@ namespace PolyPaint.Vues
                 }
             }
 
-            // when is updating a link (a link is selected && an achor point has been clicked before)
-            //if ((DataContext as VueModele)?.OutilSelectionne == "lasso" && surfaceDessin.isCreatingLink == 2)
-            //{
-                
-            //    link.path.RemoveAt(0);
-            //    link.path.Insert(0, new Coordinates(fromPoint.X, fromPoint.Y));
-            //    link.path.RemoveAt(link.path.Count - 1);
-            //    link.path.Add(new Coordinates(toPoint.X, toPoint.Y));
+            // when is creating a link from customStroke to canvas point (a link is selected && an achor point has been clicked before)
+            if (surfaceDessin.isCreatingLink > 0)
+            {
+                // what to put in when no guid? i.e not linked to shapeStroke?
+                surfaceDessin.linkBeingCreated.addToPointToLink(e.GetPosition(surfaceDessin), "", 0);
+                surfaceDessin.Strokes.Add(surfaceDessin.linkBeingCreated);
 
-            //    // redessiner les liens
-            //    for (int i = 0; i < Strokes.Count; i++)
-            //    {
-            //        if (Strokes[i].GetType() == typeof(LinkStroke))
-            //        {
-            //            Strokes.Replace(
-            //                    Strokes[i],
-            //                    new StrokeCollection { new LinkStroke(new Guid(link.id), link, new StylusPointCollection { new StylusPoint(0, 0) }) }
-            //                );
-            //        }
-            //    }
-            //}
+                surfaceDessin.isCreatingLink = 0;
+
+                
+            }
 
             // Pour que les boutons est la bonne couleur
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");

@@ -15,7 +15,7 @@ namespace PolyPaint.CustomInk
         // The Thumb to drag to rotate the strokes.
         Thumb rotateHandle;
 
-        // The surrounding boarder.
+        // The surrounding border.
         Path line;
 
         VisualCollection visualChildren;

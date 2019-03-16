@@ -2,7 +2,6 @@
 using PolyPaint.Enums;
 using PolyPaint.Templates;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -10,39 +9,39 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PolyPaint.CustomInk
 {
     public class CustomInkCanvas : InkCanvas
     {
-        public List<Link> links = new List<Link>();
-
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
         private StrokeCollection clipboard;
 
         public StylusPoint firstPoint;
-        public bool isCreatingLink = false;
+        public int isCreatingLink = 0;
         public bool isUpdatingLink = false;
-        public Link linkBeingUpdated;
+        public LinkStroke linkBeingUpdated;
+        public LinkStroke linkBeingCreated; 
 
         internal void updateLink(CustomStroke stroke, int number, Point position)
         {
             // number = 0 if from. 1 if to.
             isUpdatingLink = true;
-            foreach (Link link in links)
+            foreach (CustomStroke customStroke in Strokes)
             {
-                if (link.id == stroke.guid.ToString())
+                if (customStroke.guid == stroke.guid)
                 {
-                    if(number == 0)
+                    if (number == 0)
                     {
-                        link.from = null;
+                        (customStroke as LinkStroke).from = null;
                     }
                     else
                     {
-                        link.to = null;
+                        (customStroke as LinkStroke).to = null;
                     }
-                    linkBeingUpdated = link;
+                    linkBeingUpdated = customStroke as LinkStroke;
                 }
             }
             addAnchorPoints();
@@ -55,10 +54,9 @@ namespace PolyPaint.CustomInk
 
             if(isUpdatingLink)
             {
-                if(linkBeingUpdated.from == null)
+                if (linkBeingUpdated.from == null)
                 {
                     // mettre a jour la position du point initial (from)
-
                     linkBeingUpdated.path.RemoveAt(0);
                     linkBeingUpdated.path.Insert(0, new Coordinates(pointPosition.X, pointPosition.Y));
                     linkBeingUpdated.from = new AnchorPoint(stroke.guid.ToString(), anchor, "0");
@@ -74,12 +72,11 @@ namespace PolyPaint.CustomInk
                 // redessiner les liens
                 for (int i = 0; i < Strokes.Count; i++)
                 {
-                    if (Strokes[i].GetType() == typeof(LinkStroke) && (Strokes[i] as LinkStroke).guid.ToString() == linkBeingUpdated.id)
+                    if (Strokes[i].GetType() == typeof(LinkStroke) && (Strokes[i] as LinkStroke).guid == linkBeingUpdated.guid)
                     {
-                        Strokes.Replace(
-                                Strokes[i],
-                                new StrokeCollection { new LinkStroke(new Guid(linkBeingUpdated.id), linkBeingUpdated, new StylusPointCollection { new StylusPoint(0, 0) }) }
-                            );
+                        Strokes.RemoveAt(i);
+                        linkBeingUpdated.addStylusPointsToLink();
+                        Strokes.Add(linkBeingUpdated);
                     }
                 }
 
@@ -87,24 +84,19 @@ namespace PolyPaint.CustomInk
             }
             else
             {
-                if (isCreatingLink)
+                if (isCreatingLink > 0)
                 {
-                    Point firstPointToLink = links[links.Count - 1].GetPoint(0);
+                    linkBeingCreated.addToPointToLink(pointPosition, stroke.guid.ToString(), anchor);
+                    Strokes.Add(linkBeingCreated);
 
-                    links[links.Count - 1].path.Add(new Coordinates(pointPosition.X, pointPosition.Y));
-                    links[links.Count - 1].to = new AnchorPoint(stroke.guid.ToString(), anchor, "0");
-
-                    Strokes.Add(new LinkStroke(links[links.Count - 1], new StylusPointCollection { new StylusPoint(firstPointToLink.X, firstPointToLink.Y) }));
-
-                    isCreatingLink = false;
+                    isCreatingLink = 0;
                 }
                 else
                 {
-                    Link newLink = new Link(pointPosition, stroke.guid.ToString(), anchor);
-                    links.Add(newLink);
+                    linkBeingCreated = new LinkStroke(pointPosition, stroke.guid.ToString(), anchor, new StylusPointCollection { new StylusPoint(0, 0) });
 
                     addAnchorPoints();
-                    isCreatingLink = true;
+                    isCreatingLink = 1;
                 }
             }
 
@@ -114,32 +106,40 @@ namespace PolyPaint.CustomInk
 
         public void RefreshLinks()
         {
-            //if (!isCreatingLink)
-            //{
-            //    foreach (Link link in links)
-            //    {
-            //        Point fromPoint = link.GetFromPoint(this.Strokes);
-            //        Point toPoint = link.GetToPoint(this.Strokes);
-            //        // mettre a jour les positions des points initial et final
-            //        link.path.RemoveAt(0);
-            //        link.path.Insert(0, new Coordinates(fromPoint.X, fromPoint.Y));
-            //        link.path.RemoveAt(link.path.Count - 1);
-            //        link.path.Add(new Coordinates(toPoint.X, toPoint.Y));
-                    
-            //        // redessiner les liens
-            //        for(int i = 0; i < Strokes.Count; i++)
-            //        {
-            //            if(Strokes[i].GetType() == typeof(LinkStroke))
-            //            {
-            //                Strokes.Replace(
-            //                        Strokes[i],
-            //                        new StrokeCollection { new LinkStroke(new Guid(link.id), link, new StylusPointCollection { new StylusPoint(0, 0) }) }
-            //                    );
-            //            }
-            //        }
+            if (isCreatingLink == 0)
+            {
+                for (int i = 0; i < Strokes.Count; i++)
+                {
+                    CustomStroke customStroke = Strokes[i] as CustomStroke;
+                    if (customStroke.type == (int)StrokeTypes.LINK)
+                    {
+                        LinkStroke linkStroke = customStroke as LinkStroke;
+                        foreach (CustomStroke selectedStroke in SelectedStrokes)
+                        {
+                            if(linkStroke.from?.formId == selectedStroke.guid.ToString())
+                            {
+                                Point fromPoint = linkStroke.GetFromPoint(this.Strokes);
+                                // mettre a jour les positions des points initial et final
+                                linkStroke.path.RemoveAt(0);
+                                linkStroke.path.Insert(0, new Coordinates(fromPoint.X, fromPoint.Y));
+                            }
+                            if (linkStroke.to?.formId == selectedStroke.guid.ToString())
+                            {
+                                Point toPoint = linkStroke.GetToPoint(this.Strokes);
+                                // mettre a jour les positions des points initial et final
+                                linkStroke.path.RemoveAt(linkStroke.path.Count - 1);
+                                linkStroke.path.Add(new Coordinates(toPoint.X, toPoint.Y));
+                            }
 
-            //    }
-            //}
+                            linkStroke.addStylusPointsToLink();
+
+                        }
+                    }
+                }
+                //Action emptyDelegate = delegate { };
+                //Dispatcher.Invoke(emptyDelegate, DispatcherPriority.Render);
+
+            }
         }
         #endregion
 
@@ -252,7 +252,6 @@ namespace PolyPaint.CustomInk
                     break;
                 case StrokeTypes.LINK:
                     customStroke = new LinkStroke(e.Stroke.StylusPoints);
-                    links.Add(new Link(customStroke.guid.ToString(), customStroke.name, new AnchorPoint(), new AnchorPoint(), customStroke.type, (customStroke as LinkStroke).style, (customStroke as LinkStroke).path));
                     break;
                 default:
                     customStroke = new ClassStroke(e.Stroke.StylusPoints);
@@ -406,15 +405,16 @@ namespace PolyPaint.CustomInk
             Children.Clear();
 
             isUpdatingLink = false;
-            isCreatingLink = false;
-            //if (isCreatingLink == 1)
-            //{
-            //    isCreatingLink++;
-            //} else
-            //{
-            //    isCreatingLink = 0;
-            //}
-            
+            //isCreatingLink = false;
+            if (isCreatingLink == 1)
+            {
+                isCreatingLink++;
+            }
+            else
+            {
+                isCreatingLink = 0;
+            }
+
             StrokeCollection selectedStrokes = new StrokeCollection();
 
             // Add selection adorners to selectedStrokes
@@ -448,12 +448,15 @@ namespace PolyPaint.CustomInk
             if (selectedStroke.GetType() != typeof(LinkStroke))
             {
                 myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
-            }
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+            } else
+            {
+                myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke, this));
+            }
 
         }
 
-        private void addAnchorPoints()
+        public void addAnchorPoints()
         {
             foreach (CustomStroke stroke in Strokes)
             {

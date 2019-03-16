@@ -10,7 +10,7 @@ namespace PolyPaint.CustomInk
 {
     class AnchorPointAdorner : Adorner
     {
-        List<Button> buttons;
+        List<CustomButton> buttons;
         VisualCollection visualChildren;
 
         // The center of the strokes.
@@ -36,33 +36,19 @@ namespace PolyPaint.CustomInk
             center = stroke.GetCenter();
             rotation = new RotateTransform(stroke.rotation, center.X, center.Y);
 
-            buttons = new List<Button>();
-            // Pour une ShapeStroke
-            if (customStroke.GetType() != typeof(LinkStroke))
-            {
-                buttons.Add(new CustomButton(stroke, canvas, 0));
-                buttons.Add(new CustomButton(stroke, canvas, 1));
-            
-                buttons.Add(new CustomButton(stroke, canvas, 2));
-                buttons.Add(new CustomButton(stroke, canvas, 3));
-            }
-            else //LinkStroke
-            {
-                buttons.Add(new LinkStrokeButton(stroke, canvas, 0));
-                buttons.Add(new LinkStrokeButton(stroke, canvas, 1));
-            }
+            buttons = new List<CustomButton>();
+            buttons.Add(new CustomButton(stroke, canvas, 0));
+            buttons.Add(new CustomButton(stroke, canvas, 1));
+            buttons.Add(new CustomButton(stroke, canvas, 2));
+            buttons.Add(new CustomButton(stroke, canvas, 3));
 
 
             visualChildren = new VisualCollection(this);
-            foreach(Button button in buttons)
+            foreach(CustomButton button in buttons)
             {
                 button.Cursor = Cursors.SizeNWSE;
                 button.Width = 10;
                 button.Height = 10;
-                if (stroke.GetType() == typeof(LinkStroke))
-                {
-                    button.Background = Brushes.DarkRed;
-                }
                 button.Background = Brushes.IndianRed;
                 
                 visualChildren.Add(button);
@@ -88,32 +74,12 @@ namespace PolyPaint.CustomInk
 
             center = stroke.GetCenter();
 
-            if (stroke.GetType() != typeof(LinkStroke))
-            {
-                ArrangeButton(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
-                ArrangeButton(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
-                ArrangeButton(2, 0, strokeBounds.Height / 2 + HANDLEMARGIN);
-                ArrangeButton(3, -(strokeBounds.Width / 2 + HANDLEMARGIN), 0);
-            }
-            else if((stroke as LinkStroke).path.Count > 1) { 
-
-                ArrangeButton(0, center.X - (stroke as LinkStroke).path[0].x, center.Y - (stroke as LinkStroke).path[0].y);
-                ArrangeButton(1, center.X - (stroke as LinkStroke).path[1].x, center.Y - (stroke as LinkStroke).path[1].y);
-            }
-
-            //stroke.anchorPoints.Clear();
-            //AddAnchorPointsToStroke();
+            ArrangeButton(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
+            ArrangeButton(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
+            ArrangeButton(2, 0, strokeBounds.Height / 2 + HANDLEMARGIN);
+            ArrangeButton(3, -(strokeBounds.Width / 2 + HANDLEMARGIN), 0);
 
             return finalSize;
-        }
-
-        private void AddAnchorPointsToStroke()
-        {
-            for(int i = 0; i < 4; i++)
-            {
-                Point position = buttons[i].TransformToAncestor(canvas).Transform(new Point(0, 0));
-                (stroke as ShapeStroke).anchorPoints.Add(new Point(position.X, position.Y));
-            }
         }
 
         private void ArrangeButton(int buttonNumber, double xOffset, double yOffset)
