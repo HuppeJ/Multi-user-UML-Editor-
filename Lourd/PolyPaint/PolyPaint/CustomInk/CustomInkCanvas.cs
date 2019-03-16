@@ -19,29 +19,10 @@ namespace PolyPaint.CustomInk
         private StrokeCollection clipboard;
 
         public StylusPoint firstPoint;
-        public int isCreatingLink = 0;
         public bool isUpdatingLink = false;
-        public LinkStroke linkBeingCreated; 
         
-        #region createLink
-        public void createLink(CustomStroke stroke, int anchor, Point pointPosition)
-        {
-
-            if (isCreatingLink > 0)
-            {
-                linkBeingCreated.addToPointToLink(pointPosition, stroke?.guid.ToString(), anchor);
-                Strokes.Add(linkBeingCreated);
-
-                isCreatingLink = 0;
-            }
-            else
-            {
-                linkBeingCreated = new LinkStroke(pointPosition, stroke?.guid.ToString(), anchor, new StylusPointCollection { new StylusPoint(0, 0) });
-                isCreatingLink = 1;
-            }
-            
-        }
-
+        #region links
+        
         public void updateLink(int linkStrokeAnchor, LinkStroke linkBeingUpdated, string strokeToAttachGuid, int strokeToAttachAnchor, Point pointPosition)
         {
 
@@ -68,56 +49,55 @@ namespace PolyPaint.CustomInk
         
         public void RefreshLinks()
         {
-            if (isCreatingLink == 0)
+            foreach (CustomStroke customStroke in Strokes)
             {
-                foreach (CustomStroke customStroke in Strokes)
+                if (isLinkStroke(customStroke))
                 {
-                    if (isLinkStroke(customStroke))
+                    LinkStroke linkStroke = customStroke as LinkStroke;
+
+                    if (linkStroke.isAttached())
                     {
-                        LinkStroke linkStroke = customStroke as LinkStroke;
-
-                        if (linkStroke.isAttached())
+                        if (SelectedStrokes.Count == 1 && SelectedStrokes.Contains(linkStroke)) { } // do nothing 
+                        else
                         {
-                            if (SelectedStrokes.Count == 1 && SelectedStrokes.Contains(linkStroke)) { } // do nothing 
-                            else
+                            if (linkStroke.from.formId == null)
                             {
-                                if (linkStroke.from.formId == null) {
-                                    StylusPoint point = linkStroke.StylusPoints[0];
-                                    linkStroke.path[0] = new Coordinates(point.X, point.Y);
-                                } else if (linkStroke.to.formId == null)
+                                StylusPoint point = linkStroke.StylusPoints[0];
+                                linkStroke.path[0] = new Coordinates(point.X, point.Y);
+                            }
+                            else if (linkStroke.to.formId == null)
+                            {
+                                StylusPoint point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
+                                linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.X, point.Y);
+                            }
+
+
+                            foreach (CustomStroke selectedStroke in SelectedStrokes)
+                            {
+                                if (linkStroke.from?.formId == selectedStroke.guid.ToString())
                                 {
-                                    StylusPoint point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
-                                    linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.X, point.Y);
+                                    Point fromPoint = linkStroke.GetFromPoint(this.Strokes);
+                                    // mettre a jour les positions des points initial et final
+                                    linkStroke.path[0] = new Coordinates(fromPoint.X, fromPoint.Y);
+                                }
+                                if (linkStroke.to?.formId == selectedStroke.guid.ToString())
+                                {
+                                    Point toPoint = linkStroke.GetToPoint(this.Strokes);
+                                    // mettre a jour les positions des points initial et final
+                                    linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(toPoint.X, toPoint.Y);
                                 }
 
-
-                                foreach (CustomStroke selectedStroke in SelectedStrokes)
-                                {
-                                    if (linkStroke.from?.formId == selectedStroke.guid.ToString())
-                                    {
-                                        Point fromPoint = linkStroke.GetFromPoint(this.Strokes);
-                                        // mettre a jour les positions des points initial et final
-                                        linkStroke.path[0] = new Coordinates(fromPoint.X, fromPoint.Y);
-                                    }
-                                    if (linkStroke.to?.formId == selectedStroke.guid.ToString())
-                                    {
-                                        Point toPoint = linkStroke.GetToPoint(this.Strokes);
-                                        // mettre a jour les positions des points initial et final
-                                        linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(toPoint.X, toPoint.Y);
-                                    }
-
-                                    linkStroke.addStylusPointsToLink();
-                                }
+                                linkStroke.addStylusPointsToLink();
                             }
                         }
-                        else if(SelectedStrokes.Contains(linkStroke)) // update path if linkStroke is not attached and has been moved or resized
-                        {
-                            StylusPoint point = linkStroke.StylusPoints[0];
-                            linkStroke.path[0] = new Coordinates(point.X, point.Y);
+                    }
+                    else if (SelectedStrokes.Contains(linkStroke)) // update path if linkStroke is not attached and has been moved or resized
+                    {
+                        StylusPoint point = linkStroke.StylusPoints[0];
+                        linkStroke.path[0] = new Coordinates(point.X, point.Y);
 
-                            point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
-                            linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.X, point.Y);
-                        }
+                        point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
+                        linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.X, point.Y);
                     }
                 }
             }
@@ -385,16 +365,7 @@ namespace PolyPaint.CustomInk
             Children.Clear();
 
             isUpdatingLink = false;
-            //isCreatingLink = false;
-            if (isCreatingLink == 1)
-            {
-                isCreatingLink++;
-            }
-            else
-            {
-                isCreatingLink = 0;
-            }
-
+            
             StrokeCollection selectedStrokes = new StrokeCollection();
 
             // Add selection adorners to selectedStrokes

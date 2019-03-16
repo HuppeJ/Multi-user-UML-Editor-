@@ -135,17 +135,17 @@ namespace PolyPaint.CustomInk
             // triangle that uses the center and the mouse's position 
             // as vertices for the hypotenuse.
             
-            Point pos = Mouse.GetPosition(this);
-            int number = 0;
-            if (sender as Thumb == anchors[1]) number = 1;
+            //Point pos = Mouse.GetPosition(this);
+            //int number = 0;
+            //if (sender as Thumb == anchors[1]) number = 1;
 
-            double deltaX = pos.X - center.X;
-            double deltaY = pos.Y - center.Y;
+            //double deltaX = pos.X - center.X;
+            //double deltaY = pos.Y - center.Y;
 
-            if (deltaY.Equals(0) && deltaX.Equals(0))
-            {
-                return;
-            }
+            //if (deltaY.Equals(0) && deltaX.Equals(0))
+            //{
+            //    return;
+            //}
 
 
             // Apply the rotation to the strokes' outline.
@@ -155,8 +155,8 @@ namespace PolyPaint.CustomInk
             //line.Data = new LineGeometry(new Point(0, 0),
             //                             new Point((stroke as LinkStroke).path[1].x, (stroke as LinkStroke).path[1].y)
             //                            );
-            line.Stroke = Brushes.Blue;
-            line.StrokeThickness = 1;
+            //line.Stroke = Brushes.Blue;
+            //line.StrokeThickness = 1;
             
             //line.RenderTransform = rotation;
         }

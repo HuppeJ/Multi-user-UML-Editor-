@@ -13,7 +13,6 @@ namespace PolyPaint.CustomInk
 {
     class AnchorPointAdorner : Adorner
     {
-        List<CustomButton> buttons;
         List<Thumb> anchors;
         List<StrokeAnchorPointThumb> cheatAnchors;
 
@@ -23,7 +22,7 @@ namespace PolyPaint.CustomInk
         Point center;
 
         // The linkLine
-        Path line;
+        //Path line;
 
         RotateTransform rotation;
         const int HANDLEMARGIN = 15;
@@ -82,8 +81,8 @@ namespace PolyPaint.CustomInk
             }
 
             strokeBounds = customStroke.GetBounds();
-            line = new Path();
-            visualChildren.Add(line);
+            //line = new Path();
+            //visualChildren.Add(line);
 
         }
 
@@ -135,17 +134,6 @@ namespace PolyPaint.CustomInk
         {
             //e.HorizontalChange, e.VerticalChange;
             canvas.addAnchorPoints();
-
-            int number = 0;
-            if (sender as Thumb == anchors[1]) number = 1;
-            if (sender as Thumb == anchors[2]) number = 2;
-            if (sender as Thumb == anchors[3]) number = 3;
-            Point pos = Mouse.GetPosition(this);
-
-            canvas.createLink(stroke, number, pos);
-
-
-            InvalidateArrange();
         }
 
         void dragHandle_DragDelta(object sender, DragDeltaEventArgs e)
@@ -211,7 +199,18 @@ namespace PolyPaint.CustomInk
 
                 }
             }
-            canvas.createLink(strokeTo, number, actualPos);
+
+
+            int linkAnchorNumber = 0;
+            if (sender as Thumb == anchors[1]) linkAnchorNumber = 1;
+            if (sender as Thumb == anchors[2]) linkAnchorNumber = 2;
+            if (sender as Thumb == anchors[3]) linkAnchorNumber = 3;
+            Point pos = (sender as Thumb).TransformToAncestor(canvas).Transform(new Point(0, 0));
+
+            LinkStroke linkBeingCreated = new LinkStroke(pos, stroke?.guid.ToString(), linkAnchorNumber, new StylusPointCollection { new StylusPoint(0, 0) });
+            linkBeingCreated.addToPointToLink(actualPos, strokeTo?.guid.ToString(), number);
+
+            canvas.Strokes.Add(linkBeingCreated);
 
 
             InvalidateArrange();

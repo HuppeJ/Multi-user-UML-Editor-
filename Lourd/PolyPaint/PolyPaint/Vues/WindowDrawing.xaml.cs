@@ -85,17 +85,8 @@ namespace PolyPaint.Vues
                 }
             }
 
-            // when is creating a link from customStroke to canvas point (a link is selected && an achor point has been clicked before)
-            if (surfaceDessin.isCreatingLink > 0)
-            {
-                // what to put in when no guid? i.e not linked to shapeStroke? gi
-                surfaceDessin.linkBeingCreated.addToPointToLink(e.GetPosition(surfaceDessin), null, 0);
-                surfaceDessin.Strokes.Add(surfaceDessin.linkBeingCreated);
-
-                surfaceDessin.isCreatingLink = 0;
-            }
-            
-            // Pour que les boutons est la bonne couleur
+                        
+            // Pour que les boutons soient de la bonne couleur
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
         }
 
