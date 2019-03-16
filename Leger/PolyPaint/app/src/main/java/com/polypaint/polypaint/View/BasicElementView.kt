@@ -381,64 +381,8 @@ open class BasicElementView: ConstraintLayout {
 
                     val basicShapeId = ViewShapeHolder.getInstance().map[this]
                     if(basicShapeId != null){
-                        val linksTo = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksTo
-                        if(linksTo != null){
-                            for(linkId in linksTo){
-                                if(linkId != null) {
-                                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
-                                    val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
-                                    if (linkView != null && linkShape != null) {
-//                                        linkView.end.x += deltaX
-//                                        linkView.end.y += deltaY
-
-
-                                        val parentView = this.parent as RelativeLayout
-                                        val coord = IntArray(2)
-                                        this.getLocationOnScreen(coord)
-                                        val activity = context as AppCompatActivity
-                                        val toolbarView: View= activity.findViewById(R.id.toolbar)
-
-
-//                                        linkShape.path.last().x = coord[0]-parentView.x + this.measuredWidth/2.0
-//                                        linkShape.path.last().y = coord[1]-toolbarView.measuredHeight.toDouble() + this.measuredHeight/2.0
-
-//                                        linkShape.path.last().x = leftX + this.measuredWidth / 2.0
-//                                        linkShape.path.last().y = topY + this.measuredHeight / 2.0
-
-                                        setLinkPositionWithAnchor(linkShape, false)
-
-
-//                                        linkShape.path.last().x += deltaX
-//                                        linkShape.path.last().y += deltaY
-                                        linkView.requestLayout()
-
-                                    }
-                                }
-                            }
-                        }
-                        val linksFrom = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
-                        if(linksFrom != null){
-                            for(linkId in linksFrom){
-                                if(linkId != null) {
-                                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
-                                    val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
-                                    if (linkView != null && linkShape != null) {
-//                                        linkView.start.x += deltaX
-//                                        linkView.start.y += deltaY
-
-//                                        linkShape.path.first().x += deltaX
-//                                        linkShape.path.first().y += deltaY
-
-//                                        linkShape.path.first().x = leftX + this.measuredWidth / 2.0
-//                                        linkShape.path.first().y = topY + this.measuredHeight / 2.0
-
-                                        setLinkPositionWithAnchor(linkShape, true)
-                                        linkView.requestLayout()
-
-                                    }
-                                }
-                            }
-                        }
+                        setAllLinksPosition(basicShapeId, false)
+                        setAllLinksPosition(basicShapeId, true)
                     }
 
 
@@ -466,6 +410,8 @@ open class BasicElementView: ConstraintLayout {
         }
         true
     }
+
+
     private fun calculateDeltaAngle() : Float{
         val angle1 : Double = Math.atan2( (fingersCoords[1].y - fingersCoords[0].y), (fingersCoords[1].x - fingersCoords[0].x))
         val angle2 : Double = Math.atan2( (fingersCoords[3].y - fingersCoords[2].y), (fingersCoords[3].x - fingersCoords[2].x))
@@ -559,64 +505,8 @@ open class BasicElementView: ConstraintLayout {
 
                 val basicShapeId = ViewShapeHolder.getInstance().map[this]
                 if(basicShapeId != null){
-                    val linksTo = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksTo
-                    if(linksTo != null){
-                        for(linkId in linksTo){
-                            if(linkId != null) {
-                                val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
-                                val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
-                                if (linkView != null && linkShape != null) {
-//                                        linkView.end.x += deltaX
-//                                        linkView.end.y += deltaY
-//                                    when (linkShape.to.anchor){
-//                                        AnchorPoints.LEFT.ordinal->linkShape.path.last().y += deltaY / 2f
-//                                        AnchorPoints.TOP.ordinal->linkShape.path.last().x +=deltaX / 2f
-//                                        AnchorPoints.RIGHT.ordinal->{
-//                                            linkShape.path.last().x += deltaX
-//                                            linkShape.path.last().y += deltaY / 2f
-//                                        }
-//                                        AnchorPoints.BOTTOM.ordinal ->{
-//                                            linkShape.path.last().x += deltaX / 2f
-//                                            linkShape.path.last().y += deltaY
-//                                        }
-//                                    }
-
-                                    setLinkPositionWithAnchor(linkShape, false)
-                                    linkView.requestLayout()
-                                }
-                            }
-                        }
-                    }
-                    val linksFrom = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
-                    if(linksFrom != null){
-                        for(linkId in linksFrom){
-                            if(linkId != null) {
-                                val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
-                                val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
-                                if (linkView != null && linkShape != null) {
-//                                        linkView.start.x += deltaX
-//                                        linkView.start.y += deltaY
-
-//                                    when (linkShape.from.anchor){
-//                                        AnchorPoints.LEFT.ordinal->linkShape.path.first().y += deltaY / 2f
-//                                        AnchorPoints.TOP.ordinal->linkShape.path.first().x +=deltaX / 2f
-//                                        AnchorPoints.RIGHT.ordinal -> {
-//                                            linkShape.path.first().x += deltaX
-//                                            linkShape.path.first().y += deltaY / 2f
-//                                        }
-//                                        AnchorPoints.BOTTOM.ordinal ->{
-//                                            linkShape.path.first().x += deltaX / 2f
-//                                            linkShape.path.first().y += deltaY
-//                                        }
-//                                    }
-
-                                    setLinkPositionWithAnchor(linkShape, true)
-                                    linkView.requestLayout()
-
-                                }
-                            }
-                        }
-                    }
+                    setAllLinksPosition(basicShapeId, false)
+                    setAllLinksPosition(basicShapeId, true)
                 }
             }
             MotionEvent.ACTION_UP -> {
@@ -631,6 +521,28 @@ open class BasicElementView: ConstraintLayout {
         true
     }
 
+    private fun setAllLinksPosition(basicShapeId: String, isFrom:Boolean){
+        val links = if(isFrom){
+            ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
+        } else {
+            ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksTo
+        }
+        if(links != null){
+            for(linkId in links){
+                if(linkId != null) {
+                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                    val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+                    if (linkView != null && linkShape != null) {
+
+                        setLinkPositionWithAnchor(linkShape, isFrom)
+                        linkView.requestLayout()
+
+                    }
+                }
+            }
+        }
+    }
+
     private fun setLinkPositionWithAnchor(link: Link, isFrom: Boolean){
         var anchor: Int
         var point: Coordinates
@@ -641,24 +553,6 @@ open class BasicElementView: ConstraintLayout {
             anchor =link.to.anchor
             point = link.path.last()
         }
-//        when (anchor){
-//            AnchorPoints.LEFT.ordinal->{
-//                point.y = topY + this.measuredHeight / 2.0
-//                point.x = leftX.toDouble()
-//            }
-//            AnchorPoints.TOP.ordinal->{
-//                point.y = topY.toDouble()
-//                point.x = leftX + this.measuredWidth / 2.0
-//            }
-//            AnchorPoints.RIGHT.ordinal->{
-//                point.y = topY + this.measuredHeight / 2.0
-//                point.x = (leftX + this.measuredWidth).toDouble()
-//            }
-//            AnchorPoints.BOTTOM.ordinal ->{
-//                point.y = (topY + this.measuredHeight).toDouble()
-//                point.x = leftX + this.measuredWidth / 2.0
-//            }
-//        }
         val centerX = (leftX + this.measuredWidth / 2.0)
         val centerY = (topY + this.measuredHeight / 2.0)
         var newX: Double = 0.0
