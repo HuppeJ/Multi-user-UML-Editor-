@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
@@ -27,7 +28,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-open class BasicElementView: RelativeLayout {
+open class BasicElementView: ConstraintLayout {
 
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
@@ -42,6 +43,9 @@ open class BasicElementView: RelativeLayout {
     var pointerFinger2 : Int = -1
 
     var fingersCoords : Array<Coordinates> = Array(4) { Coordinates(0.0,0.0) }
+
+    var leftX = this.pivotX
+    var topY = this.pivotY
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -345,6 +349,8 @@ open class BasicElementView: RelativeLayout {
                     val deltaY = event.rawY - oldFrameRawY
                     this.x = this.x + deltaX
                     this.y = this.y + deltaY
+                    leftX += deltaX
+                    topY += deltaY
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
 
@@ -357,8 +363,11 @@ open class BasicElementView: RelativeLayout {
                         //Calculate Angle
                         val angle = calculateDeltaAngle()
 
+
                         //Rotate
                         rotation += angle.toInt()
+
+
 
                         //Log.d("Angle", ""+angle)
                         //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
@@ -373,42 +382,8 @@ open class BasicElementView: RelativeLayout {
 
                     val basicShapeId = ViewShapeHolder.getInstance().map[this]
                     if(basicShapeId != null){
-                        val linksTo = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksTo
-                        if(linksTo != null){
-                            for(linkId in linksTo){
-                                if(linkId != null) {
-                                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
-                                    val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
-                                    if (linkView != null && linkShape != null) {
-//                                        linkView.end.x += deltaX
-//                                        linkView.end.y += deltaY
-
-                                        linkShape.path.last().x += deltaX
-                                        linkShape.path.last().y += deltaY
-                                        linkView.requestLayout()
-
-                                    }
-                                }
-                            }
-                        }
-                        val linksFrom = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
-                        if(linksFrom != null){
-                            for(linkId in linksFrom){
-                                if(linkId != null) {
-                                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
-                                    val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
-                                    if (linkView != null && linkShape != null) {
-//                                        linkView.start.x += deltaX
-//                                        linkView.start.y += deltaY
-
-                                        linkShape.path.first().x += deltaX
-                                        linkShape.path.first().y += deltaY
-                                        linkView.requestLayout()
-
-                                    }
-                                }
-                            }
-                        }
+                        setAllLinksPosition(basicShapeId, false)
+                        setAllLinksPosition(basicShapeId, true)
                     }
 
 
@@ -436,6 +411,8 @@ open class BasicElementView: RelativeLayout {
         }
         true
     }
+
+
     private fun calculateDeltaAngle() : Float{
         val angle1 : Double = Math.atan2( (fingersCoords[1].y - fingersCoords[0].y), (fingersCoords[1].x - fingersCoords[0].x))
         val angle2 : Double = Math.atan2( (fingersCoords[3].y - fingersCoords[2].y), (fingersCoords[3].x - fingersCoords[2].x))
@@ -516,13 +493,22 @@ open class BasicElementView: RelativeLayout {
                 oldFrameRawY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> {
-                val newWidth = borderResizableLayout.width + (event.rawX - oldFrameRawX)
-                val newHeight = borderResizableLayout.height + (event.rawY - oldFrameRawY)
+                var deltaX: Int = (event.rawX - oldFrameRawX).toInt()
+                var deltaY: Int = (event.rawY - oldFrameRawY).toInt()
+                val newWidth = borderResizableLayout.width + deltaX
+                val newHeight = borderResizableLayout.height + deltaY
 
-                resize(newWidth.toInt(), newHeight.toInt())
+                resize(newWidth, newHeight)
 
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
+
+
+                val basicShapeId = ViewShapeHolder.getInstance().map[this]
+                if(basicShapeId != null){
+                    setAllLinksPosition(basicShapeId, false)
+                    setAllLinksPosition(basicShapeId, true)
+                }
             }
             MotionEvent.ACTION_UP -> {
                 val activity: AppCompatActivity = context as AppCompatActivity
@@ -534,6 +520,66 @@ open class BasicElementView: RelativeLayout {
             }
         }
         true
+    }
+
+    private fun setAllLinksPosition(basicShapeId: String, isFrom:Boolean){
+        val links = if(isFrom){
+            ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
+        } else {
+            ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksTo
+        }
+        if(links != null){
+            for(linkId in links){
+                if(linkId != null) {
+                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                    val linkShape: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+                    if (linkView != null && linkShape != null) {
+
+                        setLinkPositionWithAnchor(linkShape, isFrom)
+                        linkView.requestLayout()
+
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setLinkPositionWithAnchor(link: Link, isFrom: Boolean){
+        var anchor: Int
+        var point: Coordinates
+        if(isFrom){
+            anchor = link.from.anchor
+            point = link.path.first()
+        } else {
+            anchor =link.to.anchor
+            point = link.path.last()
+        }
+        val centerX = (leftX + this.measuredWidth / 2.0)
+        val centerY = (topY + this.measuredHeight / 2.0)
+        var newX: Double = 0.0
+        var newY: Double = 0.0
+        when (anchor){
+            AnchorPoints.LEFT.ordinal->{
+                Log.d("Rotation", rotation.toString())
+                newX = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newY = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+            }
+            AnchorPoints.RIGHT.ordinal->{
+                newX = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newY = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+            }
+            AnchorPoints.TOP.ordinal->{
+                newX = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newY = - (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+            }
+
+            AnchorPoints.BOTTOM.ordinal ->{
+                newX = -(borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newY = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+            }
+        }
+        point.y = centerY + newY
+        point.x = centerX + newX
     }
 
     open fun resize(newWidth:Int, newHeight:Int){
