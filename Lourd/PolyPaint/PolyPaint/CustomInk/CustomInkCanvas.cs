@@ -9,7 +9,6 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace PolyPaint.CustomInk
 {
@@ -22,123 +21,105 @@ namespace PolyPaint.CustomInk
         public StylusPoint firstPoint;
         public int isCreatingLink = 0;
         public bool isUpdatingLink = false;
-        public LinkStroke linkBeingUpdated;
         public LinkStroke linkBeingCreated; 
-
-        internal void updateLink(CustomStroke stroke, int number, Point position)
-        {
-            // number = 0 if from. 1 if to.
-            isUpdatingLink = true;
-            foreach (CustomStroke customStroke in Strokes)
-            {
-                if (customStroke.guid == stroke.guid)
-                {
-                    if (number == 0)
-                    {
-                        (customStroke as LinkStroke).from = null;
-                    }
-                    else
-                    {
-                        (customStroke as LinkStroke).to = null;
-                    }
-                    linkBeingUpdated = customStroke as LinkStroke;
-                }
-            }
-            addAnchorPoints();
-
-        }
-
+        
         #region createLink
         public void createLink(CustomStroke stroke, int anchor, Point pointPosition)
         {
 
-            if(isUpdatingLink)
+            if (isCreatingLink > 0)
             {
-                if (linkBeingUpdated.from == null)
+                linkBeingCreated.addToPointToLink(pointPosition, stroke?.guid.ToString(), anchor);
+                Strokes.Add(linkBeingCreated);
+
+                isCreatingLink = 0;
+            }
+            else
+            {
+                linkBeingCreated = new LinkStroke(pointPosition, stroke?.guid.ToString(), anchor, new StylusPointCollection { new StylusPoint(0, 0) });
+                isCreatingLink = 1;
+            }
+            
+        }
+
+        public void updateLink(int linkStrokeAnchor, LinkStroke linkBeingUpdated, string strokeToAttachGuid, int strokeToAttachAnchor, Point pointPosition)
+        {
+
+            if (isUpdatingLink)
+            {
+                if (linkStrokeAnchor == 0)
                 {
                     // mettre a jour la position du point initial (from)
-                    linkBeingUpdated.path.RemoveAt(0);
-                    linkBeingUpdated.path.Insert(0, new Coordinates(pointPosition.X, pointPosition.Y));
-                    linkBeingUpdated.from = new AnchorPoint(stroke.guid.ToString(), anchor, "0");
+                    linkBeingUpdated.path[0] = new Coordinates(pointPosition.X, pointPosition.Y);
+                    linkBeingUpdated.from = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "0");
                 }
                 else
                 {
                     // mettre a jour la position du point final (to)
-                    linkBeingUpdated.path.RemoveAt(linkBeingUpdated.path.Count - 1);
-                    linkBeingUpdated.path.Add(new Coordinates(pointPosition.X, pointPosition.Y));
-                    linkBeingUpdated.to = new AnchorPoint(stroke.guid.ToString(), anchor, "0");
+                    linkBeingUpdated.path[linkBeingUpdated.path.Count - 1] = new Coordinates(pointPosition.X, pointPosition.Y);
+                    linkBeingUpdated.to = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "0");
                 }
 
-                // redessiner les liens
-                for (int i = 0; i < Strokes.Count; i++)
-                {
-                    if (Strokes[i].GetType() == typeof(LinkStroke) && (Strokes[i] as LinkStroke).guid == linkBeingUpdated.guid)
-                    {
-                        Strokes.RemoveAt(i);
-                        linkBeingUpdated.addStylusPointsToLink();
-                        Strokes.Add(linkBeingUpdated);
-                    }
-                }
-
-                isUpdatingLink = false;
+                linkBeingUpdated.addStylusPointsToLink();
+                RefreshChildren();
             }
-            else
-            {
-                if (isCreatingLink > 0)
-                {
-                    linkBeingCreated.addToPointToLink(pointPosition, stroke.guid.ToString(), anchor);
-                    Strokes.Add(linkBeingCreated);
-
-                    isCreatingLink = 0;
-                }
-                else
-                {
-                    linkBeingCreated = new LinkStroke(pointPosition, stroke.guid.ToString(), anchor, new StylusPointCollection { new StylusPoint(0, 0) });
-
-                    addAnchorPoints();
-                    isCreatingLink = 1;
-                }
-            }
-
-            Select(new StrokeCollection { stroke });
 
         }
-
+        
         public void RefreshLinks()
         {
             if (isCreatingLink == 0)
             {
-                for (int i = 0; i < Strokes.Count; i++)
+                foreach (CustomStroke customStroke in Strokes)
                 {
-                    CustomStroke customStroke = Strokes[i] as CustomStroke;
-                    if (customStroke.type == (int)StrokeTypes.LINK)
+                    if (isLinkStroke(customStroke))
                     {
                         LinkStroke linkStroke = customStroke as LinkStroke;
-                        foreach (CustomStroke selectedStroke in SelectedStrokes)
+
+                        if (linkStroke.isAttached())
                         {
-                            if(linkStroke.from?.formId == selectedStroke.guid.ToString())
+                            if (SelectedStrokes.Count == 1 && SelectedStrokes.Contains(linkStroke)) { } // do nothing 
+                            else
                             {
-                                Point fromPoint = linkStroke.GetFromPoint(this.Strokes);
-                                // mettre a jour les positions des points initial et final
-                                linkStroke.path.RemoveAt(0);
-                                linkStroke.path.Insert(0, new Coordinates(fromPoint.X, fromPoint.Y));
-                            }
-                            if (linkStroke.to?.formId == selectedStroke.guid.ToString())
-                            {
-                                Point toPoint = linkStroke.GetToPoint(this.Strokes);
-                                // mettre a jour les positions des points initial et final
-                                linkStroke.path.RemoveAt(linkStroke.path.Count - 1);
-                                linkStroke.path.Add(new Coordinates(toPoint.X, toPoint.Y));
-                            }
+                                if (linkStroke.from.formId == null) {
+                                    StylusPoint point = linkStroke.StylusPoints[0];
+                                    linkStroke.path[0] = new Coordinates(point.X, point.Y);
+                                } else if (linkStroke.to.formId == null)
+                                {
+                                    StylusPoint point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
+                                    linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.X, point.Y);
+                                }
 
-                            linkStroke.addStylusPointsToLink();
 
+                                foreach (CustomStroke selectedStroke in SelectedStrokes)
+                                {
+                                    if (linkStroke.from?.formId == selectedStroke.guid.ToString())
+                                    {
+                                        Point fromPoint = linkStroke.GetFromPoint(this.Strokes);
+                                        // mettre a jour les positions des points initial et final
+                                        linkStroke.path[0] = new Coordinates(fromPoint.X, fromPoint.Y);
+                                    }
+                                    if (linkStroke.to?.formId == selectedStroke.guid.ToString())
+                                    {
+                                        Point toPoint = linkStroke.GetToPoint(this.Strokes);
+                                        // mettre a jour les positions des points initial et final
+                                        linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(toPoint.X, toPoint.Y);
+                                    }
+
+                                    linkStroke.addStylusPointsToLink();
+                                }
+                            }
+                        }
+                        else if(SelectedStrokes.Contains(linkStroke)) // update path if linkStroke is not attached and has been moved or resized
+                        {
+                            StylusPoint point = linkStroke.StylusPoints[0];
+                            linkStroke.path[0] = new Coordinates(point.X, point.Y);
+
+                            point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
+                            linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.X, point.Y);
                         }
                     }
                 }
-                //Action emptyDelegate = delegate { };
-                //Dispatcher.Invoke(emptyDelegate, DispatcherPriority.Render);
-
             }
         }
         #endregion
@@ -177,7 +158,7 @@ namespace PolyPaint.CustomInk
             {
                 SelectedStrokes.Add(stroke);
             }
-            base.OnSelectionChanging(e);
+            //base.OnSelectionChanging(e);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
@@ -193,9 +174,8 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionMoved(EventArgs e)
         {
-            base.OnSelectionMoved(e);
-            RefreshChildren();
             RefreshLinks();
+            RefreshChildren();
         }
 
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
@@ -445,13 +425,13 @@ namespace PolyPaint.CustomInk
             AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
             myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
 
-            if (selectedStroke.GetType() != typeof(LinkStroke))
+            if (!isLinkStroke(selectedStroke))
             {
                 myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
             } else
             {
-                myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke, this));
+                myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
             }
 
         }
@@ -503,5 +483,11 @@ namespace PolyPaint.CustomInk
             //}
         }
         #endregion
+
+        private static bool isLinkStroke(Stroke stroke)
+        {
+            return stroke.GetType() == typeof(LinkStroke);
+        }
+
     }
 }

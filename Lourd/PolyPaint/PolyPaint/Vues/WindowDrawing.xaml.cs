@@ -45,6 +45,7 @@ namespace PolyPaint.Vues
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
+            
         }
 
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
@@ -87,15 +88,13 @@ namespace PolyPaint.Vues
             // when is creating a link from customStroke to canvas point (a link is selected && an achor point has been clicked before)
             if (surfaceDessin.isCreatingLink > 0)
             {
-                // what to put in when no guid? i.e not linked to shapeStroke?
-                surfaceDessin.linkBeingCreated.addToPointToLink(e.GetPosition(surfaceDessin), "", 0);
+                // what to put in when no guid? i.e not linked to shapeStroke? gi
+                surfaceDessin.linkBeingCreated.addToPointToLink(e.GetPosition(surfaceDessin), null, 0);
                 surfaceDessin.Strokes.Add(surfaceDessin.linkBeingCreated);
 
                 surfaceDessin.isCreatingLink = 0;
-
-                
             }
-
+            
             // Pour que les boutons est la bonne couleur
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
         }

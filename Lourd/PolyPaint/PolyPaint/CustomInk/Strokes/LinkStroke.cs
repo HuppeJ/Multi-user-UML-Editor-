@@ -44,7 +44,7 @@ namespace PolyPaint.CustomInk.Strokes
             int nbOfPoints = pts.Count;
             double yStep = y / nbOfPoints;
             double xStep = x / nbOfPoints;
-            
+
 
             // garder uniquement le premier point
             while (StylusPoints.Count > 1)
@@ -56,7 +56,7 @@ namespace PolyPaint.CustomInk.Strokes
             for (int i = 1; i <= nbOfPoints; i++)
             {
                 StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-                if(i == nbOfPoints)
+                if (i == nbOfPoints)
                 {
                     path.Add(new Coordinates(StylusPoints[nbOfPoints].X, StylusPoints[nbOfPoints].Y));
                 }
@@ -64,7 +64,7 @@ namespace PolyPaint.CustomInk.Strokes
 
 
         }
-        
+
         public LinkStroke(Point pointFrom, string formId, int anchor, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
         {
             guid = new Guid();
@@ -74,7 +74,7 @@ namespace PolyPaint.CustomInk.Strokes
             type = (int)StrokeTypes.LINK;
             style = new LinkStyle();
             path = new List<Coordinates>();
-            path.Add(new Coordinates(pointFrom.X, pointFrom.Y));            
+            path.Add(new Coordinates(pointFrom.X, pointFrom.Y));
         }
 
         public void addStylusPointsToLink()
@@ -97,7 +97,10 @@ namespace PolyPaint.CustomInk.Strokes
             {
                 StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
             }
-            StylusPoints.RemoveAt(0);
+            if (StylusPoints.Count > 1)
+            {
+                StylusPoints.RemoveAt(0);
+            }
         }
 
         public void addToPointToLink(Point pointTo, string formId, int anchor)
@@ -143,6 +146,10 @@ namespace PolyPaint.CustomInk.Strokes
             return point;
         }
 
+        public bool isAttached()
+        {
+            return from.formId != null || to.formId != null;
+        }
         //public bool 
 
         // ON DOIT FAIRE LA ROTATION DUN LINKSTROKE??? gi

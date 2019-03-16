@@ -169,14 +169,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
-    <Compile Include="CustomInk\CustomButton.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\EditionAdorner.cs" />
     <Compile Include="CustomInk\EditionButton.cs" />
     <Compile Include="CustomInk\LinkAnchorPointAdorner.cs" />
-    <Compile Include="CustomInk\LinkStrokeButton.cs" />
     <Compile Include="CustomInk\RotateAdorner.cs" />
+    <Compile Include="CustomInk\StrokeAnchorPointThumb.cs" />
     <Compile Include="CustomInk\Strokes\ActivityStroke.cs" />
     <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
     <Compile Include="CustomInk\AnchorPointAdorner.cs" />

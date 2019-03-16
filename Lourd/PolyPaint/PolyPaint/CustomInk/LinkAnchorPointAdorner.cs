@@ -22,24 +22,22 @@ namespace PolyPaint.CustomInk
         // The linkLine
         Path line;
 
-        RotateTransform rotation;
         const int HANDLEMARGIN = 15;
 
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
-        public CustomStroke stroke;
+        public LinkStroke stroke;
         public CustomInkCanvas canvas;
 
-        public LinkAnchorPointAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
+        public LinkAnchorPointAdorner(UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
-            stroke = customStroke;
+            stroke = linkStroke;
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = customStroke.GetBounds();
+            strokeBounds = linkStroke.GetBounds();
             center = stroke.GetCenter();
-            rotation = new RotateTransform(stroke.rotation, center.X, center.Y);
 
             anchors = new List<Thumb>();
             // Pour une ShapeStroke
@@ -53,9 +51,10 @@ namespace PolyPaint.CustomInk
             //    anchor.Width = 10;
             //    anchor.Height = 10;
             //    anchor.Background = Brushes.IndianRed;
-           
-            //    anchor.DragDelta += new DragDeltaEventHandler(rotateHandle_DragDelta);
-            //    anchor.DragCompleted += new DragCompletedEventHandler(rotateHandle_DragCompleted);
+
+            //    anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
+            //    anchor.DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);
+            //    anchor.DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);
 
             //    visualChildren.Add(anchor);
             //}
@@ -65,8 +64,10 @@ namespace PolyPaint.CustomInk
             anchors[0].Height = 10;
             anchors[0].Background = Brushes.IndianRed;
 
-            anchors[0].DragDelta += new DragDeltaEventHandler(rotateHandle_DragDelta);
-            anchors[0].DragCompleted += new DragCompletedEventHandler(rotateHandle_DragCompleted);
+            anchors[0].DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
+            anchors[0].DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);
+            anchors[0].DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);
+
             visualChildren.Add(anchors[0]);
 
             anchors[1].Cursor = Cursors.SizeNWSE;
@@ -74,11 +75,12 @@ namespace PolyPaint.CustomInk
             anchors[1].Height = 10;
             anchors[1].Background = Brushes.Blue;
             
-            anchors[1].DragDelta += new DragDeltaEventHandler(rotateHandle_DragDelta);
-            anchors[1].DragCompleted += new DragCompletedEventHandler(rotateHandle_DragCompleted);
+            anchors[1].DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
+            anchors[1].DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);
+            anchors[1].DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);
             visualChildren.Add(anchors[1]);
 
-            strokeBounds = customStroke.GetBounds();
+            strokeBounds = linkStroke.GetBounds();
 
             line = new Path();
             
@@ -101,10 +103,7 @@ namespace PolyPaint.CustomInk
                 ArrangeAnchor(0, -center.X + (stroke as LinkStroke).path[0].x, -center.Y + (stroke as LinkStroke).path[0].y);
                 ArrangeAnchor(1, -center.X + (stroke as LinkStroke).path[1].x, -center.Y + (stroke as LinkStroke).path[1].y);
             }
-
-            line.Data = new LineGeometry(new Point((stroke as LinkStroke).path[0].x, (stroke as LinkStroke).path[0].y),
-                                         new Point((stroke as LinkStroke).path[1].x, (stroke as LinkStroke).path[1].y)
-                                        );
+            
             line.Arrange(new Rect(finalSize));
 
             return finalSize;
@@ -118,32 +117,27 @@ namespace PolyPaint.CustomInk
                                   strokeBounds.Width,
                                   strokeBounds.Height);
 
-            if (rotation != null)
-            {
-                handleRect.Transform(rotation.Value);
-            }
-
             // Draws the thumb and the rectangle around the strokes.
             anchors[anchorNumber].Arrange(handleRect);
         }
 
-        /// <summary>
-        /// Rotates the rectangle representing the
-        /// strokes' bounds as the user drags the
-        /// Thumb.
-        /// </summary>
-        void rotateHandle_DragDelta(object sender, DragDeltaEventArgs e)
+        void dragHandle_DragStarted(object sender,
+                                        DragStartedEventArgs e)
+        {
+            canvas.addAnchorPoints();
+            canvas.isUpdatingLink = true;
+
+        }
+
+        void dragHandle_DragDelta(object sender, DragDeltaEventArgs e)
         {
             // Find the angle of which to rotate the shape.  Use the right
             // triangle that uses the center and the mouse's position 
             // as vertices for the hypotenuse.
-
-            canvas.addAnchorPoints();
-
+            
             Point pos = Mouse.GetPosition(this);
             int number = 0;
             if (sender as Thumb == anchors[1]) number = 1;
-            canvas.updateLink(stroke, number, pos);
 
             double deltaX = pos.X - center.X;
             double deltaY = pos.Y - center.Y;
@@ -157,31 +151,55 @@ namespace PolyPaint.CustomInk
             // Apply the rotation to the strokes' outline.
             //rotation = new RotateTransform(angle, center.X, center.Y);
 
-            line.Data = new LineGeometry(new Point(0, 0),
-                                         new Point((stroke as LinkStroke).path[1].x, (stroke as LinkStroke).path[1].y)
-                                        );
+            // works!!
+            //line.Data = new LineGeometry(new Point(0, 0),
+            //                             new Point((stroke as LinkStroke).path[1].x, (stroke as LinkStroke).path[1].y)
+            //                            );
             line.Stroke = Brushes.Blue;
             line.StrokeThickness = 1;
             
             //line.RenderTransform = rotation;
         }
 
-        /// <summary>
-        /// Rotates the strokes to the same angle as outline.
-        /// </summary>
-        void rotateHandle_DragCompleted(object sender,
+        
+        void dragHandle_DragCompleted(object sender,
                                         DragCompletedEventArgs e)
         {
-            if (rotation == null)
-            {
-                return;
-            }
-
             //e.HorizontalChange, e.VerticalChange;
 
             // Redraw rotateHandle.
 
-            canvas.isUpdatingLink = true;
+            Point actualPos = Mouse.GetPosition(this);
+
+            CustomStroke strokeTo = null;
+            int number = 0;
+
+
+            foreach (UIElement thumb in canvas.Children)
+            {
+                if (thumb.GetType() == typeof(StrokeAnchorPointThumb))
+                {
+                    Point thumbPosition = thumb.TransformToAncestor(canvas).Transform(new Point(0, 0));
+
+                    StrokeAnchorPointThumb cheatThumb = thumb as StrokeAnchorPointThumb;
+                    double y = thumbPosition.Y - actualPos.Y;
+                    double x = thumbPosition.X - actualPos.X;
+
+                    double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
+                    if (distBetweenPoints <= 30)
+                    {
+                        strokeTo = cheatThumb.stroke;
+                        actualPos = thumbPosition;
+                        number = cheatThumb.number;
+                    }
+
+                }
+            }
+            int linkStrokeAnchor = 0;
+            if ((sender as Thumb) == anchors[1]) linkStrokeAnchor = 1;
+
+
+            canvas.updateLink(linkStrokeAnchor, stroke, strokeTo?.guid.ToString(), number, actualPos);
 
             InvalidateArrange();
         }
