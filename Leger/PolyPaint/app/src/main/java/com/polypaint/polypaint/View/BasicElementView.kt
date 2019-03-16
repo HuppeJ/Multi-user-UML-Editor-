@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
@@ -27,7 +28,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-open class BasicElementView: RelativeLayout {
+open class BasicElementView: ConstraintLayout {
 
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
@@ -42,6 +43,9 @@ open class BasicElementView: RelativeLayout {
     var pointerFinger2 : Int = -1
 
     var fingersCoords : Array<Coordinates> = Array(4) { Coordinates(0.0,0.0) }
+
+    var leftX = this.pivotX
+    var topY = this.pivotY
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -344,6 +348,8 @@ open class BasicElementView: RelativeLayout {
                     val deltaY = event.rawY - oldFrameRawY
                     this.x = this.x + deltaX
                     this.y = this.y + deltaY
+                    leftX += deltaX
+                    topY += deltaY
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
 
@@ -356,8 +362,11 @@ open class BasicElementView: RelativeLayout {
                         //Calculate Angle
                         val angle = calculateDeltaAngle()
 
+
                         //Rotate
                         rotation += angle.toInt()
+
+
 
                         //Log.d("Angle", ""+angle)
                         //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
@@ -382,8 +391,25 @@ open class BasicElementView: RelativeLayout {
 //                                        linkView.end.x += deltaX
 //                                        linkView.end.y += deltaY
 
-                                        linkShape.path.last().x += deltaX
-                                        linkShape.path.last().y += deltaY
+
+                                        val parentView = this.parent as RelativeLayout
+                                        val coord = IntArray(2)
+                                        this.getLocationOnScreen(coord)
+                                        val activity = context as AppCompatActivity
+                                        val toolbarView: View= activity.findViewById(R.id.toolbar)
+
+
+//                                        linkShape.path.last().x = coord[0]-parentView.x + this.measuredWidth/2.0
+//                                        linkShape.path.last().y = coord[1]-toolbarView.measuredHeight.toDouble() + this.measuredHeight/2.0
+
+//                                        linkShape.path.last().x = leftX + this.measuredWidth / 2.0
+//                                        linkShape.path.last().y = topY + this.measuredHeight / 2.0
+
+                                        setLinkPositionWithAnchor(linkShape, false)
+
+
+//                                        linkShape.path.last().x += deltaX
+//                                        linkShape.path.last().y += deltaY
                                         linkView.requestLayout()
 
                                     }
@@ -400,8 +426,13 @@ open class BasicElementView: RelativeLayout {
 //                                        linkView.start.x += deltaX
 //                                        linkView.start.y += deltaY
 
-                                        linkShape.path.first().x += deltaX
-                                        linkShape.path.first().y += deltaY
+//                                        linkShape.path.first().x += deltaX
+//                                        linkShape.path.first().y += deltaY
+
+//                                        linkShape.path.first().x = leftX + this.measuredWidth / 2.0
+//                                        linkShape.path.first().y = topY + this.measuredHeight / 2.0
+
+                                        setLinkPositionWithAnchor(linkShape, true)
                                         linkView.requestLayout()
 
                                     }
@@ -526,13 +557,6 @@ open class BasicElementView: RelativeLayout {
                 oldFrameRawY = event.rawY
 
 
-                if(newWidth < mMinimumWidth){
-                    deltaX = 0
-                }
-                if(newHeight < mMinimumHeight){
-                    deltaY = 0
-                }
-
                 val basicShapeId = ViewShapeHolder.getInstance().map[this]
                 if(basicShapeId != null){
                     val linksTo = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksTo
@@ -544,18 +568,20 @@ open class BasicElementView: RelativeLayout {
                                 if (linkView != null && linkShape != null) {
 //                                        linkView.end.x += deltaX
 //                                        linkView.end.y += deltaY
-                                    when (linkShape.to.anchor){
-                                        AnchorPoints.LEFT.ordinal->linkShape.path.last().y += deltaY / 2f
-                                        AnchorPoints.TOP.ordinal->linkShape.path.last().x +=deltaX / 2f
-                                        AnchorPoints.RIGHT.ordinal->{
-                                            linkShape.path.last().x += deltaX
-                                            linkShape.path.last().y += deltaY / 2f
-                                        }
-                                        AnchorPoints.BOTTOM.ordinal ->{
-                                            linkShape.path.last().x += deltaX / 2f
-                                            linkShape.path.last().y += deltaY
-                                        }
-                                    }
+//                                    when (linkShape.to.anchor){
+//                                        AnchorPoints.LEFT.ordinal->linkShape.path.last().y += deltaY / 2f
+//                                        AnchorPoints.TOP.ordinal->linkShape.path.last().x +=deltaX / 2f
+//                                        AnchorPoints.RIGHT.ordinal->{
+//                                            linkShape.path.last().x += deltaX
+//                                            linkShape.path.last().y += deltaY / 2f
+//                                        }
+//                                        AnchorPoints.BOTTOM.ordinal ->{
+//                                            linkShape.path.last().x += deltaX / 2f
+//                                            linkShape.path.last().y += deltaY
+//                                        }
+//                                    }
+
+                                    setLinkPositionWithAnchor(linkShape, false)
                                     linkView.requestLayout()
                                 }
                             }
@@ -571,18 +597,20 @@ open class BasicElementView: RelativeLayout {
 //                                        linkView.start.x += deltaX
 //                                        linkView.start.y += deltaY
 
-                                    when (linkShape.from.anchor){
-                                        AnchorPoints.LEFT.ordinal->linkShape.path.first().y += deltaY / 2f
-                                        AnchorPoints.TOP.ordinal->linkShape.path.first().x +=deltaX / 2f
-                                        AnchorPoints.RIGHT.ordinal -> {
-                                            linkShape.path.first().x += deltaX
-                                            linkShape.path.first().y += deltaY / 2f
-                                        }
-                                        AnchorPoints.BOTTOM.ordinal ->{
-                                            linkShape.path.first().x += deltaX / 2f
-                                            linkShape.path.first().y += deltaY
-                                        }
-                                    }
+//                                    when (linkShape.from.anchor){
+//                                        AnchorPoints.LEFT.ordinal->linkShape.path.first().y += deltaY / 2f
+//                                        AnchorPoints.TOP.ordinal->linkShape.path.first().x +=deltaX / 2f
+//                                        AnchorPoints.RIGHT.ordinal -> {
+//                                            linkShape.path.first().x += deltaX
+//                                            linkShape.path.first().y += deltaY / 2f
+//                                        }
+//                                        AnchorPoints.BOTTOM.ordinal ->{
+//                                            linkShape.path.first().x += deltaX / 2f
+//                                            linkShape.path.first().y += deltaY
+//                                        }
+//                                    }
+
+                                    setLinkPositionWithAnchor(linkShape, true)
                                     linkView.requestLayout()
 
                                 }
@@ -601,6 +629,62 @@ open class BasicElementView: RelativeLayout {
             }
         }
         true
+    }
+
+    private fun setLinkPositionWithAnchor(link: Link, isFrom: Boolean){
+        var anchor: Int
+        var point: Coordinates
+        if(isFrom){
+            anchor = link.from.anchor
+            point = link.path.first()
+        } else {
+            anchor =link.to.anchor
+            point = link.path.last()
+        }
+//        when (anchor){
+//            AnchorPoints.LEFT.ordinal->{
+//                point.y = topY + this.measuredHeight / 2.0
+//                point.x = leftX.toDouble()
+//            }
+//            AnchorPoints.TOP.ordinal->{
+//                point.y = topY.toDouble()
+//                point.x = leftX + this.measuredWidth / 2.0
+//            }
+//            AnchorPoints.RIGHT.ordinal->{
+//                point.y = topY + this.measuredHeight / 2.0
+//                point.x = (leftX + this.measuredWidth).toDouble()
+//            }
+//            AnchorPoints.BOTTOM.ordinal ->{
+//                point.y = (topY + this.measuredHeight).toDouble()
+//                point.x = leftX + this.measuredWidth / 2.0
+//            }
+//        }
+        val centerX = (leftX + this.measuredWidth / 2.0)
+        val centerY = (topY + this.measuredHeight / 2.0)
+        var newX: Double = 0.0
+        var newY: Double = 0.0
+        when (anchor){
+            AnchorPoints.LEFT.ordinal->{
+                Log.d("Rotation", rotation.toString())
+                newX = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newY = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+            }
+            AnchorPoints.RIGHT.ordinal->{
+                newX = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newY = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+            }
+            AnchorPoints.TOP.ordinal->{
+                newX = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newY = - (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+            }
+
+            AnchorPoints.BOTTOM.ordinal ->{
+                newX = -(borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newY = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+            }
+        }
+        point.y = centerY + newY
+        point.x = centerX + newX
     }
 
     open fun resize(newWidth:Int, newHeight:Int){
