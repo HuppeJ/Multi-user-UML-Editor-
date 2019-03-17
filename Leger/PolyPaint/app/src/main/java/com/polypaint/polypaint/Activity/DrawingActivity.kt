@@ -24,7 +24,6 @@ import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
-import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.LinksUpdateResponse
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -32,9 +31,7 @@ import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
 import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
 import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
 import com.polypaint.polypaint.SocketReceptionModel.LinksUpdateEvent
-import com.polypaint.polypaint.View.ClassView
-import com.polypaint.polypaint.View.ImageElementView
-import com.polypaint.polypaint.View.LinkView
+import com.polypaint.polypaint.View.*
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
 import kotlinx.android.synthetic.main.item_drawing.*
@@ -265,7 +262,7 @@ class DrawingActivity : AppCompatActivity(){
                 viewType = ImageElementView(this, shapeType)
             }
             ShapeTypes.COMMENT -> {
-                viewType = BasicElementView(this)
+                viewType = CommentView(this)
             }
             ShapeTypes.PHASE -> {
                 viewType = BasicElementView(this)

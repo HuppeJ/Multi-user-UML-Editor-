@@ -18,10 +18,9 @@ import kotlinx.android.synthetic.main.basic_element.view.*
 import kotlinx.android.synthetic.main.view_class.view.*
 
 
-class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementView(context) {
-    override var mMinimumWidth : Float = 220F
-    override var mMinimumHeight : Float = 320F
-    private var shapeType : ShapeTypes? = shapeType
+class CommentView(context: Context): BasicElementView(context) {
+    override var mMinimumWidth : Float = 400F
+    override var mMinimumHeight : Float = 220F
 
 
     override fun onAttachedToWindow() {
@@ -29,48 +28,20 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         val activity : AppCompatActivity = context as AppCompatActivity
 
-        var child: View = activity.layoutInflater.inflate(R.layout.view_image_element, null)
+        var child: View = activity.layoutInflater.inflate(R.layout.view_comment, null)
 
-        var nameText: TextView = child.findViewById(R.id.name) as TextView
+        var nameText: TextView = child.findViewById(R.id.comment_text) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
-        nameText.text = "basictElement.name"
+        nameText.text = "comment..."
 
-        /*
-        val shape = ViewShapeHolder.getInstance().canevas.findShape(
-            ViewShapeHolder.getInstance().map.getValue(this)
-        )
-        Log.d("*******", shape.toString())
-        */
-
-        var img: ImageView = child.findViewById(R.id.image_element) as ImageView
-
-        when(this.shapeType){
-            ShapeTypes.DEFAULT->{ }
-
-            ShapeTypes.ARTIFACT -> {
-                img.setBackgroundResource(R.drawable.ic_artifact)
-            }
-            ShapeTypes.ACTIVITY -> {
-                img.setBackgroundResource(R.drawable.ic_activity)
-            }
-            ShapeTypes.ROLE -> {
-                img.setBackgroundResource(R.drawable.ic_actor)
-
-            }
-
-        }
 
         borderResizableLayout.addView(child)
-
 
         // TODO : On ne peut pas mettre à jour les dimmenssion d'une vue dans onAttachedToWindow alors le code ci-dessous ne fait rien en ce moment
         // TODO : Pour le moment je n'ai pas trouvé d'alternative qui fonctionne sans interférer avec le resize.
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-        linearLayoutCompat.layoutParams.height = (9*mMinimumHeight/10).toInt()
-        linearLayoutCompat2.layoutParams.height = (1*mMinimumHeight/10).toInt()
-
     }
 
     override fun resize(newWidth:Int, newHeight:Int){
@@ -80,8 +51,6 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
-            linearLayoutCompat.layoutParams.height = (9*newHeight / 10)
-            linearLayoutCompat2.layoutParams.height = (1 * newHeight / 10)
         }
 
         borderResizableLayout.requestLayout()
