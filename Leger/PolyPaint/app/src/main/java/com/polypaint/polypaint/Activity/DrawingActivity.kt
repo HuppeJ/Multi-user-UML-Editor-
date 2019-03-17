@@ -204,6 +204,42 @@ class DrawingActivity : AppCompatActivity(){
                 //For Sync
                 ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
+            ShapeTypes.ARTIFACT.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.ARTIFACT)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.ACTIVITY.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.ACTIVITY)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.ROLE.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.ROLE)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.COMMENT.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.COMMENT)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.PHASE.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.PHASE)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+
         }
 
         syncLayoutFromCanevas()
@@ -288,9 +324,11 @@ class DrawingActivity : AppCompatActivity(){
                         val shapeDuplicated = shapeToDuplicate.copy()
                         shapeDuplicated.id = UUID.randomUUID().toString()
                         ViewShapeHolder.getInstance().canevas.addShape(shapeDuplicated)
+
                         addOnCanevas(shapeDuplicated)
 
                         emitAddForm(shapeDuplicated)
+
                         ViewShapeHolder.getInstance().stackShapeCreatedId.push(shapeDuplicated.id)
 
                         ViewShapeHolder.getInstance().map.inverse().getValue(shapeDuplicated.id).isSelected = true
