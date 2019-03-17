@@ -265,7 +265,7 @@ class DrawingActivity : AppCompatActivity(){
                 viewType = CommentView(this)
             }
             ShapeTypes.PHASE -> {
-                viewType = BasicElementView(this)
+                viewType = PhaseView(this)
             }
         }
         viewType.addView(viewContainer)
