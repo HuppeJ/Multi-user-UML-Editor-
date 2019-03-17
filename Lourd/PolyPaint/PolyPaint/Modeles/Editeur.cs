@@ -3,8 +3,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Threading;
 using PolyPaint.CustomInk;
 using PolyPaint.Enums;
 
@@ -90,7 +93,8 @@ namespace PolyPaint.Modeles
             // Il faudrait pouvoir verifier que le trait n'existe pas, ou pouvoir le modifier... on a acces au guid?
             if (!isInTraits(selectedStroke))
             {
-                traits.Add(selectedStroke);
+                // Application.Current.Dispatcher.Invoke(new Action(() => { traits.Add(selectedStroke); }), DispatcherPriority.ContextIdle);
+                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(selectedStroke);
             }
         }
 

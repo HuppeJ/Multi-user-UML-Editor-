@@ -1,10 +1,10 @@
-import { ICanevas, IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditFormsData, IUpdateLinksData, IEditGalleryData } from "../interfaces/interfaces";
+import { ICanevas, IEditLinksData, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from "../interfaces/interfaces";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
     public selectedForms: any;  // selectedForms is a Map : [key: formId, value: username]
-    public selectedLinks: any;  // selectedLinks is a Map : [key: formId, value: username]
+    public selectedLinks: any;  // selectedLinks is a Map : [key: linkId, value: username]
     public canvasSelected: boolean;  // selectedLinks is a Map : [key: formId, value: username]
 
     constructor(public canvas: ICanevas) {
@@ -14,15 +14,15 @@ export default class CanvasRoom {
         this.canvasSelected = false;
     }
 
-    public addUser(username: any) {
+    public addUser(username: string) {
         this.connectedUsers.add(username);
     }
 
-    public removeUser(username: any) {
+    public removeUser(username: string) {
         this.connectedUsers.delete(username);
     }
 
-    public hasUser(username: any) {
+    public hasUser(username: string) {
         return this.connectedUsers.has(username);
     }
 
@@ -42,6 +42,10 @@ export default class CanvasRoom {
 
     public isAuthorOfCanvase(username: string) {
         return this.canvas.author === username;
+    }
+
+    public isPasswordValid(data: IEditGalleryData) {
+        return this.canvas.password === data.password;
     }
 
     /***********************************************
@@ -87,14 +91,14 @@ export default class CanvasRoom {
     }
 
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à delete
-    public deleteForms(data: IEditFormsData): boolean {
+    public deleteForms(data: IUpdateFormsData): boolean {
         try {
             let formIsDeleted: boolean = false;
 
-            data.formsId.forEach((formId) => {
+            data.forms.forEach((form) => {
                 formIsDeleted = false;
                 this.canvas.shapes = this.canvas.shapes.filter((shape) => {
-                    if (shape.id === formId) {
+                    if (shape.id === form.id) {
                         formIsDeleted = true;
                         return false;
                     }
@@ -103,7 +107,7 @@ export default class CanvasRoom {
                 });
 
                 if (!formIsDeleted) {
-                    throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
+                    throw new Error(`There is no form with the id: "${form}" in the canvas : "${this.canvas.name}".`);
                 }
             });
 
@@ -115,21 +119,21 @@ export default class CanvasRoom {
     }
 
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
-    public selectForms(data: IEditFormsData): boolean {
+    public selectForms(data: IUpdateFormsData): boolean {
         try {
             // If one form doesn't exist an Error will be thrown
             this.doFormsExist(data);
 
             // Check if all forms are not selected, if a form is already selected throw an Error.
-            data.formsId.forEach((formId) => {
-                if (this.selectedForms.has(formId)) {
-                    throw new Error(`The form with the id: "${formId}" is already selected in the canvas : "${this.canvas.name}".`);
+            data.forms.forEach((form) => {
+                if (this.selectedForms.has(form.id)) {
+                    throw new Error(`The form with the id: "${form}" is already selected in the canvas : "${this.canvas.name}".`);
                 }
             });
 
             // If all forms are not selected, select them
-            data.formsId.forEach((formId) => {
-                this.selectedForms.set(formId, data.username);
+            data.forms.forEach((form) => {
+                this.selectedForms.set(form.id, data.username);
             });
 
             return true;
@@ -142,14 +146,14 @@ export default class CanvasRoom {
 
 
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à selectionner
-    public deselectForms(data: IEditFormsData): boolean {
+    public deselectForms(data: IUpdateFormsData): boolean {
         try {
             // If one form doesn't exist an Error will be thrown
             this.doFormsExist(data);
 
             // Deselect all forms
-            data.formsId.forEach((formId) => {
-                this.selectedForms.delete(formId);
+            data.forms.forEach((form) => {
+                this.selectedForms.delete(form.id);
             });
 
             return true;
@@ -332,19 +336,19 @@ export default class CanvasRoom {
     /***********************************************
     * Utils functions 
     ************************************************/
-    private doFormsExist(data: IEditFormsData): boolean {
+    private doFormsExist(data: IUpdateFormsData): boolean {
         let formExist: boolean = false;
 
-        data.formsId.forEach((formId) => {
+        data.forms.forEach((form) => {
             formExist = false;
             this.canvas.shapes.forEach((shape) => {
-                if (shape.id === formId) {
+                if (shape.id === form.id) {
                     formExist = true;
                 }
             });
 
             if (!formExist) {
-                throw new Error(`There is no form with the id: "${formId}" in the canvas : "${this.canvas.name}".`);
+                throw new Error(`There is no form with the id: "${form}" in the canvas : "${this.canvas.name}".`);
             }
         });
 
@@ -381,7 +385,7 @@ export default class CanvasRoom {
 
     public getSelectedFormsSERI(): string {
         return JSON.stringify({
-            selectedForms: mapToObj(this.selectedForms)
+            selectedForms: Array.from(this.selectedForms.keys())
         });
     }
 

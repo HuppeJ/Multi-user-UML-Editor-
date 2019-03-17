@@ -35,9 +35,13 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:maxLines="6"/>
+
+        <!--android:text="http://192.168.0.106:8010"-->
+        <!--android:text="http://10.200.22.65:5020"-->
         <!--android:text="http://10.200.15.230:8080"-->
         <!--android:text="https://projet-3-228722.appspot.com"-->
         <!--android:text="http://192.168.0.194:8080"-->
+        <!--android:text="http://10.200.22.65:5020"-->
 
     </LinearLayout>
     <Button

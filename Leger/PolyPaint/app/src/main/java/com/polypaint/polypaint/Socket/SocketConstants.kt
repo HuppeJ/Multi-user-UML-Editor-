@@ -2,7 +2,10 @@ package com.polypaint.polypaint.Socket
 
 class SocketConstants{
     companion object {
-        public const val SERVER_URL: String = "https://localhost:4200"
+        public const val SERVER_URL: String = "https://localhost:5020"
+
+        const val RESET_SERVER_STATE: String = "resetServerState"
+
         const val CREATE_USER: String ="createUser"
         const val CREATE_USER_RESPONSE: String = "createUserResponse"
         const val LOGIN_USER: String = "loginUser"
@@ -48,6 +51,14 @@ class SocketConstants{
         const val DELETE_LINKS_RESPONSE: String = ""
         const val LINKS_DELETED: String = ""
 
+        const val SELECT_LINKS: String = "selectLinks"
+        const val SELECT_LINKS_RESPONSE: String = "selectLinksResponse"
+        const val LINKS_SELECTED: String = "linksSelected"
+
+        const val DESELECT_LINKS: String = "deselectLinks"
+        const val DESELECT_LINKS_RESPONSE: String = "deselectLinksResponse"
+        const val LINKS_DESELECTED: String = "linksDeselected"
+
         // Edition of the canvas
         const val REINITIALIZE_CANVAS: String = "reinitializeCanvas"
         const val REINITIALIZE_CANVAS_RESPONSE: String = "reinitializeCanvasResponse"
@@ -60,12 +71,18 @@ class SocketConstants{
         // Canvas creation
         const val CREATE_CANVAS: String = "createCanvas"
         const val CREATE_CANVAS_RESPONSE: String = "createCanvasResponse"
-        const val CANVAS_ROOM_CREATED: String = "canvasRoomCreated"
+        const val CANVAS_CREATED: String = "canvasCreated"
+
+        // Canvas connection
+        const val JOIN_CANVAS_ROOM: String = "joinCanvasRoom"
+        const val JOIN_CANVAS_ROOM_RESPONSE: String = "joinCanvasRoomResponse"
+        const val LEAVE_CANVAS_ROOM: String = "leaveCanvasRoom"
+        const val LEAVE_CANVAS_ROOM_RESPONSE: String = "leaveCanvasRoomResponse"
 
         // Canvas deletion
         const val REMOVE_CANVAS: String = "removeCanvas"
-        const val REMOVE_CANVAS_ROOM_RESPONSE: String = "removeCanvasRoomResponse"
-        const val CANVAS_ROOM_REMOVED: String = "canvasRoomRemoved"
+        const val REMOVE_CANVAS_RESPONSE: String = "removeCanvasResponse"
+        const val CANVAS_REMOVED: String = "canvasRemoved"
 
         // Get existing canvas
         const val GET_ALL_CANVAS: String = "getAllCanvas"

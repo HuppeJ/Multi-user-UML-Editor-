@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { IUpdateFormsData, IEditLinksData, IEditCanevasData, IEditGalleryData, IEditFormsData, IUpdateLinksData } from "../interfaces/interfaces";
+import { IEditLinksData, IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -12,6 +12,20 @@ export default class CanvasManager {
 
     public getCanvasRoomIdFromName(canvasName: string): string {
         return `${CANVAS_ROOM_ID}_${canvasName}`;
+    }
+
+    public resetServerState(): boolean {
+        this.canvasRooms.clear();
+        return true;
+    }
+
+    public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.isPasswordValid(data);
     }
 
     public addCanvasRoom(canvasRoomId: string, data: IEditCanevasData) {
@@ -80,6 +94,7 @@ export default class CanvasManager {
     public addFormToCanvas(canvasRoomId: string, data: IUpdateFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
+            console.log("canvasRoom doesn't exist:" + canvasRoomId);
             return false;
         }
 
@@ -95,7 +110,7 @@ export default class CanvasManager {
         return canvasRoom.updateForms(data);
     }
 
-    public deleteCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+    public deleteCanvasForms(canvasRoomId: string, data: IUpdateFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -104,7 +119,7 @@ export default class CanvasManager {
         return canvasRoom.deleteForms(data);
     }
 
-    public selectCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+    public selectCanvasForms(canvasRoomId: string, data: IUpdateFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -113,7 +128,7 @@ export default class CanvasManager {
         return canvasRoom.selectForms(data);
     }
 
-    public deselectCanvasForms(canvasRoomId: string, data: IEditFormsData) {
+    public deselectCanvasForms(canvasRoomId: string, data: IUpdateFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -225,9 +240,11 @@ export default class CanvasManager {
         return canvasRoom.getSelectedFormsSERI();
     }
 
-    public getCanvasRoomSERI(canvasRoomId: string): string {
+    public getCanvasSERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        return JSON.stringify(canvasRoom);
+        return JSON.stringify({
+            canvas: canvasRoom.canvas
+        });
     }
 
     public getCanvasRoomsSERI(): string {
@@ -241,7 +258,7 @@ export default class CanvasManager {
 
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
             if (canvasRoom.isCanvasPublic()) {
-                publicCanvasArray.push(canvasRoom);
+                publicCanvasArray.push(canvasRoom.canvas);
             }
         }
 
@@ -255,7 +272,7 @@ export default class CanvasManager {
 
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
             if (canvasRoom.isCanvasPrivate() && canvasRoom.isAuthorOfCanvase(username)) {
-                privateCanvasArray.push(canvasRoom);
+                privateCanvasArray.push(canvasRoom.canvas);
             }
         }
 

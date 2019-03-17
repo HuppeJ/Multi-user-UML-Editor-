@@ -12,12 +12,13 @@ namespace PolyPaint.Templates
         public string password { get; set; }
         public List<BasicShape> shapes { get; set; }
         public List<Link> links { get; set; }
+        public int[] dimensions { get; set; }
 
         public Canvas()
         {
         }
 
-        public Canvas(string id, string name, string author, string owner, int accessibility, string password, List<BasicShape> shapes, List<Link> links)
+        public Canvas(string id, string name, string author, string owner, int accessibility, string password, List<BasicShape> shapes, List<Link> links, int[] dimensions)
         {
             this.id = id;
             this.name = name;
@@ -27,6 +28,7 @@ namespace PolyPaint.Templates
             this.password = password;
             this.shapes = shapes;
             this.links = links;
+            this.dimensions = dimensions;
         }
     }
 }

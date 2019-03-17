@@ -18,12 +18,6 @@ export interface IUpdateFormsData {
     forms: any[], // IBasicShape || IClassShape
 }
 
-export interface IEditFormsData {
-    username: string,
-    canevasName: string,  
-    formsId: string[],
-}
-
 export interface IUpdateLinksData {
     username: string,
     canevasName: string,  
@@ -36,7 +30,19 @@ export interface IEditLinksData {
     linksId: string[],
 }
 
+export interface IEditChatroomData {
+    username: string,
+    chatroomName: string,  
+    // password: string, ?
+}
 
+// TODO: vérifier format
+export interface IMessageData {
+    username: string,
+    chatroomName: string,
+    createdAt: string,
+    message: string,
+}
 
 /***********************************************
 * Interfaces for objects

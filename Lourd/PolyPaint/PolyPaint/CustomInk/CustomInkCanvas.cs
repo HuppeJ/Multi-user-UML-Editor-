@@ -1,6 +1,7 @@
 ﻿using PolyPaint.Enums;
 using PolyPaint.Services;
 using PolyPaint.Templates;
+using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,18 +11,79 @@ using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk
 {
     public class CustomInkCanvas : InkCanvas
     {
+        public List<Link> links = new List<Link>();
+
         private CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
 
         private StrokeCollection clipboard;
+        private Templates.Canvas canvas;
 
         public StylusPoint firstPoint;
+        private int isCreatingLink = 0;
+
+        #region createLink
+        public void createLink(CustomStroke stroke, int anchor, Point pointPosition)
+        {
+            Select(new StrokeCollection { stroke });
+            // cheat, pcq RefreshChildren est appele avant createConnectionForm
+            if (isCreatingLink == 2)
+            {
+                Path path = new Path();
+                path.Stroke = Brushes.Black;
+                path.StrokeThickness = 1;
+                Point firstPointToLink = links[links.Count - 1].GetFromPoint(this.Strokes);
+                    //stroke.GetAnchorPoint(anchor);
+                path.Data = new LineGeometry(firstPointToLink, pointPosition);
+
+
+                links[links.Count - 1].path.Add(new Coordinates(pointPosition.X, pointPosition.Y));
+                links[links.Count - 1].to = new AnchorPoint(stroke.guid.ToString(), anchor, "0");
+
+                Children.Add(path);
+                isCreatingLink = 0;
+                refreshLinks();
+            }
+            else
+            {
+                Link newLink = new Link(pointPosition, stroke.guid.ToString(), anchor);
+                links.Add(newLink);
+                
+                addAnchorPoints();
+                isCreatingLink = 1;
+            }
+
+        }
+
+        public void refreshLinks()
+        {
+            if (isCreatingLink != 2)
+            {
+                foreach (Link link in links)
+                {
+                    Point fromPoint = link.GetFromPoint(this.Strokes);
+                    Point toPoint = link.GetToPoint(this.Strokes);
+                    // mettre a jour les positions des points
+                    link.path.Clear();
+                    link.path.Add(new Coordinates(fromPoint.X, fromPoint.Y));
+                    link.path.Add(new Coordinates(toPoint.X, toPoint.Y));
+
+                    // redessiner les liens
+                    Path path = new Path();
+                    path.Stroke = Brushes.Black;
+                    path.StrokeThickness = 1;
+                    path.Data = new LineGeometry(fromPoint, toPoint);
+
+                    Children.Add(path);
+                }
+            }
+        }
+        #endregion
 
         #region StrokeType dependency property
         public string StrokeType
@@ -32,13 +94,6 @@ namespace PolyPaint.CustomInk
         public static readonly DependencyProperty StrokeTypeProperty = DependencyProperty.Register(
           "StrokeType", typeof(string), typeof(CustomInkCanvas), new PropertyMetadata("CLASS_SHAPE"));
         #endregion
-        /*
-        #region SelectedStrokes dependency property
-        
-        public static readonly DependencyProperty SelectedStrokesProperty = DependencyProperty.Register(
-          "SelectedStrokes", typeof(StrokeCollection), typeof(CustomInkCanvas), new PropertyMetadata(new StrokeCollection(), new PropertyChangedCallback(OnSelectionChanged)));
-        #endregion
-        */
         #region SelectedStrokes dependency property
         public StrokeCollection SelectedStrokes
         {
@@ -55,22 +110,27 @@ namespace PolyPaint.CustomInk
             DynamicRenderer = customRenderer;
 
             clipboard = new StrokeCollection();
+
+            canvas = new Templates.Canvas(Guid.NewGuid().ToString(), "newCanvas", ConnectionService.username,
+                ConnectionService.username, 1, null, new List<BasicShape>(), new List<Link>(), new int[] { 1, 1 });
+            DrawingService.CreateCanvas(canvas);
+            DrawingService.JoinCanvas("newCanvas");
+            DrawingService.AddStroke += OnRemoteStroke;
         }
 
-        protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e)
-        {
+        #region On.. event handlers
+        protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
             SelectedStrokes.Clear();
             foreach (Stroke stroke in e.GetSelectedStrokes())
             {
                 SelectedStrokes.Add(stroke);
             }
-            
             base.OnSelectionChanging(e);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
         {
-            //base.OnSelectionChanged(e);
+            base.OnSelectionChanged(e);
             RefreshChildren();
         }
 
@@ -88,6 +148,17 @@ namespace PolyPaint.CustomInk
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
         {
             base.OnSelectionResizing(e);
+
+            // Update selected strokes height and width
+            StrokeCollection strokes = GetSelectedStrokes();
+            double heightRatio = e.NewRectangle.Height / e.OldRectangle.Height;
+            double widthRatio = e.NewRectangle.Width / e.OldRectangle.Width;
+
+            foreach(CustomStroke stroke in strokes)
+            {
+                stroke.shapeStyle.width *= widthRatio;
+                stroke.shapeStyle.height *= heightRatio;
+            }
         }
 
         protected override void OnSelectionResized(EventArgs e)
@@ -105,6 +176,46 @@ namespace PolyPaint.CustomInk
         {
             base.OnStrokeErasing(e);
         }
+        #endregion
+
+        private void OnRemoteStroke(InkCanvasStrokeCollectedEventArgs e)
+        {
+            CustomStroke stroke = (CustomStroke)e.Stroke;
+            Strokes.Add(stroke);
+
+            AddTextBox(stroke);
+        }
+
+        private CustomStroke CreateStroke(StylusPointCollection pts, InkCanvasStrokeCollectedEventArgs e, StrokeTypes strokeType)
+        {
+            CustomStroke customStroke;
+            switch (strokeType)
+            {
+                case StrokeTypes.CLASS_SHAPE:
+                    customStroke = new ClassStroke(pts);
+                    break;
+                case StrokeTypes.ARTIFACT:
+                    customStroke = new ArtifactStroke(pts);
+                    break;
+                case StrokeTypes.ACTIVITY:
+                    customStroke = new ActivityStroke(pts);
+                    break;
+                case StrokeTypes.ROLE:
+                    customStroke = new ActorStroke(pts);
+                    break;
+                case StrokeTypes.COMMENT:
+                    customStroke = new ClassStroke(pts);
+                    break;
+                case StrokeTypes.PHASE:
+                    customStroke = new ClassStroke(pts);
+                    break;
+                default:
+                    customStroke = new ClassStroke(pts);
+                    break;
+
+            }
+            return customStroke;
+        }
 
         #region OnStrokeCollected
         protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
@@ -112,48 +223,16 @@ namespace PolyPaint.CustomInk
             // Remove the original stroke and add a custom stroke.
             Strokes.Remove(e.Stroke);
 
-            CustomStroke customStroke;
             StrokeTypes strokeType = (StrokeTypes) Enum.Parse(typeof(StrokeTypes), StrokeType);
 
-            switch (strokeType)
-            {
-                case StrokeTypes.CLASS_SHAPE:
-                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
-                    break;
-                case StrokeTypes.ARTIFACT:
-                    customStroke = new ArtifactStroke(e.Stroke.StylusPoints);
-                    break;
-                case StrokeTypes.ACTIVITY:
-                    customStroke = new ActivityStroke(e.Stroke.StylusPoints);
-                    break;
-                case StrokeTypes.ROLE:
-                    customStroke = new ActorStroke(e.Stroke.StylusPoints);
-                    break;
-                case StrokeTypes.COMMENT:
-                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
-                    break;
-                case StrokeTypes.PHASE:
-                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
-                    break;
-                default:
-                    customStroke = new ClassStroke(e.Stroke.StylusPoints);
-                    break;
-               
-            }
+            CustomStroke customStroke = CreateStroke(e.Stroke.StylusPoints, e, strokeType);
+            
             Strokes.Add(customStroke);
-            firstPoint = customStroke.StylusPoints[0];
+            DrawingService.CreateShape(customStroke);
+            // firstPoint = customStroke.StylusPoints[0];
             SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
 
-            //Coordinates coordinates = new Coordinates(customStroke.StylusPoints[0].X, customStroke.StylusPoints[0].Y);
-            //ShapeStyle shapeStyle = new ShapeStyle();
-            //shapeStyle.coordinates = coordinates;
-
-            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>());
-
-            // Visual visual = this.GetVisualChild(this.Children.Count - 1);
-
-            //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(visual);
-            //myAdornerLayer.Add(new AnchorPointAdorner(visual));
+            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>(), new List<string>());
 
             // Pass the custom stroke to base class' OnStrokeCollected method.
             InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
@@ -171,7 +250,7 @@ namespace PolyPaint.CustomInk
                 double y = point.Y;
 
                 ClassStroke classStroke = (ClassStroke)stroke;
-                ClassTextBox sp = new ClassTextBox(classStroke.name, classStroke.attributes, classStroke.methods);
+                ClassTextBox sp = new ClassTextBox(classStroke);
                 this.Children.Add(sp);
                 InkCanvas.SetTop(sp, y);
                 InkCanvas.SetLeft(sp, x);
@@ -250,8 +329,7 @@ namespace PolyPaint.CustomInk
                 selectedNewStrokes.Add(newStrokes);
             }
 
-            //SelectedStrokes.Add(newStrokes); // non necessaire ajoute dedans avec le .Select
-            // Il faudrait tourner toutes les strokes avec le adorner. Puis selectionner apres le foreach ici
+            //SelectedStrokes.Add(newStrokes); // non necessaire, pcq le .Select les ajoute 
             Select(selectedNewStrokes);
         }
         #endregion
@@ -310,46 +388,92 @@ namespace PolyPaint.CustomInk
             //removeAdorners();
             Children.Clear();
 
+            if (isCreatingLink == 1)
+            {
+                isCreatingLink++;
+            } else
+            {
+                isCreatingLink = 0;
+            }
+            
             StrokeCollection selectedStrokes = new StrokeCollection();
 
+            // Add selection adorners to selectedStrokes
             foreach (CustomStroke selectedStroke in GetSelectedStrokes())
             {
                 selectedStrokes.Add(selectedStroke);
-
-                Path path = new Path();
-                path.Data = selectedStroke.GetGeometry();
-
-                Children.Add(path);
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
-                myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                addAdorners(selectedStroke);
             }
 
+            // Add text boxes (names) to all strokes
             foreach (CustomStroke stroke in Strokes)
             {
                 AddTextBox(stroke);
             }
 
-            Select(selectedStrokes);
+            // refresh all the links
+            refreshLinks();
+
+            ReadOnlyCollection<UIElement> ahhh = GetSelectedElements();
+            Select(selectedStrokes, GetSelectedElements());
         }
 
-        // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e
+        private void addAdorners(CustomStroke selectedStroke)
+        {
+            Path path = new Path();
+            path.Data = selectedStroke.GetGeometry();
+
+            Children.Add(path);
+            AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+            myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+            myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+            myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+
+        }
+
+        // Tjrs avoir les anchorPoints? Laid.. gi
+        private void addAnchorPoints()
+        {
+            foreach (CustomStroke stroke in Strokes)
+            {
+                Path path = new Path();
+                path.Data = stroke.GetGeometry();
+
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                myAdornerLayer.Add(new AnchorPointAdorner(path, stroke, this));
+            }
+        }
+
+        // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e stroke ajoutee
         private void removeAdorners()
         {
-            List<UIElement> children = new List<UIElement>();
-
-            foreach (UIElement child in Children)
+            for(int i = 0; i < Children.Count; i++)
             {
-                if (child.GetType() == typeof(Path))
+                if (Children[i].GetType() == typeof(Path))
                 {
-                    children.Add(child);
+                    Children.RemoveAt(i);
                 }
-            }
+                else if (Children[i]?.GetType() == typeof(CustomTextBox))
+                {
+                    Children.RemoveAt(i);
+                }
 
-            foreach (UIElement child in children)
-            {
-                Children.Remove(child);
             }
+            //List<UIElement> children = new List<UIElement>();
+
+            //foreach (UIElement child in Children)
+            //{
+            //    if (child.GetType() == typeof(Path))
+            //    {
+            //        children.Add(child);
+            //    }
+            //}
+
+            //foreach (UIElement child in children)
+            //{
+            //    Children.Remove(child);
+            //}
         }
         #endregion
     }

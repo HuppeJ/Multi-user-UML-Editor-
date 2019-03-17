@@ -97,10 +97,16 @@
             android:clickable="true"
             android:layout_width="80dp"
             android:layout_height="48dp"
-            android:gravity="center"
-            android:layout_gravity="bottom"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
             app:layout_constraintStart_toStartOf="@+id/linearLayout2"
     />
+    <Button
+            android:text="resetServer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" tools:layout_editor_absoluteY="328dp"
+            android:id="@+id/reset_server_state" app:layout_constraintStart_toEndOf="@+id/login_button"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/create_user_button" android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

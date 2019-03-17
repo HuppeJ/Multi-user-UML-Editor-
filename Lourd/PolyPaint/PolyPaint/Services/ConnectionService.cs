@@ -7,25 +7,22 @@ namespace PolyPaint.Services
 {
     class ConnectionService
     {
-        public event Action<bool> Connection;
-        public event Action<bool> UserCreation;
-        public event Action<bool> UserLogin;
+        public static event Action<bool> Connection;
+        public static event Action<bool> UserCreation;
+        public static event Action<bool> UserLogin;
 
-        public event Action ConnectionReconnecting;
-        public event Action ConnectionReconnected;
-        public event Action ConnectionClosed;
+        public static event Action ConnectionReconnecting;
+        public static event Action ConnectionReconnected;
+        public static event Action ConnectionClosed;
+        
+        public static string username;
 
-        protected JavaScriptSerializer serializer;
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         //private string url = "https://projet-3-228722.appspot.com";
-        private static string url = "http://localhost:8080";
-        protected static Socket socket;
+        private static string url = "http://localhost:8010";
+        public static Socket socket;
 
-        public ConnectionService()
-        {
-            serializer = new JavaScriptSerializer();
-        }
-
-        public void Connect(object o)
+        public static void Connect(object o)
         {
             socket = IO.Socket(url);
 
@@ -52,6 +49,11 @@ namespace PolyPaint.Services
                 // TODO : ou le mettre? Le client ne devrait pas la joindre par defaut quand il login, sur le serveur?
                 socket.Emit("joinChatroom");
 
+                if(!isLoginSuccessful)
+                {
+                    username = null;
+                }
+
                 UserLogin?.Invoke(isLoginSuccessful);
             });
 
@@ -61,12 +63,12 @@ namespace PolyPaint.Services
             });
         }
 
-        public void Disconnect()
+        public static void Disconnect()
         {
             socket.Emit("logoutUser");
         }
 
-        public void CreateUser(string username, string password)
+        public static void CreateUser(string username, string password)
         {
             User user = new User()
             {
@@ -79,7 +81,7 @@ namespace PolyPaint.Services
             socket.Emit("createUser", serializedResult);
         }
 
-        public void LoginUser(string username, string password)
+        public static void LoginUser(string username, string password)
         {
             User user = new User()
             {
@@ -91,19 +93,21 @@ namespace PolyPaint.Services
 
             socket.Emit("loginUser", serializedResult);
 
+            ConnectionService.username = username;
+
         }
 
-        private void Disconnected()
+        private static void Disconnected()
         {
             ConnectionClosed?.Invoke();
         }
 
-        private void Reconnected()
+        private static void Reconnected()
         {
             ConnectionReconnected?.Invoke();
         }
 
-        private void Reconnecting()
+        private static void Reconnecting()
         {
             ConnectionReconnecting?.Invoke();
         }
