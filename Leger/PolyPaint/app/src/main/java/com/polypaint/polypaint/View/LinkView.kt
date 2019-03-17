@@ -3,8 +3,11 @@ package com.polypaint.polypaint.View
 import android.content.Context
 import android.graphics.*
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageButton
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +19,7 @@ import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.Coordinates
 import com.polypaint.polypaint.Model.Link
+import com.polypaint.polypaint.R
 
 class LinkView: View{
     private var socket: Socket? = null
@@ -29,6 +33,16 @@ class LinkView: View{
     var multiplicityTo: TextView? = null
     var nameView: TextView? = null
     var dialog: DialogFragment? = null
+    var editButton: ImageButton? = null
+    var angleButtons: ArrayList<ImageButton> = ArrayList()
+    var startAnchorButton : ImageButton? = null
+    var endAnchorButton: ImageButton? = null
+    var oldFrameRawX : Float = 0.0F
+    var oldFrameRawY : Float = 0.0F
+    val middlePoints: ArrayList<Coordinates> = ArrayList()
+    var canvas: Canvas? = null
+    var thickness: Float = 10f
+
 
     constructor(context: Context) : super(context) {
         initialise()
@@ -50,38 +64,141 @@ class LinkView: View{
     }
 
     override fun onDraw(canvas: Canvas){
+        this.canvas = canvas
         val linkId: String? =ViewShapeHolder.getInstance().linkMap[this]
         if(linkId!=null) {
             link = ViewShapeHolder.getInstance().canevas.findLink(linkId)
         }
 
-        val parent = this.parent as RelativeLayout
+        val parentView = this.parent as RelativeLayout
         if(multiplicityFrom != null){
-            parent.removeView(multiplicityFrom)
+            parentView.removeView(multiplicityFrom)
         }
         if(multiplicityTo != null){
-            parent.removeView(multiplicityTo)
+            parentView.removeView(multiplicityTo)
         }
         if(nameView != null){
-            parent.removeView(nameView)
+            parentView.removeView(nameView)
         }
 
-        val angle : Double = Math.atan2( (end.y - start.y), (end.x - start.x))
-        val angle2: Double =  angle -Math.PI/2
 
-        var thickness: Float = 10f
         if( link?.style?.thickness != null) {
             thickness = link?.style?.thickness!!.toFloat()
         }
 
+        val localLink: Link? = link
+        if(localLink != null) {
+            drawPath(paint,localLink.path, canvas)
+        } else {
+            val pathToDraw: ArrayList<Coordinates> = ArrayList()
+            pathToDraw.add(start)
+            pathToDraw.add(end)
+            drawPath(paint, pathToDraw, canvas)
+        }
+
+        addTextViews(parentView)
+
+        addButtons(parentView)
+
+
+    }
+
+    private fun addButtons(parentView: RelativeLayout){
+        parentView.removeView(startAnchorButton)
+        startAnchorButton = ImageButton(context)
+        startAnchorButton?.setImageResource(R.drawable.ic_resize)
+        startAnchorButton?.layoutParams?.height = 24
+        startAnchorButton?.layoutParams?.width = 24
+        startAnchorButton?.x = start.x.toFloat()
+        startAnchorButton?.y = start.y.toFloat()
+        startAnchorButton?.setOnTouchListener(onTouchListenerStartAnchorButton)
+        startAnchorButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+        parentView.addView(startAnchorButton)
+
+        parentView.removeView(endAnchorButton)
+        endAnchorButton = ImageButton(context)
+        endAnchorButton?.setImageResource(R.drawable.ic_resize)
+        endAnchorButton?.layoutParams?.height = 24
+        endAnchorButton?.layoutParams?.width = 24
+        endAnchorButton?.x = end.x.toFloat()
+        endAnchorButton?.y = end.y.toFloat()
+        endAnchorButton?.setOnTouchListener(onTouchListenerEndAnchorButton)
+        endAnchorButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+        parentView.addView(endAnchorButton)
+
+        for(angleButton: ImageButton in angleButtons){
+            parentView.removeView(angleButton)
+        }
+        angleButtons.clear()
+        for(middlePoint: Coordinates in middlePoints){
+            val angleButton = ImageButton(context)
+            angleButton.setImageResource(R.drawable.ic_resize)
+            angleButton.layoutParams?.height = 12
+            angleButton.layoutParams?.width = 12
+            angleButton.x = middlePoint.x.toFloat()
+            angleButton.y = middlePoint.y.toFloat()
+            angleButton.setOnTouchListener(onTouchListenerAngleButton)
+            angleButton.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+            angleButtons.add(angleButton)
+            parentView.addView(angleButton)
+        }
+
+        parentView.removeView(editButton)
+        editButton = ImageButton(context)
+        editButton?.setImageResource(R.drawable.ic_edit)
+        editButton?.layoutParams?.height = 24
+        editButton?.layoutParams?.width = 24
+        editButton?.x = start.x.toFloat() + (end.x.toFloat() - start.x.toFloat()) /2  +15
+        editButton?.y = start.y.toFloat() + (end.y.toFloat() - start.y.toFloat()) /2
+        editButton?.setOnClickListener{
+            showModal()
+        }
+        editButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+        parentView.addView(editButton)
+    }
+
+    private fun drawPath(paint: Paint, pathToDraw: ArrayList<Coordinates>, canvas: Canvas){
+
+        var angle : Double =0.0
+        var angle2: Double =0.0
+        var firstLineAngle: Double = 0.0
+        middlePoints.clear()
         val path: Path = Path()
-        path.moveTo(start.x.toFloat() - thickness/2 * Math.cos(angle2).toFloat(), start.y.toFloat()-thickness/2 * Math.sin(angle2).toFloat())
-        path.lineTo(end.x.toFloat() - thickness/2 * Math.cos(angle2).toFloat(), end.y.toFloat()-thickness/2 * Math.sin(angle2).toFloat())
-        path.lineTo(end.x.toFloat() + thickness/2 * Math.cos(angle2).toFloat(), end.y.toFloat()+thickness/2 * Math.sin(angle2).toFloat())
-        path.lineTo(start.x.toFloat() + thickness/2 * Math.cos(angle2).toFloat(), start.y.toFloat()+thickness/2 * Math.sin(angle2).toFloat())
-        path.lineTo(start.x.toFloat() - thickness/2 * Math.cos(angle2).toFloat(), start.y.toFloat()-thickness/2 * Math.sin(angle2).toFloat())
-        path.close()
+
+            var previousPoint: Coordinates = pathToDraw[0]
+            for (point: Coordinates in pathToDraw) {
+                if (point == start) {
+                    continue
+                }
+                val middlePoint = Coordinates(previousPoint.x + (point.x - previousPoint.x) /2, previousPoint.y + (point.y - previousPoint.y) / 2)
+                middlePoints.add(middlePoint)
+                angle  = Math.atan2( (point.y - previousPoint.y), (point.x - previousPoint.x))
+                angle2 =  angle -Math.PI/2
+                if(previousPoint == start){
+                    firstLineAngle = angle
+                }
+                path.moveTo(
+                    previousPoint.x.toFloat() - thickness / 2 * Math.cos(angle2).toFloat(),
+                    previousPoint.y.toFloat() - thickness / 2 * Math.sin(angle2).toFloat()
+                )
+                path.lineTo(
+                    point.x.toFloat() - thickness / 2 * Math.cos(angle2).toFloat(),
+                    point.y.toFloat() - thickness / 2 * Math.sin(angle2).toFloat()
+                )
+                path.lineTo(
+                    point.x.toFloat() + thickness / 2 * Math.cos(angle2).toFloat(),
+                    point.y.toFloat() + thickness / 2 * Math.sin(angle2).toFloat()
+                )
+                path.lineTo(
+                    previousPoint.x.toFloat() + thickness / 2 * Math.cos(angle2).toFloat(),
+                    previousPoint.y.toFloat() + thickness / 2 * Math.sin(angle2).toFloat()
+                )
+                path.close()
+                previousPoint = point
+            }
+
         canvas.drawPath(path, paint)
+
 
         rect = RectF()
         path.computeBounds(rect, true)
@@ -97,13 +214,10 @@ class LinkView: View{
             LinkTypes.HERITAGE.ordinal -> drawHeritage(canvas, angle2, thickness)
             LinkTypes.ONE_WAY_ASSOCIATION.ordinal->drawArrowTip(canvas, angle, thickness, false)
             LinkTypes.TWO_WAY_ASSOCIATION.ordinal->{
-                drawArrowTip(canvas,angle,thickness, true)
+                drawArrowTip(canvas,firstLineAngle,thickness, true)
                 drawArrowTip(canvas, angle, thickness, false)
             }
         }
-
-        addTextViews(parent)
-
     }
 
     private fun drawComposition(canvas: Canvas, lineAngle: Double, thickness: Float){
@@ -186,24 +300,24 @@ class LinkView: View{
         canvas.drawPath(arrowPath, arrowPaint)
     }
 
-    private fun addTextViews(parent: RelativeLayout){
+    private fun addTextViews(parentView: RelativeLayout){
         multiplicityFrom = TextView(context)
         multiplicityFrom?.x = start.x.toFloat() +15
         multiplicityFrom?.y = start.y.toFloat()
         multiplicityFrom?.setText(link?.from?.multiplicity)
-        parent.addView(multiplicityFrom)
+        parentView.addView(multiplicityFrom)
 
         multiplicityTo = TextView(context)
         multiplicityTo?.x = end.x.toFloat() +15
         multiplicityTo?.y = end.y.toFloat()
         multiplicityTo?.setText(link?.to?.multiplicity)
-        parent.addView(multiplicityTo)
+        parentView.addView(multiplicityTo)
 
         nameView = TextView(context)
         nameView?.x =start.x.toFloat() + (end.x.toFloat() - start.x.toFloat()) /2  +15
         nameView?.y =start.y.toFloat() + (end.y.toFloat() - start.y.toFloat()) /2
         nameView?.setText(link?.name)
-        parent.addView(nameView)
+        parentView.addView(nameView)
     }
 
     override fun onDetachedFromWindow() {
@@ -225,8 +339,11 @@ class LinkView: View{
     }
 
     override fun setSelected(selected: Boolean) {
+        val parentView = this.parent as RelativeLayout
         if(selected){
+
             paint.color = Color.BLUE
+
         }else{
             when(link?.style?.color){
                 "BLACK"->paint.color = Color.BLACK
@@ -247,26 +364,141 @@ class LinkView: View{
             parentView.dispatchSetSelected(false)
             v.isSelected = true
 
-            var activity: AppCompatActivity = context as AppCompatActivity
-
-            if(dialog == null) {
-                dialog = EditLinkDialogFragment()
-
-                var bundle: Bundle = Bundle()
-                bundle.putString("linkId", ViewShapeHolder.getInstance().linkMap[this])
-                dialog?.arguments = bundle
-
-                Log.d("****", dialog?.arguments.toString())
-                dialog?.show(activity.supportFragmentManager, "alllooooo")
-            }
-
             true
         }else{
             false
         }
 
     }
+
+    private fun showModal(){
+        var activity: AppCompatActivity = context as AppCompatActivity
+
+        if(dialog == null) {
+            dialog = EditLinkDialogFragment()
+
+            var bundle: Bundle = Bundle()
+            bundle.putString("linkId", ViewShapeHolder.getInstance().linkMap[this])
+            dialog?.arguments = bundle
+
+            Log.d("****", dialog?.arguments.toString())
+            dialog?.show(activity.supportFragmentManager, "alllooooo")
+        }
+    }
+
+    private var onTouchListenerAngleButton = View.OnTouchListener { v, event ->
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                oldFrameRawX = event.rawX
+                oldFrameRawY = event.rawY
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val index = angleButtons.indexOf(v)
+                val deltaX = event.rawX - oldFrameRawX
+                val deltaY = event.rawY - oldFrameRawY
+//                val middlePoint = middlePoints[index]
+//                val copyOfPath: ArrayList<Coordinates> = link?.path?.clone() as ArrayList<Coordinates>
 //
+//                angleButtons.indexOf(v)
+//                copyOfPath.add(index + 1, Coordinates(middlePoint.x + deltaX, middlePoint.y + deltaY))
+//                val previewPaint = paint
+//                previewPaint.color = Color.LTGRAY
+//                val localCanvas:Canvas? = canvas
+//                if(localCanvas != null) {
+//                    drawPath(previewPaint, copyOfPath, localCanvas)
+//                }
+
+                v.x += deltaX
+                v.y += deltaY
+
+//                val path:Path = Path()
+//                val localLink: Link? = link
+//                if(localLink != null) {
+//                    path.moveTo(localLink.path.get(index).x.toFloat(), localLink.path.get(index).y.toFloat())
+//                    path.lineTo(v.x, v.y)
+//                    path.moveTo(localLink.path.get(index+1).x.toFloat(), localLink.path.get(index+1).y.toFloat())
+//                }
+//                val previewPaint = Paint()
+//                previewPaint.style = Paint.Style.STROKE
+//                previewPaint.strokeWidth = thickness
+//                previewPaint.color = Color.LTGRAY
+//
+//                canvas?.drawPath(path, previewPaint)
+
+
+                oldFrameRawY = event.rawY
+                oldFrameRawX = event.rawX
+
+            }
+            MotionEvent.ACTION_UP -> {
+                val index = angleButtons.indexOf(v)
+                val deltaX = event.rawX - oldFrameRawX
+                val deltaY = event.rawY - oldFrameRawY
+                val middlePoint = middlePoints[index]
+                angleButtons.indexOf(v)
+                link?.path?.add(index + 1, Coordinates(v.x.toDouble(), v.y.toDouble() ))
+                invalidate()
+                requestLayout()
+            }
+        }
+
+        true
+    }
+
+    private var onTouchListenerStartAnchorButton = View.OnTouchListener { v, event ->
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                oldFrameRawX = event.rawX
+                oldFrameRawY = event.rawY
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val deltaX = event.rawX - oldFrameRawX
+                val deltaY = event.rawY - oldFrameRawY
+                v.x += deltaX
+                v.y += deltaY
+
+                oldFrameRawY = event.rawY
+                oldFrameRawX = event.rawX
+
+            }
+            MotionEvent.ACTION_UP -> {
+                link?.path?.first()?.x = v.x.toDouble()
+                link?.path?.first()?.y = v.y.toDouble()
+                invalidate()
+                requestLayout()
+            }
+        }
+
+        true
+    }
+    private var onTouchListenerEndAnchorButton = View.OnTouchListener { v, event ->
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                oldFrameRawX = event.rawX
+                oldFrameRawY = event.rawY
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val deltaX = event.rawX - oldFrameRawX
+                val deltaY = event.rawY - oldFrameRawY
+                v.x += deltaX
+                v.y += deltaY
+
+                oldFrameRawY = event.rawY
+                oldFrameRawX = event.rawX
+
+            }
+            MotionEvent.ACTION_UP -> {
+                link?.path?.last()?.x = v.x.toDouble()
+                link?.path?.last()?.y = v.y.toDouble()
+                invalidate()
+                requestLayout()
+            }
+        }
+
+        true
+    }
+//
+
 //    private fun emitSelection(){
 //        val response: String = this.createResponseObject()
 //

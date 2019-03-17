@@ -226,6 +226,7 @@ open class BasicElementView: ConstraintLayout {
                             if (anchorPointStart != null) {
                                 val path: ArrayList<Coordinates> = ArrayList()
                                 path.add(start)
+                                path.add(Coordinates(start.x + 50, start.y -20))
                                 path.add(link.end)
                                 val linkShape: Link = Link(
                                     UUID.randomUUID().toString(),
