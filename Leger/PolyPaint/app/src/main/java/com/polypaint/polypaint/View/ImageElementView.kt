@@ -8,9 +8,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
 import kotlinx.android.synthetic.main.view_class.view.*
@@ -27,19 +29,33 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         val activity : AppCompatActivity = context as AppCompatActivity
 
-        var child: View? = null
+        var child: View = activity.layoutInflater.inflate(R.layout.view_image_element, null)
+
+        var nameText: TextView = child.findViewById(R.id.name) as TextView
+        // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsé
+        nameText.text = "basictElement.name"
+
+        /*
+        val shape = ViewShapeHolder.getInstance().canevas.findShape(
+            ViewShapeHolder.getInstance().map.getValue(this)
+        )
+        Log.d("*******", shape.toString())
+        */
+
+        var img: ImageView = child.findViewById(R.id.image_element) as ImageView
 
         when(this.shapeType){
             ShapeTypes.DEFAULT->{ }
 
             ShapeTypes.ARTIFACT -> {
-                child = activity.layoutInflater.inflate(R.layout.view_artifact, null)
+                img.setBackgroundResource(R.drawable.ic_artifact)
             }
             ShapeTypes.ACTIVITY -> {
-                child = activity.layoutInflater.inflate(R.layout.view_activity, null)
+                img.setBackgroundResource(R.drawable.ic_activity)
             }
             ShapeTypes.ROLE -> {
-                child = activity.layoutInflater.inflate(R.layout.view_role, null)
+                img.setBackgroundResource(R.drawable.ic_actor)
+
             }
 
         }
@@ -60,9 +76,6 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
     }
 
     override fun resize(newWidth:Int, newHeight:Int){
-        Log.d("newWidth", newWidth.toString())
-        Log.d("newHeight", newHeight.toString())
-
         if(newWidth >= mMinimumWidth){
             borderResizableLayout.layoutParams.width = newWidth
         }

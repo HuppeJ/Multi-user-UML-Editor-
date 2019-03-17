@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
+import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
@@ -427,21 +428,33 @@ open class BasicElementView: ConstraintLayout {
 
         return angle
     }
-    private var onTouchListenerEditButton = View.OnTouchListener { v, event ->
+
+    open protected var onTouchListenerEditButton = View.OnTouchListener { v, event ->
         when(event.action){
-            MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerEditButton"
-                var activity: AppCompatActivity = context as AppCompatActivity
-
-                var dialog: DialogFragment = EditClassDialogFragment()
-                var bundle: Bundle = Bundle()
-                bundle.putString("id", "asdfasg")
-                dialog.arguments = bundle
-
-                Log.d("****", dialog.arguments.toString())
-                dialog.show(activity.supportFragmentManager, "alllooooo")
+            MotionEvent.ACTION_DOWN -> {
+                editShape()
             }
+            /*val activity: AppCompatActivity = context as AppCompatActivity
+            if(activity is DrawingActivity){
+                val drawingActivity : DrawingActivity = activity as DrawingActivity
+                drawingActivity.syncCanevasFromLayout()
+            }
+            emitUpdate()*/
         }
         true
+    }
+
+    open fun editShape(){
+        val shapeId: String? = ViewShapeHolder.getInstance().map[this]
+
+        var activity: AppCompatActivity = context as AppCompatActivity
+        var dialog: DialogFragment = EditBasicElementDialogFragment()
+
+        var bundle: Bundle = Bundle()
+        bundle.putString("shapeId", shapeId)
+        dialog.arguments = bundle
+
+        dialog.show(activity.supportFragmentManager, "alllooooo")
     }
 
     private var onTouchListenerDeleteButton = View.OnTouchListener { v, event ->
