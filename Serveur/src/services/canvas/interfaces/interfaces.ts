@@ -30,7 +30,19 @@ export interface IEditLinksData {
     linksId: string[],
 }
 
+export interface IEditChatroomData {
+    username: string,
+    chatroomName: string,  
+    // password: string, ?
+}
 
+// TODO: vérifier format
+export interface IMessageData {
+    username: string,
+    chatroomName: string,
+    createdAt: string,
+    message: string,
+}
 
 /***********************************************
 * Interfaces for objects

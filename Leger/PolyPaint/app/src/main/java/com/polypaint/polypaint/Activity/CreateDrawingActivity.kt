@@ -27,7 +27,10 @@ import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
+import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.Model.Canevas
+import com.polypaint.polypaint.Model.Coordinates
+import com.polypaint.polypaint.Model.ShapeStyle
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.CanvasCreationResponse
 import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
@@ -58,13 +61,13 @@ class CreateDrawingActivity: AppCompatActivity(){
         setSupportActionBar(activityToolbar)
         drawer = drawer {
             primaryItem("Gallery") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_picture
                 onClick { _ ->
                     false
                 }
             }
             primaryItem("Chat") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_chat
                 onClick { _ ->
                     val intent = Intent(this@CreateDrawingActivity, ChatActivity::class.java)
                     startActivity(intent)
@@ -74,7 +77,7 @@ class CreateDrawingActivity: AppCompatActivity(){
             }
             footer{
                 secondaryItem("Settings") {
-                    icon = R.drawable.message_rectangle_r
+                    icon = R.drawable.ic_settings
                 }
             }
 
@@ -123,7 +126,7 @@ class CreateDrawingActivity: AppCompatActivity(){
         var password = passwordView?.text.toString().trim()
         isPasswordProtected = TextUtils.isEmpty(password)
 
-        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, password, ArrayList(), ArrayList())
+        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, password,  ArrayList(), ArrayList())
 
 
 

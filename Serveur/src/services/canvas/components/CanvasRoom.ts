@@ -14,15 +14,15 @@ export default class CanvasRoom {
         this.canvasSelected = false;
     }
 
-    public addUser(username: any) {
+    public addUser(username: string) {
         this.connectedUsers.add(username);
     }
 
-    public removeUser(username: any) {
+    public removeUser(username: string) {
         this.connectedUsers.delete(username);
     }
 
-    public hasUser(username: any) {
+    public hasUser(username: string) {
         return this.connectedUsers.has(username);
     }
 

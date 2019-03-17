@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import co.zsmb.materialdrawerkt.builders.drawer
@@ -23,7 +24,6 @@ import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
-import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.LinksUpdateResponse
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -31,11 +31,11 @@ import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
 import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
 import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
 import com.polypaint.polypaint.SocketReceptionModel.LinksUpdateEvent
-import com.polypaint.polypaint.View.ClassView
-import com.polypaint.polypaint.View.ImageElementView
-import com.polypaint.polypaint.View.LinkView
+import com.polypaint.polypaint.View.*
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
+import kotlinx.android.synthetic.main.item_drawing.*
+import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -60,13 +60,13 @@ class DrawingActivity : AppCompatActivity(){
         setSupportActionBar(activityToolbar)
         drawer = drawer {
             primaryItem("Gallery") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_picture
                 onClick { _ ->
                     false
                 }
             }
             primaryItem("Chat") {
-                icon = R.drawable.message_rectangle_r
+                icon = R.drawable.ic_chat
                 onClick { _ ->
                     val intent = Intent(this@DrawingActivity, ChatActivity::class.java)
                     startActivity(intent)
@@ -76,7 +76,7 @@ class DrawingActivity : AppCompatActivity(){
             }
             footer{
                 secondaryItem("Settings") {
-                    icon = R.drawable.message_rectangle_r
+                    icon = R.drawable.ic_settings
                 }
             }
 
@@ -84,12 +84,14 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
+        canevas_title.text = ViewShapeHolder.getInstance().canevas.name
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
+        initializeViewFromCanevas()
+
         add_button.setOnClickListener {
             addOnCanevas(ShapeTypes.DEFAULT)
-            //TODO: Send to all others the event here
         }
 
         class_button.setOnClickListener {
@@ -114,6 +116,7 @@ class DrawingActivity : AppCompatActivity(){
         clear_canvas_button.setOnClickListener {
             emitClearCanvas()
             parent_relative_layout?.removeAllViews()
+            ViewShapeHolder.getInstance().stackShapeCreatedId = Stack<String>()
         }
 
         duplicate_button.setOnClickListener{
@@ -129,16 +132,20 @@ class DrawingActivity : AppCompatActivity(){
             unstackView()
         }
 
-        sync_canevas_from_layout_button.setOnClickListener {
-            syncCanevasFromLayout()
-        }
-
-        sync_layout_from_canevas.setOnClickListener {
-            syncLayoutFromCanevas()
-        }
     }
 
+    private fun initializeViewFromCanevas(){
+        //Shape
+        if(ViewShapeHolder.getInstance().canevas != null){
+            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
+            for(shape in ViewShapeHolder.getInstance().canevas.shapes){
+                addOnCanevas(shape)
+            }
+            //TODO: LINKS
 
+        }
+
+    }
     override fun onResume() {
         super.onResume()
         val app = application as PolyPaint
@@ -159,22 +166,14 @@ class DrawingActivity : AppCompatActivity(){
         var shape = newShapeOnCanevas(shapeType)
         var view = newViewOnCanevas(shapeType)
 
-        // TODO : Je pense qu'on peut enlever cette partie de code (J.H.)
-        //when(shapeType){
-        //    ShapeTypes.DEFAULT -> {}
-        //    ShapeTypes.CLASS_SHAPE -> {
-        //        shape = newShapeOnCanevas(ShapeTypes.CLASS_SHAPE)
-        //        view = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
-        //    }
-        // }
-
-
         //addViewToLayout
         parent_relative_layout?.addView(view)
         //addShapeToCanevas
         ViewShapeHolder.getInstance().canevas.addShape(shape)
         //mapViewAndShapeId
         ViewShapeHolder.getInstance().map.put(view, shape.id)
+        //stackFor Stack/Unstack
+        ViewShapeHolder.getInstance().stackShapeCreatedId.push(shape.id)
 
         //EMIT
         /*
@@ -263,10 +262,10 @@ class DrawingActivity : AppCompatActivity(){
                 viewType = ImageElementView(this, shapeType)
             }
             ShapeTypes.COMMENT -> {
-                viewType = BasicElementView(this)
+                viewType = CommentView(this)
             }
             ShapeTypes.PHASE -> {
-                viewType = BasicElementView(this)
+                viewType = PhaseView(this)
             }
         }
         viewType.addView(viewContainer)
@@ -292,14 +291,21 @@ class DrawingActivity : AppCompatActivity(){
                         addOnCanevas(shapeDuplicated)
 
                         emitAddForm(shapeDuplicated)
+                        ViewShapeHolder.getInstance().stackShapeCreatedId.push(shapeDuplicated.id)
+
+                        ViewShapeHolder.getInstance().map.inverse().getValue(shapeDuplicated.id).isSelected = true
                     }
                 }
             }
         }else{
             for(shape in clipboard){
                 ViewShapeHolder.getInstance().canevas.addShape(shape)
+                ViewShapeHolder.getInstance().stackShapeCreatedId.push(shape.id)
                 addOnCanevas(shape)
                 emitAddForm(shape)
+
+                ViewShapeHolder.getInstance().map.inverse().getValue(shape.id).isSelected = true
+
             }
             clipboard.clear()
         }
@@ -314,32 +320,38 @@ class DrawingActivity : AppCompatActivity(){
                 emitDeleteForm(shapeToCut!!)
                 parent_relative_layout.removeView(view)
                 ViewShapeHolder.getInstance().remove(view)
+
+                ViewShapeHolder.getInstance().stackShapeCreatedId.remove(shapeToCut.id)
             }
         }
     }
 
     private fun stackView(){
-        val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
-        for (view in list){
-            if(view.isSelected && !view.isSelectedByOther){
-                val shapeToStack = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
+        try {
+            var idToStack = ViewShapeHolder.getInstance().stackShapeCreatedId.pop()
+            var shapeToStack = ViewShapeHolder.getInstance().canevas.findShape(idToStack)
+            stackBasicShape.push(shapeToStack)
+            emitDeleteForm(shapeToStack!!)
 
-                stackBasicShape.push(shapeToStack)
-                emitDeleteForm(shapeToStack!!)
+            var viewToRemove = ViewShapeHolder.getInstance().map.inverse().getValue(idToStack)
+            parent_relative_layout.removeView(viewToRemove)
+            ViewShapeHolder.getInstance().remove(viewToRemove)
 
-                parent_relative_layout.removeView(view)
-                ViewShapeHolder.getInstance().remove(view)
-            }
-        }
+        }catch (e : EmptyStackException){}
+
     }
     private fun unstackView(){
         try {
             val shapeUnstacked = stackBasicShape.pop()
+
             ViewShapeHolder.getInstance().canevas.addShape(shapeUnstacked)
             addOnCanevas(shapeUnstacked)
 
             emitAddForm(shapeUnstacked)
+            ViewShapeHolder.getInstance().stackShapeCreatedId.push(shapeUnstacked.id)
+
         }catch (e : EmptyStackException){}
+        catch (e : NullPointerException){} //If stacking deleted shape
     }
     private fun syncLayoutFromCanevas(){
         for (view in ViewShapeHolder.getInstance().map.keys){
@@ -469,6 +481,7 @@ class DrawingActivity : AppCompatActivity(){
                 Log.d("formsDeleted", obj.username + form.name)
                 runOnUiThread {
                     ViewShapeHolder.getInstance().remove(form)
+                    ViewShapeHolder.getInstance().stackShapeCreatedId.remove(form.id)
                     syncLayoutFromCanevas()
                 }
             }
@@ -479,6 +492,7 @@ class DrawingActivity : AppCompatActivity(){
         Log.d("onCanvasReinitialized", "alllooo")
         runOnUiThread {
             ViewShapeHolder.getInstance().removeAll()
+            ViewShapeHolder.getInstance().stackShapeCreatedId = Stack<String>()
             syncLayoutFromCanevas()
         }
     }

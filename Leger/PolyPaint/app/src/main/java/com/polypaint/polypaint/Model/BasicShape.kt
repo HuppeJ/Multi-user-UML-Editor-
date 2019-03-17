@@ -3,10 +3,11 @@ package com.polypaint.polypaint.Model
 import android.content.Context
 import com.polypaint.polypaint.R
 import android.view.LayoutInflater
+import java.io.Serializable
 import java.util.*
 
 
-open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var linksTo: ArrayList<String?>, var linksFrom: ArrayList<String?>) {
+open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var linksTo: ArrayList<String?>, var linksFrom: ArrayList<String?>) : Serializable {
 //    private var inflater : LayoutInflater? = null
 
     init {
