@@ -2,6 +2,7 @@ package com.polypaint.polypaint.View
 
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
+import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -13,6 +14,7 @@ import androidx.fragment.app.DialogFragment
 import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
+import com.polypaint.polypaint.Particles.ParticleSystem
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
 import kotlinx.android.synthetic.main.view_class.view.*
@@ -49,6 +51,7 @@ class PhaseView(context: Context): BasicElementView(context) {
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
         linearLayoutCompat.layoutParams.height = (2*mMinimumHeight/10).toInt()
         linearLayoutCompat2.layoutParams.height = (8*mMinimumHeight/10).toInt()
+
 
     }
 

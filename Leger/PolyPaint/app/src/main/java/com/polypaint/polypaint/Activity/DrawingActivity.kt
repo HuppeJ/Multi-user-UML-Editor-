@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.Canvas
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +26,7 @@ import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
+import com.polypaint.polypaint.Particles.ParticleSystem
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.LinksUpdateResponse
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -38,6 +41,11 @@ import kotlinx.android.synthetic.main.item_drawing.*
 import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.ArrayList
+import androidx.core.view.ViewCompat.setAlpha
+import androidx.core.os.HandlerCompat.postDelayed
+import android.provider.SyncStateContract.Helpers.update
+import android.widget.FrameLayout
+import com.polypaint.polypaint.Holder.VFXHolder
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -48,7 +56,6 @@ class DrawingActivity : AppCompatActivity(){
 
     private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
     private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate (savedInstanceState: Bundle?) {
@@ -132,6 +139,11 @@ class DrawingActivity : AppCompatActivity(){
             unstackView()
         }
 
+        //TODO : C'est vraiment degeux, le mettre dans un view à lui avec un holder pour faire le pont ?
+
+        VFXHolder.getInstance().vfxView = VfxView(this)
+        parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
+
     }
 
     private fun initializeViewFromCanevas(){
@@ -186,9 +198,14 @@ class DrawingActivity : AppCompatActivity(){
         emitAddForm(shape)
 
         syncLayoutFromCanevas()
+
+        VFXHolder.getInstance().fireVFX(
+            (shape.shapeStyle.coordinates.x + shape.shapeStyle.width/2).toFloat(),
+            (shape.shapeStyle.coordinates.y + shape.shapeStyle.height/2).toFloat(),this)
     }
 
     private fun addOnCanevas(basicShape: BasicShape){
+        //TODO: Probablement une meilleure facon de mapper la value à l'enum ...
         when(basicShape.type){
             ShapeTypes.DEFAULT.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
