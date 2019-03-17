@@ -17,19 +17,16 @@ import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
 import kotlinx.android.synthetic.main.view_class.view.*
 
-
-class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementView(context) {
-    override var mMinimumWidth : Float = 220F
-    override var mMinimumHeight : Float = 320F
-    private var shapeType : ShapeTypes? = shapeType
-
+class PhaseView(context: Context): BasicElementView(context) {
+        override var mMinimumWidth : Float = 400F
+        override var mMinimumHeight : Float = 220F
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
         val activity : AppCompatActivity = context as AppCompatActivity
 
-        var child: View = activity.layoutInflater.inflate(R.layout.view_image_element, null)
+        var child: View = activity.layoutInflater.inflate(R.layout.view_phase, null)
 
         var nameText: TextView = child.findViewById(R.id.name) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
@@ -42,24 +39,6 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         Log.d("*******", shape.toString())
         */
 
-        var img: ImageView = child.findViewById(R.id.image_element) as ImageView
-
-        when(this.shapeType){
-            ShapeTypes.DEFAULT->{ }
-
-            ShapeTypes.ARTIFACT -> {
-                img.setBackgroundResource(R.drawable.ic_artifact)
-            }
-            ShapeTypes.ACTIVITY -> {
-                img.setBackgroundResource(R.drawable.ic_activity)
-            }
-            ShapeTypes.ROLE -> {
-                img.setBackgroundResource(R.drawable.ic_actor)
-
-            }
-
-        }
-
         borderResizableLayout.addView(child)
 
 
@@ -68,8 +47,8 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-        linearLayoutCompat.layoutParams.height = (9*mMinimumHeight/10).toInt()
-        linearLayoutCompat2.layoutParams.height = (1*mMinimumHeight/10).toInt()
+        linearLayoutCompat.layoutParams.height = (2*mMinimumHeight/10).toInt()
+        linearLayoutCompat2.layoutParams.height = (8*mMinimumHeight/10).toInt()
 
     }
 
@@ -80,8 +59,8 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
-            linearLayoutCompat.layoutParams.height = (9*newHeight / 10)
-            linearLayoutCompat2.layoutParams.height = (1 * newHeight / 10)
+            linearLayoutCompat.layoutParams.height = (2*newHeight / 10)
+            linearLayoutCompat2.layoutParams.height = (8 * newHeight / 10)
         }
 
         borderResizableLayout.requestLayout()

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-        android:id="@+id/role_layout"
+        android:id="@+id/image_element_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -10,37 +10,34 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
                                                   android:layout_height="wrap_content"
+                                                  android:gravity="center"
                                                   app:layout_constraintTop_toTopOf="parent"
                                                   android:id="@+id/linearLayoutCompat"
                                                   app:layout_constraintBottom_toBottomOf="parent"
                                                   app:layout_constraintVertical_bias="0.04"
+                                                  android:background="@drawable/borders_comment"
+
     >
-        <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_actor"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/image_element"/>
+        <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:text="phaseName"/>
+
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
                                                   android:layout_height="match_parent"
-                                                  android:gravity="center"
                                                   app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat"
                                                   android:id="@+id/linearLayoutCompat2"
                                                   android:layout_below="@+id/linearLayoutCompat"
+                                                  android:background="@drawable/borders_comment"
+
     >
-        <TextView
-                android:id="@+id/class_attributes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="Actor"/>
+
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
