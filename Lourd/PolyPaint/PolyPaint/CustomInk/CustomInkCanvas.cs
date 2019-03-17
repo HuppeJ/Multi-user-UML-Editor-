@@ -243,19 +243,7 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
-            if(stroke.type == (int) StrokeTypes.CLASS_SHAPE)
-            {
-                Point point = stroke.GetBounds().TopLeft;
-                double x = point.X;
-                double y = point.Y;
-
-                ClassStroke classStroke = (ClassStroke)stroke;
-                ClassTextBox sp = new ClassTextBox(classStroke);
-                this.Children.Add(sp);
-                InkCanvas.SetTop(sp, y);
-                InkCanvas.SetLeft(sp, x);
-            }
-            else
+            if(stroke.type != (int) StrokeTypes.CLASS_SHAPE)
             {
                 Point point = stroke.GetBounds().BottomLeft;
                 double x = point.X;
@@ -428,7 +416,10 @@ namespace PolyPaint.CustomInk
             myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
             myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
             myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
-
+            if(selectedStroke.type == (int)StrokeTypes.CLASS_SHAPE)
+            {
+                myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
+            }
         }
 
         // Tjrs avoir les anchorPoints? Laid.. gi
