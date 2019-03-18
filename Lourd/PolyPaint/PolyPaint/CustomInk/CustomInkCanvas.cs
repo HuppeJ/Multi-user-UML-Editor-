@@ -2,6 +2,7 @@
 using PolyPaint.Enums;
 using PolyPaint.Templates;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -58,10 +59,28 @@ namespace PolyPaint.CustomInk
                     {
                         if (SelectedStrokes.Count == 1 && SelectedStrokes.Contains(linkStroke))
                         {
-                            linkStroke.addStylusPointsToLink(); // update
+                            // keep the same stylus points if linkstroke is attached and is the only one moved
+                            linkStroke.addStylusPointsToLink(); 
                         }
                         else
                         {
+                            // si plusieurs points dans le path, les mettre a jour si la selectedStroke a bouge
+                            if (SelectedStrokes.Contains(linkStroke))
+                            {
+                                List<Coordinates> pathCopy = new List<Coordinates>(linkStroke.path);
+                                int stylusPointsIndex = 0;
+                                for (int i = 1; i < linkStroke.path.Count - 1; i++)
+                                {
+                                    Point firstPoint = new Point(pathCopy[i - 1].x, pathCopy[i - 1].y);
+                                    Point secondPoint = new Point(pathCopy[i].x, pathCopy[i].y);
+                                    double y = secondPoint.Y - firstPoint.Y;
+                                    double x = secondPoint.X - firstPoint.X;
+
+                                    stylusPointsIndex += (int)Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
+                                    linkStroke.path[i] = new Coordinates(linkStroke.StylusPoints[stylusPointsIndex].ToPoint());
+                                }
+                            }
+                            // update the free points of linkStrokes (from view)
                             if (linkStroke.from.formId == null)
                             {
                                 StylusPoint point = linkStroke.StylusPoints[0];
@@ -72,8 +91,8 @@ namespace PolyPaint.CustomInk
                                 StylusPoint point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
                                 linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
                             }
-
-
+                            
+                            // move the attached points of linkStrokes
                             foreach (CustomStroke selectedStroke in SelectedStrokes)
                             {
                                 if (linkStroke.from?.formId == selectedStroke.guid.ToString())
@@ -88,18 +107,28 @@ namespace PolyPaint.CustomInk
                                     // mettre a jour les positions des points initial et final
                                     linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(toPoint);
                                 }
-
-                                linkStroke.addStylusPointsToLink();
+                                
                             }
+
+                            // update the linkstroke (view)
+                            linkStroke.addStylusPointsToLink();
                         }
                     }
                     else if (SelectedStrokes.Contains(linkStroke)) // update path if linkStroke is not attached and has been moved or resized
                     {
                         StylusPoint point = linkStroke.StylusPoints[0];
+                        double xDiff = point.X - linkStroke.path[0].x;
+                        double yDiff = point.Y - linkStroke.path[0].y;
                         linkStroke.path[0] = new Coordinates(point.ToPoint());
 
                         point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
                         linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
+
+                        // si plusieurs points dans le path. gi ne fonctionne pas pour le rresize :/
+                        for (int i = 1; i < linkStroke.path.Count - 1; i++)
+                        {
+                           linkStroke.path[i] = new Coordinates(linkStroke.path[i].x + xDiff, linkStroke.path[i].y + yDiff);
+                        }
                     }
                 }
             }

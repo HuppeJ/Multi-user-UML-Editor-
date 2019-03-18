@@ -118,8 +118,8 @@ namespace PolyPaint.CustomInk
         void dragHandle_DragCompleted(object sender,
                                         DragCompletedEventArgs e)
         {
-            //stroke.path.Insert(indexInPath, new Coordinates(Mouse.GetPosition(this)));
-            //stroke.addStylusPointsToLink2();
+            stroke.path.Insert(indexInPath, new Coordinates(Mouse.GetPosition(this)));
+            stroke.addStylusPointsToLink();
             visualChildren.Clear();
             InvalidateArrange();
         }
