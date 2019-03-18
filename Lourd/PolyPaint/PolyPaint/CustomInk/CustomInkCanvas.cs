@@ -250,32 +250,32 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
-            if(stroke.type == (int) StrokeTypes.CLASS_SHAPE)
+            if(stroke.type == (int)StrokeTypes.LINK)
             {
-                Point point = stroke.GetBounds().TopLeft;
-                double x = point.X;
-                double y = point.Y;
+                double x = stroke.StylusPoints[0].X;
+                double y = stroke.StylusPoints[0].Y;
 
-                ClassStroke classStroke = (ClassStroke)stroke;
-                ClassTextBox sp = new ClassTextBox(classStroke.name, classStroke.attributes, classStroke.methods);
-                this.Children.Add(sp);
-                InkCanvas.SetTop(sp, y);
-                InkCanvas.SetLeft(sp, x);
+                CreateTextBox(stroke, x, y);
             }
-            else
+            else if(stroke.type != (int)StrokeTypes.CLASS_SHAPE)
             {
                 Point point = stroke.GetBounds().BottomLeft;
                 double x = point.X;
                 double y = point.Y;
 
-                CustomTextBox tb = new CustomTextBox();
-                tb.Text = stroke.name;
-                tb.Uid = stroke.guid.ToString();
-
-                this.Children.Add(tb);
-                InkCanvas.SetTop(tb, y);
-                InkCanvas.SetLeft(tb, x);
+                CreateTextBox(stroke, x, y);
             }
+        }
+
+        private void CreateTextBox(CustomStroke stroke, double x, double y)
+        {
+            CustomTextBox tb = new CustomTextBox();
+            tb.Text = stroke.name;
+            tb.Uid = stroke.guid.ToString();
+
+            Children.Add(tb);
+            SetTop(tb, y);
+            SetLeft(tb, x);
         }
         #endregion
 
