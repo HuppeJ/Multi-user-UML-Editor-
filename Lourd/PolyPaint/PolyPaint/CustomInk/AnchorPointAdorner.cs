@@ -20,10 +20,7 @@ namespace PolyPaint.CustomInk
 
         // The center of the strokes.
         Point center;
-
-        // The linkLine
-        //Path line;
-
+        
         RotateTransform rotation;
         const int HANDLEMARGIN = 15;
 
@@ -33,9 +30,19 @@ namespace PolyPaint.CustomInk
 
         public CustomInkCanvas canvas;
 
+        private Path linkPreview;
+        LineGeometry linkPreviewGeom = new LineGeometry();
+
         public AnchorPointAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            visualChildren = new VisualCollection(this);
+
+            linkPreview = new Path();
+            linkPreview.Stroke = Brushes.Gray;
+            linkPreview.StrokeThickness = 2;
+            visualChildren.Add(linkPreview);
+
             stroke = customStroke;
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
@@ -51,7 +58,6 @@ namespace PolyPaint.CustomInk
             anchors.Add(new Thumb());
            
 
-            visualChildren = new VisualCollection(this);
             foreach (Thumb anchor in anchors)
             {
                 anchor.Cursor = Cursors.SizeNWSE;
@@ -74,26 +80,16 @@ namespace PolyPaint.CustomInk
             foreach (Thumb cheatAnchor in cheatAnchors)
             {
                 cheatAnchor.Cursor = Cursors.SizeNWSE;
-                cheatAnchor.Width = 10;
-                cheatAnchor.Height = 10;
-                
+                cheatAnchor.Width = 1;
+                cheatAnchor.Height = 1;
+
                 canvas.Children.Add(cheatAnchor);
             }
 
             strokeBounds = customStroke.GetBounds();
-            //line = new Path();
-            //visualChildren.Add(line);
 
         }
 
-        /// <summary>
-        /// Draw the rotation handle and the outline of
-        /// the element.
-        /// </summary>
-        /// <param name="finalSize">The final area within the 
-        /// parent that this element should use to arrange 
-        /// itself and its children.</param>
-        /// <returns>The actual size used. </returns>
         protected override Size ArrangeOverride(Size finalSize)
         {
             if (strokeBounds.IsEmpty)
@@ -107,6 +103,8 @@ namespace PolyPaint.CustomInk
             ArrangeAnchor(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
             ArrangeAnchor(2, 0, strokeBounds.Height / 2 + HANDLEMARGIN);
             ArrangeAnchor(3, -(strokeBounds.Width / 2 + HANDLEMARGIN), 0);
+
+            linkPreview.Arrange(new Rect(finalSize));
 
             return finalSize;
         }
@@ -134,51 +132,24 @@ namespace PolyPaint.CustomInk
         {
             //e.HorizontalChange, e.VerticalChange;
             canvas.addAnchorPoints();
+            linkPreviewGeom.StartPoint = Mouse.GetPosition(this);
         }
 
         void dragHandle_DragDelta(object sender, DragDeltaEventArgs e)
         {
+            linkPreviewGeom.EndPoint = Mouse.GetPosition(this);
 
-            //Point pos = Mouse.GetPosition(this);
-
-            //double deltaX = pos.X - center.X;
-            //double deltaY = pos.Y - center.Y;
-
-            //if (deltaY.Equals(0) && deltaX.Equals(0))
-            //{
-            //    return;
-            //}
-
-            //int number = 0;
-            //if (sender as Thumb == anchors[1]) number = 1;
-            //if (sender as Thumb == anchors[2]) number = 2;
-            //if (sender as Thumb == anchors[3]) number = 3;
-
-            //Point initialPosition = anchors[number].TransformToAncestor(canvas).Transform(new Point(0, 0));
-
-            //// works!!
-            //visualChildren.Remove(line);
-            //line.Data = new LineGeometry(initialPosition,
-            //                             pos);
-            //line.Stroke = Brushes.Blue;
-            //line.StrokeThickness = 1;
-            //visualChildren.Add(line);
-
-            //line.RenderTransform = rotation;
+            linkPreview.Data = linkPreviewGeom;
+            linkPreview.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
         }
 
         void dragHandle_DragCompleted(object sender,
                                         DragCompletedEventArgs e)
-        {
-            //e.HorizontalChange, e.VerticalChange;
-
-            // Redraw rotateHandle.
-                        
+        {                        
             Point actualPos = Mouse.GetPosition(this);
 
             CustomStroke strokeTo = null;
             int number = 0;
-
 
             foreach (UIElement thumb in canvas.Children)
             {
@@ -206,13 +177,15 @@ namespace PolyPaint.CustomInk
             if (sender as Thumb == anchors[2]) linkAnchorNumber = 2;
             if (sender as Thumb == anchors[3]) linkAnchorNumber = 3;
             Point pos = (sender as Thumb).TransformToAncestor(canvas).Transform(new Point(0, 0));
+            pos.X += 5;
+            pos.Y += 5;
 
             LinkStroke linkBeingCreated = new LinkStroke(pos, stroke?.guid.ToString(), linkAnchorNumber, new StylusPointCollection { new StylusPoint(0, 0) });
             linkBeingCreated.addToPointToLink(actualPos, strokeTo?.guid.ToString(), number);
 
             canvas.Strokes.Add(linkBeingCreated);
 
-
+            visualChildren.Remove(linkPreview);
             InvalidateArrange();
         }
 

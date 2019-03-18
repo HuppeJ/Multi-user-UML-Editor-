@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using PolyPaint.Enums;
 using System.Windows;
 using System.Windows.Ink;
+using System.Windows.Shapes;
+using System.Windows.Media;
 
 namespace PolyPaint.CustomInk.Strokes
 {
@@ -51,14 +53,14 @@ namespace PolyPaint.CustomInk.Strokes
             {
                 StylusPoints.RemoveAt(1);
             }
-            path.Add(new Coordinates(StylusPoints[0].X, StylusPoints[0].Y));
+            path.Add(new Coordinates(StylusPoints[0].ToPoint()));
 
             for (int i = 1; i <= nbOfPoints; i++)
             {
                 StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
                 if (i == nbOfPoints)
                 {
-                    path.Add(new Coordinates(StylusPoints[nbOfPoints].X, StylusPoints[nbOfPoints].Y));
+                    path.Add(new Coordinates(StylusPoints[nbOfPoints].ToPoint()));
                 }
             }
 
@@ -74,7 +76,7 @@ namespace PolyPaint.CustomInk.Strokes
             type = (int)StrokeTypes.LINK;
             style = new LinkStyle();
             path = new List<Coordinates>();
-            path.Add(new Coordinates(pointFrom.X, pointFrom.Y));
+            path.Add(new Coordinates(pointFrom));
         }
 
         public void addStylusPointsToLink()
@@ -103,9 +105,41 @@ namespace PolyPaint.CustomInk.Strokes
             }
         }
 
+        public void addStylusPointsToLink2()
+        {
+            // garder uniquement le premier point
+            while (StylusPoints.Count > 1)
+            {
+                StylusPoints.RemoveAt(1);
+            }
+
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+
+                Point firstPoint = new Point(path[i].x, path[i].y);
+                Point lastPoint = new Point(path[i + 1].x, path[i + 1].y);
+                double y = lastPoint.Y - firstPoint.Y;
+                double x = lastPoint.X - firstPoint.X;
+
+                double nbOfPoints = Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
+                double yStep = y / nbOfPoints;
+                double xStep = x / nbOfPoints;
+
+                for (int j = 1; j < nbOfPoints; j++)
+                {
+                    StylusPoints.Add(new StylusPoint(firstPoint.X + j * xStep, firstPoint.Y + j * yStep));
+                }
+            }
+
+            if (StylusPoints.Count > 1)
+            {
+                StylusPoints.RemoveAt(0);
+            }
+        }
+
         public void addToPointToLink(Point pointTo, string formId, int anchor)
         {
-            path.Add(new Coordinates(pointTo.X, pointTo.Y));
+            path.Add(new Coordinates(pointTo));
             to = new AnchorPoint(formId, anchor, "0");
 
             addStylusPointsToLink();
@@ -144,6 +178,31 @@ namespace PolyPaint.CustomInk.Strokes
             }
 
             return point;
+        }
+
+        internal int GetIndexforNewPoint(Point point)
+        {
+            int index = 0;
+            Rect rect;
+            RectangleGeometry rectGeometry = new RectangleGeometry();
+
+            for (int i = 0; i < path.Count - 1 && index == 0; i++)
+            {
+                rect = new Rect(path[i].ToPoint(), path[i + 1].ToPoint());
+                rectGeometry.Rect = rect;
+                if (rectGeometry.FillContains(point))
+                {
+                    index = i + 1;
+                }
+            }
+
+
+            return index;
+        }
+
+        internal bool ContainsPoint(Point point)
+        {
+            return GetGeometry().FillContains(point);
         }
 
         public bool isAttached()

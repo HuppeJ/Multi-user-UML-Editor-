@@ -20,9 +20,8 @@ namespace PolyPaint.CustomInk
 
         public StylusPoint firstPoint;
         public bool isUpdatingLink = false;
-        
-        #region links
-        
+
+        #region Links
         public void updateLink(int linkStrokeAnchor, LinkStroke linkBeingUpdated, string strokeToAttachGuid, int strokeToAttachAnchor, Point pointPosition)
         {
 
@@ -31,13 +30,13 @@ namespace PolyPaint.CustomInk
                 if (linkStrokeAnchor == 0)
                 {
                     // mettre a jour la position du point initial (from)
-                    linkBeingUpdated.path[0] = new Coordinates(pointPosition.X, pointPosition.Y);
+                    linkBeingUpdated.path[0] = new Coordinates(pointPosition);
                     linkBeingUpdated.from = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "0");
                 }
                 else
                 {
                     // mettre a jour la position du point final (to)
-                    linkBeingUpdated.path[linkBeingUpdated.path.Count - 1] = new Coordinates(pointPosition.X, pointPosition.Y);
+                    linkBeingUpdated.path[linkBeingUpdated.path.Count - 1] = new Coordinates(pointPosition);
                     linkBeingUpdated.to = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "0");
                 }
 
@@ -57,18 +56,21 @@ namespace PolyPaint.CustomInk
 
                     if (linkStroke.isAttached())
                     {
-                        if (SelectedStrokes.Count == 1 && SelectedStrokes.Contains(linkStroke)) { } // do nothing 
+                        if (SelectedStrokes.Count == 1 && SelectedStrokes.Contains(linkStroke))
+                        {
+                            linkStroke.addStylusPointsToLink(); // update
+                        }
                         else
                         {
                             if (linkStroke.from.formId == null)
                             {
                                 StylusPoint point = linkStroke.StylusPoints[0];
-                                linkStroke.path[0] = new Coordinates(point.X, point.Y);
+                                linkStroke.path[0] = new Coordinates(point.ToPoint());
                             }
                             else if (linkStroke.to.formId == null)
                             {
                                 StylusPoint point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
-                                linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.X, point.Y);
+                                linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
                             }
 
 
@@ -78,13 +80,13 @@ namespace PolyPaint.CustomInk
                                 {
                                     Point fromPoint = linkStroke.GetFromPoint(this.Strokes);
                                     // mettre a jour les positions des points initial et final
-                                    linkStroke.path[0] = new Coordinates(fromPoint.X, fromPoint.Y);
+                                    linkStroke.path[0] = new Coordinates(fromPoint);
                                 }
                                 if (linkStroke.to?.formId == selectedStroke.guid.ToString())
                                 {
                                     Point toPoint = linkStroke.GetToPoint(this.Strokes);
                                     // mettre a jour les positions des points initial et final
-                                    linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(toPoint.X, toPoint.Y);
+                                    linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(toPoint);
                                 }
 
                                 linkStroke.addStylusPointsToLink();
@@ -94,13 +96,29 @@ namespace PolyPaint.CustomInk
                     else if (SelectedStrokes.Contains(linkStroke)) // update path if linkStroke is not attached and has been moved or resized
                     {
                         StylusPoint point = linkStroke.StylusPoints[0];
-                        linkStroke.path[0] = new Coordinates(point.X, point.Y);
+                        linkStroke.path[0] = new Coordinates(point.ToPoint());
 
                         point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
-                        linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.X, point.Y);
+                        linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
                     }
                 }
             }
+        }
+
+        internal void modifyLinkStrokePath(LinkStroke linkStroke, Point mousePosition)
+        {
+            if (linkStroke.ContainsPoint(mousePosition))
+            {
+                int index = linkStroke.GetIndexforNewPoint(mousePosition);
+                Path path = new Path();
+                path.Data = linkStroke.GetGeometry();
+
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                myAdornerLayer.Add(new LinkElbowAdorner(mousePosition, index, path, linkStroke, this));
+            }
+
+
         }
         #endregion
 
@@ -165,9 +183,8 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionResized(EventArgs e)
         {
-            base.OnSelectionResized(e);
-            RefreshChildren();
             RefreshLinks();
+            RefreshChildren();
         }
 
         protected override void OnStrokeErased(RoutedEventArgs e)
@@ -362,6 +379,7 @@ namespace PolyPaint.CustomInk
         {
             // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e
             //removeAdorners();
+
             Children.Clear();
 
             isUpdatingLink = false;
@@ -380,10 +398,7 @@ namespace PolyPaint.CustomInk
             {
                 AddTextBox(stroke);
             }
-
-            // refresh all the links
-            //refreshLinks();
-
+            
             Select(selectedStrokes);
         }
 
@@ -422,7 +437,7 @@ namespace PolyPaint.CustomInk
                 }
             }
         }
-
+        
         // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e stroke ajoutee
         private void removeAdorners()
         {

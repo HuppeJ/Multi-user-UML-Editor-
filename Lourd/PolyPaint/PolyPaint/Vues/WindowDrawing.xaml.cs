@@ -28,7 +28,7 @@ namespace PolyPaint.Vues
             InitializeComponent();
             DataContext = new VueModele();
         }
-        
+
         // Pour gérer les points de contrôles.
         private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
         private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
@@ -45,13 +45,13 @@ namespace PolyPaint.Vues
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
-            
+
         }
 
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
-        
+
         private void RotateSelection(object sender, RoutedEventArgs e) => surfaceDessin.RotateStrokes();
 
         private void RefreshChildren(object sender, RoutedEventArgs e)
@@ -84,11 +84,17 @@ namespace PolyPaint.Vues
                     myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
                 }
             }
+            else if (surfaceDessin.SelectedStrokes.Count == 1 && surfaceDessin.SelectedStrokes[0].GetType() == typeof(LinkStroke))
+            {
+                surfaceDessin.modifyLinkStrokePath(surfaceDessin.SelectedStrokes[0] as LinkStroke, e.GetPosition(surfaceDessin));
 
-                        
+            }
+
+
             // Pour que les boutons soient de la bonne couleur
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
         }
+        
 
         // Bouton pour changer le texte de l'élément sélectionné
         public void RenameSelection()
