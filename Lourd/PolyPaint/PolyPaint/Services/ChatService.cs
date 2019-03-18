@@ -28,20 +28,18 @@ namespace PolyPaint.Services
 
             socket.On("getChatroomsResponse", (data) =>
             {
-
-                RoomList rooms = serializer.Deserialize<RoomList>((string)data);
-                //GetChatrooms?.Invoke(roomList);
-                int i = 0;
+                RoomList roomlist = serializer.Deserialize<RoomList>((string)data);
+                GetChatrooms?.Invoke(roomlist);
             });
             
             socket.Emit("createChatroom", serializer.Serialize(new Chatroom("Everyone")));
         }
         
-        public void SendMessage(string message, string sender, long timestamp, string chatroomName)
+        public void SendMessage(string message, string username, long timestamp, string chatroomName)
         {
             ChatMessageTemplate chatMessage = new ChatMessageTemplate() {
                 message = message,
-                sender = sender,
+                username = username,
                 createdAt = timestamp,
                 chatroomName = chatroomName
             };
@@ -52,6 +50,12 @@ namespace PolyPaint.Services
         public void RequestChatrooms()
         {
             socket.Emit("getChatrooms");
+        }
+
+        public void JoinChatroom(string chatroomName)
+        {
+
+            socket.Emit("joinChatroom", serializer.Serialize(new ChatroomJoin(chatroomName, username)));
         }
     }
 }
