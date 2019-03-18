@@ -24,12 +24,6 @@ export interface IUpdateLinksData {
     links: ILink[],
 }
 
-export interface IEditLinksData {
-    username: string,
-    canevasName: string,  
-    linksId: string[],
-}
-
 export interface IEditChatroomData {
     username: string,
     chatroomName: string,  
