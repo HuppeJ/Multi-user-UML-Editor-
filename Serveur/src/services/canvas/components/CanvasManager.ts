@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { IEditLinksData, IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData } from "../interfaces/interfaces";
+import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -159,7 +159,7 @@ export default class CanvasManager {
         return canvasRoom.updateLinks(data);
     }
 
-    public deleteCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+    public deleteCanvasLinks(canvasRoomId: string, data: IUpdateLinksData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -168,7 +168,7 @@ export default class CanvasManager {
         return canvasRoom.deleteLinks(data);
     }
 
-    public selectCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+    public selectCanvasLinks(canvasRoomId: string, data: IUpdateLinksData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -177,7 +177,7 @@ export default class CanvasManager {
         return canvasRoom.selectLinks(data);
     }
 
-    public deselectCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+    public deselectCanvasLinks(canvasRoomId: string, data: IUpdateLinksData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;

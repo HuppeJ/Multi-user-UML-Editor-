@@ -1,4 +1,4 @@
-import { ICanevas, IEditLinksData, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from "../interfaces/interfaces";
+import { ICanevas, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from "../interfaces/interfaces";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
@@ -173,7 +173,7 @@ export default class CanvasRoom {
                 throw new Error(`You can only create one Link at a time.`);
             }
             // TODO : Check if linkTo and linkFrom point to existing forms?
-            // TODO : En ce moment on ne met pas à jour les linksTo: ILink[], linksFrom: ILink[], dans les IBasicShape
+            this.canvas.links.push(data.links[0]);
             return true;
         } catch (e) {
             console.log("[Error] in addLink", e);
@@ -183,22 +183,21 @@ export default class CanvasRoom {
 
     public updateLinks(data: IUpdateLinksData): boolean {
         try {
-            // TODO : Check if linkTo and linkFrom point to existing forms?
-            // TODO : En ce moment on ne met pas à jour les linksTo: ILink[], linksFrom: ILink[], dans les IBasicShape
-            // let linkIsUpdated: boolean = false;
-            // data.links.forEach((newLink) => {
-            //     linkIsUpdated = false;
-            //     this.canvas.links.forEach((link, index) => {
-            //         if (newLink.id === link.id) {
-            //             this.canvas.links[index] = newLink;
-            //             linkIsUpdated = true;
-            //         }
-            //     });
+            //TODO : Check if linkTo and linkFrom point to existing forms?
+            let linkIsUpdated: boolean = false;
+            data.links.forEach((newLink) => {
+                linkIsUpdated = false;
+                this.canvas.links.forEach((link, index) => {
+                    if (newLink.id === link.id) {
+                        this.canvas.links[index] = newLink;
+                        linkIsUpdated = true;
+                    }
+                });
 
-            //     if (!linkIsUpdated) {
-            //         throw new Error(`There is no form with the id: "${newLink.id}" in the canvas : "${this.canvas.name}".`);
-            //     }
-            // });
+                if (!linkIsUpdated) {
+                    throw new Error(`There is no form with the id: "${newLink.id}" in the canvas : "${this.canvas.name}".`);
+                }
+            });
 
             return true;
         } catch (e) {
@@ -208,26 +207,25 @@ export default class CanvasRoom {
     }
 
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les forms à delete
-    public deleteLinks(data: IEditLinksData): boolean {
+    public deleteLinks(data: IUpdateLinksData): boolean {
         try {
             // TODO : Check if linkTo and linkFrom point to existing forms?
-            // TODO : En ce moment on ne met pas à jour les linksTo: ILink[], linksFrom: ILink[], dans les IBasicShape
-            // let linkIsDeleted: boolean = false;
-            // data.links.forEach((newlink) => {
-            //     linkIsDeleted = false;
-            //     this.canvas.links = this.canvas.links.filter((link) => {
-            //         if (newlink.id === link.id) {
-            //             linkIsDeleted = true;
-            //             return false;
-            //         }
+            let linkIsDeleted: boolean = false;
+            data.links.forEach((newlink) => {
+                linkIsDeleted = false;
+                this.canvas.links = this.canvas.links.filter((link) => {
+                    if (newlink.id === link.id) {
+                        linkIsDeleted = true;
+                        return false;
+                    }
 
-            //         return true;
-            //     });
+                    return true;
+                });
 
-            //     if (!linkIsDeleted) {
-            //         throw new Error(`There is no form with the id: "${newlink.id}" in the canvas : "${this.canvas.name}".`);
-            //     }
-            // });
+                if (!linkIsDeleted) {
+                    throw new Error(`There is no form with the id: "${newlink.id}" in the canvas : "${this.canvas.name}".`);
+                }
+            });
 
             return true;
         } catch (e) {
@@ -237,21 +235,21 @@ export default class CanvasRoom {
     }
 
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les links à selectionner
-    public selectLinks(data: IEditLinksData): boolean {
+    public selectLinks(data: IUpdateLinksData): boolean {
         try {
             // If one form doesn't exist an Error will be thrown
             this.doLinksExist(data);
 
             // Check if all links are not selected, if a form is already selected throw an Error.
-            data.linksId.forEach((linkId) => {
-                if (this.selectedLinks.has(linkId)) {
-                    throw new Error(`The form with the id: "${linkId}" is already selected in the canvas : "${this.canvas.name}".`);
+            data.links.forEach((link) => {
+                if (this.selectedLinks.has(link.id)) {
+                    throw new Error(`The form with the id: "${link}" is already selected in the canvas : "${this.canvas.name}".`);
                 }
             });
 
             // If all links are not selected, select them
-            data.linksId.forEach((formId) => {
-                this.selectedLinks.set(formId, data.username);
+            data.links.forEach((link) => {
+                this.selectedLinks.set(link.id, data.username);
             });
 
             return true;
@@ -264,14 +262,14 @@ export default class CanvasRoom {
 
 
     // Note : Il ne faut pas qu'il y ait de dupliqué dans les links à selectionner
-    public deselectLinks(data: IEditLinksData): boolean {
+    public deselectLinks(data: IUpdateLinksData): boolean {
         try {
             // If one form doesn't exist an Error will be thrown
             this.doLinksExist(data);
 
             // Deselect all links
-            data.linksId.forEach((linkId) => {
-                this.selectedLinks.delete(linkId);
+            data.links.forEach((link) => {
+                this.selectedLinks.delete(link.id);
             });
 
             return true;
@@ -355,19 +353,19 @@ export default class CanvasRoom {
         return true;
     }
 
-    private doLinksExist(data: IEditLinksData): boolean {
+    private doLinksExist(data: IUpdateLinksData): boolean {
         let linkExist: boolean = false;
 
-        data.linksId.forEach((linkId) => {
+        data.links.forEach((link) => {
             linkExist = false;
-            this.canvas.links.forEach((link) => {
-                if (link.id === linkId) {
+            this.canvas.links.forEach((lien) => {
+                if (lien.id === link.id) {
                     linkExist = true;
                 }
             });
 
             if (!linkExist) {
-                throw new Error(`There is no link with the id: "${linkId}" in the canvas : "${this.canvas.name}".`);
+                throw new Error(`There is no link with the id: "${link}" in the canvas : "${this.canvas.name}".`);
             }
         });
 

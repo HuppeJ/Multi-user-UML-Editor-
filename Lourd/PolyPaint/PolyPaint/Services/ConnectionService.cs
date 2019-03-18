@@ -68,6 +68,11 @@ namespace PolyPaint.Services
             socket.Emit("logoutUser");
         }
 
+        public static void Close()
+        {
+            socket.Emit("disconnect");
+        }
+
         public static void CreateUser(string username, string password)
         {
             User user = new User()
