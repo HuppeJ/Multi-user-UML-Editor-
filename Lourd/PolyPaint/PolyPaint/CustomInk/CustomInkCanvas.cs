@@ -262,7 +262,7 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
-            if(stroke.type != (int) StrokeTypes.CLASS_SHAPE)
+            if (stroke.type != (int)StrokeTypes.CLASS_SHAPE)
             {
                 Point point = stroke.GetBounds().BottomLeft;
                 double x = point.X;
@@ -275,6 +275,15 @@ namespace PolyPaint.CustomInk
                 this.Children.Add(tb);
                 InkCanvas.SetTop(tb, y);
                 InkCanvas.SetLeft(tb, x);
+            }
+            else if (stroke.type == (int)StrokeTypes.CLASS_SHAPE)
+            {
+                Path path = new Path();
+                path.Data = stroke.GetGeometry();
+
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
             }
         }
         #endregion

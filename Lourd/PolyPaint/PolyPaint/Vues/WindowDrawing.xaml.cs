@@ -92,12 +92,15 @@ namespace PolyPaint.Vues
             {
                 if (((CustomStroke)strokes[0]).type == (int)StrokeTypes.CLASS_SHAPE)
                 {
+                    popUpClassVue.setParameters(strokes[0] as ClassStroke);
                     popUpClass.IsOpen = true;
                 }
                 else
                 {
+                    popUpNameVue.setParameters(strokes[0] as CustomStroke);
                     popUpName.IsOpen = true;
                 }
+                IsEnabled = false;
             }
         }
 
@@ -107,6 +110,7 @@ namespace PolyPaint.Vues
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
             surfaceDessin.RefreshChildren();
+            IsEnabled = true;
         }
 
         public void Rename(string className, string attributes, string methods)
@@ -114,12 +118,29 @@ namespace PolyPaint.Vues
             popUpClass.IsOpen = false;
             ClassStroke stroke = (ClassStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = className;
+
             stroke.attributes = new List<string>();
-            stroke.attributes.Add(attributes);
+            string[] lines = attributes.Split(
+                new[] { Environment.NewLine },
+                StringSplitOptions.None
+            );
+            foreach(string line in lines)
+            {
+                stroke.attributes.Add(line);
+            }
+
             stroke.methods = new List<string>();
-            stroke.methods.Add(methods);
+            lines = methods.Split(
+                new[] { Environment.NewLine },
+                StringSplitOptions.None
+            );
+            foreach (string line in lines)
+            {
+                stroke.methods.Add(line);
+            }
 
             surfaceDessin.RefreshChildren();
+            IsEnabled = true;
         }
 
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)

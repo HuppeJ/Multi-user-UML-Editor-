@@ -15,13 +15,13 @@ namespace PolyPaint.CustomInk
         public ClassTextBox(ClassStroke stroke) : base()
         {
             ShapeStyle shapeStyle = stroke.shapeStyle;
-            tb1 = new CustomTextBox(stroke.name, shapeStyle.width, shapeStyle.height / 3);
+            tb1 = new CustomTextBox(stroke.name, shapeStyle.width, shapeStyle.height / 5);
             tb1.TextAlignment = TextAlignment.Center;
 
-            tb2 = new CustomTextBox(getString(stroke.attributes), shapeStyle.width, shapeStyle.height / 3);
+            tb2 = new CustomTextBox(getString(stroke.attributes), shapeStyle.width, shapeStyle.height * 2 / 5);
             tb2.MinLines = 3;
 
-            tb3 = new CustomTextBox(getString(stroke.methods), shapeStyle.width, shapeStyle.height / 3);
+            tb3 = new CustomTextBox(getString(stroke.methods), shapeStyle.width, shapeStyle.height * 2 / 5);
             tb3.MinLines = 3;
 
             Orientation = Orientation.Vertical;
