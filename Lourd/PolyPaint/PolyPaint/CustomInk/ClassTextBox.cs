@@ -19,6 +19,7 @@ namespace PolyPaint.CustomInk
 
         public ClassTextBox(ClassStroke stroke, CustomInkCanvas canvas) : base()
         {
+            IsHitTestVisible = false;
             this.canvas = canvas;
             this.selectedStroke = stroke;
 

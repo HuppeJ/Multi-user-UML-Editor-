@@ -12,7 +12,6 @@ namespace PolyPaint.CustomInk
             BorderThickness = new Thickness(0);
             TextWrapping = TextWrapping.Wrap;
             AcceptsReturn = true;
-            IsReadOnly = true;
             IsHitTestVisible = false;
         }
 
@@ -25,7 +24,6 @@ namespace PolyPaint.CustomInk
             Height = height;
             TextWrapping = TextWrapping.Wrap;
             AcceptsReturn = true;
-            IsReadOnly = true;
             IsHitTestVisible = false;
         }
     }
