@@ -80,26 +80,17 @@ namespace PolyPaint.CustomInk
                     pointRotatedAroundOrigin = rotatePoint(0, halfHeight);
                     break;
                 case 1:
-                    pointRotatedAroundOrigin = rotatePoint(halfWidth, 0);
+                    pointRotatedAroundOrigin = rotatePoint(-halfWidth, 0);
                     break;
                 case 2:
                     pointRotatedAroundOrigin = rotatePoint(0, -halfHeight);
                     break;
                 default:
-                    pointRotatedAroundOrigin = rotatePoint(-halfWidth, 0);
+                    pointRotatedAroundOrigin = rotatePoint(halfWidth, 0);
                     break;
             }
 
-            return  new Point(xCenter - pointRotatedAroundOrigin.X, yCenter - pointRotatedAroundOrigin.Y);
-        }
-
-        private Point rotatePoint(double x, double y)
-        {
-            double rotationInRad = rotation * Math.PI / 180;
-            double cosTheta = Math.Cos(rotationInRad);
-            double sinTheta = Math.Sin(rotationInRad);
-            
-            return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+            return new Point(xCenter - pointRotatedAroundOrigin.X, yCenter - pointRotatedAroundOrigin.Y);
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
