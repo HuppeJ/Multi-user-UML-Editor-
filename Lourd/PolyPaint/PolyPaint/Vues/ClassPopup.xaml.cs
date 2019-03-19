@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.CustomInk;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -84,13 +85,32 @@ namespace PolyPaint.Vues
             {
                 windowDrawing.Rename(_className, _attributes, _methods);
             }
-            _className = "";
-            _attributes = "";
-            _methods = "";
+        }
 
+        public void setParameters(ClassStroke stroke)
+        {
+            _className = stroke.name;
+            _attributes = ListToString(stroke.attributes);
+            _methods = ListToString(stroke.methods);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClassName"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Attributes"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Methods"));
+        }
+
+        private string ListToString(List<string> strings)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach(string str in strings)
+            {
+                sb.Append(str);
+                sb.AppendLine();
+            }
+            if(sb.Length > 0)
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+
+            return sb.ToString();
         }
 
         protected void NotifyPropertyChanged(string info)
