@@ -97,8 +97,6 @@
             android:clickable="true"
             android:layout_width="80dp"
             android:layout_height="48dp"
-            android:gravity="center"
-            android:layout_gravity="bottom"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
             app:layout_constraintStart_toStartOf="@+id/linearLayout2"
     />

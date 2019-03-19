@@ -51,5 +51,10 @@ namespace PolyPaint.CustomInk
 
             drawingContext.PushTransform(transform);
         }
+
+        public override BasicShape GetBasicShape()
+        {
+            return new ClassShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom, attributes, methods);
+        }
     }
 }

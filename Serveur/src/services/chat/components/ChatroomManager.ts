@@ -1,69 +1,76 @@
 import Chatroom from "./Chatroom";
 import { CHAT_ROOM_ID } from "../../../constants/RoomID";
+import { IEditChatroomData, IMessageData } from "../../canvas/interfaces/interfaces";
 
 export default class ChatroomManager {
-    // mapping of all available chatrooms 
-    // chatrooms est une Map : [key: chatroom.name, value: Chatroom]
-    private chatrooms = new Map();
+    private chatrooms = new Map(); // [key: chatroomId, value: Chatroom]
 
     public getChatroomIdFromName(chatroomName: string): string {
         return `${CHAT_ROOM_ID}-${chatroomName}`;
     }
 
-    public addChatroom(chatroomName: string, socketId: any) {
-        if (!this.isChatroom(chatroomName)) {
-            const chatroom = new Chatroom(chatroomName);
-            chatroom.addUser(socketId);
-            this.chatrooms.set(chatroomName, chatroom);
+    public sendMessage(chatroomId: string, data: IMessageData) {
+        const chatroom: Chatroom = this.chatrooms.get(chatroomId);
+        if (!chatroom) {
+            return false;
+        }
+
+        return chatroom.sendMessage(data);
+    }
+
+    public addChatroom(chatroomId: string, data: IEditChatroomData) {
+        if (this.chatrooms.has(chatroomId)) {
+            return false;
+        }
+
+        const chatroom = new Chatroom(data);
+        this.chatrooms.set(chatroomId, chatroom);
+        return true;
+    }
+
+    public removeChatroom(chatroomId: string, data: IEditChatroomData) {
+        if (this.chatrooms.has(chatroomId)) {
+            this.chatrooms.delete(chatroomId);
             return true;
         }
+
         return false;
     }
 
-    public isChatroom(chatroomName: string) {
-        return this.chatrooms.has(chatroomName);
-    }
-
-    public removeChatroom(chatroomName: string) {
-        if (this.isChatroom(chatroomName)) {
-            this.chatrooms.delete(chatroomName);
-        }
-    }
-
-    public addUserToChatroom(chatroomName: string, socketId: any) {
-        if (this.isChatroom(chatroomName)){
-            const chatroom = this.chatrooms.get(chatroomName);
-            if (!chatroom.hasUser(socketId)) {
-                chatroom.addUser(socketId);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public isClientInChatroom(chatroomName: string, socketId: any) {
-        if (this.isChatroom(chatroomName)){
-            let chatroom = this.chatrooms.get(chatroomName);
-            return chatroom.hasUser(socketId);
-        }
-        return false;
-    }
-
-    public removeClientFromChatroom(chatroomName: string, socketId: any) {
-        if(this.isClientInChatroom(chatroomName, socketId)) {
-            let chatroom = this.chatrooms.get(chatroomName);
-            chatroom.removeUser(socketId);
+    public addUserToChatroom(chatroomId: string, data: IEditChatroomData) {
+        const chatroom: Chatroom = this.chatrooms.get(chatroomId);
+        if (chatroom && !chatroom.hasUser(data.username)) {
+            chatroom.addUser(data.username);
             return true;
         }
+
         return false;
     }
 
-    public getChatrooms() {
-        return JSON.stringify(Array.from(this.chatrooms.keys()));
+    public removeUserFromChatroom(chatroomId: string, data: IEditChatroomData) {
+        const chatroom: Chatroom = this.chatrooms.get(chatroomId);
+        if (chatroom && chatroom.hasUser(data.username)) {
+            chatroom.removeUser(data.username);
+            return true;
+        }
+
+        return false;
     }
 
-    public getChatroomClients(chatroomName: string) {
-        let strKeys = JSON.stringify(this.chatrooms.get(chatroomName));
-        return strKeys;
+    public getChatroomsSERI(): string {
+        return JSON.stringify({
+            chatrooms: Array.from(this.chatrooms.keys())
+        });
+    }
+
+    public getChatroomClientsSERI(chatroomId: string) {
+        const chatroom: Chatroom = this.chatrooms.get(chatroomId);
+        if (chatroom) {
+            return chatroom.getConnectedUsersSERI();
+        }
+
+        return JSON.stringify({
+            connectedUsers: ""
+        });;
     }
 }

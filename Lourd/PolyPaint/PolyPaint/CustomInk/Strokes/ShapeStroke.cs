@@ -22,33 +22,32 @@ namespace PolyPaint.CustomInk
             guid = Guid.NewGuid();
             name = "This is a stroke";
 
-            int width = 100;
-            if (type == 0) width = 150;
-
             Point lastPoint = pts[pts.Count - 1].ToPoint();
+            Coordinates coordinates = new Coordinates(lastPoint.X, lastPoint.Y);
+
+            shapeStyle = new ShapeStyle(coordinates,100,100,0,"black",0,"none");
+            if (type == 0) shapeStyle.width = 150;
+
             while (StylusPoints.Count > 1)
             {
                 StylusPoints.RemoveAt(0);
             }
-            for (double i = lastPoint.X; i < width + lastPoint.X; i += 0.5)
+            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
             {
-                for (double j = lastPoint.Y; j < 100 + lastPoint.Y; j += 0.5)
+                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
                 {
                     StylusPoints.Add(new StylusPoint(i, j));
                 }
             }
+            linksTo = new List<string>();
+            linksFrom = new List<string>();
 
-            // Quelle est la width?
-            // Les coordonnees sont bien celles du coin en haut a gauche?
-            double height = 100.0;
-            double rotation = 0.0;
-            //shapeStyle = new ShapeStyle(new Coordinates(lastPoint.X, lastPoint.Y), width, height, rotation);
-            anchorPoints = new List<Point>();
         }
 
+        
         public ShapeStroke(StylusPointCollection pts, BasicShape basicShape) : base(pts)
         {
-            guid = new Guid(basicShape.id);
+            guid = Guid.Parse(basicShape.id);
             name = basicShape.name;
             type = basicShape.type;
             shapeStyle = basicShape.shapeStyle;
@@ -127,5 +126,10 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
         
+        public virtual BasicShape GetBasicShape()
+        {
+            BasicShape basicShape = new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
+            return basicShape;
+        }
     }
 }

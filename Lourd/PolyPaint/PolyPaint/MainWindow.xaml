@@ -30,6 +30,7 @@
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding LogoutCommand}"/>
+            <i:InvokeCommandAction Command="{Binding ClosingCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
 

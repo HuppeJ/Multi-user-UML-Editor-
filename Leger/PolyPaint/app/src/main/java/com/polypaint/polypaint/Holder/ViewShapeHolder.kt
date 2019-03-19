@@ -7,10 +7,12 @@ import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.Model.Link
 import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.View.LinkView
+import java.util.*
 
 class ViewShapeHolder(){
     var map: BiMap<BasicElementView, String> = HashBiMap.create()
     var linkMap : BiMap<LinkView, String> = HashBiMap.create()
+    var stackShapeCreatedId : Stack<String> = Stack<String>()
     var canevas : Canevas = Canevas("default","default name","aa-author", "aa-owner", 2, "", ArrayList<BasicShape>(), ArrayList<Link>())
     companion object {
         private val viewShapeHolder: ViewShapeHolder = ViewShapeHolder()

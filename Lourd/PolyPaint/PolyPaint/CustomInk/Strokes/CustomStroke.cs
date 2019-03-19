@@ -17,10 +17,6 @@ namespace PolyPaint.CustomInk
         {
         }
 
-        public CustomStroke(StylusPointCollection pts, BasicShape basicShape) : base(pts)
-        {
-        }
-
         public Point GetCenter()
         {
             Rect strokeBounds = GetBounds();

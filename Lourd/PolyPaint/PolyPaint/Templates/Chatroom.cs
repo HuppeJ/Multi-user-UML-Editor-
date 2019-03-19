@@ -2,15 +2,15 @@
 {
     class Chatroom
     {
-        public string name { get; set; }
+        public string chatroomName { get; set; }
 
         public Chatroom()
         {
         }
 
-        public Chatroom(string name)
+        public Chatroom(string chatroomName)
         {
-            this.name = name;
+            this.chatroomName = chatroomName;
         }
     }
 }

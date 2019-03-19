@@ -58,6 +58,8 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
     private inner class PrivateImageHolder internal constructor(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         internal var nameText: TextView = itemView.findViewById(R.id.canevas_name_text) as TextView
+        internal var lockImage: ImageView = itemView.findViewById(R.id.lock) as ImageView
+        internal var imageView: ImageView = itemView.findViewById(R.id.canevas_preview) as ImageView
         /*
         internal var timeText: TextView = itemView.findViewById(R.id.text_message_time) as TextView
         */
@@ -65,6 +67,12 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
         internal fun bind(canevas: Canevas, listener: OnItemClickListener) {
             itemView.setOnClickListener { listener.onItemClick(canevas) }
             nameText.text = canevas.name
+            imageView.setImageResource(R.drawable.ic_picture)
+            imageView.layoutParams.width = 100
+            imageView.layoutParams.height = 100
+            if(canevas.password != ""){
+                lockImage.setImageResource(R.drawable.ic_padlock)
+            }
             //var rectangle: Drawable? = messageText.background
             //rectangle?.mutate()?.setColorFilter(R.color.colorOutlineSendMessage, PorterDuff.Mode.SRC_ATOP)
             //messageText.text = message.text
@@ -78,7 +86,7 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
 
         internal var nameText: TextView = itemView.findViewById(R.id.canevas_name_text) as TextView
         internal var imageView: ImageView = itemView.findViewById(R.id.canevas_preview) as ImageView
-
+        internal var lockImage: ImageView = itemView.findViewById(R.id.lock) as ImageView
 
         internal fun bind(canevas: Canevas, listener: OnItemClickListener) {
             itemView.setOnClickListener { listener.onItemClick(canevas) }
@@ -88,6 +96,9 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
                 nameText.text = canevas.name + " owned by " + canevas.owner
             }
             imageView.setImageResource(R.drawable.ic_delete)
+            if(canevas.password != ""){
+                lockImage.setImageResource(R.drawable.ic_padlock)
+            }
             //var rectangle: Drawable? = messageText.background
             //rectangle?.mutate()?.setColorFilter(R.color.colorOutlineSendMessage, PorterDuff.Mode.SRC_ATOP)
             //messageText.text = message.text

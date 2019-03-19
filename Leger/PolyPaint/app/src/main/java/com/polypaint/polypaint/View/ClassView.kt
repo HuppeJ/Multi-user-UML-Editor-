@@ -8,7 +8,10 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
+import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
+import com.polypaint.polypaint.Holder.ViewShapeHolder
+import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
 import kotlinx.android.synthetic.main.view_class.view.*
@@ -48,4 +51,21 @@ class ClassView(context: Context): BasicElementView(context) {
         borderResizableLayout.requestLayout()
         requestLayout()
     }
+
+    override fun editShape(){
+        val shapeId: String? = ViewShapeHolder.getInstance().map[this]
+
+        var activity: AppCompatActivity = context as AppCompatActivity
+        var dialog: DialogFragment = EditClassDialogFragment()
+
+        var bundle: Bundle = Bundle()
+        bundle.putString("shapeId", shapeId)
+        dialog.arguments = bundle
+
+        Log.d("****", dialog.arguments.toString())
+        dialog.show(activity.supportFragmentManager, "alllooooo")
+    }
+
+
+
 }
