@@ -45,11 +45,11 @@ namespace PolyPaint.CustomInk
             center = stroke.GetCenter();
 
             anchors = new List<Thumb>();
-            // Pour une ShapeStroke
-            //for (int i = 1; i < stroke.path.Count - 1; i++)
-            //{
+            // The linkstroke must already be selected
+            if (!isOnLinkStrokeEnds(initialMousePosition))
+            {
                 anchors.Add(new Thumb());
-            //}
+            }
 
             visualChildren = new VisualCollection(this);
             foreach (Thumb anchor in anchors)
@@ -74,6 +74,29 @@ namespace PolyPaint.CustomInk
 
         }
 
+        private bool isOnLinkStrokeEnds(Point initialMousePosition)
+        {
+            double x = stroke.path[0].x - initialMousePosition.X;
+            double y = stroke.path[0].y - initialMousePosition.Y;
+
+            double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
+            if (distBetweenPoints <= 10)
+            {
+                return true;
+            }
+
+            x = stroke.path[stroke.path.Count - 1].x - initialMousePosition.X;
+            y = stroke.path[stroke.path.Count - 1].y - initialMousePosition.Y;
+
+            distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
+            if (distBetweenPoints <= 10)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         protected override Size ArrangeOverride(Size finalSize)
         {
             if (strokeBounds.IsEmpty)
@@ -83,10 +106,10 @@ namespace PolyPaint.CustomInk
 
             center = stroke.GetCenter();
 
-            //for(int i = 1; i < stroke.path.Count - 1; i++)
-            //{
-                ArrangeAnchor(0, -center.X + initialMousePosition.X, -center.Y + initialMousePosition.Y);    
-            //}
+            for (int i = 0; i < anchors.Count; i++)
+            {
+                ArrangeAnchor(i, -center.X + initialMousePosition.X, -center.Y + initialMousePosition.Y);
+            }
 
             line.Arrange(new Rect(finalSize));
 
@@ -128,8 +151,9 @@ namespace PolyPaint.CustomInk
 
             stroke.path.Insert(indexInPath, new Coordinates(actualPos));
             stroke.addStylusPointsToLink();
-            visualChildren.Clear();
+            canvas.RefreshChildren();
             InvalidateArrange();
+            visualChildren.Clear();
         }
 
         // Override the VisualChildrenCount and 

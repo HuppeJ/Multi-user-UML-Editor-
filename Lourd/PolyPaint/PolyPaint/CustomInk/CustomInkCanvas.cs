@@ -36,12 +36,12 @@ namespace PolyPaint.CustomInk
                 if (linkStrokeAnchor == 0)
                 {
                     // mettre a jour la position du point initial (from)
-                    linkBeingUpdated.from = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "0");
+                    linkBeingUpdated.from = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "");
                 }
                 else if(linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
                 {
                     // mettre a jour la position du point final (to)
-                    linkBeingUpdated.to = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "0");
+                    linkBeingUpdated.to = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "");
                 }
 
                 linkBeingUpdated.addStylusPointsToLink();
@@ -79,17 +79,17 @@ namespace PolyPaint.CustomInk
                                     double y = secondPoint.Y - firstPoint.Y;
                                     double x = secondPoint.X - firstPoint.X;
 
-                                    stylusPointsIndex += (int)Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
+                                    stylusPointsIndex += (int)Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)))/10;
                                     linkStroke.path[i] = new Coordinates(linkStroke.StylusPoints[stylusPointsIndex].ToPoint());
                                 }
                             }
                             // update the free points of linkStrokes (from view)
-                            if (linkStroke.from.formId == null)
+                            if (linkStroke.from?.formId == null)
                             {
                                 StylusPoint point = linkStroke.StylusPoints[0];
                                 linkStroke.path[0] = new Coordinates(point.ToPoint());
                             }
-                            else if (linkStroke.to.formId == null)
+                            else if (linkStroke.to?.formId == null)
                             {
                                 StylusPoint point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
                                 linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
@@ -377,14 +377,14 @@ namespace PolyPaint.CustomInk
             double toY = stylusPoints[stylusPoints.Count-1].Y - 20;
 
             CustomTextBox from = new CustomTextBox();
-            from.Text = "" + stroke.style.multiplicityFrom;
+            from.Text = "" + stroke.from.multiplicity;
             from.Uid = stroke.guid.ToString();
             Children.Add(from);
             SetTop(from, fromY);
             SetLeft(from, fromX);
 
             CustomTextBox to = new CustomTextBox();
-            to.Text = "" + stroke.style.multiplicityTo;
+            to.Text = "" + stroke.to.multiplicity;
             to.Uid = stroke.guid.ToString();
             Children.Add(to);
             SetTop(to, toY);

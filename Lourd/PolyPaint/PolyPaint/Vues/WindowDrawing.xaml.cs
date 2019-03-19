@@ -158,7 +158,7 @@ namespace PolyPaint.Vues
             IsEnabled = true;
         }
 
-        public void Rename(string linkName, int linkStyle, string selectedColor, int linkThickness, int multiplicityFrom, int multiplicityTo)
+        public void Rename(string linkName, int linkStyle, string selectedColor, int linkThickness, string multiplicityFrom, string multiplicityTo)
         {
             popUpLink.IsOpen = false;
             LinkStroke stroke = (LinkStroke)surfaceDessin.GetSelectedStrokes()[0];
@@ -166,9 +166,14 @@ namespace PolyPaint.Vues
             stroke.style.type = linkStyle;
             stroke.style.color = selectedColor;
             stroke.style.thickness = linkThickness;
-            stroke.style.multiplicityFrom = multiplicityFrom;
-            stroke.style.multiplicityTo = multiplicityTo;
+            stroke.from.multiplicity = multiplicityFrom;
+            stroke.to.multiplicity = multiplicityTo;
 
+            // gi
+            //stroke.
+            stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
+            stroke.DrawingAttributes.Width = linkThickness;
+            stroke.DrawingAttributes.Height = linkThickness;
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
         }

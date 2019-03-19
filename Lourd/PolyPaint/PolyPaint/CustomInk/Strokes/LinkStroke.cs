@@ -33,9 +33,12 @@ namespace PolyPaint.CustomInk.Strokes
             guid = Guid.NewGuid();
             name = "Link";
             from = new AnchorPoint();
+            from.SetDefaults();
             to = new AnchorPoint();
+            to.SetDefaults();
             type = (int)StrokeTypes.LINK;
             style = new LinkStyle();
+            style.SetDefaults();
             path = new List<Coordinates>();
 
             StylusPoint firstPoint = pts[0];
@@ -43,7 +46,7 @@ namespace PolyPaint.CustomInk.Strokes
             double y = lastPoint.Y - firstPoint.Y;
             double x = lastPoint.X - firstPoint.X;
 
-            int nbOfPoints = pts.Count;
+            int nbOfPoints = pts.Count/10;
             double yStep = y / nbOfPoints;
             double xStep = x / nbOfPoints;
 
@@ -83,10 +86,12 @@ namespace PolyPaint.CustomInk.Strokes
         {
             guid = new Guid();
             name = "";
-            from = new AnchorPoint(formId, anchor, "0");
+            from = new AnchorPoint(formId, anchor, "");
             to = new AnchorPoint();
+            to.SetDefaults();
             type = (int)StrokeTypes.LINK;
             style = new LinkStyle();
+            style.SetDefaults();
             path = new List<Coordinates>();
             path.Add(new Coordinates(pointFrom));
         }
@@ -107,15 +112,17 @@ namespace PolyPaint.CustomInk.Strokes
                 double y = lastPoint.Y - firstPoint.Y;
                 double x = lastPoint.X - firstPoint.X;
 
-                double nbOfPoints = Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
+                double nbOfPoints = Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)))/10;
                 double yStep = y / nbOfPoints;
                 double xStep = x / nbOfPoints;
 
-                for (int j = 1; j < nbOfPoints; j++)
+                for (int j = 0; j < nbOfPoints; j++)
                 {
                     StylusPoints.Add(new StylusPoint(firstPoint.X + j * xStep, firstPoint.Y + j * yStep));
                 }
             }
+
+            StylusPoints.Add(new StylusPoint(path[path.Count - 1].x, path[path.Count - 1].y));
 
             if (StylusPoints.Count > 1)
             {
@@ -126,7 +133,7 @@ namespace PolyPaint.CustomInk.Strokes
         public void addToPointToLink(Point pointTo, string formId, int anchor)
         {
             path.Add(new Coordinates(pointTo));
-            to = new AnchorPoint(formId, anchor, "0");
+            to = new AnchorPoint(formId, anchor, "");
 
             addStylusPointsToLink();
         }
@@ -193,7 +200,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         public bool isAttached()
         {
-            return from.formId != null || to.formId != null;
+            return from?.formId != null || to?.formId != null;
         }
         //public bool 
 

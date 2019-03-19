@@ -54,12 +54,12 @@
                       RecentColorsHeader="Recently used"
                       UsingAlphaChannel="True"
                       AdvancedButtonHeader="Personalized" />
-                    <TextBlock Margin="0, 10, 0, 0">Choose link weight:</TextBlock>
-                    <Slider Width="100" Height="26" Minimum="1" Maximum="50"
+                    <TextBlock Margin="0, 10, 0, 0">Choose link thickness:</TextBlock>
+                    <Slider Width="100" Height="26" Minimum="1" Maximum="10" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"
                         Value="{Binding LinkThickness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         Margin="12"
                         Foreground="Gray"                        
-                        TickFrequency="10" TickPlacement="BottomRight" IsSnapToTickEnabled="False"/>
+                        TickFrequency="5" TickPlacement="BottomRight" IsSnapToTickEnabled="False"/>
                     <TextBlock>Enter multiplicity from here:</TextBlock>
                     <TextBox x:Name="TxtBoxMultFrom" Width="150" Margin="0,5"
                                  materialDesign:HintAssist.Hint="Enter multiplicity here"   

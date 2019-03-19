@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Shapes;
 using System;
+using System.Windows.Ink;
 
 namespace PolyPaint.CustomInk
 {
@@ -165,7 +166,7 @@ namespace PolyPaint.CustomInk
                     double x = thumbPosition.X - actualPos.X;
 
                     double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
-                    if(distBetweenPoints <= 30)
+                    if(distBetweenPoints <= 10)
                     {
                         strokeTo = cheatThumb.stroke;
                         actualPos = thumbPosition;
@@ -187,9 +188,11 @@ namespace PolyPaint.CustomInk
             LinkStroke linkBeingCreated = new LinkStroke(pos, stroke?.guid.ToString(), linkAnchorNumber, new StylusPointCollection { new StylusPoint(0, 0) });
             linkBeingCreated.addToPointToLink(actualPos, strokeTo?.guid.ToString(), number);
 
-            canvas.Strokes.Add(linkBeingCreated);
-
             visualChildren.Remove(linkPreview);
+
+            canvas.Strokes.Add(linkBeingCreated);
+            canvas.Select(new StrokeCollection { linkBeingCreated });
+
             InvalidateArrange();
         }
 

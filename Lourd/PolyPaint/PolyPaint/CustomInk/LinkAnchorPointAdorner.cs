@@ -100,7 +100,10 @@ namespace PolyPaint.CustomInk
                                   strokeBounds.Height);
 
             // Draws the thumb and the rectangle around the strokes.
-            anchors[anchorNumber].Arrange(handleRect);
+            if (anchorNumber < anchors.Count)
+            {
+                anchors[anchorNumber].Arrange(handleRect);
+            }
         }
 
         void dragHandle_DragStarted(object sender, DragStartedEventArgs e)
@@ -163,7 +166,7 @@ namespace PolyPaint.CustomInk
                     double x = thumbPosition.X - actualPos.X;
 
                     double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
-                    if (distBetweenPoints <= 30)
+                    if (distBetweenPoints <= 10)
                     {
                         strokeTo = cheatThumb.stroke;
                         actualPos = thumbPosition;

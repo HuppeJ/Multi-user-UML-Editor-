@@ -58,13 +58,13 @@ namespace PolyPaint.Vues
             }
         }
 
-        private string _selectedColor = "";
+        private string _selectedColor;
         public string SelectedColor
         {
             get { return _selectedColor; }
             set
             {
-                if (_selectedColor == value) return;
+                if (_selectedColor == value || value == null) return;
 
                 _selectedColor = value;
                 NotifyPropertyChanged("SelectedColor");
@@ -84,8 +84,8 @@ namespace PolyPaint.Vues
             }
         }
 
-        private int _multiplicityFrom = 1;
-        public int MultiplicityFrom
+        private string _multiplicityFrom = "";
+        public string MultiplicityFrom
         {
             get { return _multiplicityFrom; }
             set
@@ -97,8 +97,8 @@ namespace PolyPaint.Vues
             }
         }
 
-        private int _multiplicityTo = 1;
-        public int MultiplicityTo
+        private string _multiplicityTo = "";
+        public string MultiplicityTo
         {
             get { return _multiplicityTo; }
             set
@@ -141,8 +141,8 @@ namespace PolyPaint.Vues
                 _linkStyle = ConvertStyleToString(stroke.style.type);
                 _selectedColor = stroke.style.color;
                 _linkThickness = stroke.style.thickness;
-                _multiplicityFrom = stroke.style.multiplicityFrom;
-                _multiplicityTo = stroke.style.multiplicityTo;
+                _multiplicityFrom = stroke.from.multiplicity;
+                _multiplicityTo = stroke.to.multiplicity;
             }
             
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));

@@ -30,19 +30,7 @@ namespace PolyPaint.Templates
             this.style = style;
             this.path = path;
         }
-
-        public Link(Point pointFrom, string formId, int anchor)
-        {
-            //id = new Guid().ToString();
-            name = "";
-            from = new AnchorPoint(formId, anchor, "0");
-            to = new AnchorPoint();
-            type = 0;
-            style = new LinkStyle();
-            path = new List<Coordinates>();
-            path.Add(new Coordinates(pointFrom.X, pointFrom.Y));
-        }
-
+        
         public Point GetPoint(int indexInPath)
         {
             return new Point(path[indexInPath].x, path[indexInPath].y);
