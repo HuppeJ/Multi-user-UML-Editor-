@@ -102,9 +102,14 @@ namespace PolyPaint.Vues
             StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
             if(strokes.Count == 1)
             {
-                if (((CustomStroke)strokes[0]).type == (int)StrokeTypes.CLASS_SHAPE)
+                if ((strokes[0] as CustomStroke).type == (int)StrokeTypes.CLASS_SHAPE)
                 {
                     popUpClass.IsOpen = true;
+                }
+                else if((strokes[0] as CustomStroke).type == (int)StrokeTypes.LINK)
+                {
+                    popUpLinkVue.setParameters();
+                    popUpLink.IsOpen = true;
                 }
                 else
                 {
@@ -130,6 +135,18 @@ namespace PolyPaint.Vues
             stroke.attributes.Add(attributes);
             stroke.methods = new List<string>();
             stroke.methods.Add(methods);
+
+            surfaceDessin.RefreshChildren();
+        }
+
+        public void Rename(string linkName, int linkStyle, string selectedColor, int linkThickness)
+        {
+            popUpLink.IsOpen = false;
+            LinkStroke stroke = (LinkStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = linkName;
+            stroke.style.type = linkStyle;
+            stroke.style.color = selectedColor;
+            stroke.style.thickness = linkThickness;
 
             surfaceDessin.RefreshChildren();
         }

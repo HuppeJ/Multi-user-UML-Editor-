@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="PolyPaint.Vues.LinkPopup"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d"
+             Padding="0,0,0,0" Margin="0,0,0,0" Background="Transparent"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--Material Design-->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="375" Margin="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,0">
+                <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
+                    <TextBlock>Enter link name here:</TextBlock>
+                    <TextBox x:Name="TxtBox" Width="150" Margin="0,5"
+                                 materialDesign:HintAssist.Hint="Enter name here"   
+                                 Text="{Binding Label, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    </TextBox>
+                    <TextBlock Margin="0, 10, 0, 0">Choose link style:</TextBlock>
+                    <ListBox Name="MyList" SelectedValue="{Binding LinkStyle, Mode=TwoWay}">
+                        <sys:String>Full</sys:String>
+                        <sys:String>Dotted</sys:String>
+                    </ListBox>
+                    <TextBlock Margin="0, 10, 0, 0">Choose link color:</TextBlock>
+                    <xctk:ColorPicker x:Name="colorSelector"                             
+                      VerticalContentAlignment="Stretch"
+                      Background="#00000000"
+                      ShowDropDownButton="False"
+                      ShowRecentColors="True"
+                      BorderBrush="#80000000"
+                      Margin="5,0,0,0" Width="39" Height="38"
+                      SelectedColor="{Binding SelectedColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      AvailableColorsHeader="Palette"
+                      StandardColorsHeader="Base colors"
+                      StandardButtonHeader="Standard"
+                      RecentColorsHeader="Recently used"
+                      UsingAlphaChannel="True"
+                      AdvancedButtonHeader="Personalized" />
+                    <TextBlock Margin="0, 10, 0, 0">Choose link weight:</TextBlock>
+                    <Slider Width="100" Height="26" Minimum="1" Maximum="50"
+                        Value="{Binding LinkThickness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Margin="12"
+                        Foreground="Gray"                        
+                        TickFrequency="10" TickPlacement="BottomRight" IsSnapToTickEnabled="False"/>
+                    <Button Content="Accept Changes" Margin="0,10,0,0" Click="Rename" Width="150"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </materialDesign:Card>
+</UserControl>

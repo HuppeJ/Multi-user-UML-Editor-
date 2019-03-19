@@ -235,6 +235,9 @@
     <Compile Include="Vues\GalleryView.xaml.cs">
       <DependentUpon>GalleryView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\LinkPopup.xaml.cs">
+      <DependentUpon>LinkPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
@@ -317,6 +320,10 @@
     <Page Include="Vues\GalleryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\LinkPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\LoginView.xaml">
       <Generator>MSBuild:Compile</Generator>
