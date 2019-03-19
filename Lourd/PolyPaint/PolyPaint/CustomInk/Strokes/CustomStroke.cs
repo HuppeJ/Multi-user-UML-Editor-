@@ -3,6 +3,7 @@ using System.Windows.Input;
 using System.Windows;
 using System;
 using PolyPaint.Templates;
+using PolyPaint.CustomInk.Strokes;
 
 namespace PolyPaint.CustomInk
 {
@@ -82,6 +83,11 @@ namespace PolyPaint.CustomInk
             double sinTheta = Math.Sin(rotationInRad);
 
             return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+        }
+
+        public bool isLinkStroke()
+        {
+            return GetType() == typeof(LinkStroke);
         }
     }
 }

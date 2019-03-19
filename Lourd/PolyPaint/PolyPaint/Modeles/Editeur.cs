@@ -24,6 +24,7 @@ namespace PolyPaint.Modeles
         public StrokeCollection traits = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
         public StrokeCollection selectedStrokes = new StrokeCollection();
+        public StrokeCollection remoteSelectedStrokes = new StrokeCollection();
 
 
         public event EventHandler<CustomStroke> AddStrokeFromModel;
@@ -138,8 +139,11 @@ namespace PolyPaint.Modeles
             try
             {
                 Stroke trait = traits.Last();
-                traitsRetires.Add(trait);
-                traits.Remove(trait);
+                if (!remoteSelectedStrokes.Contains(trait))
+                {
+                    traitsRetires.Add(trait);
+                    traits.Remove(trait);
+                }
             }
             catch { }
 

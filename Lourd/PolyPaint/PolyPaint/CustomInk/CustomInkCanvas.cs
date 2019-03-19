@@ -54,7 +54,7 @@ namespace PolyPaint.CustomInk
         {
             foreach (CustomStroke customStroke in Strokes)
             {
-                if (isLinkStroke(customStroke))
+                if (customStroke.isLinkStroke())
                 {
                     LinkStroke linkStroke = customStroke as LinkStroke;
 
@@ -184,7 +184,9 @@ namespace PolyPaint.CustomInk
                 ConnectionService.username, 1, null, new List<BasicShape>(), new List<Link>(), new int[] { 1, 1 });
             DrawingService.CreateCanvas(canvas);
             DrawingService.JoinCanvas("newCanvas");
+
             DrawingService.AddStroke += OnRemoteStroke;
+            DrawingService.RemoveStrokes += OnRemoveStrokes;
         }
 
         #region On.. event handlers
@@ -225,7 +227,7 @@ namespace PolyPaint.CustomInk
 
             foreach(CustomStroke stroke in strokes)
             {
-                if (!isLinkStroke(stroke))
+                if (!stroke.isLinkStroke())
                 {
                     (stroke as ShapeStroke).shapeStyle.width *= widthRatio;
                     (stroke as ShapeStroke).shapeStyle.height *= heightRatio;
@@ -246,6 +248,9 @@ namespace PolyPaint.CustomInk
 
         protected override void OnStrokeErasing(InkCanvasStrokeErasingEventArgs e)
         {
+            StrokeCollection strokes = new StrokeCollection();
+            strokes.Add(e.Stroke);
+            DrawingService.RemoveShapes(strokes);
             base.OnStrokeErasing(e);
         }
         #endregion
@@ -254,8 +259,22 @@ namespace PolyPaint.CustomInk
         {
             CustomStroke stroke = (CustomStroke)e.Stroke;
             Strokes.Add(stroke);
-
             AddTextBox(stroke);
+        }
+
+        private void OnRemoveStrokes(StrokeCollection strokes)
+        {
+            foreach (CustomStroke stroke in strokes)
+            {
+                foreach (CustomStroke stroke2 in Strokes)
+                {
+                    if(stroke.guid.Equals(stroke2.guid))
+                    {
+                        Strokes.Remove(stroke2);
+                        break;
+                    }
+                }
+            }
         }
 
         private CustomStroke CreateStroke(StylusPointCollection pts, InkCanvasStrokeCollectedEventArgs e, StrokeTypes strokeType)
@@ -303,7 +322,7 @@ namespace PolyPaint.CustomInk
             CustomStroke customStroke = CreateStroke(e.Stroke.StylusPoints, e, strokeType);
             
             Strokes.Add(customStroke);
-            if (!isLinkStroke(customStroke))
+            if (!customStroke.isLinkStroke())
             {
                 DrawingService.CreateShape(customStroke as ShapeStroke);
             }
@@ -344,31 +363,6 @@ namespace PolyPaint.CustomInk
                 AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                 myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
             }
-        }
-        #endregion
-
-        #region RotateStrokes
-        public void RotateStrokes()
-        {
-            StrokeCollection strokes = GetSelectedStrokes();
-
-            if (strokes.Count == 0)
-                return;
-
-            foreach (CustomStroke selectedStroke in strokes)
-            {
-                double rotation = selectedStroke.rotation;
-                if (rotation.Equals(360))
-                    rotation = 0;
-                else
-                    rotation += 10;
-                Stroke newStroke = selectedStroke.CloneRotated(rotation);
-                StrokeCollection newStrokes = new StrokeCollection();
-                newStrokes.Add(newStroke);
-                Strokes.Replace(selectedStroke, newStrokes);
-            }
-
-            RefreshChildren();
         }
         #endregion
 
@@ -480,7 +474,7 @@ namespace PolyPaint.CustomInk
             AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
             myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
 
-            if (!isLinkStroke(selectedStroke))
+            if (!selectedStroke.isLinkStroke())
             {
                 myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
@@ -542,11 +536,6 @@ namespace PolyPaint.CustomInk
             //}
         }
         #endregion
-
-        private static bool isLinkStroke(Stroke stroke)
-        {
-            return stroke.GetType() == typeof(LinkStroke);
-        }
-
+        
     }
 }

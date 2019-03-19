@@ -52,8 +52,6 @@ namespace PolyPaint.Vues
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
 
-        private void RotateSelection(object sender, RoutedEventArgs e) => surfaceDessin.RotateStrokes();
-
         private void RefreshChildren(object sender, RoutedEventArgs e)
         {
             // pcq click et command ne fonctionnent pas ensemble
