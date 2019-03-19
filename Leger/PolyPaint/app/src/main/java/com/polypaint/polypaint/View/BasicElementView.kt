@@ -2,6 +2,7 @@ package com.polypaint.polypaint.View
 
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -152,6 +153,7 @@ open class BasicElementView: ConstraintLayout {
                     link.end = Coordinates((start.x + (event.rawX-oldFrameRawX)), (start.y + (event.rawY-oldFrameRawY)))
                     oldLink = link
                     parentView.addView(link)
+                    colorAnchorOnHover(link.end.x.toInt(), link.end.y.toInt())
                 }
                 MotionEvent.ACTION_UP -> {
                     for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
@@ -172,6 +174,9 @@ open class BasicElementView: ConstraintLayout {
                                 otherBasicView = basicView
                                 if(basicShapeId != null){
                                     anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.TOP.ordinal)
+                                    basicView.anchorPoint0.setBackgroundColor(Color.TRANSPARENT)
+                                    basicView.anchorPoint0.invalidate()
+                                    basicView.anchorPoint0.requestLayout()
                                 }
                                 break
                             } else if (isViewInBounds(basicView.anchorPoint1, x, y)) {
@@ -179,6 +184,9 @@ open class BasicElementView: ConstraintLayout {
                                 otherBasicView = basicView
                                 if(basicShapeId != null){
                                     anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.RIGHT.ordinal)
+                                    basicView.anchorPoint1.setBackgroundColor(Color.TRANSPARENT)
+                                    basicView.anchorPoint1.invalidate()
+                                    basicView.anchorPoint1.requestLayout()
                                 }
                                 break
                             } else if (isViewInBounds(basicView.anchorPoint2, x, y)) {
@@ -186,6 +194,9 @@ open class BasicElementView: ConstraintLayout {
                                 otherBasicView = basicView
                                 if(basicShapeId != null){
                                     anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.BOTTOM.ordinal)
+                                    basicView.anchorPoint2.setBackgroundColor(Color.TRANSPARENT)
+                                    basicView.anchorPoint2.invalidate()
+                                    basicView.anchorPoint2.requestLayout()
                                 }
                                 break
                             } else if (isViewInBounds(basicView.anchorPoint3, x, y)) {
@@ -193,6 +204,9 @@ open class BasicElementView: ConstraintLayout {
                                 otherBasicView = basicView
                                 if(basicShapeId != null){
                                     anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.LEFT.ordinal)
+                                    basicView.anchorPoint3.setBackgroundColor(Color.TRANSPARENT)
+                                    basicView.anchorPoint3.invalidate()
+                                    basicView.anchorPoint3.requestLayout()
                                 }
                                 break
                             }
@@ -295,7 +309,9 @@ open class BasicElementView: ConstraintLayout {
         val location = IntArray(2);
         view.getDrawingRect(outRect);
         view.getLocationOnScreen(location);
-        outRect.offset((location[0] - parentView.x).toInt(), location[1] - toolbarView.measuredHeight - view.measuredWidth/2);
+        outRect.offset((location[0] - parentView.x).toInt(), location[1] - toolbarView.measuredHeight - view.measuredWidth/2 - (24 * resources.displayMetrics.density / 2).toInt() );
+        outRect.left -= 5
+        outRect.right += 5
         return outRect.contains(x, y);
     }
 
@@ -421,7 +437,55 @@ open class BasicElementView: ConstraintLayout {
         true
     }
 
-
+    private fun colorAnchorOnHover(x: Int, y: Int) {
+        for (basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
+            if (!basicView.isSelectedByOther) {
+                val basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
+                if (basicView.isViewInBounds(basicView.anchorPoint0, x, y)) {
+                    if (basicShapeId != null) {
+                        basicView.anchorPoint0.setBackgroundColor(Color.GREEN)
+                        basicView.anchorPoint0.invalidate()
+                        basicView.anchorPoint0.requestLayout()
+                    }
+                    break
+                } else if (basicView.isViewInBounds(basicView.anchorPoint1, x, y)) {
+                    if (basicShapeId != null) {
+                        basicView.anchorPoint1.setBackgroundColor(Color.GREEN)
+                        basicView.anchorPoint1.invalidate()
+                        basicView.anchorPoint1.requestLayout()
+                    }
+                    break
+                } else if (basicView.isViewInBounds(basicView.anchorPoint2, x, y)) {
+                    if (basicShapeId != null) {
+                        basicView.anchorPoint2.setBackgroundColor(Color.GREEN)
+                        basicView.anchorPoint2.invalidate()
+                        basicView.anchorPoint2.requestLayout()
+                    }
+                    break
+                } else if (basicView.isViewInBounds(basicView.anchorPoint3, x, y)) {
+                    if (basicShapeId != null) {
+                        basicView.anchorPoint3.setBackgroundColor(Color.GREEN)
+                        basicView.anchorPoint3.invalidate()
+                        basicView.anchorPoint3.requestLayout()
+                    }
+                    break
+                } else {
+                    basicView.anchorPoint0.setBackgroundColor(Color.TRANSPARENT)
+                    basicView.anchorPoint0.invalidate()
+                    basicView.anchorPoint0.requestLayout()
+                    basicView.anchorPoint1.setBackgroundColor(Color.TRANSPARENT)
+                    basicView.anchorPoint1.invalidate()
+                    basicView.anchorPoint1.requestLayout()
+                    basicView.anchorPoint2.setBackgroundColor(Color.TRANSPARENT)
+                    basicView.anchorPoint2.invalidate()
+                    basicView.anchorPoint2.requestLayout()
+                    basicView.anchorPoint3.setBackgroundColor(Color.TRANSPARENT)
+                    basicView.anchorPoint3.invalidate()
+                    basicView.anchorPoint3.requestLayout()
+                }
+            }
+        }
+    }
     private fun calculateDeltaAngle() : Float{
         val angle1 : Double = Math.atan2( (fingersCoords[1].y - fingersCoords[0].y), (fingersCoords[1].x - fingersCoords[0].x))
         val angle2 : Double = Math.atan2( (fingersCoords[3].y - fingersCoords[2].y), (fingersCoords[3].x - fingersCoords[2].x))

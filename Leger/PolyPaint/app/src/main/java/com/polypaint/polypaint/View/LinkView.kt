@@ -113,7 +113,7 @@ class LinkView: View{
     private fun addButtons(parentView: RelativeLayout){
         parentView.removeView(deleteButton)
         deleteButton = ImageButton(context)
-        deleteButton?.setImageResource(R.drawable.ic_resize)
+        deleteButton?.setImageResource(R.drawable.ic_delete)
         deleteButton?.layoutParams?.height = 24
         deleteButton?.layoutParams?.width = 24
         deleteButton?.x = start.x.toFloat() + 50
