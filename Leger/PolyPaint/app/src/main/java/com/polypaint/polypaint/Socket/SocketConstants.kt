@@ -87,6 +87,11 @@ class SocketConstants{
         // Get existing canvas
         const val GET_ALL_CANVAS: String = "getAllCanvas"
         const val GET_ALL_CANVAS_RESPONSE: String = "getAllCanvasResponse"
+        const val GET_PUBLIC_CANVAS: String = "getPublicCanvas"
+        const val GET_PUBLIC_CANVAS_RESPONSE: String = "getPublicCanvasResponse"
+        const val GET_PRIVATE_CANVAS: String = "getPrivateCanvas"
+        const val GET_PRIVATE_CANVAS_RESPONSE: String = "getPrivateCanvasResponse"
+
 
 
 

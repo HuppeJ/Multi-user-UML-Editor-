@@ -156,7 +156,7 @@ class CreateDrawingActivity: AppCompatActivity(){
 
         val gson = Gson()
         val obj: CanvasCreationResponse = gson.fromJson(it[0].toString())
-        if(obj.isCreated) {
+        if(obj.isCreated && obj.canvasName == canevas?.name) {
             Log.d("canvasCreated", "created" + canevas?.name)
             val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas?.name!!, canevas?.password!!)
             val sendObj = gson.toJson(galleryEditEvent)
@@ -172,8 +172,8 @@ class CreateDrawingActivity: AppCompatActivity(){
 
         val gson = Gson()
         val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
-        if(obj.isCanvasRoomJoined) {
-            Log.d("canvasJoined", "created" + canevas?.name)
+        if(obj.isCanvasRoomJoined && obj.canvasName == canevas?.name) {
+            Log.d("canvasJoined", "created " + canevas?.name)
             val intent = Intent(this, DrawingActivity::class.java)
             intent.putExtra("canevas", canevas)
             startActivity(intent)
