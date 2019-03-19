@@ -169,6 +169,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="CustomInk\PhaseAdorner.cs" />
+    <Compile Include="CustomInk\CommentAdorner.cs" />
     <Compile Include="CustomInk\ClassAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
@@ -182,6 +184,8 @@
     <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
     <Compile Include="CustomInk\AnchorPointAdorner.cs" />
     <Compile Include="CustomInk\Strokes\ArtifactStroke.cs" />
+    <Compile Include="CustomInk\Strokes\PhaseStroke.cs" />
+    <Compile Include="CustomInk\Strokes\CommentStroke.cs" />
     <Compile Include="CustomInk\Strokes\ClassStroke.cs" />
     <Compile Include="CustomInk\CustomDynamicRenderer.cs" />
     <Compile Include="CustomInk\CustomInkCanvas.cs" />
