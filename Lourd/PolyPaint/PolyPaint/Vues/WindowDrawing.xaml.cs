@@ -139,7 +139,7 @@ namespace PolyPaint.Vues
             surfaceDessin.RefreshChildren();
         }
 
-        public void Rename(string linkName, int linkStyle, string selectedColor, int linkThickness)
+        public void Rename(string linkName, int linkStyle, string selectedColor, int linkThickness, int multiplicityFrom, int multiplicityTo)
         {
             popUpLink.IsOpen = false;
             LinkStroke stroke = (LinkStroke)surfaceDessin.GetSelectedStrokes()[0];
@@ -147,6 +147,8 @@ namespace PolyPaint.Vues
             stroke.style.type = linkStyle;
             stroke.style.color = selectedColor;
             stroke.style.thickness = linkThickness;
+            stroke.style.multiplicityFrom = multiplicityFrom;
+            stroke.style.multiplicityTo = multiplicityTo;
 
             surfaceDessin.RefreshChildren();
         }

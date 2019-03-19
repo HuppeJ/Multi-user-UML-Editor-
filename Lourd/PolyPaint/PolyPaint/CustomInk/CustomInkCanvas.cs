@@ -284,7 +284,9 @@ namespace PolyPaint.CustomInk
                 double x = stroke.StylusPoints[0].X;
                 double y = stroke.StylusPoints[0].Y;
 
-                CreateTextBox(stroke, x, y);
+                CreateNameTextBox(stroke, x, y);
+
+                CreateMultiplicityTextBox(stroke.StylusPoints, stroke as LinkStroke);
             }
             else if(stroke.type != (int)StrokeTypes.CLASS_SHAPE)
             {
@@ -292,11 +294,34 @@ namespace PolyPaint.CustomInk
                 double x = point.X;
                 double y = point.Y;
 
-                CreateTextBox(stroke, x, y);
+                CreateNameTextBox(stroke, x, y);
             }
         }
 
-        private void CreateTextBox(CustomStroke stroke, double x, double y)
+        private void CreateMultiplicityTextBox(StylusPointCollection stylusPoints, LinkStroke stroke)
+        {
+            double fromX = stylusPoints[0].X;
+            double fromY = stylusPoints[0].Y - 20;
+
+            double toX = stylusPoints[stylusPoints.Count-1].X;
+            double toY = stylusPoints[stylusPoints.Count-1].Y - 20;
+
+            CustomTextBox from = new CustomTextBox();
+            from.Text = "" + stroke.style.multiplicityFrom;
+            from.Uid = stroke.guid.ToString();
+            Children.Add(from);
+            SetTop(from, fromY);
+            SetLeft(from, fromX);
+
+            CustomTextBox to = new CustomTextBox();
+            to.Text = "" + stroke.style.multiplicityTo;
+            to.Uid = stroke.guid.ToString();
+            Children.Add(to);
+            SetTop(to, toY);
+            SetLeft(to, toX);
+        }
+
+        private void CreateNameTextBox(CustomStroke stroke, double x, double y)
         {
             CustomTextBox tb = new CustomTextBox();
             tb.Text = stroke.name;

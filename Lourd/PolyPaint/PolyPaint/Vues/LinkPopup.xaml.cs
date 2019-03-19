@@ -84,6 +84,32 @@ namespace PolyPaint.Vues
             }
         }
 
+        private int _multiplicityFrom = 1;
+        public int MultiplicityFrom
+        {
+            get { return _multiplicityFrom; }
+            set
+            {
+                if (MultiplicityFrom == value) return;
+
+                _multiplicityFrom = value;
+                NotifyPropertyChanged("MultiplicityFrom");
+            }
+        }
+
+        private int _multiplicityTo = 1;
+        public int MultiplicityTo
+        {
+            get { return _multiplicityTo; }
+            set
+            {
+                if (_multiplicityTo == value) return;
+
+                _multiplicityTo = value;
+                NotifyPropertyChanged("MultiplicityTo");
+            }
+        }
+
         private void Rename(object sender, RoutedEventArgs e)
         {
             var parent = Parent;
@@ -95,7 +121,7 @@ namespace PolyPaint.Vues
             windowDrawing = (WindowDrawing) parent;
             if (windowDrawing != null)
             {
-                windowDrawing.Rename(_label, ConvertStyleToInt(_linkStyle), _selectedColor, _linkThickness);
+                windowDrawing.Rename(_label, ConvertStyleToInt(_linkStyle), _selectedColor, _linkThickness, _multiplicityFrom, _multiplicityTo);
             }
         }
 
@@ -115,12 +141,16 @@ namespace PolyPaint.Vues
                 _linkStyle = ConvertStyleToString(stroke.style.type);
                 _selectedColor = stroke.style.color;
                 _linkThickness = stroke.style.thickness;
+                _multiplicityFrom = stroke.style.multiplicityFrom;
+                _multiplicityTo = stroke.style.multiplicityTo;
             }
             
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkStyle"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedColor"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkThickness"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MultiplicityFrom"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MultiplicityTo"));
         }
 
         private int ConvertStyleToInt(string style)
