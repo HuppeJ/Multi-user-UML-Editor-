@@ -131,5 +131,11 @@ namespace PolyPaint.CustomInk
             BasicShape basicShape = new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
             return basicShape;
         }
+
+        public override void updatePosition()
+        {
+            Coordinates newCoordinates = new Coordinates(GetBounds().X, GetBounds().Y);
+            shapeStyle.coordinates = newCoordinates;
+        }
     }
 }

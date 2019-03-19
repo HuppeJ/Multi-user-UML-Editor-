@@ -89,5 +89,9 @@ namespace PolyPaint.CustomInk
         {
             return GetType() == typeof(LinkStroke);
         }
+
+        public virtual void updatePosition()
+        {
+        }
     }
 }

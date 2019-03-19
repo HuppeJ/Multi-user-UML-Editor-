@@ -347,7 +347,7 @@ namespace PolyPaint.VueModeles
             if (isLoginSuccessful)
             {
                 UserMode = UserModes.Gallery;
-                selectedRoom = rooms.First();
+                // selectedRoom = rooms.First();
                 IsLoggedIn = true;
             }
             else
