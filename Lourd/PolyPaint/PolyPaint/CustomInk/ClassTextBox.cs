@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.Templates;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,13 +12,17 @@ namespace PolyPaint.CustomInk
         public CustomTextBox tb2;
         public CustomTextBox tb3;
 
-        public ClassTextBox(string name, List<string> attributes, List<string> methods) : base()
+        public ClassTextBox(ClassStroke stroke) : base()
         {
-            tb1 = new CustomTextBox(name);
+            ShapeStyle shapeStyle = stroke.shapeStyle;
+            tb1 = new CustomTextBox(stroke.name, shapeStyle.width, shapeStyle.height / 5);
             tb1.TextAlignment = TextAlignment.Center;
-            
-            tb2 = new CustomTextBox(getString(attributes));
-            tb3 = new CustomTextBox(getString(methods));
+
+            tb2 = new CustomTextBox(getString(stroke.attributes), shapeStyle.width, shapeStyle.height * 2 / 5);
+            tb2.MinLines = 3;
+
+            tb3 = new CustomTextBox(getString(stroke.methods), shapeStyle.width, shapeStyle.height * 2 / 5);
+            tb3.MinLines = 3;
 
             Orientation = Orientation.Vertical;
 

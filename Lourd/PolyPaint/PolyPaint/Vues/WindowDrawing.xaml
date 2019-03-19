@@ -164,10 +164,10 @@
 
         </Border>
         <Popup x:Name="popUpName" Placement="Center">
-            <Vues:RenamePopup />
+            <Vues:RenamePopup x:Name="popUpNameVue"/>
         </Popup>
         <Popup x:Name="popUpClass" Placement="Center">
-            <Vues:ClassPopup />
+            <Vues:ClassPopup x:Name="popUpClassVue"/>
         </Popup>
         <Popup x:Name="popUpLink" Placement="Center">
             <Vues:LinkPopup x:Name="popUpLinkVue"/>

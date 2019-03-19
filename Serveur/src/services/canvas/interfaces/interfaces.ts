@@ -24,13 +24,19 @@ export interface IUpdateLinksData {
     links: ILink[],
 }
 
-export interface IEditLinksData {
+export interface IEditChatroomData {
     username: string,
-    canevasName: string,  
-    linksId: string[],
+    chatroomName: string,  
+    // password: string, ?
 }
 
-
+// TODO: vérifier format
+export interface IMessageData {
+    username: string,
+    chatroomName: string,
+    createdAt: string,
+    message: string,
+}
 
 /***********************************************
 * Interfaces for objects

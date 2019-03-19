@@ -58,14 +58,26 @@ namespace PolyPaint.CustomInk.Strokes
             for (int i = 1; i <= nbOfPoints; i++)
             {
                 StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-                if (i == nbOfPoints)
-                {
-                    path.Add(new Coordinates(StylusPoints[nbOfPoints].ToPoint()));
-                }
             }
 
+            path.Add(new Coordinates(StylusPoints[nbOfPoints].ToPoint()));
+
+
+            //Point arrowPoint1 = rotatePoint(path[0].x, path[0].y, 30);
+            //Point arrowPoint2 = rotatePoint(path[0].x, path[0].y, -30);
+            
 
         }
+
+        //public Point rotatePoint(double x, double y, double rotation)
+        //{
+        //    double rotationInRad = rotation * Math.PI / 180;
+        //    double cosTheta = Math.Cos(rotationInRad);
+        //    double sinTheta = Math.Sin(rotationInRad);
+
+        //    return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+        //}
+
 
         public LinkStroke(Point pointFrom, string formId, int anchor, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
         {

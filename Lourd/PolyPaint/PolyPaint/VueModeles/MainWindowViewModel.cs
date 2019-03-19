@@ -107,7 +107,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _connectCommand ?? (_connectCommand = new RelayCommand<object>(connectionService.Connect, CanConnect));
+                return _connectCommand ?? (_connectCommand = new RelayCommand<object>(ConnectionService.Connect, CanConnect));
             }
         }
 
@@ -143,7 +143,7 @@ namespace PolyPaint.VueModeles
         {
             var passwordBox = o as PasswordBox;
             var password = passwordBox.Password;
-            chatService.CreateUser(username, password);
+            ChatService.CreateUser(username, password);
         }
 
         private bool CanCreate(object o)
@@ -168,7 +168,7 @@ namespace PolyPaint.VueModeles
         {
             var passwordBox = o as PasswordBox;
             var password = passwordBox.Password;
-            chatService.LoginUser(username, password);
+            ChatService.LoginUser(username, password);
             chatService.RequestChatrooms();
         }
 
@@ -196,7 +196,7 @@ namespace PolyPaint.VueModeles
             _isLoggedIn = false;
             textMessage = string.Empty;
             _selectedRoom?.Chatter.Clear();
-            chatService.Disconnect();
+            ChatService.Disconnect();
         }
 
         private bool CanLogout(object o)
@@ -281,7 +281,7 @@ namespace PolyPaint.VueModeles
 
         private void SendMessage(object o)
         {
-            chatService.SendMessage(textMessage, username, DateTimeOffset.Now.ToUnixTimeMilliseconds());
+            chatService.SendMessage(textMessage, username, DateTimeOffset.Now.ToUnixTimeMilliseconds(), selectedRoom.name);
             textMessage = string.Empty;
         }
 
@@ -296,10 +296,10 @@ namespace PolyPaint.VueModeles
         private void NewMessage(ChatMessageTemplate message)
         {
             ChatMessage cm = new ChatMessage {
-                sender = message.sender,
-                text = message.text,
+                sender = message.username,
+                text = message.message,
                 createdAt = DateTimeOffset.FromUnixTimeMilliseconds(message.createdAt).DateTime.ToLocalTime(),
-                isOriginNative = (message.sender == username)
+                isOriginNative = (message.username == username)
             };
 
             if (!_selectedRoom.Chatter.Contains(cm)){
@@ -310,7 +310,7 @@ namespace PolyPaint.VueModeles
 
         private void GetChatrooms(RoomList chatrooms)
         {
-            foreach(string room in chatrooms.rooms)
+            foreach(string room in chatrooms.chatrooms)
             {
                 Room newRoom = new Room { name = room };
                 if(!rooms.Contains(newRoom))
@@ -364,13 +364,13 @@ namespace PolyPaint.VueModeles
             chatService = new ChatService();
             ctxTaskFactory = new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext());
 
-            connectionService.Connection += Connection;
-            connectionService.UserCreation += UserCreation;
-            connectionService.UserLogin += UserLogin;
+            ConnectionService.Connection += Connection;
+            ConnectionService.UserCreation += UserCreation;
+            ConnectionService.UserLogin += UserLogin;
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;
 
-            rooms.Add(new Room { name = "Everyone" });
+            // rooms.Add(new Room { name = "Everyone" });
         }
 
     }

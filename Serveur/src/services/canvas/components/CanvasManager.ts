@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { IEditLinksData, IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData } from "../interfaces/interfaces";
+import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -94,6 +94,7 @@ export default class CanvasManager {
     public addFormToCanvas(canvasRoomId: string, data: IUpdateFormsData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
+            console.log("canvasRoom doesn't exist:" + canvasRoomId);
             return false;
         }
 
@@ -158,7 +159,7 @@ export default class CanvasManager {
         return canvasRoom.updateLinks(data);
     }
 
-    public deleteCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+    public deleteCanvasLinks(canvasRoomId: string, data: IUpdateLinksData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -167,7 +168,7 @@ export default class CanvasManager {
         return canvasRoom.deleteLinks(data);
     }
 
-    public selectCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+    public selectCanvasLinks(canvasRoomId: string, data: IUpdateLinksData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -176,7 +177,7 @@ export default class CanvasManager {
         return canvasRoom.selectLinks(data);
     }
 
-    public deselectCanvasLinks(canvasRoomId: string, data: IEditLinksData) {
+    public deselectCanvasLinks(canvasRoomId: string, data: IUpdateLinksData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -239,9 +240,11 @@ export default class CanvasManager {
         return canvasRoom.getSelectedFormsSERI();
     }
 
-    public getCanvasRoomSERI(canvasRoomId: string): string {
+    public getCanvasSERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        return JSON.stringify(canvasRoom);
+        return JSON.stringify({
+            canvas: canvasRoom.canvas
+        });
     }
 
     public getCanvasRoomsSERI(): string {
