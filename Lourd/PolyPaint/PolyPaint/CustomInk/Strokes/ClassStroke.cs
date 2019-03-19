@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace PolyPaint.CustomInk
 {
-    public class ClassStroke : CustomStroke
+    public class ClassStroke : ShapeStroke
     {
         public List<string> attributes;
         public List<string> methods;

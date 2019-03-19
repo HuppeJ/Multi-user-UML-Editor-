@@ -10,7 +10,7 @@ using PolyPaint.Templates;
 
 namespace PolyPaint.CustomInk
 {
-    public class ArtifactStroke : CustomStroke
+    public class ArtifactStroke : ShapeStroke
     {
         public ArtifactStroke(StylusPointCollection pts) : base(pts)
         {

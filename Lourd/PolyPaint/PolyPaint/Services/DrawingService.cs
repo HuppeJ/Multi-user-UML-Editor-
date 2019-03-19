@@ -102,10 +102,10 @@ namespace PolyPaint.Services
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
         }
 
-        public static void CreateShape(CustomStroke customStroke)
+        public static void CreateShape(ShapeStroke shapeStroke)
         {
             StrokeCollection strokes = new StrokeCollection();
-            strokes.Add(customStroke);
+            strokes.Add(shapeStroke);
             socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(strokes)));
         }
 
@@ -129,7 +129,10 @@ namespace PolyPaint.Services
             List<BasicShape> forms = new List<BasicShape>();
             foreach (CustomStroke customStroke in strokes)
             {
-                forms.Add(customStroke.GetBasicShape());
+                if (!customStroke.isLinkStroke())
+                {
+                    forms.Add((customStroke as ShapeStroke).GetBasicShape());
+                }
             }
 
             return new UpdateFormsData(username, canvasName, forms);
