@@ -81,32 +81,6 @@ namespace PolyPaint.CustomInk.Strokes
 
         public void addStylusPointsToLink()
         {
-            Point firstPoint = new Point(path[0].x, path[0].y);
-            Point lastPoint = new Point(path[path.Count - 1].x, path[path.Count - 1].y);
-            double y = lastPoint.Y - firstPoint.Y;
-            double x = lastPoint.X - firstPoint.X;
-
-            double nbOfPoints = Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
-            double yStep = y / nbOfPoints;
-            double xStep = x / nbOfPoints;
-
-            // garder uniquement le premier point
-            while (StylusPoints.Count > 1)
-            {
-                StylusPoints.RemoveAt(1);
-            }
-            for (int i = 1; i < nbOfPoints; i++)
-            {
-                StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-            }
-            if (StylusPoints.Count > 1)
-            {
-                StylusPoints.RemoveAt(0);
-            }
-        }
-
-        public void addStylusPointsToLink2()
-        {
             // garder uniquement le premier point
             while (StylusPoints.Count > 1)
             {

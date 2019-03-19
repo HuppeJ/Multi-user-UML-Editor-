@@ -130,7 +130,6 @@ namespace PolyPaint.CustomInk
         void dragHandle_DragStarted(object sender,
                                         DragStartedEventArgs e)
         {
-            //e.HorizontalChange, e.VerticalChange;
             canvas.addAnchorPoints();
             linkPreviewGeom.StartPoint = Mouse.GetPosition(this);
         }
@@ -147,7 +146,12 @@ namespace PolyPaint.CustomInk
                                         DragCompletedEventArgs e)
         {                        
             Point actualPos = Mouse.GetPosition(this);
-
+            if(actualPos.X < 0 || actualPos.Y < 0)
+            {
+                visualChildren.Remove(linkPreview);
+                InvalidateArrange();
+                return;
+            }
             CustomStroke strokeTo = null;
             int number = 0;
 

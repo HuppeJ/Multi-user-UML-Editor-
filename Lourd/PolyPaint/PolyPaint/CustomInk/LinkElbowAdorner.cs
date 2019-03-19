@@ -57,7 +57,7 @@ namespace PolyPaint.CustomInk
                 anchor.Cursor = Cursors.SizeNWSE;
                 anchor.Width = 10;
                 anchor.Height = 10;
-                anchor.Background = Brushes.IndianRed;
+                anchor.Background = Brushes.Black;
 
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
                 anchor.DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);
@@ -118,8 +118,16 @@ namespace PolyPaint.CustomInk
         void dragHandle_DragCompleted(object sender,
                                         DragCompletedEventArgs e)
         {
-            //stroke.path.Insert(indexInPath, new Coordinates(Mouse.GetPosition(this)));
-            //stroke.addStylusPointsToLink2();
+            Point actualPos = Mouse.GetPosition(this);
+            if (actualPos.X < 0 || actualPos.Y < 0)
+            {
+                visualChildren.Clear();
+                InvalidateArrange();
+                return;
+            }
+
+            stroke.path.Insert(indexInPath, new Coordinates(actualPos));
+            stroke.addStylusPointsToLink();
             visualChildren.Clear();
             InvalidateArrange();
         }

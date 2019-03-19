@@ -66,44 +66,40 @@ namespace PolyPaint.CustomInk
 
         public Point GetAnchorPoint(int anchorNumber)
         {
-            Point point;
             double xCenter = GetCenter().X;
             double yCenter = GetCenter().Y;
             double margin = 10;
             double halfWidth = GetBounds().Width / 2 + margin;
             double halfHeight = GetBounds().Height / 2 + margin;
 
-            // gi AJOUTER LE ROTATE sur les bounds? creer
-            double cosTheta = Math.Cos(rotation);
-            double sinTheta = Math.Sin(rotation);
-            double halfWidthRotated = halfWidth * cosTheta + halfHeight * sinTheta;
-            double halfHeightRotated = -halfWidth * sinTheta + halfHeight * cosTheta;
+            Point pointRotatedAroundOrigin;
 
             switch (anchorNumber)
             {
                 case 0:
-                    point = new Point(xCenter, yCenter - halfHeightRotated);
+                    pointRotatedAroundOrigin = rotatePoint(0, halfHeight);
                     break;
                 case 1:
-                    point = new Point(xCenter + halfWidthRotated, yCenter);
+                    pointRotatedAroundOrigin = rotatePoint(halfWidth, 0);
                     break;
                 case 2:
-                    point = new Point(xCenter, yCenter + halfHeightRotated);
+                    pointRotatedAroundOrigin = rotatePoint(0, -halfHeight);
                     break;
                 default:
-                    point = new Point(xCenter - halfWidthRotated, yCenter);
+                    pointRotatedAroundOrigin = rotatePoint(-halfWidth, 0);
                     break;
             }
 
-            return point;
+            return  new Point(xCenter - pointRotatedAroundOrigin.X, yCenter - pointRotatedAroundOrigin.Y);
         }
 
         private Point rotatePoint(double x, double y)
         {
-            double cosTheta = Math.Cos(rotation);
-            double sinTheta = Math.Sin(rotation);
-
-            return new Point(x * cosTheta + y * sinTheta, -x * sinTheta + y * cosTheta);
+            double rotationInRad = rotation * Math.PI / 180;
+            double cosTheta = Math.Cos(rotationInRad);
+            double sinTheta = Math.Sin(rotationInRad);
+            
+            return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
