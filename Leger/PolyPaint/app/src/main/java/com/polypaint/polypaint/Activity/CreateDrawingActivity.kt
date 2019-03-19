@@ -104,8 +104,8 @@ class CreateDrawingActivity: AppCompatActivity(){
 
 
 
-        socket?.on(SocketConstants.CREATE_CANVAS_RESPONSE, onCreateCanvasResponse)
-        socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+        //socket?.off(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+        //socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
 
         /*val ft = supportFragmentManager.beginTransaction()
         //ft.add(R.id.list_container, RoomsListFragment())
@@ -151,24 +151,11 @@ class CreateDrawingActivity: AppCompatActivity(){
 
     }
 
-    private var onCreateCanvasResponse: Emitter.Listener = Emitter.Listener {
-        Log.d("onCreateCanvasResponse", "alllooo")
-
-        val gson = Gson()
-        val obj: CanvasCreationResponse = gson.fromJson(it[0].toString())
-        if(obj.isCreated && obj.canvasName == canevas?.name) {
-            Log.d("canvasCreated", "created" + canevas?.name)
-            val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas?.name!!, canevas?.password!!)
-            val sendObj = gson.toJson(galleryEditEvent)
-            Log.d("joinObj", sendObj)
-            socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
 
 
-        }
-    }
-
+    /*
     private var onJoinCanvasResponse: Emitter.Listener = Emitter.Listener {
-        Log.d("onJoinCanvasResponse", "alllooo")
+        Log.d("onJoinCanvasResponse", "alllooo11111")
 
         val gson = Gson()
         val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
@@ -179,5 +166,5 @@ class CreateDrawingActivity: AppCompatActivity(){
             startActivity(intent)
         }
     }
-
+    */
 }
