@@ -298,7 +298,7 @@ namespace PolyPaint.CustomInk
                     customStroke = new CommentStroke(pts);
                     break;
                 case StrokeTypes.PHASE:
-                    customStroke = new ClassStroke(pts);
+                    customStroke = new PhaseStroke(pts);
                     break;
                 case StrokeTypes.LINK:
                     customStroke = new LinkStroke(e.Stroke.StylusPoints);
@@ -361,6 +361,13 @@ namespace PolyPaint.CustomInk
                     Children.Add(commentPath);
                     AdornerLayer commentAdorner = AdornerLayer.GetAdornerLayer(commentPath);
                     commentAdorner.Add(new CommentAdorner(commentPath, stroke, this));
+                    break;
+                case (int)StrokeTypes.PHASE:
+                    Path phasePath = new Path();
+                    phasePath.Data = stroke.GetGeometry();
+                    Children.Add(phasePath);
+                    AdornerLayer phaseAdorner = AdornerLayer.GetAdornerLayer(phasePath);
+                    phaseAdorner.Add(new PhaseAdorner(phasePath, stroke, this));
                     break;
                 default:
                     Point point = stroke.GetBounds().BottomLeft;

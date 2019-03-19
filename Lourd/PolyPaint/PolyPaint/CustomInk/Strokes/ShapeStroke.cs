@@ -25,7 +25,7 @@ namespace PolyPaint.CustomInk
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             Coordinates coordinates = new Coordinates(lastPoint.X, lastPoint.Y);
 
-            shapeStyle = new ShapeStyle(coordinates,100,100,0,"black",0,"none");
+            shapeStyle = new ShapeStyle(coordinates,100,100,0, "#FFFFFFFF", 0,"none");
 
             while (StylusPoints.Count > 1)
             {
@@ -82,29 +82,6 @@ namespace PolyPaint.CustomInk
             }
 
             return new Point(xCenter - pointRotatedAroundOrigin.X, yCenter - pointRotatedAroundOrigin.Y);
-        }
-
-        protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
-        {
-            if (drawingContext == null)
-            {
-                throw new ArgumentNullException("drawingContext");
-            }
-            if (null == drawingAttributes)
-            {
-                throw new ArgumentNullException("drawingAttributes");
-            }
-            DrawingAttributes originalDa = drawingAttributes.Clone();
-            SolidColorBrush brush2 = new SolidColorBrush(drawingAttributes.Color);
-            brush2.Freeze();
-            // drawingContext.DrawRectangle(brush2, null, new Rect(GetTheLeftTopPoint(), GetTheRightBottomPoint()));
-            // Create the source
-            BitmapImage img = new BitmapImage();
-            img.BeginInit();
-            // img.UriSource = new Uri("C:/Users/Alex/Pictures/Polar-bear-cub_917.jpg");
-            img.UriSource = new Uri("../../Resources/artefact.png", UriKind.Relative);
-            img.EndInit();
-
         }
         
         public virtual BasicShape GetBasicShape()
