@@ -115,6 +115,7 @@ namespace PolyPaint.Vues
                 {
                     popUpName.IsOpen = true;
                 }
+                IsEnabled = false;
             }
         }
 
@@ -124,6 +125,7 @@ namespace PolyPaint.Vues
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
             surfaceDessin.RefreshChildren();
+            IsEnabled = true;
         }
 
         public void Rename(string className, string attributes, string methods)
@@ -151,6 +153,7 @@ namespace PolyPaint.Vues
             stroke.style.multiplicityTo = multiplicityTo;
 
             surfaceDessin.RefreshChildren();
+            IsEnabled = true;
         }
 
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)
