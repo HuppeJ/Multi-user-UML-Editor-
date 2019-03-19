@@ -14,12 +14,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
 import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Enum.LinkTypes
 import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
+import com.polypaint.polypaint.Model.AnchorPoint
+import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.Model.Coordinates
 import com.polypaint.polypaint.Model.Link
 import com.polypaint.polypaint.R
+import kotlinx.android.synthetic.main.basic_element.view.*
 
 class LinkView: View{
     private var socket: Socket? = null
@@ -33,10 +37,13 @@ class LinkView: View{
     var multiplicityTo: TextView? = null
     var nameView: TextView? = null
     var dialog: DialogFragment? = null
+
     var editButton: ImageButton? = null
     var angleButtons: ArrayList<ImageButton> = ArrayList()
     var startAnchorButton : ImageButton? = null
     var endAnchorButton: ImageButton? = null
+    var deleteButton: ImageButton? = null
+
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
     val middlePoints: ArrayList<Coordinates> = ArrayList()
@@ -104,6 +111,19 @@ class LinkView: View{
     }
 
     private fun addButtons(parentView: RelativeLayout){
+        parentView.removeView(deleteButton)
+        deleteButton = ImageButton(context)
+        deleteButton?.setImageResource(R.drawable.ic_resize)
+        deleteButton?.layoutParams?.height = 24
+        deleteButton?.layoutParams?.width = 24
+        deleteButton?.x = start.x.toFloat() + 50
+        deleteButton?.y = start.y.toFloat() - 50
+        deleteButton?.setOnClickListener{
+            deleteLink()
+        }
+        deleteButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+        parentView.addView(deleteButton)
+
         parentView.removeView(startAnchorButton)
         startAnchorButton = ImageButton(context)
         startAnchorButton?.setImageResource(R.drawable.ic_resize)
@@ -320,7 +340,23 @@ class LinkView: View{
         parentView.addView(nameView)
     }
 
-    override fun onDetachedFromWindow() {
+    private fun deleteLink(){
+        val fromId = link?.from?.formId
+        if(fromId != null && fromId != ""){
+            val fromShape = ViewShapeHolder.getInstance().canevas.findShape(fromId)
+            fromShape?.linksFrom?.remove(link?.id)
+        }
+        val toId = link?.to?.formId
+        if(toId != null && toId != ""){
+            val toShape = ViewShapeHolder.getInstance().canevas.findShape(toId)
+            toShape?.linksTo?.remove(link?.id)
+        }
+        removeButtonsAndTexts()
+        val parent = this.parent as RelativeLayout
+        parent.removeView(this)
+    }
+
+    private fun removeButtonsAndTexts(){
         val parent = this.parent as RelativeLayout
         if(multiplicityFrom != null){
             parent.removeView(multiplicityFrom)
@@ -331,7 +367,23 @@ class LinkView: View{
         if(nameView != null){
             parent.removeView(nameView)
         }
-        super.onDetachedFromWindow()
+        if(deleteButton != null){
+            parent.removeView(deleteButton)
+        }
+        if(editButton != null){
+            parent.removeView(editButton)
+        }
+        if(startAnchorButton != null){
+            parent.removeView(startAnchorButton)
+        }
+        if(endAnchorButton != null){
+            parent.removeView(endAnchorButton)
+        }
+        for(angleButton in angleButtons) {
+            if (angleButton != null) {
+                parent.removeView(angleButton)
+            }
+        }
     }
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -447,7 +499,13 @@ class LinkView: View{
 
     private var onTouchListenerStartAnchorButton = View.OnTouchListener { v, event ->
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+            MotionEvent.ACTION_DOWN -> {
+                for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
+                    if (!basicView.isSelectedByOther) {
+                        basicView.setAnchorsVisible(true)
+                    }
+                }
+
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
@@ -457,11 +515,79 @@ class LinkView: View{
                 v.x += deltaX
                 v.y += deltaY
 
+                colorAnchorOnHover(v.x.toInt(), v.y.toInt())
+
                 oldFrameRawY = event.rawY
                 oldFrameRawX = event.rawX
 
             }
             MotionEvent.ACTION_UP -> {
+                for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
+                    basicView.setAnchorsVisible(false)
+                }
+                var anchorPointStart: AnchorPoint = AnchorPoint()
+                var otherBasicView: BasicElementView? = null
+                val x = v.x.toInt()
+                val y = v.y.toInt()
+                for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
+                    if(!basicView.isSelectedByOther) {
+                        val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
+                        if (basicView.isViewInBounds(basicView.anchorPoint0, x, y)) {
+                            otherBasicView = basicView
+                            if(basicShapeId != null){
+                                anchorPointStart = AnchorPoint(basicShapeId, AnchorPoints.TOP.ordinal)
+                                basicView.anchorPoint0.setBackgroundColor(Color.TRANSPARENT)
+                                basicView.anchorPoint0.invalidate()
+                                basicView.anchorPoint0.requestLayout()
+                            }
+                            break
+                        } else if (basicView.isViewInBounds(basicView.anchorPoint1, x, y)) {
+                            otherBasicView = basicView
+                            if(basicShapeId != null){
+                                anchorPointStart = AnchorPoint(basicShapeId, AnchorPoints.RIGHT.ordinal)
+                                basicView.anchorPoint1.setBackgroundColor(Color.TRANSPARENT)
+                                basicView.anchorPoint1.invalidate()
+                                basicView.anchorPoint1.requestLayout()
+                            }
+                            break
+                        } else if (basicView.isViewInBounds(basicView.anchorPoint2, x, y)) {
+                            otherBasicView = basicView
+                            if(basicShapeId != null){
+                                anchorPointStart = AnchorPoint(basicShapeId, AnchorPoints.BOTTOM.ordinal)
+                                basicView.anchorPoint2.setBackgroundColor(Color.TRANSPARENT)
+                                basicView.anchorPoint2.invalidate()
+                                basicView.anchorPoint2.requestLayout()
+                            }
+                            break
+                        } else if (basicView.isViewInBounds(basicView.anchorPoint3, x, y)) {
+                            otherBasicView = basicView
+                            if(basicShapeId != null){
+                                anchorPointStart = AnchorPoint(basicShapeId, AnchorPoints.LEFT.ordinal)
+                                basicView.anchorPoint3.setBackgroundColor(Color.TRANSPARENT)
+                                basicView.anchorPoint3.invalidate()
+                                basicView.anchorPoint3.requestLayout()
+                            }
+                            break
+                        }
+                    }
+                }
+
+                val formId = link?.from?.formId
+                if(formId != null && formId != ""){
+                    val shape = ViewShapeHolder.getInstance().canevas.findShape(formId)
+                    if(shape != null){
+                        shape.linksFrom.remove(link?.id)
+                    }
+                }
+                link?.from?.formId = anchorPointStart.formId
+                link?.from?.anchor = anchorPointStart.anchor
+
+                val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
+                val canevas: Canevas = ViewShapeHolder.getInstance().canevas
+                if(otherBasicViewId != null) {
+                    canevas.findShape(otherBasicViewId)?.linksFrom?.add(link?.id)
+                }
+                Log.d("AnchorFormId","Forms id" + link!!.from.formId)
                 link?.path?.first()?.x = v.x.toDouble()
                 link?.path?.first()?.y = v.y.toDouble()
                 invalidate()
@@ -473,7 +599,12 @@ class LinkView: View{
     }
     private var onTouchListenerEndAnchorButton = View.OnTouchListener { v, event ->
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+            MotionEvent.ACTION_DOWN -> {
+                for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
+                    if (!basicView.isSelectedByOther) {
+                        basicView.setAnchorsVisible(true)
+                    }
+                }
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
@@ -486,8 +617,76 @@ class LinkView: View{
                 oldFrameRawY = event.rawY
                 oldFrameRawX = event.rawX
 
+                colorAnchorOnHover(v.x.toInt(), v.y.toInt())
+
             }
             MotionEvent.ACTION_UP -> {
+                for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
+                    basicView.setAnchorsVisible(false)
+                }
+
+                var anchorPointEnd: AnchorPoint = AnchorPoint()
+                var otherBasicView: BasicElementView? = null
+                val x = v.x.toInt()
+                val y = v.y.toInt()
+                for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
+                    if(!basicView.isSelectedByOther) {
+                        val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
+                        if (basicView.isViewInBounds(basicView.anchorPoint0, x, y)) {
+                            otherBasicView = basicView
+                            if(basicShapeId != null){
+                                anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.TOP.ordinal)
+                                basicView.anchorPoint0.setBackgroundColor(Color.TRANSPARENT)
+                                basicView.anchorPoint0.invalidate()
+                                basicView.anchorPoint0.requestLayout()
+                            }
+                            break
+                        } else if (basicView.isViewInBounds(basicView.anchorPoint1, x, y)) {
+                            otherBasicView = basicView
+                            if(basicShapeId != null){
+                                anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.RIGHT.ordinal)
+                                basicView.anchorPoint1.setBackgroundColor(Color.TRANSPARENT)
+                                basicView.anchorPoint1.invalidate()
+                                basicView.anchorPoint1.requestLayout()
+                            }
+                            break
+                        } else if (basicView.isViewInBounds(basicView.anchorPoint2, x, y)) {
+                            otherBasicView = basicView
+                            if(basicShapeId != null){
+                                anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.BOTTOM.ordinal)
+                                basicView.anchorPoint2.setBackgroundColor(Color.TRANSPARENT)
+                                basicView.anchorPoint2.invalidate()
+                                basicView.anchorPoint2.requestLayout()
+                            }
+                            break
+                        } else if (basicView.isViewInBounds(basicView.anchorPoint3, x, y)) {
+                            otherBasicView = basicView
+                            if(basicShapeId != null){
+                                anchorPointEnd = AnchorPoint(basicShapeId, AnchorPoints.LEFT.ordinal)
+                                basicView.anchorPoint3.setBackgroundColor(Color.TRANSPARENT)
+                                basicView.anchorPoint3.invalidate()
+                                basicView.anchorPoint3.requestLayout()
+                            }
+                            break
+                        }
+                    }
+                }
+                val formId = link?.to?.formId
+                if(formId != null && formId != ""){
+                    val shape = ViewShapeHolder.getInstance().canevas.findShape(formId)
+                    if(shape != null){
+                        shape.linksTo.remove(link?.id)
+                    }
+                }
+                link?.to?.formId = anchorPointEnd.formId
+                link?.to?.anchor = anchorPointEnd.anchor
+
+                val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
+                val canevas: Canevas = ViewShapeHolder.getInstance().canevas
+                if(otherBasicViewId != null) {
+                    canevas.findShape(otherBasicViewId)?.linksTo?.add(link?.id)
+                }
+                Log.d("AnchorFormId","Forms id" + link!!.to.formId)
                 link?.path?.last()?.x = v.x.toDouble()
                 link?.path?.last()?.y = v.y.toDouble()
                 invalidate()
@@ -496,6 +695,56 @@ class LinkView: View{
         }
 
         true
+    }
+
+    private fun colorAnchorOnHover(x: Int, y: Int){
+        for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
+            if(!basicView.isSelectedByOther) {
+                val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
+                if (basicView.isViewInBounds(basicView.anchorPoint0, x, y)) {
+                    if(basicShapeId != null){
+                        basicView.anchorPoint0.setBackgroundColor(Color.GREEN)
+                        basicView.anchorPoint0.invalidate()
+                        basicView.anchorPoint0.requestLayout()
+                    }
+                    break
+                } else if (basicView.isViewInBounds(basicView.anchorPoint1, x, y)) {
+                    if(basicShapeId != null){
+                        basicView.anchorPoint1.setBackgroundColor(Color.GREEN)
+                        basicView.anchorPoint1.invalidate()
+                        basicView.anchorPoint1.requestLayout()
+                    }
+                    break
+                } else if (basicView.isViewInBounds(basicView.anchorPoint2, x, y)) {
+                    if(basicShapeId != null){
+                        basicView.anchorPoint2.setBackgroundColor(Color.GREEN)
+                        basicView.anchorPoint2.invalidate()
+                        basicView.anchorPoint2.requestLayout()
+                    }
+                    break
+                } else if (basicView.isViewInBounds(basicView.anchorPoint3, x, y)) {
+                    if(basicShapeId != null){
+                        basicView.anchorPoint3.setBackgroundColor(Color.GREEN)
+                        basicView.anchorPoint3.invalidate()
+                        basicView.anchorPoint3.requestLayout()
+                    }
+                    break
+                } else {
+                    basicView.anchorPoint0.setBackgroundColor(Color.TRANSPARENT)
+                    basicView.anchorPoint0.invalidate()
+                    basicView.anchorPoint0.requestLayout()
+                    basicView.anchorPoint1.setBackgroundColor(Color.TRANSPARENT)
+                    basicView.anchorPoint1.invalidate()
+                    basicView.anchorPoint1.requestLayout()
+                    basicView.anchorPoint2.setBackgroundColor(Color.TRANSPARENT)
+                    basicView.anchorPoint2.invalidate()
+                    basicView.anchorPoint2.requestLayout()
+                    basicView.anchorPoint3.setBackgroundColor(Color.TRANSPARENT)
+                    basicView.anchorPoint3.invalidate()
+                    basicView.anchorPoint3.requestLayout()
+                }
+            }
+        }
     }
 //
 

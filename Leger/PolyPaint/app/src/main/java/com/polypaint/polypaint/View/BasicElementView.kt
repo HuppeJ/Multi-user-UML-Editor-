@@ -16,7 +16,6 @@ import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
-import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
@@ -99,7 +98,7 @@ open class BasicElementView: ConstraintLayout {
         return super.setSelected(selected)
     }
 
-    private fun setAnchorsVisible(isVisible: Boolean){
+    fun setAnchorsVisible(isVisible: Boolean){
         if(isVisible){
             anchorPoint0.visibility = View.VISIBLE
             anchorPoint1.visibility = View.VISIBLE
@@ -161,7 +160,7 @@ open class BasicElementView: ConstraintLayout {
                         }
                     }
                     var otherAnchor : View? = null
-                    var anchorPointEnd: AnchorPoint? = null
+                    var anchorPointEnd: AnchorPoint = AnchorPoint()
                     var otherBasicView: BasicElementView? = null
                     val x = (start.x + (event.rawX-oldFrameRawX)).toInt()
                     val y = (start.y + (event.rawY-oldFrameRawY)).toInt()
@@ -199,77 +198,87 @@ open class BasicElementView: ConstraintLayout {
                             }
                         }
                     }
-                    if(otherAnchor != null && anchorPointEnd !=null && otherBasicView != null){
-                        link.start = start
+
+                    link.start = start
+                    if(Math.abs(x - start.x) > 50 || Math.abs(y - start.y) > 50) {
+                        link.end = Coordinates(x.toDouble(), y.toDouble())
+                    } else {
+                        link.end = Coordinates(x + 50.0, y + 50.0)
+                    }
+                    val thisBasicViewId = ViewShapeHolder.getInstance().map[this]
+                    val linksToUpdate: ArrayList<Link> = ArrayList()
+                    val formsToUpdate: ArrayList<BasicShape> = ArrayList()
+                    val username: String = UserHolder.getInstance().username
+                    val canevas: Canevas = ViewShapeHolder.getInstance().canevas
+
+
+                    if(otherAnchor != null && anchorPointEnd.formId != "" && otherBasicView != null){
+
                         val coord = IntArray(2)
                         otherAnchor.getLocationOnScreen(coord)
                         val activity = context as AppCompatActivity
                         val toolbarView: View= activity.findViewById(R.id.toolbar)
                         link.end = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
 
+                    }
 
-                        val thisBasicViewId = ViewShapeHolder.getInstance().map[this]
-                        val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
-                        var anchorPointStart: AnchorPoint ?= null
-                        if(thisBasicViewId != null && otherBasicViewId != null) {
-                            when (v.id) {
-                                R.id.anchorPoint0 -> anchorPointStart =
-                                        AnchorPoint(thisBasicViewId, AnchorPoints.TOP.ordinal)
-                                R.id.anchorPoint1 -> anchorPointStart =
-                                        AnchorPoint(thisBasicViewId, AnchorPoints.RIGHT.ordinal)
-                                R.id.anchorPoint2 -> anchorPointStart =
-                                        AnchorPoint(thisBasicViewId, AnchorPoints.BOTTOM.ordinal)
-                                R.id.anchorPoint3 -> anchorPointStart =
-                                        AnchorPoint(thisBasicViewId, AnchorPoints.LEFT.ordinal)
-                            }
-
-                            if (anchorPointStart != null) {
-                                val path: ArrayList<Coordinates> = ArrayList()
-                                path.add(start)
-                                path.add(Coordinates(start.x + 50, start.y -20))
-                                path.add(link.end)
-                                val linkShape: Link = Link(
-                                    UUID.randomUUID().toString(),
-                                    "Link",
-                                    anchorPointStart,
-                                    anchorPointEnd,
-                                    3,
-                                    LinkStyle("BLACK", 10, 0),
-                                    path
-                                )
-
-                                val username: String = UserHolder.getInstance().username
-                                val canevas: Canevas = ViewShapeHolder.getInstance().canevas
-                                val links: ArrayList<Link> = ArrayList()
-                                val formsToUpdate: ArrayList<BasicShape> = ArrayList()
-
-                                formsToUpdate.add(canevas.findShape(thisBasicViewId)!!)
-                                formsToUpdate.add(canevas.findShape(otherBasicViewId)!!)
-                                links.add(linkShape)
-
-                                ViewShapeHolder.getInstance().linkMap.forcePut(link, linkShape.id)
-                                canevas.links.add(linkShape)
-                                canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
-                                canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
-
-                                //Log.d("createLink", linkShape)
-                                var linkObj: String =""
-                                val gson = Gson()
-                                val linkUpdate: LinksUpdateEvent = LinksUpdateEvent(username, canevas.name, links)
-                                linkObj = gson.toJson(linkUpdate)
-                                Log.d("emitingCreateLink", linkObj)
-
-                                var formsObj =""
-                                val fromsUpdate: FormsUpdateEvent = FormsUpdateEvent(username, canevas.name, formsToUpdate)
-                                formsObj = gson.toJson(fromsUpdate)
-                                Log.d("emitingUpdateForms", formsObj)
-                                socket?.emit(SocketConstants.CREATE_LINK, linkObj)
-                                socket?.emit(SocketConstants.UPDATE_FORMS, formsObj)
-
-                                parentView.addView(link)
-                            }
+                    var anchorPointStart: AnchorPoint = AnchorPoint()
+                    if(thisBasicViewId != null){
+                        when (v.id) {
+                            R.id.anchorPoint0 -> anchorPointStart =
+                                AnchorPoint(thisBasicViewId, AnchorPoints.TOP.ordinal)
+                            R.id.anchorPoint1 -> anchorPointStart =
+                                AnchorPoint(thisBasicViewId, AnchorPoints.RIGHT.ordinal)
+                            R.id.anchorPoint2 -> anchorPointStart =
+                                AnchorPoint(thisBasicViewId, AnchorPoints.BOTTOM.ordinal)
+                            R.id.anchorPoint3 -> anchorPointStart =
+                                AnchorPoint(thisBasicViewId, AnchorPoints.LEFT.ordinal)
                         }
+                        if (anchorPointStart.formId != "") {
+                            val path: ArrayList<Coordinates> = ArrayList()
+                            path.add(start)
+                            path.add(link.end)
+                            val linkShape: Link = Link(
+                                UUID.randomUUID().toString(),
+                                "Link",
+                                anchorPointStart,
+                                anchorPointEnd,
+                                3,
+                                LinkStyle("BLACK", 10, 0),
+                                path
+                            )
 
+                            formsToUpdate.add(canevas.findShape(thisBasicViewId)!!)
+                            linksToUpdate.add(linkShape)
+
+
+                            val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
+
+                            if(otherBasicViewId != null) {
+                                formsToUpdate.add(canevas.findShape(otherBasicViewId)!!)
+                                canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
+                            }
+
+                            ViewShapeHolder.getInstance().linkMap.forcePut(link, linkShape.id)
+                            canevas.links.add(linkShape)
+                            canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
+
+                            //Log.d("createLink", linkShape)
+                            var linkObj: String =""
+                            val gson = Gson()
+                            val linkUpdate: LinksUpdateEvent = LinksUpdateEvent(username, canevas.name, linksToUpdate)
+                            linkObj = gson.toJson(linkUpdate)
+                            Log.d("emitingCreateLink", linkObj)
+
+                            var formsObj =""
+                            val fromsUpdate: FormsUpdateEvent = FormsUpdateEvent(username, canevas.name, formsToUpdate)
+                            formsObj = gson.toJson(fromsUpdate)
+                            Log.d("emitingUpdateForms", formsObj)
+                            socket?.emit(SocketConstants.CREATE_LINK, linkObj)
+                            socket?.emit(SocketConstants.UPDATE_FORMS, formsObj)
+
+                            parentView.addView(link)
+                        }
                     }
                     oldLink = null
                 }
@@ -278,9 +287,7 @@ open class BasicElementView: ConstraintLayout {
         true
     }
 
-
-
-    private fun isViewInBounds(view: View, x: Int, y: Int): Boolean{
+    fun isViewInBounds(view: View, x: Int, y: Int): Boolean{
         val activity = context as AppCompatActivity
         val toolbarView: View= activity.findViewById(R.id.toolbar)
         val parentView = view.parent.parent.parent as RelativeLayout
@@ -472,20 +479,28 @@ open class BasicElementView: ConstraintLayout {
                 for(linkId: String? in linksFrom!! ) {
                     Log.d("linkid", linkId)
                     val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId!!)
-                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
-                    if(linkView != null){
-                        parentView.removeView(linkView)
+                    if(link!= null){
+                        link.from.formId = ""
+                        link.from.anchor = 0
                     }
-                    ViewShapeHolder.getInstance().remove(link!!)
+//                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+//                    if(linkView != null){
+//                        parentView.removeView(linkView)
+//                    }
+//                    ViewShapeHolder.getInstance().remove(link!!)
                 }
 
                 for(linkId: String? in linksTo!! ) {
                     val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId!!)
-                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
-                    if(linkView != null){
-                        parentView.removeView(linkView)
+                    if(link!= null){
+                        link.to.formId = ""
+                        link.to.anchor = 0
                     }
-                    ViewShapeHolder.getInstance().remove(link!!)
+//                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+//                    if(linkView != null){
+//                        parentView.removeView(linkView)
+//                    }
+//                    ViewShapeHolder.getInstance().remove(link!!)
                 }
 
                 ViewShapeHolder.getInstance().stackShapeCreatedId.remove(ViewShapeHolder.getInstance().map.getValue(this))
@@ -660,7 +675,12 @@ open class BasicElementView: ConstraintLayout {
     private fun emitLinkUpdate(linksIdArray: ArrayList<String?>){
         val linksArray = ArrayList<Link>()
         for(id in linksIdArray) {
-            linksArray.add(ViewShapeHolder.getInstance().canevas.findLink(id!!)!!)
+            if(id != null) {
+                val link = ViewShapeHolder.getInstance().canevas.findLink(id)
+                if(link != null){
+                    linksArray.add(link)
+                }
+            }
         }
         val response: String = this.createLinksUpdateEvent(linksArray)
 
