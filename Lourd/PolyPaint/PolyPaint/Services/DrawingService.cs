@@ -84,9 +84,9 @@ namespace PolyPaint.Services
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
         }
 
-        public static void CreateShape(CustomStroke customStroke)
+        public static void CreateShape(ShapeStroke shapeStroke)
         {
-            BasicShape basicShape = customStroke.GetBasicShape();
+            BasicShape basicShape = shapeStroke.GetBasicShape();
             List<BasicShape> forms = new List<BasicShape>();
             forms.Add(basicShape);
 

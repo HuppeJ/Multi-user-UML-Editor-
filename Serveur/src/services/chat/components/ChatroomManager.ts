@@ -59,7 +59,7 @@ export default class ChatroomManager {
 
     public getChatroomsSERI(): string {
         return JSON.stringify({
-            chatrooms: JSON.stringify(Array.from(this.chatrooms.keys()))
+            chatrooms: Array.from(this.chatrooms.keys())
         });
     }
 

@@ -98,6 +98,12 @@
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="PHASE">
                 </Button>
+                <Button x:Name="Link" Width="40" Height="40" Margin="5" Padding="0,0" Content="LINK" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="LINK">
+                </Button>
                 <!--<Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -158,10 +164,10 @@
 
         </Border>
         <Popup x:Name="popUpName" Placement="Center">
-            <Vues:RenamePopup />
+            <Vues:RenamePopup x:Name="popUpNameVue"/>
         </Popup>
         <Popup x:Name="popUpClass" Placement="Center">
-            <Vues:ClassPopup />
+            <Vues:ClassPopup x:Name="popUpClassVue"/>
         </Popup>
         <Border DockPanel.Dock="Bottom" Height="25" BorderThickness="0,0.75,0,0.75" BorderBrush="#77000000">
             <StackPanel Orientation="Horizontal" Background="#FFF0F0F0">

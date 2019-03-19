@@ -15,7 +15,7 @@ namespace PolyPaint.CustomInk
         // The Thumb to drag to rotate the strokes.
         Thumb rotateHandle;
 
-        // The surrounding boarder.
+        // The surrounding border.
         Path line;
 
         VisualCollection visualChildren;
@@ -170,7 +170,6 @@ namespace PolyPaint.CustomInk
             }
 
             canvas.RotateStrokesWithAngle(rotation.Angle);
-
 
             // Save the angle of the last rotation.
             lastAngle = rotation.Angle;

@@ -12,6 +12,8 @@ using System.Windows.Ink;
 using PolyPaint.Enums;
 using System.Windows.Shapes;
 using System.Collections.Generic;
+using PolyPaint.CustomInk.Strokes;
+using PolyPaint.Templates;
 
 namespace PolyPaint.Vues
 {
@@ -26,7 +28,7 @@ namespace PolyPaint.Vues
             InitializeComponent();
             DataContext = new VueModele();
         }
-        
+
         // Pour gérer les points de contrôles.
         private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
         private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
@@ -43,12 +45,13 @@ namespace PolyPaint.Vues
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
+
         }
 
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
-        
+
         private void RotateSelection(object sender, RoutedEventArgs e) => surfaceDessin.RotateStrokes();
 
         private void RefreshChildren(object sender, RoutedEventArgs e)
@@ -69,20 +72,29 @@ namespace PolyPaint.Vues
                     (CustomStroke)surfaceDessin.SelectedStrokes[0]
                 );
                 surfaceDessin.Select(new StrokeCollection { newStroke });
+                if (newStroke.GetType() != typeof(LinkStroke))
+                {
+                    Path path = new Path();
+                    path.Data = newStroke.GetGeometry();
+                    surfaceDessin.Children.Add(path);
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                    myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
+                    myAdornerLayer.Add(new AnchorPointAdorner(path, newStroke, surfaceDessin));
+                    Adorner[] ad = myAdornerLayer.GetAdorners(path);
+                    myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
+                }
+            }
+            else if (surfaceDessin.SelectedStrokes.Count == 1 && surfaceDessin.SelectedStrokes[0].GetType() == typeof(LinkStroke))
+            {
+                surfaceDessin.modifyLinkStrokePath(surfaceDessin.SelectedStrokes[0] as LinkStroke, e.GetPosition(surfaceDessin));
 
-                Path path = new Path();
-                path.Data = newStroke.GetGeometry();
-                surfaceDessin.Children.Add(path);
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
-                myAdornerLayer.Add(new AnchorPointAdorner(path, newStroke, surfaceDessin));
-                Adorner[] ad = myAdornerLayer.GetAdorners(path);
-                myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
             }
 
-            // Pour que les boutons est la bonne couleur
+
+            // Pour que les boutons soient de la bonne couleur
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
         }
+        
 
         // Bouton pour changer le texte de l'élément sélectionné
         public void RenameSelection()
@@ -92,12 +104,15 @@ namespace PolyPaint.Vues
             {
                 if (((CustomStroke)strokes[0]).type == (int)StrokeTypes.CLASS_SHAPE)
                 {
+                    popUpClassVue.setParameters(strokes[0] as ClassStroke);
                     popUpClass.IsOpen = true;
                 }
                 else
                 {
+                    popUpNameVue.setParameters(strokes[0] as CustomStroke);
                     popUpName.IsOpen = true;
                 }
+                IsEnabled = false;
             }
         }
 
@@ -107,6 +122,7 @@ namespace PolyPaint.Vues
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
             surfaceDessin.RefreshChildren();
+            IsEnabled = true;
         }
 
         public void Rename(string className, string attributes, string methods)
@@ -114,12 +130,29 @@ namespace PolyPaint.Vues
             popUpClass.IsOpen = false;
             ClassStroke stroke = (ClassStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = className;
+
             stroke.attributes = new List<string>();
-            stroke.attributes.Add(attributes);
+            string[] lines = attributes.Split(
+                new[] { Environment.NewLine },
+                StringSplitOptions.None
+            );
+            foreach(string line in lines)
+            {
+                stroke.attributes.Add(line);
+            }
+
             stroke.methods = new List<string>();
-            stroke.methods.Add(methods);
+            lines = methods.Split(
+                new[] { Environment.NewLine },
+                StringSplitOptions.None
+            );
+            foreach (string line in lines)
+            {
+                stroke.methods.Add(line);
+            }
 
             surfaceDessin.RefreshChildren();
+            IsEnabled = true;
         }
 
         private void surfaceDessin_SelectionChanged(object sender, EventArgs e)

@@ -549,6 +549,7 @@ class DrawingActivity : AppCompatActivity(){
         val sendObj = gson.toJson(galleryEditEvent)
         Log.d("leaveObj", sendObj)
         socket?.emit(SocketConstants.LEAVE_CANVAS_ROOM, sendObj)
+        finish()
         super.onBackPressed()
     }
     /*override fun onBackPressed() {

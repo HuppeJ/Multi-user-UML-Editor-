@@ -33,14 +33,19 @@ namespace PolyPaint.Templates
 
         public Link(Point pointFrom, string formId, int anchor)
         {
-            id = new Guid().ToString();
+            //id = new Guid().ToString();
             name = "";
             from = new AnchorPoint(formId, anchor, "0");
-            //to = to;
+            to = new AnchorPoint();
             type = 0;
             style = new LinkStyle();
             path = new List<Coordinates>();
             path.Add(new Coordinates(pointFrom.X, pointFrom.Y));
+        }
+
+        public Point GetPoint(int indexInPath)
+        {
+            return new Point(path[indexInPath].x, path[indexInPath].y);
         }
 
         public Point GetFromPoint(StrokeCollection strokes)
@@ -53,7 +58,8 @@ namespace PolyPaint.Templates
                 if (stroke.guid.ToString() == this.from.formId)
                 {
                     fromStroke = stroke;
-                    point = fromStroke.GetAnchorPoint(this.from.anchor);
+                    point = (fromStroke as ShapeStroke).GetAnchorPoint(this.from.anchor);
+                    //point = (fromStroke as ShapeStroke).anchorPoints[from.anchor];
                 }
             }
 
@@ -70,7 +76,7 @@ namespace PolyPaint.Templates
                 if (stroke.guid.ToString() == this.to.formId)
                 {
                     fromStroke = stroke;
-                    point = fromStroke.GetAnchorPoint(this.to.anchor);
+                    point = (fromStroke as ShapeStroke).GetAnchorPoint(this.to.anchor);
                 }
             }
 

@@ -28,6 +28,8 @@ import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
+import com.polypaint.polypaint.ResponseModel.GetPrivateCanvasResponse
+import com.polypaint.polypaint.ResponseModel.GetPublicCanvasResponse
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
 import kotlinx.android.synthetic.main.activity_gallery.*
@@ -51,6 +53,8 @@ class GalleryActivity:AppCompatActivity(){
         socket = app.socket
 
         socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+        socket?.on(SocketConstants.GET_PRIVATE_CANVAS_RESPONSE, onGetPrivateCanvasResponse)
+        socket?.on(SocketConstants.GET_PUBLIC_CANVAS_RESPONSE, onGetPublicCanvasResponse)
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
@@ -87,17 +91,6 @@ class GalleryActivity:AppCompatActivity(){
             startActivity(intent)
         }
 
-        /*val ft = supportFragmentManager.beginTransaction()
-        //ft.add(R.id.list_container, RoomsListFragment())
-        ft.add(R.id.details_container, MessageListFragment(), MessageListFragment.TAG)
-        ft.commit()*/
-
-
-
-        requestPrivateCanevas()
-        requestPublicCanevas()
-
-
         adapterPrivate = ImageListAdapter(this, canevasPrivate, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{
             override fun onItemClick(canevas: Canevas) {
                 selectedCanevas = canevas
@@ -124,7 +117,7 @@ class GalleryActivity:AppCompatActivity(){
         })
         adapterPublic = ImageListAdapter(this, canevasPublic, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{
             override fun onItemClick(canevas: Canevas) {
-
+                selectedCanevas = canevas
 
                 if(canevas.password != "") {
                     var activity: AppCompatActivity = this@GalleryActivity as AppCompatActivity
@@ -136,7 +129,6 @@ class GalleryActivity:AppCompatActivity(){
                     Log.d("****", dialog.arguments.toString())
                     dialog.show(activity.supportFragmentManager, "enterPasswordDialog")
                 }else {
-
                     val gson = Gson()
                     val galleryEditEvent: GalleryEditEvent =
                         GalleryEditEvent(UserHolder.getInstance().username, canevas.name, canevas.password)
@@ -154,18 +146,39 @@ class GalleryActivity:AppCompatActivity(){
         public_gallery_recycler_view?.adapter = adapterPublic
     }
 
-    private fun requestPrivateCanevas(){
-        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", ArrayList<BasicShape>(), ArrayList<Link>()))
-        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"",  ArrayList<BasicShape>(), ArrayList<Link>()))
-        canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"abc", ArrayList<BasicShape>(), ArrayList<Link>()))
-
+    private fun requestCanevas(){
+        socket?.emit(SocketConstants.GET_PRIVATE_CANVAS)
+        socket?.emit(SocketConstants.GET_PUBLIC_CANVAS)
     }
 
-    private fun requestPublicCanevas(){
-        canevasPublic.add(Canevas("ID","qwe","AUTHOR","aa",1,"", ArrayList<BasicShape>(), ArrayList<Link>()))
-        canevasPublic.add(Canevas("ID","qwe","AUTHOR","p",1,"abc", ArrayList<BasicShape>(), ArrayList<Link>()))
-
+    private var onGetPrivateCanvasResponse: Emitter.Listener = Emitter.Listener {
+        val gson = Gson()
+        val obj: GetPrivateCanvasResponse = gson.fromJson(it[0].toString())
+        Log.d("onGetPrivateCanvasRes", it[0].toString())
+        canevasPrivate.clear()
+        for(canevas: Canevas in obj.privateCanvas) {
+            canevasPrivate.add(canevas)
+        }
+        runOnUiThread {
+            adapterPrivate?.notifyDataSetChanged()
+        }
     }
+
+    private var onGetPublicCanvasResponse: Emitter.Listener = Emitter.Listener {
+        val gson = Gson()
+        val obj: GetPublicCanvasResponse = gson.fromJson(it[0].toString())
+        Log.d("onGetPublicCanvasRes", it[0].toString())
+
+        canevasPublic.clear()
+
+        for(canevas: Canevas in obj.publicCanvas) {
+            canevasPublic.add(canevas)
+        }
+        runOnUiThread {
+            adapterPublic?.notifyDataSetChanged()
+        }
+    }
+
 
     private var onJoinCanvasResponse: Emitter.Listener = Emitter.Listener {
         Log.d("onJoinCanvasResponse", "alllooo")
@@ -197,5 +210,10 @@ class GalleryActivity:AppCompatActivity(){
             startActivity(intent)
             finish()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestCanevas()
     }
 }
