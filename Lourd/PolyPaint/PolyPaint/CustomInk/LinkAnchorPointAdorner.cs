@@ -28,7 +28,7 @@ namespace PolyPaint.CustomInk
 
         private Path linkPreview;
         LineGeometry linkPreviewGeom = new LineGeometry();
-
+        int linkStrokeAnchor;
 
         public LinkAnchorPointAdorner(UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
@@ -42,6 +42,7 @@ namespace PolyPaint.CustomInk
 
             stroke = linkStroke;
             canvas = actualCanvas;
+            linkStrokeAnchor = stroke.path.Count;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             strokeBounds = linkStroke.GetBounds();
@@ -49,8 +50,10 @@ namespace PolyPaint.CustomInk
 
             anchors = new List<Thumb>();
             // Pour une ShapeStroke
-            anchors.Add(new Thumb());
-            anchors.Add(new Thumb());
+            for (int i = 0; i < stroke.path.Count; i++)
+            {
+                anchors.Add(new Thumb());
+            }
 
             foreach (Thumb anchor in anchors)
             {
@@ -79,11 +82,10 @@ namespace PolyPaint.CustomInk
             center = stroke.GetCenter();
 
             List<Coordinates> strokePath = stroke.path;
-            if (strokePath.Count > 1)
-            {
 
-                ArrangeAnchor(0, -center.X + strokePath[0].x, -center.Y + strokePath[0].y);
-                ArrangeAnchor(1, -center.X + strokePath[strokePath.Count - 1].x, -center.Y + strokePath[strokePath.Count - 1].y);
+            for (int i = 0; i < stroke.path.Count; i++)
+            {
+                ArrangeAnchor(i, -center.X + strokePath[i].x, -center.Y + strokePath[i].y);
             }
 
             return finalSize;
@@ -103,7 +105,14 @@ namespace PolyPaint.CustomInk
 
         void dragHandle_DragStarted(object sender, DragStartedEventArgs e)
         {
-            canvas.addAnchorPoints();
+            for (int i = 0; i < stroke.path.Count && linkStrokeAnchor == stroke.path.Count; i++)
+            {
+                if ((sender as Thumb) == anchors[i]) linkStrokeAnchor = i;
+            }
+            if(linkStrokeAnchor == 0 || linkStrokeAnchor == stroke.path.Count - 1)
+            {
+                canvas.addAnchorPoints();
+            }
             canvas.isUpdatingLink = true;
         }
 
@@ -116,7 +125,7 @@ namespace PolyPaint.CustomInk
                 linkPreviewGeom.StartPoint = new Point(stroke.path[0].x, stroke.path[0].y);
                 linkPreviewGeom.EndPoint = pos;
             }
-            else //if ((sender as Thumb) == anchors[0])
+            else if ((sender as Thumb) == anchors[0])
             {
                 linkPreviewGeom.StartPoint = pos;
                 linkPreviewGeom.EndPoint = new Point(stroke.path[stroke.path.Count - 1].x, stroke.path[stroke.path.Count - 1].y);
@@ -130,11 +139,14 @@ namespace PolyPaint.CustomInk
         void dragHandle_DragCompleted(object sender,
                                         DragCompletedEventArgs e)
         {
-            //e.HorizontalChange, e.VerticalChange;
-
-            // Redraw rotateHandle.
-
             Point actualPos = Mouse.GetPosition(this);
+            if (actualPos.X < 0 || actualPos.Y < 0)
+            {
+                canvas.isUpdatingLink = false;
+                visualChildren.Remove(linkPreview);
+                InvalidateArrange();
+                return;
+            }
 
             CustomStroke strokeTo = null;
             int number = 0;
@@ -160,10 +172,7 @@ namespace PolyPaint.CustomInk
 
                 }
             }
-            int linkStrokeAnchor = 0;
-            if ((sender as Thumb) == anchors[1]) linkStrokeAnchor = 1;
-
-
+            
             canvas.updateLink(linkStrokeAnchor, stroke, strokeTo?.guid.ToString(), number, actualPos);
 
             InvalidateArrange();

@@ -28,16 +28,16 @@ namespace PolyPaint.CustomInk
 
             if (isUpdatingLink)
             {
+                linkBeingUpdated.path[linkStrokeAnchor] = new Coordinates(pointPosition);
+
                 if (linkStrokeAnchor == 0)
                 {
                     // mettre a jour la position du point initial (from)
-                    linkBeingUpdated.path[0] = new Coordinates(pointPosition);
                     linkBeingUpdated.from = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "0");
                 }
-                else
+                else if(linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
                 {
                     // mettre a jour la position du point final (to)
-                    linkBeingUpdated.path[linkBeingUpdated.path.Count - 1] = new Coordinates(pointPosition);
                     linkBeingUpdated.to = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "0");
                 }
 
@@ -328,6 +328,8 @@ namespace PolyPaint.CustomInk
                 newStrokes.Add(newStroke);
                 Strokes.Replace(selectedStroke, newStrokes);
             }
+
+            RefreshChildren();
         }
         #endregion
 
@@ -339,11 +341,8 @@ namespace PolyPaint.CustomInk
 
             foreach (CustomStroke selectedStroke in strokes)
             {
-                //double rotation = selectedStroke.rotation;
                 if (rotation.Equals(360))
                     rotation = 0;
-                //else
-                //    rotation += 10;
                 Stroke newStroke = selectedStroke.CloneRotated(rotation);
                 StrokeCollection newStrokes = new StrokeCollection { newStroke };
                 Strokes.Replace(selectedStroke, newStrokes);
@@ -353,6 +352,8 @@ namespace PolyPaint.CustomInk
 
             //SelectedStrokes.Add(newStrokes); // non necessaire, pcq le .Select les ajoute 
             Select(selectedNewStrokes);
+            // gi
+            //RefreshLinks();
         }
         #endregion
 
