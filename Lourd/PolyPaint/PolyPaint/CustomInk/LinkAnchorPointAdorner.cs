@@ -4,36 +4,33 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Collections.Generic;
 using PolyPaint.CustomInk.Strokes;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Shapes;
 using System;
+using System.Windows.Shapes;
+using PolyPaint.Templates;
 
 namespace PolyPaint.CustomInk
 {
-    class AnchorPointAdorner : Adorner
+    class LinkAnchorPointAdorner : Adorner
     {
         List<Thumb> anchors;
-        List<StrokeAnchorPointThumb> cheatAnchors;
-
         VisualCollection visualChildren;
 
         // The center of the strokes.
         Point center;
-        
-        RotateTransform rotation;
+
         const int HANDLEMARGIN = 15;
 
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
-        public CustomStroke stroke;
-
+        public LinkStroke stroke;
         public CustomInkCanvas canvas;
 
         private Path linkPreview;
         LineGeometry linkPreviewGeom = new LineGeometry();
+        int linkStrokeAnchor;
 
-        public AnchorPointAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
+        public LinkAnchorPointAdorner(UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
             visualChildren = new VisualCollection(this);
@@ -43,20 +40,20 @@ namespace PolyPaint.CustomInk
             linkPreview.StrokeThickness = 2;
             visualChildren.Add(linkPreview);
 
-            stroke = customStroke;
+            stroke = linkStroke;
             canvas = actualCanvas;
+            linkStrokeAnchor = stroke.path.Count;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = customStroke.GetBounds();
+            strokeBounds = linkStroke.GetBounds();
             center = stroke.GetCenter();
-            rotation = new RotateTransform(stroke.rotation, center.X, center.Y);
 
             anchors = new List<Thumb>();
-            anchors.Add(new Thumb());
-            anchors.Add(new Thumb());
-            anchors.Add(new Thumb());
-            anchors.Add(new Thumb());
-           
+            // Pour une ShapeStroke
+            for (int i = 0; i < stroke.path.Count; i++)
+            {
+                anchors.Add(new Thumb());
+            }
 
             foreach (Thumb anchor in anchors)
             {
@@ -65,29 +62,14 @@ namespace PolyPaint.CustomInk
                 anchor.Height = 10;
                 anchor.Background = Brushes.IndianRed;
 
-                anchor.DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
                 anchor.DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);
+                anchor.DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);
 
                 visualChildren.Add(anchor);
             }
 
-            cheatAnchors = new List<StrokeAnchorPointThumb>();
-            cheatAnchors.Add(new StrokeAnchorPointThumb(customStroke, canvas, 0));
-            cheatAnchors.Add(new StrokeAnchorPointThumb(customStroke, canvas, 1));
-            cheatAnchors.Add(new StrokeAnchorPointThumb(customStroke, canvas, 2));
-            cheatAnchors.Add(new StrokeAnchorPointThumb(customStroke, canvas, 3));
-            foreach (Thumb cheatAnchor in cheatAnchors)
-            {
-                cheatAnchor.Cursor = Cursors.SizeNWSE;
-                cheatAnchor.Width = 1;
-                cheatAnchor.Height = 1;
-
-                canvas.Children.Add(cheatAnchor);
-            }
-
-            strokeBounds = customStroke.GetBounds();
-
+            strokeBounds = linkStroke.GetBounds();
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -99,12 +81,12 @@ namespace PolyPaint.CustomInk
 
             center = stroke.GetCenter();
 
-            ArrangeAnchor(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
-            ArrangeAnchor(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
-            ArrangeAnchor(2, 0, strokeBounds.Height / 2 + HANDLEMARGIN);
-            ArrangeAnchor(3, -(strokeBounds.Width / 2 + HANDLEMARGIN), 0);
+            List<Coordinates> strokePath = stroke.path;
 
-            linkPreview.Arrange(new Rect(finalSize));
+            for (int i = 0; i < stroke.path.Count; i++)
+            {
+                ArrangeAnchor(i, -center.X + strokePath[i].x, -center.Y + strokePath[i].y);
+            }
 
             return finalSize;
         }
@@ -117,47 +99,63 @@ namespace PolyPaint.CustomInk
                                   strokeBounds.Width,
                                   strokeBounds.Height);
 
-            if (rotation != null)
-            {
-                handleRect.Transform(rotation.Value);
-            }
-
             // Draws the thumb and the rectangle around the strokes.
             anchors[anchorNumber].Arrange(handleRect);
-            cheatAnchors[anchorNumber].Arrange(handleRect);
         }
 
-        void dragHandle_DragStarted(object sender,
-                                        DragStartedEventArgs e)
+        void dragHandle_DragStarted(object sender, DragStartedEventArgs e)
         {
-            canvas.addAnchorPoints();
-            linkPreviewGeom.StartPoint = Mouse.GetPosition(this);
+            for (int i = 0; i < stroke.path.Count && linkStrokeAnchor == stroke.path.Count; i++)
+            {
+                if ((sender as Thumb) == anchors[i]) linkStrokeAnchor = i;
+            }
+            if(linkStrokeAnchor == 0 || linkStrokeAnchor == stroke.path.Count - 1)
+            {
+                canvas.addAnchorPoints();
+            }
+            canvas.isUpdatingLink = true;
         }
 
         void dragHandle_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            linkPreviewGeom.EndPoint = Mouse.GetPosition(this);
+            Point pos = Mouse.GetPosition(this);
+
+            if ((sender as Thumb) == anchors[1])
+            {
+                linkPreviewGeom.StartPoint = new Point(stroke.path[0].x, stroke.path[0].y);
+                linkPreviewGeom.EndPoint = pos;
+            }
+            else if ((sender as Thumb) == anchors[0])
+            {
+                linkPreviewGeom.StartPoint = pos;
+                linkPreviewGeom.EndPoint = new Point(stroke.path[stroke.path.Count - 1].x, stroke.path[stroke.path.Count - 1].y);
+            }
 
             linkPreview.Data = linkPreviewGeom;
             linkPreview.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
         }
 
+
         void dragHandle_DragCompleted(object sender,
                                         DragCompletedEventArgs e)
-        {                        
+        {
             Point actualPos = Mouse.GetPosition(this);
-            if(actualPos.X < 0 || actualPos.Y < 0)
+            if (actualPos.X < 0 || actualPos.Y < 0)
             {
+                canvas.isUpdatingLink = false;
                 visualChildren.Remove(linkPreview);
                 InvalidateArrange();
                 return;
             }
+
             CustomStroke strokeTo = null;
             int number = 0;
 
+
             foreach (UIElement thumb in canvas.Children)
             {
-                if (thumb.GetType() == typeof(StrokeAnchorPointThumb)) {
+                if (thumb.GetType() == typeof(StrokeAnchorPointThumb))
+                {
                     Point thumbPosition = thumb.TransformToAncestor(canvas).Transform(new Point(0, 0));
 
                     StrokeAnchorPointThumb cheatThumb = thumb as StrokeAnchorPointThumb;
@@ -165,7 +163,7 @@ namespace PolyPaint.CustomInk
                     double x = thumbPosition.X - actualPos.X;
 
                     double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
-                    if(distBetweenPoints <= 30)
+                    if (distBetweenPoints <= 30)
                     {
                         strokeTo = cheatThumb.stroke;
                         actualPos = thumbPosition;
@@ -174,22 +172,9 @@ namespace PolyPaint.CustomInk
 
                 }
             }
+            
+            canvas.updateLink(linkStrokeAnchor, stroke, strokeTo?.guid.ToString(), number, actualPos);
 
-
-            int linkAnchorNumber = 0;
-            if (sender as Thumb == anchors[1]) linkAnchorNumber = 1;
-            if (sender as Thumb == anchors[2]) linkAnchorNumber = 2;
-            if (sender as Thumb == anchors[3]) linkAnchorNumber = 3;
-            Point pos = (sender as Thumb).TransformToAncestor(canvas).Transform(new Point(0, 0));
-            pos.X += 5;
-            pos.Y += 5;
-
-            LinkStroke linkBeingCreated = new LinkStroke(pos, stroke?.guid.ToString(), linkAnchorNumber, new StylusPointCollection { new StylusPoint(0, 0) });
-            linkBeingCreated.addToPointToLink(actualPos, strokeTo?.guid.ToString(), number);
-
-            canvas.Strokes.Add(linkBeingCreated);
-
-            visualChildren.Remove(linkPreview);
             InvalidateArrange();
         }
 

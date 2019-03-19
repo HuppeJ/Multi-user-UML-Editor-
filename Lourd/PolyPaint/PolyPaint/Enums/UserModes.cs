@@ -21,6 +21,7 @@ namespace PolyPaint.Enums
         ACTIVITY,
         ROLE,
         COMMENT,
-        PHASE
+        PHASE,
+        LINK
     }
 }
