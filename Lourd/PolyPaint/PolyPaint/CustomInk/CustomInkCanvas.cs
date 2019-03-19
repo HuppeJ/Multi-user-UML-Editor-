@@ -71,16 +71,14 @@ namespace PolyPaint.CustomInk
                             if (SelectedStrokes.Contains(linkStroke))
                             {
                                 List<Coordinates> pathCopy = new List<Coordinates>(linkStroke.path);
-                                int stylusPointsIndex = 0;
+
+                                StylusPoint point = linkStroke.StylusPoints[0];
+                                double xDiff = point.X - linkStroke.path[0].x;
+                                double yDiff = point.Y - linkStroke.path[0].y;
+
                                 for (int i = 1; i < linkStroke.path.Count - 1; i++)
                                 {
-                                    Point firstPoint = new Point(pathCopy[i - 1].x, pathCopy[i - 1].y);
-                                    Point secondPoint = new Point(pathCopy[i].x, pathCopy[i].y);
-                                    double y = secondPoint.Y - firstPoint.Y;
-                                    double x = secondPoint.X - firstPoint.X;
-
-                                    stylusPointsIndex += (int)Math.Floor(Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)))/10;
-                                    linkStroke.path[i] = new Coordinates(linkStroke.StylusPoints[stylusPointsIndex].ToPoint());
+                                    linkStroke.path[i] = new Coordinates(linkStroke.path[i].x + xDiff, linkStroke.path[i].y + yDiff);
                                 }
                             }
                             // update the free points of linkStrokes (from view)
