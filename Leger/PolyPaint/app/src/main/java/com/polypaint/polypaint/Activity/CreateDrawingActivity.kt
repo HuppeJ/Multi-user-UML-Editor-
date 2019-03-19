@@ -173,9 +173,10 @@ class CreateDrawingActivity: AppCompatActivity(){
         val gson = Gson()
         val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
         if(obj.isCanvasRoomJoined) {
-            Log.d("canvasJoined", "created" + canevas?.name)
+            Log.d("canvasJoined", "created " + canevas?.name)
             val intent = Intent(this, DrawingActivity::class.java)
             intent.putExtra("canevas", canevas)
+            //ViewShapeHolder.getInstance().canevas = canevas!!
             startActivity(intent)
         }
     }

@@ -45,7 +45,13 @@ import androidx.core.view.ViewCompat.setAlpha
 import androidx.core.os.HandlerCompat.postDelayed
 import android.provider.SyncStateContract.Helpers.update
 import android.widget.FrameLayout
+import android.widget.RelativeLayout
+import com.polypaint.polypaint.Holder.SyncShapeHolder
 import com.polypaint.polypaint.Holder.VFXHolder
+import kotlinx.android.synthetic.main.dialog_edit_class.view.*
+import kotlinx.android.synthetic.main.view_class.view.*
+import kotlinx.android.synthetic.main.view_comment.view.*
+import kotlinx.android.synthetic.main.view_image_element.view.*
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -97,6 +103,11 @@ class DrawingActivity : AppCompatActivity(){
 
         initializeViewFromCanevas()
 
+        parent_relative_layout.setOnClickListener{
+            it as RelativeLayout
+            it.dispatchSetSelected(false)
+        }
+
         add_button.setOnClickListener {
             addOnCanevas(ShapeTypes.DEFAULT)
         }
@@ -124,6 +135,7 @@ class DrawingActivity : AppCompatActivity(){
             emitClearCanvas()
             parent_relative_layout?.removeAllViews()
             ViewShapeHolder.getInstance().stackShapeCreatedId = Stack<String>()
+            parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
         }
 
         duplicate_button.setOnClickListener{
@@ -139,10 +151,10 @@ class DrawingActivity : AppCompatActivity(){
             unstackView()
         }
 
-        //TODO : C'est vraiment degeux, le mettre dans un view à lui avec un holder pour faire le pont ?
-
         VFXHolder.getInstance().vfxView = VfxView(this)
         parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
+
+        SyncShapeHolder.getInstance().drawingActivity = this
 
     }
 
@@ -151,6 +163,7 @@ class DrawingActivity : AppCompatActivity(){
         if(ViewShapeHolder.getInstance().canevas != null){
             Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
             for(shape in ViewShapeHolder.getInstance().canevas.shapes){
+                Log.d("initShape","****"+shape.id+"****")
                 addOnCanevas(shape)
             }
             //TODO: LINKS
@@ -408,7 +421,7 @@ class DrawingActivity : AppCompatActivity(){
         }catch (e : EmptyStackException){}
         catch (e : NullPointerException){} //If stacking deleted shape
     }
-    private fun syncLayoutFromCanevas(){
+    public fun syncLayoutFromCanevas(){
         for (view in ViewShapeHolder.getInstance().map.keys){
             val basicShapeId:  String = ViewShapeHolder.getInstance().map.getValue(view)
             val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
@@ -417,6 +430,30 @@ class DrawingActivity : AppCompatActivity(){
                 view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                 view.rotation = basicShape.shapeStyle.rotation.toFloat()
+
+                when(basicShape.type){
+                    ShapeTypes.DEFAULT.value()-> { }
+                    ShapeTypes.CLASS_SHAPE.value()-> {
+                        basicShape as ClassShape
+                        view as ClassView
+                        view.class_name.text = basicShape.name
+                        view.class_attributes.text = basicShape.attributes.toString()
+                        view.class_methods.text = basicShape.methods.toString()
+
+                    }
+                    ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
+                        view.name.text = basicShape.name
+                    }
+
+                    ShapeTypes.COMMENT.value()-> {
+                        view.comment_text.text = basicShape.name
+                    }
+                    ShapeTypes.PHASE.value()-> {
+                        view.name.text = basicShape.name
+                    }
+
+                }
+
             }
         }
     }
@@ -548,6 +585,7 @@ class DrawingActivity : AppCompatActivity(){
         runOnUiThread {
             ViewShapeHolder.getInstance().removeAll()
             ViewShapeHolder.getInstance().stackShapeCreatedId = Stack<String>()
+            parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
             syncLayoutFromCanevas()
         }
     }

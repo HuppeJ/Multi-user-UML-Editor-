@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.fragment.app.DialogFragment
+import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
@@ -60,6 +61,7 @@ class ClassView(context: Context): BasicElementView(context) {
 
         var bundle: Bundle = Bundle()
         bundle.putString("shapeId", shapeId)
+
         dialog.arguments = bundle
 
         Log.d("****", dialog.arguments.toString())

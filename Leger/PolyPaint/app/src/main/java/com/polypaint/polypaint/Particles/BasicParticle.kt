@@ -3,6 +3,7 @@ package com.polypaint.polypaint.Particles
 import android.content.Context
 import android.graphics.*
 import kotlin.math.max
+import kotlin.math.sign
 
 
 class BasicParticle (xOrigin: Float, yOrigin:Float, var maxSpeed :Float, var context: Context) {
@@ -30,6 +31,9 @@ class BasicParticle (xOrigin: Float, yOrigin:Float, var maxSpeed :Float, var con
         //Set Random direction
         this.x = xOrigin
         this.y = yOrigin
+
+        //Square splat
+
         vX = maxSpeed * initDirection()
         vY = maxSpeed * initDirection()
 

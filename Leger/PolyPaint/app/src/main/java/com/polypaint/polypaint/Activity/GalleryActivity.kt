@@ -25,6 +25,7 @@ import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Fragment.EnterDrawingPasswordDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
@@ -156,6 +157,10 @@ class GalleryActivity:AppCompatActivity(){
 
     private fun requestPrivateCanevas(){
         canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"", ArrayList<BasicShape>(), ArrayList<Link>()))
+//        val shapeStyle : ShapeStyle = ShapeStyle(Coordinates(100.0,100.0),300.0,300.0,0.0,"white",0,"white")
+//        val bShape : BasicShape = BasicShape("id1",0,"s1",shapeStyle, ArrayList(), ArrayList())
+//        var bShapes : ArrayList<BasicShape> = ArrayList()
+//        bShapes.add(bShape)
         canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"",  ArrayList<BasicShape>(), ArrayList<Link>()))
         canevasPrivate.add(Canevas("ID","qwe","AUTHOR","aa",0,"abc", ArrayList<BasicShape>(), ArrayList<Link>()))
 
@@ -178,7 +183,8 @@ class GalleryActivity:AppCompatActivity(){
             if(selectedCanevas != null && selectedCanevas?.name == obj.canvasName) {
                 Log.d("canvasJoined", "created" + obj.canvasName)
                 val intent = Intent(this, DrawingActivity::class.java)
-                intent.putExtra("canevas", selectedCanevas)
+                //intent.putExtra("canevas", selectedCanevas)
+                ViewShapeHolder.getInstance().canevas = selectedCanevas!!
                 startActivity(intent)
             } else {
                 Log.d("Erreur", "selectionCanevas")
