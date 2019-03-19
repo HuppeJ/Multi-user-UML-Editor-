@@ -296,10 +296,10 @@ namespace PolyPaint.VueModeles
         private void NewMessage(ChatMessageTemplate message)
         {
             ChatMessage cm = new ChatMessage {
-                sender = message.sender,
+                sender = message.username,
                 text = message.message,
                 createdAt = DateTimeOffset.FromUnixTimeMilliseconds(message.createdAt).DateTime.ToLocalTime(),
-                isOriginNative = (message.sender == username)
+                isOriginNative = (message.username == username)
             };
 
             if (!_selectedRoom.Chatter.Contains(cm)){
@@ -310,7 +310,6 @@ namespace PolyPaint.VueModeles
 
         private void GetChatrooms(RoomList chatrooms)
         {
-            /*
             foreach(string room in chatrooms.chatrooms)
             {
                 Room newRoom = new Room { name = room };
@@ -319,7 +318,6 @@ namespace PolyPaint.VueModeles
                     rooms.Add(newRoom);
                 }
             }
-            */
         }
 
         private void Connection(bool isConnected)

@@ -158,10 +158,10 @@
 
         </Border>
         <Popup x:Name="popUpName" Placement="Center">
-            <Vues:RenamePopup />
+            <Vues:RenamePopup x:Name="popUpNameVue"/>
         </Popup>
         <Popup x:Name="popUpClass" Placement="Center">
-            <Vues:ClassPopup />
+            <Vues:ClassPopup x:Name="popUpClassVue"/>
         </Popup>
         <Border DockPanel.Dock="Bottom" Height="25" BorderThickness="0,0.75,0,0.75" BorderBrush="#77000000">
             <StackPanel Orientation="Horizontal" Background="#FFF0F0F0">
