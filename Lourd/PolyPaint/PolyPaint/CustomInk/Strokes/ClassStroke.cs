@@ -57,7 +57,7 @@ namespace PolyPaint.CustomInk
 
             TransformGroup transform = new TransformGroup();
 
-            transform.Children.Add(new RotateTransform(rotation, x, y));
+            transform.Children.Add(new RotateTransform(shapeStyle.rotation, x, y));
 
             drawingContext.PushTransform(transform);
         }

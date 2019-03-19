@@ -291,7 +291,6 @@ namespace PolyPaint.CustomInk
             {
                 if (stroke.guid.Equals(stroke2.guid))
                 {
-                    // strokesToReplace.Add(stroke2);
                     int index = Strokes.IndexOf(stroke2);
                     Strokes.RemoveAt(index);
                     Strokes.Insert(index, stroke);
@@ -445,8 +444,6 @@ namespace PolyPaint.CustomInk
 
             foreach (CustomStroke selectedStroke in strokes)
             {
-                if (rotation.Equals(360))
-                    rotation = 0;
                 Stroke newStroke = selectedStroke.CloneRotated(rotation);
                 StrokeCollection newStrokes = new StrokeCollection { newStroke };
                 Strokes.Replace(selectedStroke, newStrokes);
@@ -456,7 +453,7 @@ namespace PolyPaint.CustomInk
 
             //SelectedStrokes.Add(newStrokes); // non necessaire, pcq le .Select les ajoute 
             Select(selectedNewStrokes);
-            // gi
+            DrawingService.UpdateShapes(selectedNewStrokes);
             RefreshLinks();
         }
         #endregion

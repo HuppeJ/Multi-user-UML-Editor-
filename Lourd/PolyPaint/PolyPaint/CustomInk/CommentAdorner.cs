@@ -26,7 +26,7 @@ namespace PolyPaint.CustomInk
             this.canvas = canvas;
             Rect bounds = stroke.GetBounds();
             center = stroke.GetCenter();
-            rotation = new RotateTransform(stroke.rotation, center.X, center.Y);
+            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             rectangle = new Rect(bounds.TopLeft.X, bounds.TopLeft.Y, bounds.Width, bounds.Height);
 
@@ -37,7 +37,7 @@ namespace PolyPaint.CustomInk
         {
             visualChildren = new VisualCollection(this);
             customTextBox = new CustomTextBox(stroke.name, stroke.GetBounds().Width, stroke.GetBounds().Height);
-            customTextBox.LayoutTransform = new RotateTransform(stroke.rotation, center.X, center.Y);
+            customTextBox.LayoutTransform = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             visualChildren.Add(customTextBox);
         }
