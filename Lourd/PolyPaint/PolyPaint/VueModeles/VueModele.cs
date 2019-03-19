@@ -72,8 +72,6 @@ namespace PolyPaint.VueModeles
         public RelayCommand<string> ChoisirOutil { get; set; }
         public RelayCommand<object> Reinitialiser { get; set; }
 
-        public RelayCommand<object> Rotate { get; set; }
-
         internal CustomStroke AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
         {
             return editeur.AddStrokeFromView(selectedStroke);
