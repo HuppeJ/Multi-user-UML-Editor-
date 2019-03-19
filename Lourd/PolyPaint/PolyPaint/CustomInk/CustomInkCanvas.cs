@@ -319,10 +319,10 @@ namespace PolyPaint.CustomInk
                     customStroke = new ActorStroke(pts);
                     break;
                 case StrokeTypes.COMMENT:
-                    customStroke = new ClassStroke(pts);
+                    customStroke = new CommentStroke(pts);
                     break;
                 case StrokeTypes.PHASE:
-                    customStroke = new ClassStroke(pts);
+                    customStroke = new PhaseStroke(pts);
                     break;
                 case StrokeTypes.LINK:
                     customStroke = new LinkStroke(e.Stroke.StylusPoints);
@@ -364,29 +364,76 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
-            if (stroke.type != (int)StrokeTypes.CLASS_SHAPE)
+            switch (stroke.type)
             {
-                Point point = stroke.GetBounds().BottomLeft;
-                double x = point.X;
-                double y = point.Y;
-
-                CustomTextBox tb = new CustomTextBox();
-                tb.Text = stroke.name;
-                tb.Uid = stroke.guid.ToString();
-
-                this.Children.Add(tb);
-                InkCanvas.SetTop(tb, y);
-                InkCanvas.SetLeft(tb, x);
+                case (int)StrokeTypes.LINK:
+                    double x = stroke.StylusPoints[0].X;
+                    double y = stroke.StylusPoints[0].Y;
+                    CreateNameTextBox(stroke, x, y);
+                    CreateMultiplicityTextBox(stroke.StylusPoints, stroke as LinkStroke);
+                    break;
+                case (int)StrokeTypes.CLASS_SHAPE:
+                    Path path = new Path();
+                    path.Data = stroke.GetGeometry();
+                    Children.Add(path);
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                    myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
+                    break;
+                case (int)StrokeTypes.COMMENT:
+                    Path commentPath = new Path();
+                    commentPath.Data = stroke.GetGeometry();
+                    Children.Add(commentPath);
+                    AdornerLayer commentAdorner = AdornerLayer.GetAdornerLayer(commentPath);
+                    commentAdorner.Add(new CommentAdorner(commentPath, stroke, this));
+                    break;
+                case (int)StrokeTypes.PHASE:
+                    Path phasePath = new Path();
+                    phasePath.Data = stroke.GetGeometry();
+                    Children.Add(phasePath);
+                    AdornerLayer phaseAdorner = AdornerLayer.GetAdornerLayer(phasePath);
+                    phaseAdorner.Add(new PhaseAdorner(phasePath, stroke, this));
+                    break;
+                default:
+                    Point point = stroke.GetBounds().BottomLeft;
+                    double xDefault = point.X;
+                    double yDefault = point.Y;
+                    CreateNameTextBox(stroke, xDefault, yDefault);
+                    break;
             }
-            else if (stroke.type == (int)StrokeTypes.CLASS_SHAPE)
-            {
-                Path path = new Path();
-                path.Data = stroke.GetGeometry();
+        }
 
-                Children.Add(path);
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
-            }
+        private void CreateMultiplicityTextBox(StylusPointCollection stylusPoints, LinkStroke stroke)
+        {
+            double fromX = stylusPoints[0].X;
+            double fromY = stylusPoints[0].Y - 20;
+
+            double toX = stylusPoints[stylusPoints.Count-1].X;
+            double toY = stylusPoints[stylusPoints.Count-1].Y - 20;
+
+            CustomTextBox from = new CustomTextBox();
+            from.Text = "" + stroke.style.multiplicityFrom;
+            from.Uid = stroke.guid.ToString();
+            Children.Add(from);
+            SetTop(from, fromY);
+            SetLeft(from, fromX);
+
+            CustomTextBox to = new CustomTextBox();
+            to.Text = "" + stroke.style.multiplicityTo;
+            to.Uid = stroke.guid.ToString();
+            Children.Add(to);
+            SetTop(to, toY);
+            SetLeft(to, toX);
+        }
+
+        private void CreateNameTextBox(CustomStroke stroke, double x, double y)
+        {
+            CustomTextBox tb = new CustomTextBox();
+            tb.Text = stroke.name;
+            tb.Uid = stroke.guid.ToString();
+
+            Children.Add(tb);
+            SetTop(tb, y);
+            SetLeft(tb, x);
         }
         #endregion
 

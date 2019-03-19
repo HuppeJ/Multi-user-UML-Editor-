@@ -169,6 +169,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="CustomInk\PhaseAdorner.cs" />
+    <Compile Include="CustomInk\CommentAdorner.cs" />
     <Compile Include="CustomInk\ClassAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
@@ -182,6 +184,8 @@
     <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
     <Compile Include="CustomInk\AnchorPointAdorner.cs" />
     <Compile Include="CustomInk\Strokes\ArtifactStroke.cs" />
+    <Compile Include="CustomInk\Strokes\PhaseStroke.cs" />
+    <Compile Include="CustomInk\Strokes\CommentStroke.cs" />
     <Compile Include="CustomInk\Strokes\ClassStroke.cs" />
     <Compile Include="CustomInk\CustomDynamicRenderer.cs" />
     <Compile Include="CustomInk\CustomInkCanvas.cs" />
@@ -237,6 +241,9 @@
     </Compile>
     <Compile Include="Vues\GalleryView.xaml.cs">
       <DependentUpon>GalleryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\LinkPopup.xaml.cs">
+      <DependentUpon>LinkPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
@@ -320,6 +327,10 @@
     <Page Include="Vues\GalleryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\LinkPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\LoginView.xaml">
       <Generator>MSBuild:Compile</Generator>

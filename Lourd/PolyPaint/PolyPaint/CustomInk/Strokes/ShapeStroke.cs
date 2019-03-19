@@ -25,23 +25,15 @@ namespace PolyPaint.CustomInk
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             Coordinates coordinates = new Coordinates(lastPoint.X, lastPoint.Y);
 
-            shapeStyle = new ShapeStyle(coordinates,100,100,0,"black",0,"none");
-            if (type == 0) shapeStyle.width = 150;
+            shapeStyle = new ShapeStyle(coordinates,100,100,0, "#FFFFFFFF", 0,"none");
 
             while (StylusPoints.Count > 1)
             {
                 StylusPoints.RemoveAt(0);
             }
-            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
-            {
-                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
-                {
-                    StylusPoints.Add(new StylusPoint(i, j));
-                }
-            }
+            
             linksTo = new List<string>();
             linksFrom = new List<string>();
-
         }
 
         
@@ -90,40 +82,6 @@ namespace PolyPaint.CustomInk
             }
 
             return new Point(xCenter - pointRotatedAroundOrigin.X, yCenter - pointRotatedAroundOrigin.Y);
-        }
-
-        protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
-        {
-            if (drawingContext == null)
-            {
-                throw new ArgumentNullException("drawingContext");
-            }
-            if (null == drawingAttributes)
-            {
-                throw new ArgumentNullException("drawingAttributes");
-            }
-            DrawingAttributes originalDa = drawingAttributes.Clone();
-            SolidColorBrush brush2 = new SolidColorBrush(drawingAttributes.Color);
-            brush2.Freeze();
-            // drawingContext.DrawRectangle(brush2, null, new Rect(GetTheLeftTopPoint(), GetTheRightBottomPoint()));
-            // Create the source
-            BitmapImage img = new BitmapImage();
-            img.BeginInit();
-            // img.UriSource = new Uri("C:/Users/Alex/Pictures/Polar-bear-cub_917.jpg");
-            img.UriSource = new Uri("../../Resources/artefact.png", UriKind.Relative);
-            img.EndInit();
-
-            //drawingContext.DrawImage(img, new Rect(GetTheFirstPoint(), GetTheLastPoint()));
-
-            FormattedText formattedText = new FormattedText(
-                "Hello",
-                CultureInfo.GetCultureInfo("en-us"),
-                FlowDirection.LeftToRight,
-                new Typeface("Verdana"),
-                32,
-                Brushes.Black);
-
-            drawingContext.DrawText(formattedText, GetTheFirstPoint());
         }
         
         public virtual BasicShape GetBasicShape()
