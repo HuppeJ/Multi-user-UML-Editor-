@@ -295,7 +295,7 @@ namespace PolyPaint.CustomInk
                     customStroke = new ActorStroke(pts);
                     break;
                 case StrokeTypes.COMMENT:
-                    customStroke = new ClassStroke(pts);
+                    customStroke = new CommentStroke(pts);
                     break;
                 case StrokeTypes.PHASE:
                     customStroke = new ClassStroke(pts);
@@ -340,31 +340,34 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
-            if(stroke.type == (int)StrokeTypes.LINK)
+            switch (stroke.type)
             {
-                double x = stroke.StylusPoints[0].X;
-                double y = stroke.StylusPoints[0].Y;
-
-                CreateNameTextBox(stroke, x, y);
-
-                CreateMultiplicityTextBox(stroke.StylusPoints, stroke as LinkStroke);
-            }
-            else if(stroke.type != (int)StrokeTypes.CLASS_SHAPE)
-            {
-                Point point = stroke.GetBounds().BottomLeft;
-                double x = point.X;
-                double y = point.Y;
-
-                CreateNameTextBox(stroke, x, y);
-            }
-            else if (stroke.type == (int)StrokeTypes.CLASS_SHAPE)
-            {
-                Path path = new Path();
-                path.Data = stroke.GetGeometry();
-
-                Children.Add(path);
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
+                case (int)StrokeTypes.LINK:
+                    double x = stroke.StylusPoints[0].X;
+                    double y = stroke.StylusPoints[0].Y;
+                    CreateNameTextBox(stroke, x, y);
+                    CreateMultiplicityTextBox(stroke.StylusPoints, stroke as LinkStroke);
+                    break;
+                case (int)StrokeTypes.CLASS_SHAPE:
+                    Path path = new Path();
+                    path.Data = stroke.GetGeometry();
+                    Children.Add(path);
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                    myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
+                    break;
+                case (int)StrokeTypes.COMMENT:
+                    Path commentPath = new Path();
+                    commentPath.Data = stroke.GetGeometry();
+                    Children.Add(commentPath);
+                    AdornerLayer commentAdorner = AdornerLayer.GetAdornerLayer(commentPath);
+                    commentAdorner.Add(new CommentAdorner(commentPath, stroke, this));
+                    break;
+                default:
+                    Point point = stroke.GetBounds().BottomLeft;
+                    double xDefault = point.X;
+                    double yDefault = point.Y;
+                    CreateNameTextBox(stroke, xDefault, yDefault);
+                    break;
             }
         }
 

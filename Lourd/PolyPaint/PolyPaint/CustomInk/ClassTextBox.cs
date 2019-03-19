@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Ink;
+using System.Windows.Input;
 
 namespace PolyPaint.CustomInk
 {
@@ -12,8 +14,14 @@ namespace PolyPaint.CustomInk
         public CustomTextBox tb2;
         public CustomTextBox tb3;
 
-        public ClassTextBox(ClassStroke stroke) : base()
+        private CustomInkCanvas canvas;
+        private ClassStroke selectedStroke;
+
+        public ClassTextBox(ClassStroke stroke, CustomInkCanvas canvas) : base()
         {
+            this.canvas = canvas;
+            this.selectedStroke = stroke;
+
             ShapeStyle shapeStyle = stroke.shapeStyle;
             tb1 = new CustomTextBox(stroke.name, shapeStyle.width, shapeStyle.height / 5);
             tb1.TextAlignment = TextAlignment.Center;
@@ -42,6 +50,14 @@ namespace PolyPaint.CustomInk
             }
 
             return completeString.Trim();
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(selectedStroke);
+            canvas.Select(sc);
         }
     }
 }

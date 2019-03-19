@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace PolyPaint.CustomInk
 {
@@ -12,6 +13,7 @@ namespace PolyPaint.CustomInk
             TextWrapping = TextWrapping.Wrap;
             AcceptsReturn = true;
             IsReadOnly = true;
+            IsHitTestVisible = false;
         }
 
         public CustomTextBox(string name, double width, double height) : base()
@@ -24,6 +26,7 @@ namespace PolyPaint.CustomInk
             TextWrapping = TextWrapping.Wrap;
             AcceptsReturn = true;
             IsReadOnly = true;
+            IsHitTestVisible = false;
         }
     }
 }

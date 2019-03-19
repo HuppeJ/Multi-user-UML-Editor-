@@ -15,6 +15,15 @@ namespace PolyPaint.CustomInk
         public ArtifactStroke(StylusPointCollection pts) : base(pts)
         {
             type = (int)StrokeTypes.ARTIFACT;
+
+            Point lastPoint = pts[pts.Count - 1].ToPoint();
+            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
+            {
+                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
+                {
+                    StylusPoints.Add(new StylusPoint(i, j));
+                }
+            }
         }
 
         public ArtifactStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
