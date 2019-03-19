@@ -353,7 +353,7 @@ namespace PolyPaint.CustomInk
             //SelectedStrokes.Add(newStrokes); // non necessaire, pcq le .Select les ajoute 
             Select(selectedNewStrokes);
             // gi
-            //RefreshLinks();
+            RefreshLinks();
         }
         #endregion
 
