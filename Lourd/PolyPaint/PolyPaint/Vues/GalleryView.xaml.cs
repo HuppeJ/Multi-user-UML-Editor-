@@ -23,5 +23,18 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
         }
+
+        private void CreateCanvas(object sender, RoutedEventArgs e)
+        {
+            popUpCreateCanvas.IsOpen = true;
+            popUpCreateCanvasVue.Initialize();
+            IsEnabled = false;
+        }
+
+        public void ClosePopUp()
+        {
+            popUpCreateCanvas.IsOpen = false;
+            IsEnabled = true;
+        }
     }
 }

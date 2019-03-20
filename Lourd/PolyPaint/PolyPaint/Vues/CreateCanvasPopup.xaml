@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="PolyPaint.Vues.CreateCanvasPopup"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d"
+             Padding="0,0,0,0" Margin="0,0,0,0" Background="Transparent"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--Material Design-->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Margin="0">
+        <materialDesign:Card.Style>
+            <Style TargetType="materialDesign:Card">
+                <Setter Property="Height" Value="375"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding CanvasProtection}" Value="Protected">
+                        <Setter Property="Height" Value="435"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </materialDesign:Card.Style>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,0">
+                <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
+                    <TextBlock>Enter canvas name here:</TextBlock>
+                    <TextBox x:Name="TxtBox" Width="150" Margin="0,5"
+                                 materialDesign:HintAssist.Hint="Enter name here"   
+                                 Text="{Binding CanvasName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    </TextBox>
+                    <TextBlock Margin="0, 10, 0, 0">Choose canvas privacy:</TextBlock>
+                    <ListBox Name="PrivacyList" SelectedValue="{Binding CanvasPrivacy, Mode=TwoWay}">
+                        <sys:String>Public</sys:String>
+                        <sys:String>Private</sys:String>
+                    </ListBox>
+                    <TextBlock Margin="0, 10, 0, 0">Choose canvas privacy:</TextBlock>
+                    <ListBox Name="ProtectionList" SelectedValue="{Binding CanvasProtection, Mode=TwoWay}">
+                        <sys:String>Unprotected</sys:String>
+                        <sys:String>Protected</sys:String>
+                    </ListBox>
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanvasProtection}" Value="Protected">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock x:Name="PasswordTextBlock" Margin="0, 10, 0, 0">Enter canvas password:</TextBlock>
+                        <PasswordBox x:Name="PasswordTextBox" Width="150" Margin="0,5" PasswordChar="*"
+                                     materialDesign:HintAssist.Hint="Password">
+                        </PasswordBox>
+                    </StackPanel>
+                    <Button Content="Create canvas" Margin="0,10,0,0" Width="150"/>
+                    <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </materialDesign:Card>
+</UserControl>

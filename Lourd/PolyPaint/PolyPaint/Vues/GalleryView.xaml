@@ -6,6 +6,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:PolyPaint.VueModeles"
+             xmlns:Vues="clr-namespace:PolyPaint.Vues"
              mc:Ignorable="d"              
              >
     <UserControl.Resources>
@@ -28,10 +29,21 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="336" Margin="200,60,200,41">
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="1100" Height="700" Margin="0">
+        
         <Grid>
-            <Button Content="DrawingView" Margin="25,246,25,58" Command="{Binding DrawingViewCommand}" Width="150"/>
-            <Button Content="Disconnect" Margin="25,286,25,18" Command="{Binding LogoutCommand}" Width="150"/>
+            <TextBlock Height="50" Width="400" Margin="14,18,686,632" FontSize="35" FontFamily="Comic Sans MS">Your gallery</TextBlock>
+            <Button Content="New Canvas" Margin="923,31,27,637" Click="CreateCanvas" Width="150"/>
+            <Rectangle HorizontalAlignment="Stretch" Fill="Black" Margin="11,75,300,620"></Rectangle>
+            <Button Content="DrawingView" Margin="930,645,20,23" Command="{Binding DrawingViewCommand}" Width="150"/>
+            <Button Content="Disconnect" Margin="20,648,930,20" Command="{Binding LogoutCommand}" Width="150"/>
+            <StackPanel>
+                
+            </StackPanel>
+            <Popup x:Name="popUpCreateCanvas" Placement="Center">
+                <Vues:CreateCanvasPopup x:Name="popUpCreateCanvasVue"/>
+            </Popup>
         </Grid>
+        
     </materialDesign:Card>
 </UserControl>
