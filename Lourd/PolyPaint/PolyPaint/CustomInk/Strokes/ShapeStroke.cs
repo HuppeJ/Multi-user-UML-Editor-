@@ -89,5 +89,31 @@ namespace PolyPaint.CustomInk
             BasicShape basicShape = new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
             return basicShape;
         }
+
+        public override void updatePosition()
+        {
+            Coordinates newCoordinates = new Coordinates(GetBounds().X, GetBounds().Y);
+            shapeStyle.coordinates = newCoordinates;
+        }
+
+        public override CustomStroke CloneRotated(double rotation)
+        {
+            ShapeStroke newStroke = (ShapeStroke)Clone();
+
+            // Changer les bounds? Gi
+            //newStroke.GetBounds().Transform(rotation.Value);
+
+            newStroke.shapeStyle.rotation = rotation;
+            return newStroke;
+        }
+
+        private Point rotatePoint(double x, double y)
+        {
+            double rotationInRad = shapeStyle.rotation * Math.PI / 180;
+            double cosTheta = Math.Cos(rotationInRad);
+            double sinTheta = Math.Sin(rotationInRad);
+
+            return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+        }
     }
 }

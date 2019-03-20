@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Templates;
+using System.Windows.Threading;
+using PolyPaint.Services;
 
 namespace PolyPaint.Vues
 {

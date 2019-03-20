@@ -12,6 +12,7 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PolyPaint.CustomInk
 {
@@ -180,13 +181,14 @@ namespace PolyPaint.CustomInk
 
             clipboard = new StrokeCollection();
 
-            canvas = new Templates.Canvas(Guid.NewGuid().ToString(), "newCanvas", ConnectionService.username,
-                ConnectionService.username, 1, null, new List<BasicShape>(), new List<Link>(), new int[] { 1, 1 });
+            canvas = new Templates.Canvas(Guid.NewGuid().ToString(), "qwe", ConnectionService.username,
+                ConnectionService.username, 0, null, new List<BasicShape>(), new List<Link>(), new int[] { 1, 1 });
             DrawingService.CreateCanvas(canvas);
-            DrawingService.JoinCanvas("newCanvas");
+            DrawingService.JoinCanvas("qwe");
 
             DrawingService.AddStroke += OnRemoteStroke;
             DrawingService.RemoveStrokes += OnRemoveStrokes;
+            DrawingService.UpdateStroke += OnUpdateStroke;
         }
 
         #region On.. event handlers
@@ -196,7 +198,6 @@ namespace PolyPaint.CustomInk
             {
                 SelectedStrokes.Add(stroke);
             }
-            //base.OnSelectionChanging(e);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
@@ -212,6 +213,11 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionMoved(EventArgs e)
         {
+            foreach (CustomStroke stroke in SelectedStrokes)
+            {
+                stroke.updatePosition();
+            }
+            DrawingService.UpdateShapes(SelectedStrokes);
             RefreshLinks();
             RefreshChildren();
         }
@@ -237,6 +243,11 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionResized(EventArgs e)
         {
+            foreach (CustomStroke stroke in SelectedStrokes)
+            {
+                stroke.updatePosition();
+            }
+            DrawingService.UpdateShapes(SelectedStrokes);
             RefreshLinks();
             RefreshChildren();
         }
@@ -244,6 +255,7 @@ namespace PolyPaint.CustomInk
         protected override void OnStrokeErased(RoutedEventArgs e)
         {
             base.OnStrokeErased(e);
+            RefreshChildren();
         }
 
         protected override void OnStrokeErasing(InkCanvasStrokeErasingEventArgs e)
@@ -275,6 +287,23 @@ namespace PolyPaint.CustomInk
                     }
                 }
             }
+            RefreshChildren();
+        }
+
+        private void OnUpdateStroke(InkCanvasStrokeCollectedEventArgs e)
+        {
+            CustomStroke stroke = (CustomStroke)e.Stroke;
+            foreach (CustomStroke stroke2 in Strokes)
+            {
+                if (stroke.guid.Equals(stroke2.guid))
+                {
+                    int index = Strokes.IndexOf(stroke2);
+                    Strokes.RemoveAt(index);
+                    Strokes.Insert(index, stroke);
+                    break;
+                }
+            }
+            RefreshChildren();
         }
 
         private CustomStroke CreateStroke(StylusPointCollection pts, InkCanvasStrokeCollectedEventArgs e, StrokeTypes strokeType)
@@ -421,8 +450,6 @@ namespace PolyPaint.CustomInk
 
             foreach (CustomStroke selectedStroke in strokes)
             {
-                if (rotation.Equals(360))
-                    rotation = 0;
                 Stroke newStroke = selectedStroke.CloneRotated(rotation);
                 StrokeCollection newStrokes = new StrokeCollection { newStroke };
                 Strokes.Replace(selectedStroke, newStrokes);
@@ -432,7 +459,7 @@ namespace PolyPaint.CustomInk
 
             //SelectedStrokes.Add(newStrokes); // non necessaire, pcq le .Select les ajoute 
             Select(selectedNewStrokes);
-            // gi
+            DrawingService.UpdateShapes(selectedNewStrokes);
             RefreshLinks();
         }
         #endregion

@@ -18,7 +18,7 @@ namespace PolyPaint.Services
         public static event Action<string> JoinCanvasRoom;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
-        public static event Action<CustomStroke> UpdateStroke;
+        public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -36,13 +36,6 @@ namespace PolyPaint.Services
                 //string joinCanvas = serializer.Deserialize<string>((string)data);
 
                 //JoinCanvasRoom?.Invoke(joinCanvas);
-            });
-
-            socket.On("CanvasUpdateTestResponse", (data) =>
-            {
-                BasicShape updatedStroke = serializer.Deserialize<BasicShape>((string)data);
-
-                UpdateStroke?.Invoke(createStroke(updatedStroke));
             });
 
             socket.On("createCanvasResponse", (data) =>
@@ -69,7 +62,7 @@ namespace PolyPaint.Services
                 dynamic response = JObject.Parse((string)data);
                 if (!username.Equals((string)response.username))
                 {
-                    CustomStroke customStroke = createStroke(response.forms[0]);
+                    CustomStroke customStroke = createShapeStroke(response.forms[0]);
                     InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
                     Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
                 }
@@ -83,9 +76,22 @@ namespace PolyPaint.Services
                     StrokeCollection strokes = new StrokeCollection();
                     foreach (dynamic shape in response.forms)
                     {
-                        strokes.Add(createStroke(shape));
+                        strokes.Add(createShapeStroke(shape));
                     }
                     Application.Current.Dispatcher.Invoke(new Action(() => { RemoveStrokes(strokes); }), DispatcherPriority.ContextIdle);
+                }
+            });
+
+            socket.On("formsUpdated", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    foreach (dynamic shape in response.forms)
+                    {
+                        InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(createShapeStroke(shape));
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateStroke(eventArgs); }), DispatcherPriority.Render);
+                    }
                 }
             });
         }
@@ -114,6 +120,11 @@ namespace PolyPaint.Services
             socket.Emit("deleteForms", serializer.Serialize(createUpdateFormsData(strokes)));
         }
 
+        public static void UpdateShapes(StrokeCollection strokes)
+        {
+            socket.Emit("updateForms", serializer.Serialize(createUpdateFormsData(strokes)));
+        }
+
         public static void SelectShapes(StrokeCollection strokes)
         {
             socket.Emit("selectForms", serializer.Serialize(createUpdateFormsData(strokes)));
@@ -138,44 +149,29 @@ namespace PolyPaint.Services
             return new UpdateFormsData(username, canvasName, forms);
         }
 
-        public static void UpdateShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> linksTo, List<string> linksFrom)
-        {
-            BasicShape updatedShape = new BasicShape()
-            {
-                id = id,
-                type = type,
-                name = name,
-                shapeStyle = shapeStyle,
-                linksTo = linksTo,
-                linksFrom = linksFrom
-            };
-
-            socket.Emit("CanvasUpdateTest", serializer.Serialize(updatedShape));
-        }
-
-        private static CustomStroke createStroke(dynamic shape)
+        private static ShapeStroke createShapeStroke(dynamic shape)
         {
             StylusPointCollection points = new StylusPointCollection();
 
             StylusPoint point = new StylusPoint((double)shape.shapeStyle.coordinates.x, (double)shape.shapeStyle.coordinates.y);
             points.Add(point);
 
-            CustomStroke customStroke;
+            ShapeStroke shapeStroke;
             StrokeTypes type = (StrokeTypes) shape.type;
 
             switch (type)
             {
                 case StrokeTypes.CLASS_SHAPE:
-                    customStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
+                    shapeStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
                     break;
                 case StrokeTypes.ARTIFACT:
-                    customStroke = new ArtifactStroke(shape.ToObject<BasicShape>(), points);
+                    shapeStroke = new ArtifactStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 case StrokeTypes.ACTIVITY:
-                    customStroke = new ActivityStroke(shape.ToObject<BasicShape>(), points);
+                    shapeStroke = new ActivityStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 case StrokeTypes.ROLE:
-                    customStroke = new ActorStroke(shape.ToObject<BasicShape>(), points);
+                    shapeStroke = new ActorStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 //case StrokeTypes.COMMENT:
                 //    customStroke = new CommentStroke(points);
@@ -184,13 +180,13 @@ namespace PolyPaint.Services
                 //    customStroke = new PhaseStroke(points);
                 //    break;
                 default:
-                    customStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
+                    shapeStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
                     break;
 
             }
-            customStroke.guid = Guid.Parse((string)shape.id);
+            shapeStroke.guid = Guid.Parse((string)shape.id);
 
-            return customStroke;
+            return shapeStroke;
         }
 
     }
