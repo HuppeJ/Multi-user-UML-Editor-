@@ -243,6 +243,11 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionResized(EventArgs e)
         {
+            foreach (CustomStroke stroke in SelectedStrokes)
+            {
+                stroke.updatePosition();
+            }
+            DrawingService.UpdateShapes(SelectedStrokes);
             RefreshLinks();
             RefreshChildren();
         }
@@ -250,6 +255,7 @@ namespace PolyPaint.CustomInk
         protected override void OnStrokeErased(RoutedEventArgs e)
         {
             base.OnStrokeErased(e);
+            RefreshChildren();
         }
 
         protected override void OnStrokeErasing(InkCanvasStrokeErasingEventArgs e)
