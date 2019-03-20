@@ -59,7 +59,7 @@ class GalleryActivity:AppCompatActivity(){
         socket?.on(SocketConstants.GET_PUBLIC_CANVAS_RESPONSE, onGetPublicCanvasResponse)
 
 
-        socket?.on(SocketConstants.CREATE_CANVAS_RESPONSE, onCreateCanvasResponse)
+        socket?.on(SocketConstants.CANVAS_CREATED, onCanvasCreated)
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
@@ -152,7 +152,7 @@ class GalleryActivity:AppCompatActivity(){
     }
 
     private fun requestCanevas(){
-        socket?.emit(SocketConstants.GET_PRIVATE_CANVAS)
+        socket?.emit(SocketConstants.GET_PRIVATE_CANVAS, UserHolder.getInstance().username)
         socket?.emit(SocketConstants.GET_PUBLIC_CANVAS)
     }
 
@@ -207,11 +207,10 @@ class GalleryActivity:AppCompatActivity(){
     }
 
     private var onCanvasCreated: Emitter.Listener = Emitter.Listener {
-        Log.d("onCreateCanvasResponse", "alllooo")
+        Log.d("onCanvasCreated", "alllooo")
 
-        val gson = Gson()
-        val obj: CanvasCreationResponse = gson.fromJson(it[0].toString())
-        // TODO: 
+        //val gson = Gson()
+        //val obj: CanvasCreationResponse = gson.fromJson(it[0].toString())
         requestCanevas()
     }
 
