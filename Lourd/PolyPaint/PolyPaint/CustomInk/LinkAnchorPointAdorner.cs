@@ -23,7 +23,7 @@ namespace PolyPaint.CustomInk
 
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
-        public LinkStroke stroke;
+        public LinkStroke linkStroke;
         public CustomInkCanvas canvas;
 
         private Path linkPreview;
@@ -40,17 +40,16 @@ namespace PolyPaint.CustomInk
             linkPreview.StrokeThickness = 2;
             visualChildren.Add(linkPreview);
 
-            stroke = linkStroke;
+            this.linkStroke = linkStroke;
             canvas = actualCanvas;
-            linkStrokeAnchor = stroke.path.Count;
-            // rotation initiale de la stroke (pour dessiner le rectangle)
-            // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
+            linkStrokeAnchor = this.linkStroke.path.Count;
+
             strokeBounds = linkStroke.GetBounds();
-            center = stroke.GetCenter();
+            center = this.linkStroke.GetCenter();
 
             anchors = new List<Thumb>();
             // Pour une ShapeStroke
-            for (int i = 0; i < stroke.path.Count; i++)
+            for (int i = 0; i < this.linkStroke.path.Count; i++)
             {
                 anchors.Add(new Thumb());
             }
@@ -79,11 +78,11 @@ namespace PolyPaint.CustomInk
                 return finalSize;
             }
 
-            center = stroke.GetCenter();
+            center = linkStroke.GetCenter();
 
-            List<Coordinates> strokePath = stroke.path;
+            List<Coordinates> strokePath = linkStroke.path;
 
-            for (int i = 0; i < stroke.path.Count; i++)
+            for (int i = 0; i < linkStroke.path.Count; i++)
             {
                 ArrangeAnchor(i, -center.X + strokePath[i].x, -center.Y + strokePath[i].y);
             }
@@ -100,16 +99,19 @@ namespace PolyPaint.CustomInk
                                   strokeBounds.Height);
 
             // Draws the thumb and the rectangle around the strokes.
-            anchors[anchorNumber].Arrange(handleRect);
+            if (anchorNumber < anchors.Count)
+            {
+                anchors[anchorNumber].Arrange(handleRect);
+            }
         }
 
         void dragHandle_DragStarted(object sender, DragStartedEventArgs e)
         {
-            for (int i = 0; i < stroke.path.Count && linkStrokeAnchor == stroke.path.Count; i++)
+            for (int i = 0; i < linkStroke.path.Count && linkStrokeAnchor == linkStroke.path.Count; i++)
             {
                 if ((sender as Thumb) == anchors[i]) linkStrokeAnchor = i;
             }
-            if(linkStrokeAnchor == 0 || linkStrokeAnchor == stroke.path.Count - 1)
+            if(linkStrokeAnchor == 0 || linkStrokeAnchor == linkStroke.path.Count - 1)
             {
                 canvas.addAnchorPoints();
             }
@@ -122,13 +124,13 @@ namespace PolyPaint.CustomInk
 
             if ((sender as Thumb) == anchors[1])
             {
-                linkPreviewGeom.StartPoint = new Point(stroke.path[0].x, stroke.path[0].y);
+                linkPreviewGeom.StartPoint = new Point(linkStroke.path[0].x, linkStroke.path[0].y);
                 linkPreviewGeom.EndPoint = pos;
             }
             else if ((sender as Thumb) == anchors[0])
             {
                 linkPreviewGeom.StartPoint = pos;
-                linkPreviewGeom.EndPoint = new Point(stroke.path[stroke.path.Count - 1].x, stroke.path[stroke.path.Count - 1].y);
+                linkPreviewGeom.EndPoint = new Point(linkStroke.path[linkStroke.path.Count - 1].x, linkStroke.path[linkStroke.path.Count - 1].y);
             }
 
             linkPreview.Data = linkPreviewGeom;
@@ -163,17 +165,16 @@ namespace PolyPaint.CustomInk
                     double x = thumbPosition.X - actualPos.X;
 
                     double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
-                    if (distBetweenPoints <= 30)
+                    if (distBetweenPoints <= 10)
                     {
                         strokeTo = cheatThumb.stroke;
                         actualPos = thumbPosition;
                         number = cheatThumb.number;
                     }
-
                 }
             }
             
-            canvas.updateLink(linkStrokeAnchor, stroke, strokeTo?.guid.ToString(), number, actualPos);
+            canvas.updateLink(linkStrokeAnchor, linkStroke, strokeTo as ShapeStroke, number, actualPos);
 
             InvalidateArrange();
         }

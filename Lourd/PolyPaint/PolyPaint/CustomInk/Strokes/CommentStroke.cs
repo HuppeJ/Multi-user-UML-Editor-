@@ -16,7 +16,7 @@ namespace PolyPaint.CustomInk
 
         public CommentStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.COMMENT;
+            strokeType = (int)StrokeTypes.COMMENT;
             shapeStyle.height = 50;
 
             Point lastPoint = pts[pts.Count - 1].ToPoint();
@@ -36,7 +36,7 @@ namespace PolyPaint.CustomInk
 
         public override BasicShape GetBasicShape()
         {
-            return new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
+            return new BasicShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom);
         }
     }
 }

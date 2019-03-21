@@ -14,7 +14,7 @@ namespace PolyPaint.CustomInk
     {
         public ArtifactStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.ARTIFACT;
+            strokeType = (int)StrokeTypes.ARTIFACT;
 
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
@@ -28,7 +28,7 @@ namespace PolyPaint.CustomInk
 
         public ArtifactStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
         {
-
+            strokeType = (int)StrokeTypes.ARTIFACT;
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
