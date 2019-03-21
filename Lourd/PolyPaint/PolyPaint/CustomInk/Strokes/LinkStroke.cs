@@ -172,7 +172,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         public LinkStroke(Point pointFrom, string formId, int anchor, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
         {
-            guid = new Guid();
+            guid = Guid.NewGuid();
             name = "";
             from = new AnchorPoint(formId, anchor, "");
             to = new AnchorPoint();

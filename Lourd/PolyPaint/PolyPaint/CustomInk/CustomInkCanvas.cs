@@ -24,17 +24,18 @@ namespace PolyPaint.CustomInk
 
         public StylusPoint firstPoint;
         public bool isUpdatingLink = false;
-        public Dictionary<string, CustomStroke> StrokesIdToStrokeMap = new Dictionary<string, CustomStroke>();
+        public Dictionary<string, CustomStroke> StrokesDictionary = new Dictionary<string, CustomStroke>();
 
+        #region 
         public void AddStroke(CustomStroke stroke)
         {
             Strokes.Add(stroke);
-            StrokesIdToStrokeMap[stroke.guid.ToString()]= stroke;
+            StrokesDictionary[stroke.guid.ToString()]= stroke;
         }
 
         public void RemoveStroke(CustomStroke stroke)
         {
-            StrokesIdToStrokeMap.Remove(stroke.guid.ToString());
+            StrokesDictionary.Remove(stroke.guid.ToString());
             Strokes.Remove(stroke);
         }
 
@@ -42,10 +43,11 @@ namespace PolyPaint.CustomInk
         {
             foreach(CustomStroke stroke in newStrokes)
             {
-                StrokesIdToStrokeMap[stroke.guid.ToString()] = stroke;
+                StrokesDictionary[stroke.guid.ToString()] = stroke;
             }
             Strokes.Replace(selectedStroke, newStrokes);
         }
+        #endregion
 
         #region Links
         public void updateLink(int linkStrokeAnchor, LinkStroke linkBeingUpdated, ShapeStroke strokeToAttach, int strokeToAttachAnchor, Point pointPosition)
@@ -57,13 +59,20 @@ namespace PolyPaint.CustomInk
 
                 if (linkStrokeAnchor == 0)
                 {
+                    RemoveShapeStrokeLinkFrom(linkBeingUpdated);
+
                     // mettre a jour la position du point initial (from)
                     linkBeingUpdated.from = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
+                    strokeToAttach?.linksFrom.Add(linkBeingUpdated.guid.ToString());
+
                 }
                 else if(linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
                 {
+                    RemoveShapeStrokeLinkTo(linkBeingUpdated);
+
                     // mettre a jour la position du point final (to)
                     linkBeingUpdated.to = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
+                    strokeToAttach?.linksTo.Add(linkBeingUpdated.guid.ToString());
                 }
 
                 linkBeingUpdated.addStylusPointsToLink();
@@ -71,7 +80,31 @@ namespace PolyPaint.CustomInk
             }
 
         }
-        
+
+        private void RemoveShapeStrokeLinkTo(LinkStroke linkBeingUpdated)
+        {
+            if (linkBeingUpdated.to?.formId != null)
+            {
+                CustomStroke shapeStrokeTo;
+                if (StrokesDictionary.TryGetValue(linkBeingUpdated.to?.formId, out shapeStrokeTo))
+                {
+                    (shapeStrokeTo as ShapeStroke).linksTo.Remove(linkBeingUpdated.guid.ToString());
+                }
+            }
+        }
+
+        private void RemoveShapeStrokeLinkFrom(LinkStroke linkBeingUpdated)
+        {
+            if (linkBeingUpdated.from?.formId != null)
+            {
+                CustomStroke shapeStrokeFrom;
+                if (StrokesDictionary.TryGetValue(linkBeingUpdated.from?.formId, out shapeStrokeFrom))
+                {
+                    (shapeStrokeFrom as ShapeStroke).linksFrom.Remove(linkBeingUpdated.guid.ToString());
+                }
+            }
+        }
+
         public void RefreshLinks()
         {
             foreach (CustomStroke customStroke in Strokes)
@@ -236,6 +269,12 @@ namespace PolyPaint.CustomInk
             RefreshChildren();
         }
 
+        protected override void OnSelectionResized(EventArgs e)
+        {
+            RefreshLinks();
+            RefreshChildren();
+        }
+
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
         {
             base.OnSelectionResizing(e);
@@ -255,32 +294,63 @@ namespace PolyPaint.CustomInk
             }
         }
 
-        protected override void OnSelectionResized(EventArgs e)
+        protected override void OnStrokeErasing(InkCanvasStrokeErasingEventArgs e)
         {
-            RefreshLinks();
-            RefreshChildren();
+            StrokeCollection strokesToDelete = new StrokeCollection();
+            strokesToDelete.Add(e.Stroke);
+
+            UpdateAnchorPointsAndLinks(strokesToDelete);
+
+            DrawingService.RemoveShapes(strokesToDelete);
+            base.OnStrokeErasing(e);
+        }
+
+        // Remove deleted shapeStrokes' guids from anchor points (to and from) in LinkStrokes
+        // And remove deleted linkStokes from linksTo and linksFrom in ShapeStrokes
+        private void UpdateAnchorPointsAndLinks(StrokeCollection strokesToDelete)
+        {
+            foreach (CustomStroke strokeToDelete in strokesToDelete)
+            {
+                // Remove deleted linkStokes from linksTo and linksFrom in ShapeStrokes
+                if (strokeToDelete.isLinkStroke())
+                {
+                    LinkStroke linkStroke = strokeToDelete as LinkStroke;
+                    RemoveShapeStrokeLinkFrom(linkStroke);
+                    RemoveShapeStrokeLinkTo(linkStroke);
+                }
+                else
+                {
+                    // Remove deleted shapeStrokes' guids from anchor points (to and from) in LinkStrokes
+                    ShapeStroke shapeStroke = strokeToDelete as ShapeStroke;
+
+                    foreach (string linkStrokeGuid in shapeStroke.linksFrom)
+                    {
+                        CustomStroke linkStroke;
+                        if (StrokesDictionary.TryGetValue(linkStrokeGuid, out linkStroke))
+                        {
+                            (linkStroke as LinkStroke).from = new AnchorPoint();
+                            (linkStroke as LinkStroke).from.SetDefaults();
+                        }
+                    }
+                    foreach (string linkStrokeGuid in shapeStroke.linksTo)
+                    {
+                        CustomStroke linkStroke;
+                        if (StrokesDictionary.TryGetValue(linkStrokeGuid, out linkStroke))
+                        {
+                            (linkStroke as LinkStroke).to = new AnchorPoint();
+                            (linkStroke as LinkStroke).to.SetDefaults();
+                        }
+                    }
+                }
+            }
         }
 
         protected override void OnStrokeErased(RoutedEventArgs e)
         {
             base.OnStrokeErased(e);
         }
-
-        protected override void OnStrokeErasing(InkCanvasStrokeErasingEventArgs e)
-        {
-            StrokeCollection strokesToDelete = new StrokeCollection();
-            strokesToDelete.Add(e.Stroke);
-            DrawingService.RemoveShapes(strokesToDelete);
-            base.OnStrokeErasing(e);
-        }
         #endregion
 
-        internal void DeleteStrokes(StrokeCollection selectedStrokes)
-        {
-            SelectedStrokes.Clear();
-            RefreshChildren();
-            DrawingService.RemoveShapes(selectedStrokes);
-        }
 
         private void OnRemoteStroke(InkCanvasStrokeCollectedEventArgs e)
         {
@@ -303,6 +373,34 @@ namespace PolyPaint.CustomInk
                 }
             }
         }
+
+        #region OnStrokeCollected
+        protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
+        {
+            // Remove the original stroke and add a custom stroke.
+            Strokes.Remove(e.Stroke);
+
+            StrokeTypes strokeType = (StrokeTypes)Enum.Parse(typeof(StrokeTypes), StrokeType);
+
+            CustomStroke customStroke = CreateStroke(e.Stroke.StylusPoints, e, strokeType);
+
+            AddStroke(customStroke);
+            if (!customStroke.isLinkStroke())
+            {
+                DrawingService.CreateShape(customStroke as ShapeStroke);
+            }
+            // firstPoint = customStroke.StylusPoints[0];
+            SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
+
+            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>(), new List<string>());
+
+            // Pass the custom stroke to base class' OnStrokeCollected method.
+            InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
+            base.OnStrokeCollected(args);
+
+            AddTextBox(customStroke);
+        }
+
 
         private CustomStroke CreateStroke(StylusPointCollection pts, InkCanvasStrokeCollectedEventArgs e, StrokeTypes strokeType)
         {
@@ -338,36 +436,9 @@ namespace PolyPaint.CustomInk
             return customStroke;
         }
 
-        #region OnStrokeCollected
-        protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
-        {
-            // Remove the original stroke and add a custom stroke.
-            Strokes.Remove(e.Stroke);
-
-            StrokeTypes strokeType = (StrokeTypes) Enum.Parse(typeof(StrokeTypes), StrokeType);
-
-            CustomStroke customStroke = CreateStroke(e.Stroke.StylusPoints, e, strokeType);
-            
-            AddStroke(customStroke);
-            if (!customStroke.isLinkStroke())
-            {
-                DrawingService.CreateShape(customStroke as ShapeStroke);
-            }
-            // firstPoint = customStroke.StylusPoints[0];
-            SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
-
-            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>(), new List<string>());
-
-            // Pass the custom stroke to base class' OnStrokeCollected method.
-            InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
-            base.OnStrokeCollected(args);
-            
-            AddTextBox(customStroke);
-        }
-
         private void AddTextBox(CustomStroke stroke)
         {
-            if(stroke.strokeType == (int)StrokeTypes.LINK)
+            if (stroke.strokeType == (int)StrokeTypes.LINK)
             {
                 double x = stroke.StylusPoints[0].X;
                 double y = stroke.StylusPoints[0].Y;
@@ -376,7 +447,7 @@ namespace PolyPaint.CustomInk
 
                 CreateMultiplicityTextBox(stroke.StylusPoints, stroke as LinkStroke);
             }
-            else if(stroke.strokeType != (int)StrokeTypes.CLASS_SHAPE)
+            else if (stroke.strokeType != (int)StrokeTypes.CLASS_SHAPE)
             {
                 Point point = stroke.GetBounds().BottomLeft;
                 double x = point.X;
@@ -400,8 +471,8 @@ namespace PolyPaint.CustomInk
             double fromX = stylusPoints[0].X;
             double fromY = stylusPoints[0].Y - 20;
 
-            double toX = stylusPoints[stylusPoints.Count-1].X;
-            double toY = stylusPoints[stylusPoints.Count-1].Y - 20;
+            double toX = stylusPoints[stylusPoints.Count - 1].X;
+            double toY = stylusPoints[stylusPoints.Count - 1].Y - 20;
 
             CustomTextBox from = new CustomTextBox();
             from.Text = "" + stroke.from.multiplicity;
@@ -429,6 +500,14 @@ namespace PolyPaint.CustomInk
             SetLeft(tb, x);
         }
         #endregion
+
+        internal void DeleteStrokes(StrokeCollection selectedStrokes)
+        {
+            UpdateAnchorPointsAndLinks(selectedStrokes);
+            SelectedStrokes.Clear();
+            RefreshChildren();
+            DrawingService.RemoveShapes(selectedStrokes);
+        }
 
         #region RotateStrokesWithAngle
         public void RotateStrokesWithAngle(double rotation)
@@ -471,6 +550,19 @@ namespace PolyPaint.CustomInk
             {
                 Stroke newStroke = stroke.Clone();
 
+                if((newStroke as CustomStroke).isLinkStroke())
+                {
+                    LinkStroke linkStroke = newStroke as LinkStroke;
+                    linkStroke.from = new AnchorPoint();
+                    linkStroke.from.SetDefaults();
+                    linkStroke.to = new AnchorPoint();
+                    linkStroke.to.SetDefaults();
+                } else
+                {
+                    (newStroke as ShapeStroke).linksTo.Clear();
+                    (newStroke as ShapeStroke).linksFrom.Clear();
+                }
+
                 // TODO : 2 options. 1- Avoir un compteur de Paste qui incremente a chaque Paste, le reinitialiser quand 
                 // nouveau OnSelectionChanged. 2- Coller au coin du canvas
                 // Voir quoi faire avec le client leger
@@ -489,9 +581,16 @@ namespace PolyPaint.CustomInk
         #region CutStrokes
         public void CutStrokes()
         {
-            StrokeCollection selection = GetSelectedStrokes();
+            StrokeCollection selectedStrokes = GetSelectedStrokes();
+            UpdateAnchorPointsAndLinks(selectedStrokes);
+
+            foreach(CustomStroke stroke in selectedStrokes)
+            {
+                RemoveStroke(stroke);
+            }
+
             // put selection in clipboard to be able to paste it
-            clipboard = selection;
+            clipboard = selectedStrokes;
 
             // cut selection from canvas
             CutSelection();

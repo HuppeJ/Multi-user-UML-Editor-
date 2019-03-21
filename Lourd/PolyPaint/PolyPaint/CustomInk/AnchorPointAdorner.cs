@@ -185,11 +185,14 @@ namespace PolyPaint.CustomInk
             pos.Y += 5;
 
             LinkStroke linkBeingCreated = new LinkStroke(pos, shapeStroke?.guid.ToString(), linkAnchorNumber, new StylusPointCollection { new StylusPoint(0, 0) });
+            shapeStroke?.linksFrom.Add(linkBeingCreated.guid.ToString());
+
             linkBeingCreated.addToPointToLink(actualPos, strokeTo?.guid.ToString(), number);
-            
+            strokeTo?.linksFrom.Add(linkBeingCreated.guid.ToString());
+
             visualChildren.Remove(linkPreview);
 
-            canvas.Strokes.Add(linkBeingCreated);
+            canvas.AddStroke(linkBeingCreated);
             canvas.Select(new StrokeCollection { linkBeingCreated });
 
             InvalidateArrange();
