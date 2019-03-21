@@ -15,7 +15,7 @@ namespace PolyPaint.Services
 {
     class DrawingService: ConnectionService
     {
-        public static event Action<string> JoinCanvasRoom;
+        public static event Action<JoinCanvasRoomResponse> JoinCanvasRoom;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
@@ -32,21 +32,13 @@ namespace PolyPaint.Services
 
         public static void Initialize(object o)
         {
-
-            socket.On("joinCanvasTestResponse", (data) =>
-            {
-                //string joinCanvas = serializer.Deserialize<string>((string)data);
-
-                //JoinCanvasRoom?.Invoke(joinCanvas);
-            });
-
             socket.On("createCanvasResponse", (data) =>
             {
                 CreateCanvasResponse response = serializer.Deserialize<CreateCanvasResponse>((string)data);
                 if (response.isCreated)
                 {
                     canvasName = response.canvasName;
-                    DrawingService.RefreshCanvases();
+                    RefreshCanvases();
                 }
             });
 
@@ -57,6 +49,8 @@ namespace PolyPaint.Services
                 {
                     canvasName = response.canvasName;
                 }
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { JoinCanvasRoom(response); }), DispatcherPriority.Render);
             });
 
             socket.On("getPublicCanvasResponse", (data) =>
@@ -124,6 +118,12 @@ namespace PolyPaint.Services
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, roomName);
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
+        }
+
+        public static void LeaveCanvas()
+        {
+            EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
+            socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
         }
 
         public static void RefreshCanvases()

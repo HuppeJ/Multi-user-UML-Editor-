@@ -333,6 +333,7 @@ namespace PolyPaint.VueModeles
 
         private void BackToGallery(object o)
         {
+            DrawingService.LeaveCanvas();
             UserMode = UserModes.Gallery;
         }
         #endregion
@@ -391,7 +392,9 @@ namespace PolyPaint.VueModeles
         private void CreateCanvas(object o)
         {
             var passwordBox = o as PasswordBox;
+            if (CanvasProtection == "Unprotected") passwordBox.Password = "";
             var password = passwordBox.Password;
+
             int accessibility = CanvasPrivacy == "Public" ? 1 : 0;
             int[] dimensions = { 1, 1 };
 
@@ -399,6 +402,11 @@ namespace PolyPaint.VueModeles
                                                             accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions);
 
             DrawingService.CreateCanvas(canvas);
+
+            passwordBox.Password = "";
+            CanvasPrivacy = "Public";
+            CanvasProtection = "Unprotected";
+            CanvasName = "";
         }
 
         private bool CanCreateCanvas(object o)
@@ -427,7 +435,40 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
-        #region ResetSErver Command
+        #region JoinUnprotectedCanvas Command
+        private ICommand _joinUnprotectedCanvasCommand;
+        public ICommand JoinUnprotectedCanvasCommand
+        {
+            get
+            {
+                return _joinUnprotectedCanvasCommand ?? (_joinUnprotectedCanvasCommand = new RelayCommand<Object>(JoinUnprotectedCanvas));
+            }
+        }
+
+        private void JoinUnprotectedCanvas(object o)
+        {
+            var canvas = o as Templates.Canvas;
+            DrawingService.JoinCanvas(canvas.name);
+        }
+        #endregion
+
+        #region JoinProtectedCanvas Command
+        private ICommand _joinProtectedCanvasCommand;
+        public ICommand JoinProtectedCanvasCommand
+        {
+            get
+            {
+                return _joinProtectedCanvasCommand ?? (_joinProtectedCanvasCommand = new RelayCommand<Object>(JoinProtectedCanvas));
+            }
+        }
+
+        private void JoinProtectedCanvas(object o)
+        {
+            DrawingService.RefreshCanvases();
+        }
+        #endregion
+
+        #region ResetServer Command
         private ICommand _resetServerCommand;
         public ICommand ResetServerCommand
         {
@@ -516,6 +557,14 @@ namespace PolyPaint.VueModeles
         {
             PrivateCanvases = canvas.privateCanvas;
         }
+
+        private void JoinCanvasRoom(JoinCanvasRoomResponse response)
+        {
+            if (response.isCanvasRoomJoined)
+            {
+                UserMode = UserModes.Drawing;
+            }
+        }
         #endregion
 
         public MainWindowViewModel(IDialogService diagSvc)
@@ -531,6 +580,7 @@ namespace PolyPaint.VueModeles
 
             DrawingService.UpdatePublicCanvases += UpdatePublicCanvases;
             DrawingService.UpdatePrivateCanvases += UpdatePrivateCanvases;
+            DrawingService.JoinCanvasRoom += JoinCanvasRoom;
 
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;
