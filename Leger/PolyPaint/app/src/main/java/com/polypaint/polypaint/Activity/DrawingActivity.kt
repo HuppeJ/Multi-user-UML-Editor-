@@ -365,6 +365,8 @@ class DrawingActivity : AppCompatActivity(){
             if(basicShape != null) {
                 view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
                 view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
+                view.leftX = view.x
+                view.topY = view.y
                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                 view.rotation = basicShape.shapeStyle.rotation.toFloat()
             }
