@@ -22,6 +22,7 @@ namespace PolyPaint.CustomInk
 
         private StrokeCollection clipboard;
         private Templates.Canvas canvas;
+        StrokeCollection oldSelectedStrokes = new StrokeCollection();
 
         public StylusPoint firstPoint;
         public bool isUpdatingLink = false;
@@ -198,23 +199,27 @@ namespace PolyPaint.CustomInk
 
         #region On.. event handlers
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
-            StrokeCollection oldSelectedStrokes = GetSelectedStrokes().Clone();
+        }
+
+        protected override void OnSelectionChanged(EventArgs e)
+        {
+            base.OnSelectionChanged(e);
             StrokeCollection strokesToSelect = new StrokeCollection();
 
             bool isAlreadySelected;
-            foreach (CustomStroke newStroke in e.GetSelectedStrokes())
+            foreach (CustomStroke newStroke in GetSelectedStrokes())
             {
                 isAlreadySelected = false;
                 foreach (CustomStroke oldStroke in oldSelectedStrokes)
                 {
-                    if(newStroke.guid.Equals(oldStroke.guid))
+                    if (newStroke.guid.Equals(oldStroke.guid))
                     {
                         isAlreadySelected = true;
                         oldSelectedStrokes.Remove(oldStroke);
                         break;
-                    } 
+                    }
                 }
-                if(!isAlreadySelected)
+                if (!isAlreadySelected)
                 {
                     if (!SelectedStrokes.Contains(newStroke))
                     {
@@ -223,16 +228,12 @@ namespace PolyPaint.CustomInk
                     strokesToSelect.Add(newStroke);
                 }
             }
-            if(strokesToSelect.Count > 0)
+            if (strokesToSelect.Count > 0)
                 DrawingService.SelectShapes(strokesToSelect);
-            if(oldSelectedStrokes.Count > 0)
+            if (oldSelectedStrokes.Count > 0)
                 DrawingService.DeselectShapes(oldSelectedStrokes);
-        }
-
-        protected override void OnSelectionChanged(EventArgs e)
-        {
-            base.OnSelectionChanged(e);
             RefreshChildren();
+            oldSelectedStrokes = GetSelectedStrokes().Clone();
         }
 
         protected override void OnSelectionMoving(InkCanvasSelectionEditingEventArgs e)
