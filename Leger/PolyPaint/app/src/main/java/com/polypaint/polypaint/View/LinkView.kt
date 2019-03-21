@@ -448,12 +448,13 @@ class LinkView: View{
     }
 
     fun setPaintColorWithLinkStyle(){
-        when(link?.style?.color){
-            "BLACK"->paint.color = Color.BLACK
-            "GREEN"->paint.color = Color.GREEN
-            "YELLOW"->paint.color = Color.YELLOW
-            else -> paint.color = Color.BLACK
-        }
+        paint.color = Color.parseColor(link?.style?.color)
+//        when(link?.style?.color){
+//            "BLACK"->paint.color = Color.BLACK
+//            "GREEN"->paint.color = Color.GREEN
+//            "YELLOW"->paint.color = Color.YELLOW
+//            else -> paint.color = Color.BLACK
+//        }
     }
 
     private var onTouchListenerBody = View.OnTouchListener { v, event ->

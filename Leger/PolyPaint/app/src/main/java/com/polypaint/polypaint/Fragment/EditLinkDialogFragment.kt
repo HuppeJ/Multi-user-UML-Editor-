@@ -1,6 +1,7 @@
 package com.polypaint.polypaint.Fragment
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,6 +12,9 @@ import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.Link
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.View.LinkView
+import com.skydoves.colorpickerview.ColorEnvelope
+import com.skydoves.colorpickerview.ColorPickerDialog
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
 class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListener {
     var link: Link? = null
@@ -65,6 +69,24 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
             val colorSpinner: Spinner = view.findViewById(R.id.link_color_spinner)
             val thicknessSpinner: Spinner = view.findViewById(R.id.link_thickness_spinner)
             val styleSpinner: Spinner = view.findViewById(R.id.link_style_spinner)
+
+
+
+            val colorPickerButton:Button = view.findViewById(R.id.link_color_picker)
+            colorPickerButton.setOnClickListener {
+                ColorPickerDialog.Builder(context)
+                    .setPositiveButton("Select", ColorEnvelopeListener{ envelope: ColorEnvelope, fromUser: Boolean ->
+                        color = "#"+envelope.hexCode
+                        colorPickerButton.text = color
+                    })
+                    .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog: DialogInterface?, which: Int ->
+                        dialog?.dismiss()
+                    })
+                    .attachAlphaSlideBar(false)
+                    .show()
+            }
+
+
 
             nameView = view.findViewById(R.id.link_name_text)
             multiplicityFrom = view.findViewById(R.id.link_multiplicity_from_text)
