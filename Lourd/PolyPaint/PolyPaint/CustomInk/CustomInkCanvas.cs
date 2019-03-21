@@ -193,6 +193,7 @@ namespace PolyPaint.CustomInk
             DrawingService.RemoveStrokes += OnRemoveStrokes;
             DrawingService.UpdateStroke += OnUpdateStroke;
             DrawingService.UpdateSelection += OnRemoteSelection;
+            DrawingService.UpdateDeselection += OnRemoteDeselection;
         }
 
         #region On.. event handlers
@@ -222,8 +223,10 @@ namespace PolyPaint.CustomInk
                     strokesToSelect.Add(newStroke);
                 }
             }
-            DrawingService.SelectShapes(strokesToSelect);
-            DrawingService.DeselectShapes(oldSelectedStrokes);
+            if(strokesToSelect.Count > 0)
+                DrawingService.SelectShapes(strokesToSelect);
+            if(oldSelectedStrokes.Count > 0)
+                DrawingService.DeselectShapes(oldSelectedStrokes);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
@@ -305,6 +308,15 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke stroke in strokes)
             {
                 remoteSelectionIds.Add(stroke.guid.ToString());
+            }
+            RefreshChildren();
+        }
+
+        private void OnRemoteDeselection(StrokeCollection strokes)
+        {
+            foreach (CustomStroke stroke in strokes)
+            {
+                remoteSelectionIds.RemoveAt(remoteSelectionIds.IndexOf(stroke.guid.ToString()));
             }
             RefreshChildren();
         }
@@ -583,7 +595,7 @@ namespace PolyPaint.CustomInk
                 AddTextBox(stroke);
             }
             
-            Select(selectedStrokes);
+            // Select(selectedStrokes);
         }
 
         private void addAdorners(CustomStroke selectedStroke)

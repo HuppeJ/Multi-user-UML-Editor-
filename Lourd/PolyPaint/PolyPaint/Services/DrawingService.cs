@@ -21,6 +21,8 @@ namespace PolyPaint.Services
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
         public static event Action<StrokeCollection> UpdateSelection;
+        public static event Action<StrokeCollection> UpdateDeselection;
+
         public static event Action<PublicCanvases> UpdatePublicCanvases;
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
 
@@ -125,6 +127,20 @@ namespace PolyPaint.Services
                     {
                         strokes.Add(createShapeStroke(shape));
                         Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(strokes); }), DispatcherPriority.Render);
+                    }
+                }
+            });
+
+            socket.On("formsDeselected", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    StrokeCollection strokes = new StrokeCollection();
+                    foreach (dynamic shape in response.forms)
+                    {
+                        strokes.Add(createShapeStroke(shape));
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(strokes); }), DispatcherPriority.Render);
                     }
                 }
             });
