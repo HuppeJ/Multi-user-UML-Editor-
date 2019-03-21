@@ -19,6 +19,7 @@ namespace PolyPaint.Services
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
+        public static event Action<StrokeCollection> UpdateSelection;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -91,6 +92,20 @@ namespace PolyPaint.Services
                     {
                         InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(createShapeStroke(shape));
                         Application.Current.Dispatcher.Invoke(new Action(() => { UpdateStroke(eventArgs); }), DispatcherPriority.Render);
+                    }
+                }
+            });
+
+            socket.On("formsSelected", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    StrokeCollection strokes = new StrokeCollection();
+                    foreach (dynamic shape in response.forms)
+                    {
+                        strokes.Add(createShapeStroke(shape));
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(strokes); }), DispatcherPriority.Render);
                     }
                 }
             });

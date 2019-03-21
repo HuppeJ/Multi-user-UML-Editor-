@@ -25,6 +25,7 @@ namespace PolyPaint.CustomInk
 
         public StylusPoint firstPoint;
         public bool isUpdatingLink = false;
+        public List<string> remoteSelectionIds = new List<string>();
 
         #region Links
         public void updateLink(int linkStrokeAnchor, LinkStroke linkBeingUpdated, string strokeToAttachGuid, int strokeToAttachAnchor, Point pointPosition)
@@ -189,15 +190,35 @@ namespace PolyPaint.CustomInk
             DrawingService.AddStroke += OnRemoteStroke;
             DrawingService.RemoveStrokes += OnRemoveStrokes;
             DrawingService.UpdateStroke += OnUpdateStroke;
+            DrawingService.UpdateSelection += OnRemoteSelection;
         }
 
         #region On.. event handlers
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
-            SelectedStrokes.Clear();
-            foreach (Stroke stroke in e.GetSelectedStrokes())
+            StrokeCollection oldSelectedStrokes = SelectedStrokes.Clone();
+            StrokeCollection strokesToSelect = new StrokeCollection();
+
+            bool isAlreadySelected;
+            foreach (CustomStroke newStroke in e.GetSelectedStrokes())
             {
-                SelectedStrokes.Add(stroke);
+                isAlreadySelected = false;
+                foreach (CustomStroke oldStroke in oldSelectedStrokes)
+                {
+                    if(newStroke.guid.Equals(oldStroke.guid))
+                    {
+                        isAlreadySelected = true;
+                        oldSelectedStrokes.Remove(oldStroke);
+                        break;
+                    } 
+                }
+                if(!isAlreadySelected)
+                {
+                    strokesToSelect.Add(newStroke);
+                    SelectedStrokes.Add(newStroke);
+                }
             }
+            DrawingService.SelectShapes(strokesToSelect);
+            DrawingService.DeselectShapes(oldSelectedStrokes);
         }
 
         protected override void OnSelectionChanged(EventArgs e)
@@ -272,6 +293,15 @@ namespace PolyPaint.CustomInk
             CustomStroke stroke = (CustomStroke)e.Stroke;
             Strokes.Add(stroke);
             AddTextBox(stroke);
+        }
+
+        private void OnRemoteSelection(StrokeCollection strokes)
+        {
+            foreach (CustomStroke stroke in strokes)
+            {
+                remoteSelectionIds.Add(stroke.guid.ToString());
+            }
+            RefreshChildren();
         }
 
         private void OnRemoveStrokes(StrokeCollection strokes)
@@ -530,6 +560,18 @@ namespace PolyPaint.CustomInk
                 addAdorners(selectedStroke);
             }
 
+            foreach (string strokeId in remoteSelectionIds)
+            {
+                foreach (CustomStroke stroke in Strokes)
+                {
+                    if(stroke.guid.ToString().Equals(strokeId))
+                    {
+                        AddRemoteSelectionAdorner(stroke);
+                        break;
+                    }
+                }
+            }
+
             // Add text boxes (names) to all strokes
             foreach (CustomStroke stroke in Strokes)
             {
@@ -561,6 +603,16 @@ namespace PolyPaint.CustomInk
                 myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
             }
       
+        }
+
+        private void AddRemoteSelectionAdorner(CustomStroke stroke)
+        {
+            Path path = new Path();
+            path.Data = stroke.GetGeometry();
+
+            Children.Add(path);
+            AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+            myAdornerLayer.Add(new EditionAdorner(path, stroke, this));
         }
 
         public void addAnchorPoints()
