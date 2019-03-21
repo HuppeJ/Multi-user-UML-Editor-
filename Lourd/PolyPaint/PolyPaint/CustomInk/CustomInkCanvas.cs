@@ -2,7 +2,6 @@
 using PolyPaint.Enums;
 using PolyPaint.Services;
 using PolyPaint.Templates;
-using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -12,7 +11,6 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace PolyPaint.CustomInk
 {
@@ -388,7 +386,7 @@ namespace PolyPaint.CustomInk
         }
         #endregion
 
-
+        #region OnRemote...
         private void OnRemoteStroke(InkCanvasStrokeCollectedEventArgs e)
         {
             CustomStroke stroke = (CustomStroke)e.Stroke;
@@ -429,6 +427,7 @@ namespace PolyPaint.CustomInk
             }
             RefreshChildren();
         }
+        #endregion
 
         private void OnUpdateStroke(InkCanvasStrokeCollectedEventArgs e)
         {
@@ -583,14 +582,6 @@ namespace PolyPaint.CustomInk
         }
         #endregion
 
-        internal void DeleteStrokes(StrokeCollection selectedStrokes)
-        {
-            UpdateAnchorPointsAndLinks(selectedStrokes);
-            SelectedStrokes.Clear();
-            RefreshChildren();
-            DrawingService.RemoveShapes(selectedStrokes);
-        }
-
         #region RotateStrokesWithAngle
         public void RotateStrokesWithAngle(double rotation)
         {
@@ -679,6 +670,15 @@ namespace PolyPaint.CustomInk
             RefreshChildren();
         }
         #endregion
+
+
+        internal void DeleteStrokes(StrokeCollection selectedStrokes)
+        {
+            UpdateAnchorPointsAndLinks(selectedStrokes);
+            SelectedStrokes.Clear();
+            RefreshChildren();
+            DrawingService.RemoveShapes(selectedStrokes);
+        }
 
         #region RefreshChildren
         public void RefreshChildren()
