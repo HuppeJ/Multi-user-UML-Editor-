@@ -169,6 +169,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="CustomInk\PhaseAdorner.cs" />
+    <Compile Include="CustomInk\CommentAdorner.cs" />
     <Compile Include="CustomInk\ClassAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
@@ -176,12 +178,15 @@
     <Compile Include="CustomInk\EditionButton.cs" />
     <Compile Include="CustomInk\LinkAnchorPointAdorner.cs" />
     <Compile Include="CustomInk\LinkElbowAdorner.cs" />
+    <Compile Include="CustomInk\RemoteSelectionAddorner.cs" />
     <Compile Include="CustomInk\RotateAdorner.cs" />
     <Compile Include="CustomInk\StrokeAnchorPointThumb.cs" />
     <Compile Include="CustomInk\Strokes\ActivityStroke.cs" />
     <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
     <Compile Include="CustomInk\AnchorPointAdorner.cs" />
     <Compile Include="CustomInk\Strokes\ArtifactStroke.cs" />
+    <Compile Include="CustomInk\Strokes\PhaseStroke.cs" />
+    <Compile Include="CustomInk\Strokes\CommentStroke.cs" />
     <Compile Include="CustomInk\Strokes\ClassStroke.cs" />
     <Compile Include="CustomInk\CustomDynamicRenderer.cs" />
     <Compile Include="CustomInk\CustomInkCanvas.cs" />
@@ -212,6 +217,8 @@
     <Compile Include="Templates\Link.cs" />
     <Compile Include="Templates\LinkStyle.cs" />
     <Compile Include="Templates\Chatroom.cs" />
+    <Compile Include="Templates\PrivateCanvases.cs" />
+    <Compile Include="Templates\PublicCanvases.cs" />
     <Compile Include="Templates\RoomList.cs" />
     <Compile Include="Templates\ShapeStyle.cs" />
     <Compile Include="Utilitaires\AsyncObservableCollection.cs" />
@@ -231,6 +238,12 @@
     </Compile>
     <Compile Include="Vues\ClassPopup.xaml.cs">
       <DependentUpon>ClassPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\JoinProtectedCanvasPopup.xaml.cs">
+      <DependentUpon>JoinProtectedCanvasPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\CreateCanvasPopup.xaml.cs">
+      <DependentUpon>CreateCanvasPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\DrawingChatView.xaml.cs">
       <DependentUpon>DrawingChatView.xaml</DependentUpon>
@@ -315,6 +328,14 @@
     <Page Include="Vues\ClassPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\JoinProtectedCanvasPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\CreateCanvasPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\DrawingChatView.xaml">
       <SubType>Designer</SubType>

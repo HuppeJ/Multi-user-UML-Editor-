@@ -102,16 +102,6 @@ class CreateDrawingActivity: AppCompatActivity(){
             createDrawing()
         }
 
-
-
-        socket?.on(SocketConstants.CREATE_CANVAS_RESPONSE, onCreateCanvasResponse)
-        socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
-
-        /*val ft = supportFragmentManager.beginTransaction()
-        //ft.add(R.id.list_container, RoomsListFragment())
-        ft.add(R.id.details_container, MessageListFragment(), MessageListFragment.TAG)
-        ft.commit()*/
-
     }
 
     private fun createDrawing(){
@@ -126,8 +116,15 @@ class CreateDrawingActivity: AppCompatActivity(){
         var password = passwordView?.text.toString().trim()
         isPasswordProtected = TextUtils.isEmpty(password)
 
-        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, AccessibilityTypes.PUBLIC.ordinal, password,  ArrayList(), ArrayList())
+        var accessibility: Int
 
+        if(isDrawingPrivate) {
+            accessibility = AccessibilityTypes.PRIVATE.ordinal
+        } else {
+            accessibility = AccessibilityTypes.PUBLIC.ordinal
+        }
+
+        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, accessibility, password,  ArrayList(), ArrayList())
 
 
         val gson = Gson()
@@ -136,48 +133,28 @@ class CreateDrawingActivity: AppCompatActivity(){
             val sendObj = gson.toJson(canvasEvent)
             Log.d("createObj", sendObj)
             socket?.emit(SocketConstants.CREATE_CANVAS, sendObj)
-
+            val intent = Intent(this, GalleryActivity::class.java)
+            startActivity(intent)
         }
-
-
-//
-//        var dialog: DialogFragment = EditClassDialogFragment()
-//        var bundle: Bundle = Bundle()
-//        bundle.putString("id", "asdfasg")
-//        dialog.arguments = bundle
-//
-//        Log.d("****", dialog.arguments.toString())
-//        dialog.show(supportFragmentManager, "alllooooo")
 
     }
 
-    private var onCreateCanvasResponse: Emitter.Listener = Emitter.Listener {
-        Log.d("onCreateCanvasResponse", "alllooo")
-
-        val gson = Gson()
-        val obj: CanvasCreationResponse = gson.fromJson(it[0].toString())
-        if(obj.isCreated) {
-            Log.d("canvasCreated", "created" + canevas?.name)
-            val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, canevas?.name!!, canevas?.password!!)
-            val sendObj = gson.toJson(galleryEditEvent)
-            Log.d("joinObj", sendObj)
-            socket?.emit(SocketConstants.JOIN_CANVAS_ROOM, sendObj)
 
 
-        }
-    }
-
+    /*
     private var onJoinCanvasResponse: Emitter.Listener = Emitter.Listener {
-        Log.d("onJoinCanvasResponse", "alllooo")
+        Log.d("onJoinCanvasResponse", "alllooo11111")
 
         val gson = Gson()
         val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
-        if(obj.isCanvasRoomJoined) {
-            Log.d("canvasJoined", "created" + canevas?.name)
+
+        if(obj.isCanvasRoomJoined && obj.canvasName == canevas?.name) {
+            Log.d("canvasJoined", "created " + canevas?.name)
             val intent = Intent(this, DrawingActivity::class.java)
             intent.putExtra("canevas", canevas)
+            //ViewShapeHolder.getInstance().canevas = canevas!!
             startActivity(intent)
         }
     }
-
+    */
 }

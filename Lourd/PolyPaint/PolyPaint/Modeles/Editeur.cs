@@ -89,16 +89,6 @@ namespace PolyPaint.Modeles
             return selectedStroke;
         }
 
-        internal void AddStrokeFromService(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
-        {
-            // Il faudrait pouvoir verifier que le trait n'existe pas, ou pouvoir le modifier... on a acces au guid?
-            if (!isInTraits(selectedStroke))
-            {
-                // Application.Current.Dispatcher.Invoke(new Action(() => { traits.Add(selectedStroke); }), DispatcherPriority.ContextIdle);
-                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(selectedStroke);
-            }
-        }
-
         private bool isInTraits(CustomStroke selectedStroke)
         {
             foreach(CustomStroke stroke in traits)
@@ -177,9 +167,8 @@ namespace PolyPaint.Modeles
 
         public void ChooseStrokeTypeCommand(string strokeType) {
             // Automatically select crayon
-            OutilSelectionne = "crayon";
+            ChoisirOutil("crayon");
             SelectedStrokeType = strokeType;
-            ProprieteModifiee();
         }
     }
 }

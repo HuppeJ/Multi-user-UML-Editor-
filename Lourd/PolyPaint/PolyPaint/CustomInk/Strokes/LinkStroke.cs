@@ -316,7 +316,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         // ON DOIT FAIRE LA ROTATION DUN LINKSTROKE??? gi
         #region rotation
-        public override CustomStroke CloneRotated(double rotation)
+        /*public override CustomStroke CloneRotated(double rotation)
         {
             LinkStroke newStroke = (LinkStroke)Clone();
 
@@ -325,7 +325,7 @@ namespace PolyPaint.CustomInk.Strokes
 
             newStroke.rotation = rotation;
             return newStroke;
-        }
+        }*/
 
         //protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
         //{
