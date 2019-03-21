@@ -38,6 +38,15 @@ import kotlinx.android.synthetic.main.item_drawing.*
 import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.ArrayList
+import android.graphics.Bitmap
+import com.google.common.io.Flushables.flush
+import java.nio.file.Files.delete
+import java.nio.file.Files.exists
+import android.os.Environment.getExternalStorageDirectory
+import android.graphics.Canvas
+import android.os.Environment
+import java.io.File
+import java.io.FileOutputStream
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -130,6 +139,10 @@ class DrawingActivity : AppCompatActivity(){
         }
         unstack_button.setOnClickListener{
             unstackView()
+        }
+
+        save_button.setOnClickListener {
+            saveCanevas()
         }
 
     }
@@ -552,6 +565,58 @@ class DrawingActivity : AppCompatActivity(){
         finish()
         super.onBackPressed()
     }
+
+    private fun saveCanevas() {
+        //val windowView = window.decorView.findViewById<View>(android.R.id.content)
+        //val screenView: View = windowView.rootView
+
+        //screenView.isDrawingCacheEnabled = true
+        //val screenBitmap = Bitmap.createBitmap(screenView.drawingCache)
+        //screenView.isDrawingCacheEnabled = false
+
+        Log.d("saveCanevas", "saveCanevasCall")
+
+        val bitmap: Bitmap = loadBitmapFromView(findViewById(R.id.parent_relative_layout), 350, 450);
+        saveImage(bitmap);
+    }
+
+    private fun loadBitmapFromView(v: View, width: Int, height: Int): Bitmap {
+        Log.d("loadBitmapFromView", "loadBitmapFromViewCall")
+
+        val b = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val c = Canvas(b)
+        v.layout(0, 0, v.layoutParams.width, v.layoutParams.height)
+        v.draw(c)
+        return b
+    }
+
+    private fun saveImage(bitmap: Bitmap) {
+        Log.d("saveImage", "saveImageCall")
+
+        val root = Environment.getExternalStorageDirectory().toString()
+        Log.d("root", root)
+
+        val myDir = File(root + "/req_images")
+        myDir.mkdirs()
+        val generator = Random()
+        var n = 10000
+        n = generator.nextInt(n)
+        val fname = "Image-$n.jpg"
+        val file = File(myDir, fname)
+        //  Log.i(TAG, "" + file);
+        if (file.exists())
+            file.delete()
+        try {
+            val out = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            out.flush()
+            out.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
     /*override fun onBackPressed() {
         socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
         socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
