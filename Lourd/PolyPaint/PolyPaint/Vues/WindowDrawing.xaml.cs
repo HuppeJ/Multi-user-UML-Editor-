@@ -63,6 +63,33 @@ namespace PolyPaint.Vues
             surfaceDessin.RefreshChildren();
         }
 
+        private void ResetCanevas(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            if ((DataContext as VueModele).Reinitialiser.CanExecute(sender))
+            {
+                btn.IsEnabled = true;
+                (DataContext as VueModele)?.Reinitialiser.Execute(sender);
+            }
+            else
+            {
+                btn.IsEnabled = false;
+            }
+            surfaceDessin.RefreshChildren();
+        }
+
+        private void Empiler(object sender, RoutedEventArgs e)
+        {
+            (DataContext as VueModele)?.Empiler.Execute(sender);
+            surfaceDessin.RefreshChildren();
+        }
+
+        private void Depiler(object sender, RoutedEventArgs e)
+        {
+            (DataContext as VueModele)?.Depiler.Execute(sender);
+            surfaceDessin.RefreshChildren();
+        }
+
         // Quand une nouvelle nouvelle stroke a ete ajoute
         private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
         {

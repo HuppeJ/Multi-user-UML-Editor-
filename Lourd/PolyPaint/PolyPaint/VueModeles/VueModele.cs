@@ -116,7 +116,7 @@ namespace PolyPaint.VueModeles
             // Pour les commandes suivantes, il est toujours possible des les activer.
             // Donc, aucune vérification de type Peut"Action" à faire.
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
-            Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);
+            Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser, editeur.PeutReinitialiser);
 
             ChooseStrokeTypeCommand = new RelayCommand<string>(editeur.ChooseStrokeTypeCommand);
 

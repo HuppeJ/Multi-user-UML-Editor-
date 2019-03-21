@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using PolyPaint.CustomInk;
 using PolyPaint.Enums;
+using PolyPaint.Services;
 
 namespace PolyPaint.Modeles
 {
@@ -26,6 +27,8 @@ namespace PolyPaint.Modeles
         public StrokeCollection selectedStrokes = new StrokeCollection();
         public StrokeCollection remoteSelectedStrokes = new StrokeCollection();
 
+        // TODO Remove fix
+        private bool isStackUpToDate = true;
 
         public event EventHandler<CustomStroke> AddStrokeFromModel;
 
@@ -122,17 +125,30 @@ namespace PolyPaint.Modeles
         }
 
         // S'il y a au moins 1 trait sur la surface, il est possible d'exécuter Empiler.
-        public bool PeutEmpiler(object o) => (traits.Count > 0);
+        public bool PeutEmpiler(object o)
+        {
+            if(!isStackUpToDate)
+            {
+                isStackUpToDate = true;
+                return false;
+            } else
+            {
+                return (traits.Count > 0);
+            }
+        }
         // On retire le trait le plus récent de la surface de dessin et on le place sur une pile.
         public void Empiler(object o)
         {
             try
             {
+                isStackUpToDate = false;
                 Stroke trait = traits.Last();
                 if (!remoteSelectedStrokes.Contains(trait))
                 {
                     traitsRetires.Add(trait);
                     traits.Remove(trait);
+                    StrokeCollection strokes = new StrokeCollection { trait };
+                    DrawingService.RemoveShapes(strokes);
                 }
             }
             catch { }
@@ -140,14 +156,27 @@ namespace PolyPaint.Modeles
         }
 
         // S'il y a au moins 1 trait sur la pile de traits retirés, il est possible d'exécuter Depiler.
-        public bool PeutDepiler(object o) => (traitsRetires.Count > 0);
+        public bool PeutDepiler(object o)
+        {
+            if (!isStackUpToDate)
+            {
+                isStackUpToDate = true;
+                return false;
+            }
+            else
+            {
+                return (traitsRetires.Count > 0);
+            }
+        }
         // On retire le trait du dessus de la pile de traits retirés et on le place sur la surface de dessin.
         public void Depiler(object o)
         {
             try
             {
+                isStackUpToDate = false;
                 Stroke trait = traitsRetires.Last();
                 traits.Add(trait);
+                DrawingService.CreateShape(trait as ShapeStroke);
                 traitsRetires.Remove(trait);
             }
             catch { }
@@ -162,8 +191,13 @@ namespace PolyPaint.Modeles
             }
         }
 
+        public bool PeutReinitialiser(object o) => (traits.Count != 0);
         // On vide la surface de dessin de tous ses traits.
-        public void Reinitialiser(object o) => traits.Clear();
+        public void Reinitialiser(object o)
+        {
+            DrawingService.RemoveShapes(traits);
+            traits.Clear();
+        }
 
         public void ChooseStrokeTypeCommand(string strokeType) {
             // Automatically select crayon
