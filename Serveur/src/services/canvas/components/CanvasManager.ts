@@ -49,7 +49,7 @@ export default class CanvasManager {
 
     public addUserToCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && !canvasRoom.hasUser(data.username)) {
+        if (canvasRoom && !canvasRoom.hasUser(data.username) && canvasRoom.isPasswordValid(data)) {
             canvasRoom.addUser(data.username);
             return true;
         }
