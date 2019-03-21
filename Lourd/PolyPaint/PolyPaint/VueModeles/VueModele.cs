@@ -149,7 +149,7 @@ namespace PolyPaint.VueModeles
             ShapeStyle shapeStyle = new ShapeStyle();
             shapeStyle.coordinates = coordinates;
 
-            DrawingService.UpdateShape(stroke.guid.ToString(), stroke.type, "strokeName", shapeStyle, new List<string>(), new List<string>());
+            DrawingService.UpdateShape(stroke.guid.ToString(), stroke.strokeType, "strokeName", shapeStyle, new List<string>(), new List<string>());
         }
 
 

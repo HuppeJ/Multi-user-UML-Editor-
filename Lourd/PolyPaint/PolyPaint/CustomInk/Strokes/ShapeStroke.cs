@@ -26,7 +26,7 @@ namespace PolyPaint.CustomInk
             Coordinates coordinates = new Coordinates(lastPoint.X, lastPoint.Y);
 
             shapeStyle = new ShapeStyle(coordinates,100,100,0,"black",0,"none");
-            if (type == 0) shapeStyle.width = 150;
+            if (strokeType == 0) shapeStyle.width = 150;
 
             while (StylusPoints.Count > 1)
             {
@@ -49,7 +49,7 @@ namespace PolyPaint.CustomInk
         {
             guid = Guid.Parse(basicShape.id);
             name = basicShape.name;
-            type = basicShape.type;
+            strokeType = basicShape.type;
             shapeStyle = basicShape.shapeStyle;
 
             Point point = new Point(shapeStyle.coordinates.x, shapeStyle.coordinates.y);
@@ -128,7 +128,7 @@ namespace PolyPaint.CustomInk
         
         public virtual BasicShape GetBasicShape()
         {
-            BasicShape basicShape = new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
+            BasicShape basicShape = new BasicShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom);
             return basicShape;
         }
     }

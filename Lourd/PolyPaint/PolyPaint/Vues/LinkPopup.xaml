@@ -29,7 +29,7 @@
 
             <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,0">
                 <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
-                    <TextBlock>Enter link name here:</TextBlock>
+                    <TextBlock>Enter link label here:</TextBlock>
                     <TextBox x:Name="TxtBox" Width="150" Margin="0,5"
                                  materialDesign:HintAssist.Hint="Enter name here"   
                                  Text="{Binding Label, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
@@ -39,7 +39,15 @@
                         <sys:String>Full</sys:String>
                         <sys:String>Dotted</sys:String>
                     </ListBox>
-                    <TextBlock Margin="0, 10, 0, 0">Choose link color:</TextBlock>
+                    <ListBox Name="MyTypes" SelectedValue="{Binding LinkType, Mode=TwoWay}">
+                        <sys:String>Line</sys:String>
+                        <sys:String>One way association</sys:String>
+                        <!--<ListBoxItem>Two way association</ListBoxItem>
+                        <ListBoxItem>Heritage</ListBoxItem>
+                        <ListBoxItem>Aggregation</ListBoxItem>
+                        <ListBoxItem>Composition</ListBoxItem>-->
+                    </ListBox>
+                    <!--<TextBlock Margin="0, 10, 0, 0">Choose link color:</TextBlock>
                     <xctk:ColorPicker x:Name="colorSelector"                             
                       VerticalContentAlignment="Stretch"
                       Background="#00000000"
@@ -53,7 +61,7 @@
                       StandardButtonHeader="Standard"
                       RecentColorsHeader="Recently used"
                       UsingAlphaChannel="True"
-                      AdvancedButtonHeader="Personalized" />
+                      AdvancedButtonHeader="Personalized" />-->
                     <TextBlock Margin="0, 10, 0, 0">Choose link thickness:</TextBlock>
                     <Slider Width="100" Height="26" Minimum="1" Maximum="10" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"
                         Value="{Binding LinkThickness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

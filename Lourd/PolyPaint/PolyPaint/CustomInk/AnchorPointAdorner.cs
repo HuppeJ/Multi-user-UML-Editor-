@@ -4,7 +4,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Collections.Generic;
 using PolyPaint.CustomInk.Strokes;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Shapes;
 using System;
@@ -27,7 +26,7 @@ namespace PolyPaint.CustomInk
 
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
-        public CustomStroke stroke;
+        public ShapeStroke shapeStroke;
 
         public CustomInkCanvas canvas;
 
@@ -44,13 +43,13 @@ namespace PolyPaint.CustomInk
             linkPreview.StrokeThickness = 2;
             visualChildren.Add(linkPreview);
 
-            stroke = customStroke;
+            shapeStroke = customStroke as ShapeStroke;
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             strokeBounds = customStroke.GetBounds();
-            center = stroke.GetCenter();
-            rotation = new RotateTransform(stroke.rotation, center.X, center.Y);
+            center = shapeStroke.GetCenter();
+            rotation = new RotateTransform(shapeStroke.rotation, center.X, center.Y);
 
             anchors = new List<Thumb>();
             anchors.Add(new Thumb());
@@ -74,10 +73,10 @@ namespace PolyPaint.CustomInk
             }
 
             cheatAnchors = new List<StrokeAnchorPointThumb>();
-            cheatAnchors.Add(new StrokeAnchorPointThumb(customStroke, canvas, 0));
-            cheatAnchors.Add(new StrokeAnchorPointThumb(customStroke, canvas, 1));
-            cheatAnchors.Add(new StrokeAnchorPointThumb(customStroke, canvas, 2));
-            cheatAnchors.Add(new StrokeAnchorPointThumb(customStroke, canvas, 3));
+            cheatAnchors.Add(new StrokeAnchorPointThumb(shapeStroke, canvas, 0));
+            cheatAnchors.Add(new StrokeAnchorPointThumb(shapeStroke, canvas, 1));
+            cheatAnchors.Add(new StrokeAnchorPointThumb(shapeStroke, canvas, 2));
+            cheatAnchors.Add(new StrokeAnchorPointThumb(shapeStroke, canvas, 3));
             foreach (Thumb cheatAnchor in cheatAnchors)
             {
                 cheatAnchor.Cursor = Cursors.SizeNWSE;
@@ -98,7 +97,7 @@ namespace PolyPaint.CustomInk
                 return finalSize;
             }
 
-            center = stroke.GetCenter();
+            center = shapeStroke.GetCenter();
 
             ArrangeAnchor(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
             ArrangeAnchor(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
@@ -153,7 +152,7 @@ namespace PolyPaint.CustomInk
                 InvalidateArrange();
                 return;
             }
-            CustomStroke strokeTo = null;
+            ShapeStroke strokeTo = null;
             int number = 0;
 
             foreach (UIElement thumb in canvas.Children)
@@ -168,7 +167,7 @@ namespace PolyPaint.CustomInk
                     double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
                     if(distBetweenPoints <= 10)
                     {
-                        strokeTo = cheatThumb.stroke;
+                        strokeTo = cheatThumb.stroke as ShapeStroke;
                         actualPos = thumbPosition;
                         number = cheatThumb.number;
                     }
@@ -185,9 +184,9 @@ namespace PolyPaint.CustomInk
             pos.X += 5;
             pos.Y += 5;
 
-            LinkStroke linkBeingCreated = new LinkStroke(pos, stroke?.guid.ToString(), linkAnchorNumber, new StylusPointCollection { new StylusPoint(0, 0) });
+            LinkStroke linkBeingCreated = new LinkStroke(pos, shapeStroke?.guid.ToString(), linkAnchorNumber, new StylusPointCollection { new StylusPoint(0, 0) });
             linkBeingCreated.addToPointToLink(actualPos, strokeTo?.guid.ToString(), number);
-
+            
             visualChildren.Remove(linkPreview);
 
             canvas.Strokes.Add(linkBeingCreated);

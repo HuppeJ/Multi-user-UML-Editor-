@@ -4,11 +4,11 @@ namespace PolyPaint.CustomInk
 {
     public class StrokeAnchorPointThumb: Thumb
     {
-        public CustomStroke stroke;
+        public ShapeStroke stroke;
         public CustomInkCanvas canvas;
         public int number;
 
-        public StrokeAnchorPointThumb(CustomStroke stroke, CustomInkCanvas canvas, int number) : base()
+        public StrokeAnchorPointThumb(ShapeStroke stroke, CustomInkCanvas canvas, int number) : base()
         {
             this.stroke = stroke;
             this.canvas = canvas;

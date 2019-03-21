@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System;
 using System.Windows.Shapes;
 using PolyPaint.Templates;
+using PolyPaint.Enums;
 
 namespace PolyPaint.CustomInk
 {
@@ -26,7 +27,7 @@ namespace PolyPaint.CustomInk
 
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
-        public LinkStroke stroke;
+        public LinkStroke linkStroke;
         public CustomInkCanvas canvas;
         private Point initialMousePosition;
         private int indexInPath;
@@ -37,12 +38,12 @@ namespace PolyPaint.CustomInk
             initialMousePosition = mousePosition;
             indexInPath = index;
 
-            stroke = linkStroke;
+            this.linkStroke = linkStroke;
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             strokeBounds = linkStroke.GetBounds();
-            center = stroke.GetCenter();
+            center = this.linkStroke.GetCenter();
 
             anchors = new List<Thumb>();
             // The linkstroke must already be selected
@@ -76,25 +77,63 @@ namespace PolyPaint.CustomInk
 
         private bool isOnLinkStrokeEnds(Point initialMousePosition)
         {
-            double x = stroke.path[0].x - initialMousePosition.X;
-            double y = stroke.path[0].y - initialMousePosition.Y;
+
+            double strokeBeginLength = 10;
+            if ((LinkTypes)linkStroke.linkType == LinkTypes.ONE_WAY_ASSOCIATION)
+            {
+                strokeBeginLength = 20;
+            }
+            double strokeEndLength = GetUnmovableEndLength();
+
+
+            double x = linkStroke.path[0].x - initialMousePosition.X;
+            double y = linkStroke.path[0].y - initialMousePosition.Y;
 
             double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
-            if (distBetweenPoints <= 10)
+            if (distBetweenPoints <= strokeBeginLength)
             {
                 return true;
             }
 
-            x = stroke.path[stroke.path.Count - 1].x - initialMousePosition.X;
-            y = stroke.path[stroke.path.Count - 1].y - initialMousePosition.Y;
+            x = linkStroke.path[linkStroke.path.Count - 1].x - initialMousePosition.X;
+            y = linkStroke.path[linkStroke.path.Count - 1].y - initialMousePosition.Y;
 
             distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
-            if (distBetweenPoints <= 10)
+            if (distBetweenPoints <= strokeEndLength)
             {
                 return true;
             }
 
             return false;
+        }
+
+        private double GetUnmovableEndLength()
+        {
+            double strokeEndLength;
+            switch ((LinkTypes)linkStroke.linkType)
+            {
+                case LinkTypes.LINE:
+                    strokeEndLength = 10;
+                    break;
+                case LinkTypes.ONE_WAY_ASSOCIATION:
+                    strokeEndLength = 20;
+                    break;
+                case LinkTypes.TWO_WAY_ASSOCIATION:
+                    strokeEndLength = 20;
+                    break;
+                case LinkTypes.HERITAGE:
+                    strokeEndLength = 20;
+                    break;
+                case LinkTypes.AGGREGATION:
+                case LinkTypes.COMPOSITION:
+                    strokeEndLength = 30;
+                    break;
+                default:
+                    strokeEndLength = 10;
+                    break;
+            }
+
+            return strokeEndLength;
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -104,7 +143,7 @@ namespace PolyPaint.CustomInk
                 return finalSize;
             }
 
-            center = stroke.GetCenter();
+            center = linkStroke.GetCenter();
 
             for (int i = 0; i < anchors.Count; i++)
             {
@@ -149,8 +188,8 @@ namespace PolyPaint.CustomInk
                 return;
             }
 
-            stroke.path.Insert(indexInPath, new Coordinates(actualPos));
-            stroke.addStylusPointsToLink();
+            linkStroke.path.Insert(indexInPath, new Coordinates(actualPos));
+            linkStroke.addStylusPointsToLink();
             canvas.RefreshChildren();
             InvalidateArrange();
             visualChildren.Clear();

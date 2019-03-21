@@ -14,7 +14,7 @@ namespace PolyPaint.CustomInk
     {
         public ActivityStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.ACTIVITY;
+            strokeType = (int)StrokeTypes.ACTIVITY;
         }
 
         public ActivityStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)

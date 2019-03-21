@@ -14,7 +14,7 @@ namespace PolyPaint.CustomInk
     {
         public ActorStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.ROLE;
+            strokeType = (int)StrokeTypes.ROLE;
         }
 
         public ActorStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)

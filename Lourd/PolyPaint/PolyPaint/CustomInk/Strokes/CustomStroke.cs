@@ -11,7 +11,7 @@ namespace PolyPaint.CustomInk
     {
         public Guid guid;
         public string name;
-        public int type;
+        public int strokeType;
         public double rotation;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)

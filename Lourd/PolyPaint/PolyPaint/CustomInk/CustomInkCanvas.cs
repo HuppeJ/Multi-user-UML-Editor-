@@ -26,7 +26,7 @@ namespace PolyPaint.CustomInk
         public bool isUpdatingLink = false;
 
         #region Links
-        public void updateLink(int linkStrokeAnchor, LinkStroke linkBeingUpdated, string strokeToAttachGuid, int strokeToAttachAnchor, Point pointPosition)
+        public void updateLink(int linkStrokeAnchor, LinkStroke linkBeingUpdated, ShapeStroke strokeToAttach, int strokeToAttachAnchor, Point pointPosition)
         {
 
             if (isUpdatingLink)
@@ -36,12 +36,12 @@ namespace PolyPaint.CustomInk
                 if (linkStrokeAnchor == 0)
                 {
                     // mettre a jour la position du point initial (from)
-                    linkBeingUpdated.from = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "");
+                    linkBeingUpdated.from = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
                 }
                 else if(linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
                 {
                     // mettre a jour la position du point final (to)
-                    linkBeingUpdated.to = new AnchorPoint(strokeToAttachGuid, strokeToAttachAnchor, "");
+                    linkBeingUpdated.to = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
                 }
 
                 linkBeingUpdated.addStylusPointsToLink();
@@ -338,7 +338,7 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
-            if(stroke.type == (int)StrokeTypes.LINK)
+            if(stroke.strokeType == (int)StrokeTypes.LINK)
             {
                 double x = stroke.StylusPoints[0].X;
                 double y = stroke.StylusPoints[0].Y;
@@ -347,7 +347,7 @@ namespace PolyPaint.CustomInk
 
                 CreateMultiplicityTextBox(stroke.StylusPoints, stroke as LinkStroke);
             }
-            else if(stroke.type != (int)StrokeTypes.CLASS_SHAPE)
+            else if(stroke.strokeType != (int)StrokeTypes.CLASS_SHAPE)
             {
                 Point point = stroke.GetBounds().BottomLeft;
                 double x = point.X;
@@ -355,7 +355,7 @@ namespace PolyPaint.CustomInk
 
                 CreateNameTextBox(stroke, x, y);
             }
-            else if (stroke.type == (int)StrokeTypes.CLASS_SHAPE)
+            else if (stroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
             {
                 Path path = new Path();
                 path.Data = stroke.GetGeometry();
@@ -513,7 +513,7 @@ namespace PolyPaint.CustomInk
             {
                 myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
-                if(selectedStroke.type == (int)StrokeTypes.CLASS_SHAPE)
+                if(selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                 {
                     myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
                 }

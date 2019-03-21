@@ -14,12 +14,12 @@ namespace PolyPaint.CustomInk
     {
         public ArtifactStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.ARTIFACT;
+            strokeType = (int)StrokeTypes.ARTIFACT;
         }
 
         public ArtifactStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.ARTIFACT;
+            strokeType = (int)StrokeTypes.ARTIFACT;
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)

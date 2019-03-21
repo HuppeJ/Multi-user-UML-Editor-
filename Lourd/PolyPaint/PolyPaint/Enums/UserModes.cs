@@ -24,4 +24,14 @@ namespace PolyPaint.Enums
         PHASE,
         LINK
     }
+
+    public enum LinkTypes
+    {
+        LINE,
+        ONE_WAY_ASSOCIATION,
+        TWO_WAY_ASSOCIATION,
+        HERITAGE,
+        AGGREGATION,
+        COMPOSITION
+    }
 }
