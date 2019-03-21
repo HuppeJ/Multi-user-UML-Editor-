@@ -142,6 +142,31 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private List<Templates.Canvas> _publicCanvase = new List<Templates.Canvas>();
+        public List<Templates.Canvas> PublicCanvases
+        {
+            get { return _publicCanvase; }
+            set
+            {
+                if (_publicCanvase == value) return;
+
+                _publicCanvase = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private List<Templates.Canvas> _privateCanvase = new List<Templates.Canvas>();
+        public List<Templates.Canvas> PrivateCanvases
+        {
+            get { return _privateCanvase; }
+            set
+            {
+                if (_privateCanvase == value) return;
+
+                _privateCanvase = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Connect Command
@@ -353,7 +378,7 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
-        #region
+        #region CreateCanvas Command
         private ICommand _createCanvasCommand;
         public ICommand CreateCanvasCommand
         {
@@ -367,10 +392,10 @@ namespace PolyPaint.VueModeles
         {
             var passwordBox = o as PasswordBox;
             var password = passwordBox.Password;
-            int accessibility = CanvasProtection == "Unprotected" ? 0 : 1;
+            int accessibility = CanvasPrivacy == "Public" ? 1 : 0;
             int[] dimensions = { 1, 1 };
 
-            Templates.Canvas canvas = new Templates.Canvas(new Guid().ToString(), CanvasName, username, username,
+            Templates.Canvas canvas = new Templates.Canvas(Guid.NewGuid().ToString(), CanvasName, username, username,
                                                             accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions);
 
             DrawingService.CreateCanvas(canvas);
@@ -383,6 +408,38 @@ namespace PolyPaint.VueModeles
             bool unprotectedOrPassword = (CanvasProtection == "Unprotected") || !string.IsNullOrEmpty(password);
 
             return !string.IsNullOrEmpty(CanvasName) && unprotectedOrPassword;
+        }
+        #endregion
+
+        #region RefreshCanvases Command
+        private ICommand _refreshCanvasesCommand;
+        public ICommand RefreshCanvasesCommand
+        {
+            get
+            {
+                return _refreshCanvasesCommand ?? (_refreshCanvasesCommand = new RelayCommand<Object>(RefreshCanvases));
+            }
+        }
+
+        private void RefreshCanvases(object o)
+        {
+            DrawingService.RefreshCanvases();
+        }
+        #endregion
+
+        #region ResetSErver Command
+        private ICommand _resetServerCommand;
+        public ICommand ResetServerCommand
+        {
+            get
+            {
+                return _resetServerCommand ?? (_resetServerCommand = new RelayCommand<Object>(ResetServer));
+            }
+        }
+
+        private void ResetServer(object o)
+        {
+            DrawingService.ResetServer();
         }
         #endregion
 
@@ -449,6 +506,16 @@ namespace PolyPaint.VueModeles
                 dialogService.ShowNotification("Login failed :/");
             }
         }
+
+        private void UpdatePublicCanvases(PublicCanvases canvas)
+        {
+            PublicCanvases = canvas.publicCanvas;
+        }
+
+        private void UpdatePrivateCanvases(PrivateCanvases canvas)
+        {
+            PrivateCanvases = canvas.privateCanvases;
+        }
         #endregion
 
         public MainWindowViewModel(IDialogService diagSvc)
@@ -461,11 +528,14 @@ namespace PolyPaint.VueModeles
             ConnectionService.Connection += Connection;
             ConnectionService.UserCreation += UserCreation;
             ConnectionService.UserLogin += UserLogin;
+
+            DrawingService.UpdatePublicCanvases += UpdatePublicCanvases;
+            DrawingService.UpdatePrivateCanvases += UpdatePrivateCanvases;
+
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;
 
             // rooms.Add(new Room { name = "Everyone" });
         }
-
     }
 }

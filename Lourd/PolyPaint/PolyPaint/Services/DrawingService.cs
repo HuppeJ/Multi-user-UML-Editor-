@@ -19,6 +19,8 @@ namespace PolyPaint.Services
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
+        public static event Action<PublicCanvases> UpdatePublicCanvases;
+        public static event Action<PrivateCanvases> UpdatePrivateCanvases;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -56,6 +58,19 @@ namespace PolyPaint.Services
                 }
             });
 
+            socket.On("getPublicCanvasResponse", (data) =>
+            {
+                PublicCanvases canvases = serializer.Deserialize<PublicCanvases>((string)data);
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePublicCanvases(canvases); }), DispatcherPriority.Render);
+            });
+
+            socket.On("getPrivateCanvasResponse", (data) =>
+            {
+                PrivateCanvases canvases = serializer.Deserialize<PrivateCanvases>((string)data);
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePrivateCanvases(canvases); }), DispatcherPriority.Render);
+            });
 
             socket.On("formCreated", (data) =>
             {
@@ -106,6 +121,17 @@ namespace PolyPaint.Services
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, roomName);
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
+        }
+
+        public static void RefreshCanvases()
+        {
+            socket.Emit("getPublicCanvas");
+            socket.Emit("getPrivateCanvas", username);
+        }
+
+        public static void ResetServer()
+        {
+            socket.Emit("resetServerState");
         }
 
         public static void CreateShape(ShapeStroke shapeStroke)

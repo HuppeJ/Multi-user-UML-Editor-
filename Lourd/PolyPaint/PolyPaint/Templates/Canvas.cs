@@ -2,7 +2,7 @@
 
 namespace PolyPaint.Templates
 {
-    class Canvas
+    public class Canvas
     {
         public string id { get; set; }
         public string name { get; set; }

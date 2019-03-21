@@ -38,8 +38,16 @@
             <Button Content="DrawingView" Margin="930,645,20,23" Command="{Binding DrawingViewCommand}" Width="150"/>
             <Button Content="Disconnect" Margin="20,648,930,20" Command="{Binding LogoutCommand}" Width="150"/>
             <StackPanel>
-                
+                <ItemsControl ItemsSource="{Binding PublicCanvases}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
+            <Button Content="Refresh canvas" Margin="758,644,192,24" Command="{Binding RefreshCanvasesCommand}" Width="150"/>
+            <Button Content="Reset Server" Margin="581,644,369,24" Command="{Binding ResetServerCommand}" Width="150"/>
             <Popup x:Name="popUpCreateCanvas" Placement="Center">
                 <Vues:CreateCanvasPopup x:Name="popUpCreateCanvasVue"/>
             </Popup>
