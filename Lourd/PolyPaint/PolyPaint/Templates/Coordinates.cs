@@ -1,4 +1,6 @@
-﻿namespace PolyPaint.Templates
+﻿using System.Windows;
+
+namespace PolyPaint.Templates
 {
     public class Coordinates
     {
@@ -12,5 +14,15 @@
         }
 
         public Coordinates() { }
+
+        public Coordinates(Point point)
+        {
+            x = point.X;
+            y = point.Y;
+        }
+        public Point ToPoint()
+        {
+            return new Point(x, y);
+        }
     }
 }

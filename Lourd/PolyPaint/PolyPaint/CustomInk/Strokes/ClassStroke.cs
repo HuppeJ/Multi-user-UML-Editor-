@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace PolyPaint.CustomInk
 {
-    public class ClassStroke : CustomStroke
+    public class ClassStroke : ShapeStroke
     {
         public List<string> attributes;
         public List<string> methods;
@@ -21,6 +21,16 @@ namespace PolyPaint.CustomInk
             type = (int)StrokeTypes.CLASS_SHAPE;
             attributes = new List<string>();
             methods = new List<string>();
+
+            shapeStyle.width = 150;
+            Point lastPoint = pts[pts.Count - 1].ToPoint();
+            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
+            {
+                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
+                {
+                    StylusPoints.Add(new StylusPoint(i, j));
+                }
+            }
         }
 
         public ClassStroke(ClassShape classShape, StylusPointCollection pts) : base(pts, classShape)
@@ -47,7 +57,7 @@ namespace PolyPaint.CustomInk
 
             TransformGroup transform = new TransformGroup();
 
-            transform.Children.Add(new RotateTransform(rotation, x, y));
+            transform.Children.Add(new RotateTransform(shapeStyle.rotation, x, y));
 
             drawingContext.PushTransform(transform);
         }

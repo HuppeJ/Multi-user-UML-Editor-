@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.CustomInk;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -56,7 +57,11 @@ namespace PolyPaint.Vues
             {
                 windowDrawing.Rename(_label);
             }
-            _label = "";
+        }
+
+        public void setParameters(CustomStroke stroke)
+        {
+            _label = stroke.name;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));
         }
 

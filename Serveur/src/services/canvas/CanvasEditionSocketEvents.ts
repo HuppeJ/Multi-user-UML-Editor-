@@ -1,7 +1,7 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { CanvasTestRoom } from "./CanvasSocketEvents";
 import CanvasManager from "./components/CanvasManager";
-import { IEditCanevasData, IEditLinksData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from "./interfaces/interfaces";
+import { IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from "./interfaces/interfaces";
 
 export default class CanvasEditionSocketEvents {
     constructor(io: any, canvasManager: CanvasManager) {
@@ -202,7 +202,7 @@ export default class CanvasEditionSocketEvents {
 
             socket.on("deleteLinks", function (dataStr: string) {
                 try {
-                    const data: IEditLinksData = JSON.parse(dataStr);
+                    const data: IUpdateLinksData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                     const response = {
@@ -210,10 +210,10 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areLinksDeleted) {
-                        console.log(socket.id + " deleted links " + data.linksId);
+                        console.log(socket.id + " deleted links " + data.links);
                         io.to(canvasRoomId).emit("linksDeleted", dataStr);
                     } else {
-                        console.log(socket.id + " failed to delete links " + data.linksId);
+                        console.log(socket.id + " failed to delete links " + data.links);
                     }
 
                     socket.emit("deleteLinksResponse", JSON.stringify(response));
@@ -227,7 +227,7 @@ export default class CanvasEditionSocketEvents {
 
             socket.on("selectLinks", function (dataStr: string) {
                 try {
-                    const data: IEditLinksData = JSON.parse(dataStr);
+                    const data: IUpdateLinksData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                     const response = {
@@ -235,10 +235,10 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areLinksSelected) {
-                        console.log(socket.id + " selected links " + data.linksId);
+                        console.log(socket.id + " selected links " + data.links);
                         io.to(canvasRoomId).emit("linksSelected", dataStr);
                     } else {
-                        console.log(socket.id + " failed to select links " + data.linksId);
+                        console.log(socket.id + " failed to select links " + data.links);
                     }
 
                     socket.emit("selectLinksResponse", JSON.stringify(response));
@@ -252,7 +252,7 @@ export default class CanvasEditionSocketEvents {
 
             socket.on("deselectLinks", function (dataStr: string) {
                 try {
-                    const data: IEditLinksData = JSON.parse(dataStr);
+                    const data: IUpdateLinksData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                     const response = {
@@ -260,10 +260,10 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areLinksDeselected) {
-                        console.log(socket.id + " deselected links " + data.linksId);
+                        console.log(socket.id + " deselected links " + data.links);
                         io.to(canvasRoomId).emit("linksDeselected", dataStr);
                     } else {
-                        console.log(socket.id + " failed to deselect links " + data.linksId);
+                        console.log(socket.id + " failed to deselect links " + data.links);
                     }
 
                     socket.emit("deselectLinksResponse", JSON.stringify(response));

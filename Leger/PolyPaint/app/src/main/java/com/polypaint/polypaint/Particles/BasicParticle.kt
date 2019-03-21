@@ -44,6 +44,8 @@ class BasicParticle (xOrigin: Float, yOrigin:Float, var maxSpeed :Float, var con
         }
 
 
+
+
     }
     //Splatter Effect
     fun initDirection (): Float{

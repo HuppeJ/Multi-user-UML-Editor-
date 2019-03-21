@@ -14,6 +14,7 @@ using PolyPaint.Templates;
 using PolyPaint.Utilitaires;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace PolyPaint.VueModeles
 {
@@ -24,7 +25,8 @@ namespace PolyPaint.VueModeles
         private IDialogService dialogService;
         private TaskFactory ctxTaskFactory;
 
-        private string _userName = "g";
+        #region Properties
+        private string _userName = "a";
         public string username
         {
             get { return _userName; }
@@ -100,6 +102,85 @@ namespace PolyPaint.VueModeles
                 OnPropertyChanged();
             }
         }
+
+        private string _canvasName = "";
+        public string CanvasName
+        {
+            get { return _canvasName; }
+            set
+            {
+                if (_canvasName == value) return;
+
+                _canvasName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _canvasPrivacy = "Public";
+        public string CanvasPrivacy
+        {
+            get { return _canvasPrivacy; }
+            set
+            {
+                if (_canvasPrivacy == value) return;
+
+                _canvasPrivacy = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _canvasProtection = "Unprotected";
+        public string CanvasProtection
+        {
+            get { return _canvasProtection; }
+            set
+            {
+                if (_canvasProtection == value) return;
+
+                _canvasProtection = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private List<Templates.Canvas> _publicCanvases = new List<Templates.Canvas>();
+        public List<Templates.Canvas> PublicCanvases
+        {
+            get { return _publicCanvases; }
+            set
+            {
+                if (_publicCanvases == value) return;
+
+                _publicCanvases = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private List<Templates.Canvas> _privateCanvases = new List<Templates.Canvas>();
+        public List<Templates.Canvas> PrivateCanvases
+        {
+            get { return _privateCanvases; }
+            set
+            {
+                if (_privateCanvases == value) return;
+
+                _privateCanvases = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Templates.Canvas _selectedCanvas = new Templates.Canvas();
+        public Templates.Canvas SelectedCanvas
+        {
+            get { return _selectedCanvas; }
+            set
+            {
+                if (_selectedCanvas == value) return;
+
+                _selectedCanvas = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
 
         #region Connect Command
         private ICommand _connectCommand;
@@ -265,6 +346,7 @@ namespace PolyPaint.VueModeles
 
         private void BackToGallery(object o)
         {
+            DrawingService.LeaveCanvas();
             UserMode = UserModes.Gallery;
         }
         #endregion
@@ -281,7 +363,7 @@ namespace PolyPaint.VueModeles
 
         private void SendMessage(object o)
         {
-            chatService.SendMessage(textMessage, username, DateTimeOffset.Now.ToUnixTimeMilliseconds());
+            chatService.SendMessage(textMessage, username, DateTimeOffset.Now.ToUnixTimeMilliseconds(), selectedRoom.name);
             textMessage = string.Empty;
         }
 
@@ -292,14 +374,174 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region CancelCanvasCreation Command
+        private ICommand _cancelCanvasCreationCommand;
+        public ICommand CancelCanvasCreationCommand
+        {
+            get
+            {
+                return _cancelCanvasCreationCommand ?? (_cancelCanvasCreationCommand = new RelayCommand<Object>(CancelCanvasCreation));
+            }
+        }
+
+        private void CancelCanvasCreation(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            passwordBox.Password = "";
+            CanvasName = "";
+            CanvasPrivacy = "Public";
+            CanvasProtection = "Unprotected";
+        }
+        #endregion
+
+        #region CancelCanvasJoin Command
+        private ICommand _cancelCanvasJoinCommand;
+        public ICommand CancelCanvasJoinCommand
+        {
+            get
+            {
+                return _cancelCanvasJoinCommand ?? (_cancelCanvasJoinCommand = new RelayCommand<Object>(CancelCanvasJoin));
+            }
+        }
+
+        private void CancelCanvasJoin(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            passwordBox.Password = "";
+        }
+        #endregion
+
+        #region CreateCanvas Command
+        private ICommand _createCanvasCommand;
+        public ICommand CreateCanvasCommand
+        {
+            get
+            {
+                return _createCanvasCommand ?? (_createCanvasCommand = new RelayCommand<Object>(CreateCanvas, CanCreateCanvas));
+            }
+        }
+
+        private void CreateCanvas(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            if (CanvasProtection == "Unprotected") passwordBox.Password = "";
+            var password = passwordBox.Password;
+
+            int accessibility = CanvasPrivacy == "Public" ? 1 : 0;
+            int[] dimensions = { 1, 1 };
+
+            Templates.Canvas canvas = new Templates.Canvas(Guid.NewGuid().ToString(), CanvasName, username, username,
+                                                            accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions);
+
+            DrawingService.CreateCanvas(canvas);
+
+            passwordBox.Password = "";
+            CanvasPrivacy = "Public";
+            CanvasProtection = "Unprotected";
+            CanvasName = "";
+        }
+
+        private bool CanCreateCanvas(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
+            bool unprotectedOrPassword = (CanvasProtection == "Unprotected") || !string.IsNullOrEmpty(password);
+
+            return !string.IsNullOrEmpty(CanvasName) && unprotectedOrPassword;
+        }
+        #endregion
+
+        #region RefreshCanvases Command
+        private ICommand _refreshCanvasesCommand;
+        public ICommand RefreshCanvasesCommand
+        {
+            get
+            {
+                return _refreshCanvasesCommand ?? (_refreshCanvasesCommand = new RelayCommand<Object>(RefreshCanvases));
+            }
+        }
+
+        private void RefreshCanvases(object o)
+        {
+            DrawingService.RefreshCanvases();
+        }
+        #endregion
+
+        #region JoinUnprotectedCanvas Command
+        private ICommand _joinUnprotectedCanvasCommand;
+        public ICommand JoinUnprotectedCanvasCommand
+        {
+            get
+            {
+                return _joinUnprotectedCanvasCommand ?? (_joinUnprotectedCanvasCommand = new RelayCommand<Object>(JoinUnprotectedCanvas));
+            }
+        }
+
+        private void JoinUnprotectedCanvas(object o)
+        {
+            var canvas = o as Templates.Canvas;
+            DrawingService.JoinCanvas(canvas.name);
+        }
+        #endregion
+
+        #region JoinProtectedCanvas Command
+        private ICommand _joinProtectedCanvasCommand;
+        public ICommand JoinProtectedCanvasCommand
+        {
+            get
+            {
+                return _joinProtectedCanvasCommand ?? (_joinProtectedCanvasCommand = new RelayCommand<Object>(JoinProtectedCanvas));
+            }
+        }
+
+        private void JoinProtectedCanvas(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            DrawingService.JoinCanvas(SelectedCanvas.name, passwordBox.Password);
+        }
+        #endregion
+
+        #region SelectProtectedCanvas Command
+        private ICommand _selectProtectedCanvasCommand;
+        public ICommand SelectProtectedCanvasCommand
+        {
+            get
+            {
+                return _selectProtectedCanvasCommand ?? (_selectProtectedCanvasCommand = new RelayCommand<Object>(SelectProtectedCanvas));
+            }
+        }
+
+        private void SelectProtectedCanvas(object o)
+        {
+            SelectedCanvas = o as Templates.Canvas;            
+        }
+        #endregion
+
+        #region ResetServer Command
+        private ICommand _resetServerCommand;
+        public ICommand ResetServerCommand
+        {
+            get
+            {
+                return _resetServerCommand ?? (_resetServerCommand = new RelayCommand<Object>(ResetServer));
+            }
+        }
+
+        private void ResetServer(object o)
+        {
+            DrawingService.ResetServer();
+            DrawingService.RefreshCanvases();
+        }
+        #endregion
+
         #region Event Handlers
         private void NewMessage(ChatMessageTemplate message)
         {
             ChatMessage cm = new ChatMessage {
-                sender = message.sender,
-                text = message.text,
+                sender = message.username,
+                text = message.message,
                 createdAt = DateTimeOffset.FromUnixTimeMilliseconds(message.createdAt).DateTime.ToLocalTime(),
-                isOriginNative = (message.sender == username)
+                isOriginNative = (message.username == username)
             };
 
             if (!_selectedRoom.Chatter.Contains(cm)){
@@ -310,7 +552,7 @@ namespace PolyPaint.VueModeles
 
         private void GetChatrooms(RoomList chatrooms)
         {
-            foreach(string room in chatrooms.rooms)
+            foreach(string room in chatrooms.chatrooms)
             {
                 Room newRoom = new Room { name = room };
                 if(!rooms.Contains(newRoom))
@@ -347,12 +589,30 @@ namespace PolyPaint.VueModeles
             if (isLoginSuccessful)
             {
                 UserMode = UserModes.Gallery;
-                selectedRoom = rooms.First();
+                // selectedRoom = rooms.First();
                 IsLoggedIn = true;
             }
             else
             {
                 dialogService.ShowNotification("Login failed :/");
+            }
+        }
+
+        private void UpdatePublicCanvases(PublicCanvases canvas)
+        {
+            PublicCanvases = canvas.publicCanvas;
+        }
+
+        private void UpdatePrivateCanvases(PrivateCanvases canvas)
+        {
+            PrivateCanvases = canvas.privateCanvas;
+        }
+
+        private void JoinCanvasRoom(JoinCanvasRoomResponse response)
+        {
+            if (response.isCanvasRoomJoined)
+            {
+                UserMode = UserModes.Drawing;
             }
         }
         #endregion
@@ -367,11 +627,15 @@ namespace PolyPaint.VueModeles
             ConnectionService.Connection += Connection;
             ConnectionService.UserCreation += UserCreation;
             ConnectionService.UserLogin += UserLogin;
+
+            DrawingService.UpdatePublicCanvases += UpdatePublicCanvases;
+            DrawingService.UpdatePrivateCanvases += UpdatePrivateCanvases;
+            DrawingService.JoinCanvasRoom += JoinCanvasRoom;
+
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;
 
-            rooms.Add(new Room { name = "Everyone" });
+            //rooms.Add(new Room { name = "Everyone" });
         }
-
     }
 }

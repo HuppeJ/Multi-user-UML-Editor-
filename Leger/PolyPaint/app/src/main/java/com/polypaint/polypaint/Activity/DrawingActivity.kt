@@ -102,7 +102,7 @@ class DrawingActivity : AppCompatActivity(){
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        initializeViewFromCanevas()
+        //initializeViewFromCanevas()
 
         parent_relative_layout.setOnClickListener{
             it as RelativeLayout
@@ -136,7 +136,6 @@ class DrawingActivity : AppCompatActivity(){
             emitClearCanvas()
             parent_relative_layout?.removeAllViews()
             ViewShapeHolder.getInstance().stackShapeCreatedId = Stack<String>()
-            //parent_relative_layout?.addView(VFXHolder.getInstance().vfxView)
         }
 
         duplicate_button.setOnClickListener{
@@ -156,22 +155,21 @@ class DrawingActivity : AppCompatActivity(){
         parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
 
         SyncShapeHolder.getInstance().drawingActivity = this
-
     }
 
-    private fun initializeViewFromCanevas(){
-        //Shape
-        if(ViewShapeHolder.getInstance().canevas != null){
-            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
-            for(shape in ViewShapeHolder.getInstance().canevas.shapes){
-                Log.d("initShape","****"+shape.id+"****")
-                addOnCanevas(shape)
-            }
-            //TODO: LINKS
-
-        }
-
-    }
+//    private fun initializeViewFromCanevas(){
+//        //Shape
+//        if(ViewShapeHolder.getInstance().canevas != null){
+//            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
+//            for(shape in ViewShapeHolder.getInstance().canevas.shapes){
+//                Log.d("initShape","****"+shape.id+"****")
+//                addOnCanevas(shape)
+//            }
+//            //TODO: LINKS
+//
+//        }
+//
+//    }
     override fun onResume() {
         super.onResume()
         val app = application as PolyPaint
@@ -213,6 +211,7 @@ class DrawingActivity : AppCompatActivity(){
 
         syncLayoutFromCanevas()
 
+        //LAUNCH VFX
         VFXHolder.getInstance().fireVFX(
             (shape.shapeStyle.coordinates.x + shape.shapeStyle.width/2).toFloat(),
             (shape.shapeStyle.coordinates.y + shape.shapeStyle.height/2).toFloat(),this)
@@ -312,9 +311,6 @@ class DrawingActivity : AppCompatActivity(){
         when(shapeType){
             ShapeTypes.DEFAULT->{
                 viewType = BasicElementView(this)
-
-//                val link = LinkView(this)
-//                parent_relative_layout?.addView(link)
             }
             ShapeTypes.CLASS_SHAPE->{
                 viewType = ClassView(this)
@@ -647,6 +643,7 @@ class DrawingActivity : AppCompatActivity(){
         val sendObj = gson.toJson(galleryEditEvent)
         Log.d("leaveObj", sendObj)
         socket?.emit(SocketConstants.LEAVE_CANVAS_ROOM, sendObj)
+        finish()
         super.onBackPressed()
     }
     /*override fun onBackPressed() {

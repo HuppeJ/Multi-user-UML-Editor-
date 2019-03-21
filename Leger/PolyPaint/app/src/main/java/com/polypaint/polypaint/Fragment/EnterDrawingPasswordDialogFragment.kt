@@ -43,7 +43,7 @@ class EnterDrawingPasswordDialogFragment : DialogFragment(){
             val app = it.application as PolyPaint
             socket = app.socket
 
-            socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+            // socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
 
             val passwordText : EditText = view.findViewById(R.id.password_text)
             val passwordButton : Button = view.findViewById(R.id.password_button)

@@ -24,6 +24,7 @@ namespace PolyPaint.Modeles
         public StrokeCollection traits = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
         public StrokeCollection selectedStrokes = new StrokeCollection();
+        public StrokeCollection remoteSelectedStrokes = new StrokeCollection();
 
 
         public event EventHandler<CustomStroke> AddStrokeFromModel;
@@ -88,16 +89,6 @@ namespace PolyPaint.Modeles
             return selectedStroke;
         }
 
-        internal void AddStrokeFromService(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
-        {
-            // Il faudrait pouvoir verifier que le trait n'existe pas, ou pouvoir le modifier... on a acces au guid?
-            if (!isInTraits(selectedStroke))
-            {
-                // Application.Current.Dispatcher.Invoke(new Action(() => { traits.Add(selectedStroke); }), DispatcherPriority.ContextIdle);
-                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(selectedStroke);
-            }
-        }
-
         private bool isInTraits(CustomStroke selectedStroke)
         {
             foreach(CustomStroke stroke in traits)
@@ -138,8 +129,11 @@ namespace PolyPaint.Modeles
             try
             {
                 Stroke trait = traits.Last();
-                traitsRetires.Add(trait);
-                traits.Remove(trait);
+                if (!remoteSelectedStrokes.Contains(trait))
+                {
+                    traitsRetires.Add(trait);
+                    traits.Remove(trait);
+                }
             }
             catch { }
 

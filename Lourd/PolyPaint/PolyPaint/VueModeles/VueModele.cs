@@ -72,8 +72,6 @@ namespace PolyPaint.VueModeles
         public RelayCommand<string> ChoisirOutil { get; set; }
         public RelayCommand<object> Reinitialiser { get; set; }
 
-        public RelayCommand<object> Rotate { get; set; }
-
         internal CustomStroke AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
         {
             return editeur.AddStrokeFromView(selectedStroke);
@@ -150,22 +148,6 @@ namespace PolyPaint.VueModeles
             Coordinates coordinates = new Coordinates(stroke.StylusPoints[0].X, stroke.StylusPoints[0].Y);
             ShapeStyle shapeStyle = new ShapeStyle();
             shapeStyle.coordinates = coordinates;
-
-            DrawingService.UpdateShape(stroke.guid.ToString(), stroke.type, "strokeName", shapeStyle, new List<string>(), new List<string>());
-        }
-
-
-        //private void AddStroke(Stroke newStroke)
-        //{
-        //    Console.WriteLine("add de vueModele en provenance du service :) ");
-        //    editeur.traits.Add(newStroke);
-        //}
-
-        private void UpdateStroke(CustomStroke newStroke)
-        {
-            Console.WriteLine("update de vueModele en provenance du service :) ");
-            // ne add pas le trait pour vrai..
-            editeur.AddStrokeFromService(newStroke);
         }
 
 
