@@ -12,4 +12,6 @@
     <color name="colorGreyAccent">#505050</color>
     <color name="colorShadow">#CABBBBBB</color>
 
+    <color name="colorBordersRed">#FFFF0000</color>
+
 </resources>

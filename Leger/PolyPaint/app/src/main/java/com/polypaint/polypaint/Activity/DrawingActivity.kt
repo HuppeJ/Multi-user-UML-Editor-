@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -135,7 +136,7 @@ class DrawingActivity : AppCompatActivity(){
             emitClearCanvas()
             parent_relative_layout?.removeAllViews()
             ViewShapeHolder.getInstance().stackShapeCreatedId = Stack<String>()
-            parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
+            //parent_relative_layout?.addView(VFXHolder.getInstance().vfxView)
         }
 
         duplicate_button.setOnClickListener{
@@ -434,22 +435,26 @@ class DrawingActivity : AppCompatActivity(){
                 when(basicShape.type){
                     ShapeTypes.DEFAULT.value()-> { }
                     ShapeTypes.CLASS_SHAPE.value()-> {
-                        basicShape as ClassShape
-                        view as ClassView
-                        view.class_name.text = basicShape.name
-                        view.class_attributes.text = basicShape.attributes.toString()
-                        view.class_methods.text = basicShape.methods.toString()
-
+                        if(basicShape is ClassShape){
+                            view as ClassView
+                            view.class_name.text = basicShape.name
+                            view.class_attributes.text = basicShape.attributes.toString()
+                            view.class_methods.text = basicShape.methods.toString()
+                            view.outlineColor("BLACK")
+                        }
                     }
                     ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
                         view.name.text = basicShape.name
+                        view.outlineColor(basicShape.shapeStyle.borderColor)
                     }
 
                     ShapeTypes.COMMENT.value()-> {
                         view.comment_text.text = basicShape.name
+                        view.outlineColor(basicShape.shapeStyle.borderColor)
                     }
                     ShapeTypes.PHASE.value()-> {
                         view.name.text = basicShape.name
+                        view.outlineColor(basicShape.shapeStyle.borderColor)
                     }
 
                 }

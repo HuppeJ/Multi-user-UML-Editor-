@@ -3,7 +3,8 @@
     <item android:left="1dp"
           android:right="1dp"
           android:top="-1dp"
-          android:bottom="-1dp">
+          android:bottom="-1dp"
+          android:id="@+id/view_class_borders2">
         <shape android:shape="rectangle">
             <stroke android:color="#111" android:width="1dp" />
         </shape>

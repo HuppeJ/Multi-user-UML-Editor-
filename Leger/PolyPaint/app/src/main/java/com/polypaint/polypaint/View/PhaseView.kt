@@ -3,6 +3,9 @@ package com.polypaint.polypaint.View
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -17,20 +20,21 @@ import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Particles.ParticleSystem
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
-import kotlinx.android.synthetic.main.view_class.view.*
+import kotlinx.android.synthetic.main.view_phase.view.*
 
 class PhaseView(context: Context): BasicElementView(context) {
         override var mMinimumWidth : Float = 400F
         override var mMinimumHeight : Float = 220F
+        private var child : View? = null
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
         val activity : AppCompatActivity = context as AppCompatActivity
 
-        var child: View = activity.layoutInflater.inflate(R.layout.view_phase, null)
+        child = activity.layoutInflater.inflate(R.layout.view_phase, null)
 
-        var nameText: TextView = child.findViewById(R.id.name) as TextView
+        var nameText: TextView = child!!.findViewById(R.id.name) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
         nameText.text = "basictElement.name"
 
@@ -68,5 +72,30 @@ class PhaseView(context: Context): BasicElementView(context) {
 
         borderResizableLayout.requestLayout()
         requestLayout()
+    }
+
+    override fun outlineColor(color: String) {
+        var lDrawable = child!!.linearLayoutCompat.background.mutate() as LayerDrawable
+        var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
+
+        var lDrawable2 = child!!.linearLayoutCompat2.background.mutate() as LayerDrawable
+        var gDrawable2 = lDrawable2.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
+
+        when(color){
+            "BLACK" -> {
+                gDrawable.setStroke(2, Color.BLACK)
+                gDrawable2.setStroke(2, Color.BLACK)
+            }
+            "GREEN" -> {
+                gDrawable.setStroke(2, Color.GREEN)
+                gDrawable2.setStroke(2, Color.GREEN)
+            }
+            "YELLOW" -> {
+                gDrawable.setStroke(2, Color.YELLOW)
+                gDrawable2.setStroke(2, Color.YELLOW)
+            }
+        }
+
+
     }
 }
