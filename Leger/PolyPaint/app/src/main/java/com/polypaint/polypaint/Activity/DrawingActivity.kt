@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +27,7 @@ import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
+import com.polypaint.polypaint.Particles.ParticleSystem
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.LinksUpdateResponse
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -38,6 +42,17 @@ import kotlinx.android.synthetic.main.item_drawing.*
 import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.ArrayList
+import androidx.core.view.ViewCompat.setAlpha
+import androidx.core.os.HandlerCompat.postDelayed
+import android.provider.SyncStateContract.Helpers.update
+import android.widget.FrameLayout
+import android.widget.RelativeLayout
+import com.polypaint.polypaint.Holder.SyncShapeHolder
+import com.polypaint.polypaint.Holder.VFXHolder
+import kotlinx.android.synthetic.main.dialog_edit_class.view.*
+import kotlinx.android.synthetic.main.view_class.view.*
+import kotlinx.android.synthetic.main.view_comment.view.*
+import kotlinx.android.synthetic.main.view_image_element.view.*
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -48,7 +63,6 @@ class DrawingActivity : AppCompatActivity(){
 
     private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
     private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate (savedInstanceState: Bundle?) {
@@ -88,7 +102,12 @@ class DrawingActivity : AppCompatActivity(){
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        initializeViewFromCanevas()
+        //initializeViewFromCanevas()
+
+        parent_relative_layout.setOnClickListener{
+            it as RelativeLayout
+            it.dispatchSetSelected(false)
+        }
 
         add_button.setOnClickListener {
             addOnCanevas(ShapeTypes.DEFAULT)
@@ -132,20 +151,25 @@ class DrawingActivity : AppCompatActivity(){
             unstackView()
         }
 
+        VFXHolder.getInstance().vfxView = VfxView(this)
+        parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
+
+        SyncShapeHolder.getInstance().drawingActivity = this
     }
 
-    private fun initializeViewFromCanevas(){
-        //Shape
-        if(ViewShapeHolder.getInstance().canevas != null){
-            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
-            for(shape in ViewShapeHolder.getInstance().canevas.shapes){
-                addOnCanevas(shape)
-            }
-            //TODO: LINKS
-
-        }
-
-    }
+//    private fun initializeViewFromCanevas(){
+//        //Shape
+//        if(ViewShapeHolder.getInstance().canevas != null){
+//            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
+//            for(shape in ViewShapeHolder.getInstance().canevas.shapes){
+//                Log.d("initShape","****"+shape.id+"****")
+//                addOnCanevas(shape)
+//            }
+//            //TODO: LINKS
+//
+//        }
+//
+//    }
     override fun onResume() {
         super.onResume()
         val app = application as PolyPaint
@@ -186,9 +210,15 @@ class DrawingActivity : AppCompatActivity(){
         emitAddForm(shape)
 
         syncLayoutFromCanevas()
+
+        //LAUNCH VFX
+        VFXHolder.getInstance().fireVFX(
+            (shape.shapeStyle.coordinates.x + shape.shapeStyle.width/2).toFloat(),
+            (shape.shapeStyle.coordinates.y + shape.shapeStyle.height/2).toFloat(),this)
     }
 
     private fun addOnCanevas(basicShape: BasicShape){
+        //TODO: Probablement une meilleure facon de mapper la value à l'enum ...
         when(basicShape.type){
             ShapeTypes.DEFAULT.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
@@ -204,6 +234,42 @@ class DrawingActivity : AppCompatActivity(){
                 //For Sync
                 ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
+            ShapeTypes.ARTIFACT.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.ARTIFACT)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.ACTIVITY.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.ACTIVITY)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.ROLE.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.ROLE)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.COMMENT.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.COMMENT)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+            ShapeTypes.PHASE.value()-> {
+                val viewType = newViewOnCanevas(ShapeTypes.PHASE)
+                parent_relative_layout?.addView(viewType)
+
+                //For Sync
+                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+            }
+
         }
 
         syncLayoutFromCanevas()
@@ -245,9 +311,6 @@ class DrawingActivity : AppCompatActivity(){
         when(shapeType){
             ShapeTypes.DEFAULT->{
                 viewType = BasicElementView(this)
-
-//                val link = LinkView(this)
-//                parent_relative_layout?.addView(link)
             }
             ShapeTypes.CLASS_SHAPE->{
                 viewType = ClassView(this)
@@ -288,9 +351,11 @@ class DrawingActivity : AppCompatActivity(){
                         val shapeDuplicated = shapeToDuplicate.copy()
                         shapeDuplicated.id = UUID.randomUUID().toString()
                         ViewShapeHolder.getInstance().canevas.addShape(shapeDuplicated)
+
                         addOnCanevas(shapeDuplicated)
 
                         emitAddForm(shapeDuplicated)
+
                         ViewShapeHolder.getInstance().stackShapeCreatedId.push(shapeDuplicated.id)
 
                         ViewShapeHolder.getInstance().map.inverse().getValue(shapeDuplicated.id).isSelected = true
@@ -353,7 +418,7 @@ class DrawingActivity : AppCompatActivity(){
         }catch (e : EmptyStackException){}
         catch (e : NullPointerException){} //If stacking deleted shape
     }
-    private fun syncLayoutFromCanevas(){
+    public fun syncLayoutFromCanevas(){
         for (view in ViewShapeHolder.getInstance().map.keys){
             val basicShapeId:  String = ViewShapeHolder.getInstance().map.getValue(view)
             val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
@@ -362,6 +427,34 @@ class DrawingActivity : AppCompatActivity(){
                 view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                 view.rotation = basicShape.shapeStyle.rotation.toFloat()
+
+                when(basicShape.type){
+                    ShapeTypes.DEFAULT.value()-> { }
+                    ShapeTypes.CLASS_SHAPE.value()-> {
+                        if(basicShape is ClassShape){
+                            view as ClassView
+                            view.class_name.text = basicShape.name
+                            view.class_attributes.text = basicShape.attributes.toString()
+                            view.class_methods.text = basicShape.methods.toString()
+                            view.outlineColor("BLACK")
+                        }
+                    }
+                    ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
+                        view.name.text = basicShape.name
+                        view.outlineColor(basicShape.shapeStyle.borderColor)
+                    }
+
+                    ShapeTypes.COMMENT.value()-> {
+                        view.comment_text.text = basicShape.name
+                        view.outlineColor(basicShape.shapeStyle.borderColor)
+                    }
+                    ShapeTypes.PHASE.value()-> {
+                        view.name.text = basicShape.name
+                        view.outlineColor(basicShape.shapeStyle.borderColor)
+                    }
+
+                }
+
             }
         }
     }
@@ -493,6 +586,7 @@ class DrawingActivity : AppCompatActivity(){
         runOnUiThread {
             ViewShapeHolder.getInstance().removeAll()
             ViewShapeHolder.getInstance().stackShapeCreatedId = Stack<String>()
+            parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
             syncLayoutFromCanevas()
         }
     }

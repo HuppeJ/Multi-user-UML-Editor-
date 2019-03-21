@@ -25,6 +25,7 @@ import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Fragment.EnterDrawingPasswordDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.CanvasCreationResponse
@@ -199,6 +200,7 @@ class GalleryActivity:AppCompatActivity(){
                 Log.d("selectedCanevas", "created" + selectedCanevas)
 
                 intent.putExtra("canevas", selectedCanevas!!)
+                //ViewShapeHolder.getInstance().canevas = selectedCanevas!!
                 startActivity(intent)
             } else {
                 Log.d("Erreur", "selectionCanevas")
