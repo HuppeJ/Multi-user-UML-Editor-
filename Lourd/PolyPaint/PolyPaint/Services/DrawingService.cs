@@ -2,6 +2,7 @@
 using PolyPaint.CustomInk;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
+using Quobject.SocketIoClientDotNet.Client;
 using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
@@ -33,6 +34,14 @@ namespace PolyPaint.Services
 
         public static void Initialize(object o)
         {
+            socket.On(Socket.EVENT_RECONNECT, () =>
+            {
+                if(canvasName != null)
+                {
+                    JoinCanvas(canvasName);
+                }
+            });
+
             socket.On("createCanvasResponse", (data) =>
             {
                 CreateCanvasResponse response = serializer.Deserialize<CreateCanvasResponse>((string)data);

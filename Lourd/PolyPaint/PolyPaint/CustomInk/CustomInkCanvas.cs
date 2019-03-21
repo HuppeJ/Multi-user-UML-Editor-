@@ -197,7 +197,7 @@ namespace PolyPaint.CustomInk
 
         #region On.. event handlers
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
-            StrokeCollection oldSelectedStrokes = SelectedStrokes.Clone();
+            StrokeCollection oldSelectedStrokes = GetSelectedStrokes().Clone();
             StrokeCollection strokesToSelect = new StrokeCollection();
 
             bool isAlreadySelected;
@@ -215,8 +215,11 @@ namespace PolyPaint.CustomInk
                 }
                 if(!isAlreadySelected)
                 {
+                    if (!SelectedStrokes.Contains(newStroke))
+                    {
+                        SelectedStrokes.Add(newStroke);
+                    }
                     strokesToSelect.Add(newStroke);
-                    SelectedStrokes.Add(newStroke);
                 }
             }
             DrawingService.SelectShapes(strokesToSelect);

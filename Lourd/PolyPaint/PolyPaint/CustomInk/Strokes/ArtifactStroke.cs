@@ -26,9 +26,9 @@ namespace PolyPaint.CustomInk
             }
         }
 
-        public ArtifactStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts)
+        public ArtifactStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
         {
-            type = (int)StrokeTypes.ARTIFACT;
+
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)

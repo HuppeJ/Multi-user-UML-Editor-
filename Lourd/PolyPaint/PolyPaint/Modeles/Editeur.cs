@@ -167,9 +167,8 @@ namespace PolyPaint.Modeles
 
         public void ChooseStrokeTypeCommand(string strokeType) {
             // Automatically select crayon
-            OutilSelectionne = "crayon";
+            ChoisirOutil("crayon");
             SelectedStrokeType = strokeType;
-            ProprieteModifiee();
         }
     }
 }
