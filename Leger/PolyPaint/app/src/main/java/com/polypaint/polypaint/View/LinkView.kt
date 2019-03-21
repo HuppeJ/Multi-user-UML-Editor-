@@ -3,7 +3,6 @@ package com.polypaint.polypaint.View
 import android.content.Context
 import android.graphics.*
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -16,6 +15,7 @@ import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
+import com.polypaint.polypaint.Enum.BorderTypes
 import com.polypaint.polypaint.Enum.LinkTypes
 import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
@@ -55,6 +55,10 @@ class LinkView: View{
     val middlePoints: ArrayList<Coordinates> = ArrayList()
     var canvas: Canvas? = null
     var thickness: Float = 10f
+
+
+    var previewLinkView: LinkView? = null
+    var oldPreviewLink: LinkView? = null
 
     fun setIsSelectedByOther(isSelectedByOther: Boolean){
         this.isSelectedByOther = isSelectedByOther
@@ -198,40 +202,59 @@ class LinkView: View{
         var firstLineAngle: Double = 0.0
         middlePoints.clear()
         val path: Path = Path()
+        val linePath: Path = Path()
 
-            var previousPoint: Coordinates = pathToDraw[0]
-            for (point: Coordinates in pathToDraw) {
-                if (point == start) {
-                    continue
-                }
-                val middlePoint = Coordinates(previousPoint.x + (point.x - previousPoint.x) /2, previousPoint.y + (point.y - previousPoint.y) / 2)
-                middlePoints.add(middlePoint)
-                angle  = Math.atan2( (point.y - previousPoint.y), (point.x - previousPoint.x))
-                angle2 =  angle -Math.PI/2
-                if(previousPoint == start){
-                    firstLineAngle = angle
-                }
-                path.moveTo(
-                    previousPoint.x.toFloat() - thickness / 2 * Math.cos(angle2).toFloat(),
-                    previousPoint.y.toFloat() - thickness / 2 * Math.sin(angle2).toFloat()
-                )
-                path.lineTo(
-                    point.x.toFloat() - thickness / 2 * Math.cos(angle2).toFloat(),
-                    point.y.toFloat() - thickness / 2 * Math.sin(angle2).toFloat()
-                )
-                path.lineTo(
-                    point.x.toFloat() + thickness / 2 * Math.cos(angle2).toFloat(),
-                    point.y.toFloat() + thickness / 2 * Math.sin(angle2).toFloat()
-                )
-                path.lineTo(
-                    previousPoint.x.toFloat() + thickness / 2 * Math.cos(angle2).toFloat(),
-                    previousPoint.y.toFloat() + thickness / 2 * Math.sin(angle2).toFloat()
-                )
-                path.close()
-                previousPoint = point
+        var previousPoint: Coordinates = pathToDraw[0]
+        for (point: Coordinates in pathToDraw) {
+            if (point == start) {
+                continue
             }
+            val middlePoint = Coordinates(previousPoint.x + (point.x - previousPoint.x) /2, previousPoint.y + (point.y - previousPoint.y) / 2)
+            middlePoints.add(middlePoint)
+            angle  = Math.atan2( (point.y - previousPoint.y), (point.x - previousPoint.x))
+            angle2 =  angle -Math.PI/2
+            if(previousPoint == start){
+                firstLineAngle = angle
+            }
+            path.moveTo(
+                previousPoint.x.toFloat() - thickness / 2 * Math.cos(angle2).toFloat(),
+                previousPoint.y.toFloat() - thickness / 2 * Math.sin(angle2).toFloat()
+            )
+            path.lineTo(
+                point.x.toFloat() - thickness / 2 * Math.cos(angle2).toFloat(),
+                point.y.toFloat() - thickness / 2 * Math.sin(angle2).toFloat()
+            )
+            path.lineTo(
+                point.x.toFloat() + thickness / 2 * Math.cos(angle2).toFloat(),
+                point.y.toFloat() + thickness / 2 * Math.sin(angle2).toFloat()
+            )
+            path.lineTo(
+                previousPoint.x.toFloat() + thickness / 2 * Math.cos(angle2).toFloat(),
+                previousPoint.y.toFloat() + thickness / 2 * Math.sin(angle2).toFloat()
+            )
+            path.close()
 
-        canvas.drawPath(path, paint)
+            linePath.moveTo(
+                previousPoint.x.toFloat(),
+                previousPoint.y.toFloat()
+            )
+            linePath.lineTo(
+                point.x.toFloat(),
+                point.y.toFloat()
+            )
+            previousPoint = point
+        }
+
+        if(link?.style?.type == BorderTypes.DOTED.ordinal){
+            val array: FloatArray = FloatArray(2)
+            array[0] = 10f
+            array[1] = 5f
+            paint.pathEffect = DashPathEffect(array, 1f)
+        }
+        paint.strokeWidth = thickness
+
+
+        canvas.drawPath(linePath, paint)
 
 
         rect = RectF()
@@ -467,8 +490,13 @@ class LinkView: View{
     }
 
     private var onTouchListenerAngleButton = View.OnTouchListener { v, event ->
+        val parentView = this.parent as RelativeLayout
+        if(oldPreviewLink != null){
+            parentView.removeView(oldPreviewLink)
+        }
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                previewLinkView = LinkView(context)
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
@@ -490,6 +518,20 @@ class LinkView: View{
 
                 v.x += deltaX
                 v.y += deltaY
+
+
+                val localLink: Link? = link
+                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("BLACK",10,0), ArrayList())
+
+                if(localLink != null){
+                    previewLink.path.add(localLink.path[index])
+                    previewLink.path.add(Coordinates(v.x.toDouble(), v.y.toDouble()))
+                    previewLink.path.add(localLink.path[index+1])
+                    previewLinkView?.setLinkAndAnchors(previewLink)
+                }
+
+                oldPreviewLink = previewLinkView
+                parentView.addView(previewLinkView)
 
 //                val path:Path = Path()
 //                val localLink: Link? = link
@@ -528,8 +570,14 @@ class LinkView: View{
     }
 
     private var onTouchListenerStartAnchorButton = View.OnTouchListener { v, event ->
+        val parentView = this.parent as RelativeLayout
+        if(oldPreviewLink != null){
+            parentView.removeView(oldPreviewLink)
+        }
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                previewLinkView = LinkView(context)
+
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                     if (!basicView.isSelectedByOther) {
                         basicView.setAnchorsVisible(true)
@@ -550,6 +598,13 @@ class LinkView: View{
                 oldFrameRawY = event.rawY
                 oldFrameRawX = event.rawX
 
+                val localLink: Link? = link
+                if(localLink != null){
+                    previewLinkView?.end = localLink.path[1]
+                }
+                previewLinkView?.start = Coordinates(v.x.toDouble(), v.y.toDouble())
+                oldPreviewLink = previewLinkView
+                parentView.addView(previewLinkView)
             }
             MotionEvent.ACTION_UP -> {
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
@@ -602,25 +657,37 @@ class LinkView: View{
                     }
                 }
 
+                val formsToUpdate = ArrayList<BasicShape>()
                 val formId = link?.from?.formId
                 if(formId != null && formId != ""){
                     val shape = ViewShapeHolder.getInstance().canevas.findShape(formId)
                     if(shape != null){
-                        shape.linksFrom.remove(link?.id)
+                        if(formId != anchorPointStart.formId){
+                            shape.linksFrom.remove(link?.id)
+
+                            formsToUpdate.add(shape)
+                        }
                     }
                 }
                 link?.from?.formId = anchorPointStart.formId
                 link?.from?.anchor = anchorPointStart.anchor
 
-                val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
-                val canevas: Canevas = ViewShapeHolder.getInstance().canevas
-                if(otherBasicViewId != null) {
-                    canevas.findShape(otherBasicViewId)?.linksFrom?.add(link?.id)
+                if(formId != anchorPointStart.formId) {
+                    val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
+                    val canevas: Canevas = ViewShapeHolder.getInstance().canevas
+                    if (otherBasicViewId != null) {
+                        val otherShape: BasicShape? = canevas.findShape(otherBasicViewId)
+                        if (otherShape != null) {
+                            otherShape.linksFrom.add(link?.id)
+                            formsToUpdate.add(otherShape)
+                        }
+                    }
                 }
                 Log.d("AnchorFormId","Forms id" + link!!.from.formId)
                 link?.path?.first()?.x = v.x.toDouble()
                 link?.path?.first()?.y = v.y.toDouble()
 
+                emitFormsUpdate(formsToUpdate)
                 emitUpdate()
                 invalidate()
                 requestLayout()
@@ -629,9 +696,17 @@ class LinkView: View{
 
         true
     }
+
     private var onTouchListenerEndAnchorButton = View.OnTouchListener { v, event ->
+        val parentView = this.parent as RelativeLayout
+        if(oldPreviewLink != null){
+            parentView.removeView(oldPreviewLink)
+        }
         when (event.action) {
+
             MotionEvent.ACTION_DOWN -> {
+                previewLinkView = LinkView(context)
+
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                     if (!basicView.isSelectedByOther) {
                         basicView.setAnchorsVisible(true)
@@ -650,6 +725,14 @@ class LinkView: View{
                 oldFrameRawX = event.rawX
 
                 colorAnchorOnHover(v.x.toInt(), v.y.toInt())
+
+                val localLink: Link? = link
+                if(localLink != null){
+                    previewLinkView?.start = localLink.path[localLink.path.size - 2]
+                }
+                previewLinkView?.end = Coordinates(v.x.toDouble(), v.y.toDouble())
+                oldPreviewLink = previewLinkView
+                parentView.addView(previewLinkView)
 
             }
             MotionEvent.ACTION_UP -> {
@@ -703,25 +786,37 @@ class LinkView: View{
                         }
                     }
                 }
+
+                val formsToUpdate = ArrayList<BasicShape>()
                 val formId = link?.to?.formId
                 if(formId != null && formId != ""){
                     val shape = ViewShapeHolder.getInstance().canevas.findShape(formId)
                     if(shape != null){
-                        shape.linksTo.remove(link?.id)
+                        if(formId != anchorPointEnd.formId) {
+                            shape.linksTo.remove(link?.id)
+                            formsToUpdate.add(shape)
+                        }
                     }
                 }
                 link?.to?.formId = anchorPointEnd.formId
                 link?.to?.anchor = anchorPointEnd.anchor
 
-                val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
-                val canevas: Canevas = ViewShapeHolder.getInstance().canevas
-                if(otherBasicViewId != null) {
-                    canevas.findShape(otherBasicViewId)?.linksTo?.add(link?.id)
+                if(formId != anchorPointEnd.formId) {
+                    val otherBasicViewId = ViewShapeHolder.getInstance().map[otherBasicView]
+                    val canevas: Canevas = ViewShapeHolder.getInstance().canevas
+                    if (otherBasicViewId != null) {
+                        val otherShape: BasicShape? = canevas.findShape(otherBasicViewId)
+                        if (otherShape != null) {
+                            otherShape.linksTo.add(link?.id)
+                            formsToUpdate.add(otherShape)
+                        }
+                    }
                 }
                 Log.d("AnchorFormId","Forms id" + link!!.to.formId)
                 link?.path?.last()?.x = v.x.toDouble()
                 link?.path?.last()?.y = v.y.toDouble()
 
+                emitFormsUpdate(formsToUpdate)
                 emitUpdate()
                 invalidate()
                 requestLayout()
@@ -781,6 +876,20 @@ class LinkView: View{
         }
     }
 
+
+
+    private fun emitFormsUpdate(formsArray: ArrayList<BasicShape>){
+        var obj: String =""
+        if(formsArray.size>0) {
+            val gson = Gson()
+            val response: FormsUpdateEvent = FormsUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, formsArray)
+            obj = gson.toJson(response)
+        }
+        if(obj !="") {
+            Log.d("emitingFormsUpdate", obj)
+            socket?.emit(SocketConstants.UPDATE_FORMS, obj)
+        }
+    }
 
     fun emitUpdate(){
         val response: String = this.createLinksUpdateEvent()
