@@ -169,21 +169,21 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
-    <Compile Include="CustomInk\PhaseAdorner.cs" />
-    <Compile Include="CustomInk\CommentAdorner.cs" />
-    <Compile Include="CustomInk\ClassAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\PhaseAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\CommentAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\ClassAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
-    <Compile Include="CustomInk\EditionAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\EditionAdorner.cs" />
     <Compile Include="CustomInk\EditionButton.cs" />
-    <Compile Include="CustomInk\LinkAnchorPointAdorner.cs" />
-    <Compile Include="CustomInk\LinkElbowAdorner.cs" />
-    <Compile Include="CustomInk\RemoteSelectionAddorner.cs" />
-    <Compile Include="CustomInk\RotateAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\LinkAnchorPointAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\LinkElbowAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\RemoteSelectionAddorner.cs" />
+    <Compile Include="CustomInk\Adorners\RotateAdorner.cs" />
     <Compile Include="CustomInk\StrokeAnchorPointThumb.cs" />
     <Compile Include="CustomInk\Strokes\ActivityStroke.cs" />
     <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
-    <Compile Include="CustomInk\AnchorPointAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\AnchorPointAdorner.cs" />
     <Compile Include="CustomInk\Strokes\ArtifactStroke.cs" />
     <Compile Include="CustomInk\Strokes\PhaseStroke.cs" />
     <Compile Include="CustomInk\Strokes\CommentStroke.cs" />

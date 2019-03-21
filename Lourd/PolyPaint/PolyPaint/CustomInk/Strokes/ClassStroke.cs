@@ -18,7 +18,7 @@ namespace PolyPaint.CustomInk
 
         public ClassStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.CLASS_SHAPE;
+            strokeType = (int)StrokeTypes.CLASS_SHAPE;
             attributes = new List<string>();
             methods = new List<string>();
 
@@ -64,7 +64,7 @@ namespace PolyPaint.CustomInk
 
         public override BasicShape GetBasicShape()
         {
-            return new ClassShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom, attributes, methods);
+            return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
         }
     }
 }

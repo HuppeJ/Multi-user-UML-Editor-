@@ -14,7 +14,7 @@ namespace PolyPaint.CustomInk
     {
         public ActivityStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.ACTIVITY;
+            strokeType = (int)StrokeTypes.ACTIVITY;
 
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)

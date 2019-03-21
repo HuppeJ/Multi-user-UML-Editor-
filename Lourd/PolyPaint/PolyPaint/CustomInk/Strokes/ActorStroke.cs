@@ -14,7 +14,7 @@ namespace PolyPaint.CustomInk
     {
         public ActorStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.ROLE;
+            strokeType = (int)StrokeTypes.ROLE;
 
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)

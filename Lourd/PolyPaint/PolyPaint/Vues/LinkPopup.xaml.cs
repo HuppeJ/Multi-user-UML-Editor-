@@ -1,5 +1,6 @@
 ﻿using PolyPaint.CustomInk;
 using PolyPaint.CustomInk.Strokes;
+using PolyPaint.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -58,13 +59,26 @@ namespace PolyPaint.Vues
             }
         }
 
-        private string _selectedColor = "";
+        private string _linkType = "";
+        public string LinkType
+        {
+            get { return _linkType; }
+            set
+            {
+                if (_linkType == value) return;
+
+                _linkType = value;
+                NotifyPropertyChanged("LinkType");
+            }
+        }
+
+        private string _selectedColor;
         public string SelectedColor
         {
             get { return _selectedColor; }
             set
             {
-                if (_selectedColor == value) return;
+                if (_selectedColor == value || value == null) return;
 
                 _selectedColor = value;
                 NotifyPropertyChanged("SelectedColor");
@@ -84,8 +98,8 @@ namespace PolyPaint.Vues
             }
         }
 
-        private int _multiplicityFrom = 1;
-        public int MultiplicityFrom
+        private string _multiplicityFrom = "";
+        public string MultiplicityFrom
         {
             get { return _multiplicityFrom; }
             set
@@ -97,8 +111,8 @@ namespace PolyPaint.Vues
             }
         }
 
-        private int _multiplicityTo = 1;
-        public int MultiplicityTo
+        private string _multiplicityTo = "";
+        public string MultiplicityTo
         {
             get { return _multiplicityTo; }
             set
@@ -121,7 +135,7 @@ namespace PolyPaint.Vues
             windowDrawing = (WindowDrawing) parent;
             if (windowDrawing != null)
             {
-                windowDrawing.Rename(_label, ConvertStyleToInt(_linkStyle), _selectedColor, _linkThickness, _multiplicityFrom, _multiplicityTo);
+                windowDrawing.EditLink(_label, ConvertTypeToInt(_linkType),ConvertStyleToInt(_linkStyle), _selectedColor, _linkThickness, _multiplicityFrom, _multiplicityTo);
             }
         }
 
@@ -139,14 +153,16 @@ namespace PolyPaint.Vues
                 LinkStroke stroke = windowDrawing.surfaceDessin.GetSelectedStrokes()[0] as LinkStroke;
                 _label = stroke.name;
                 _linkStyle = ConvertStyleToString(stroke.style.type);
+                _linkType = ConvertTypeToString(stroke.linkType);
                 _selectedColor = stroke.style.color;
                 _linkThickness = stroke.style.thickness;
-                _multiplicityFrom = stroke.style.multiplicityFrom;
-                _multiplicityTo = stroke.style.multiplicityTo;
+                _multiplicityFrom = stroke.from.multiplicity;
+                _multiplicityTo = stroke.to.multiplicity;
             }
             
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkStyle"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkType"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedColor"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkThickness"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MultiplicityFrom"));
@@ -179,10 +195,51 @@ namespace PolyPaint.Vues
             }
         }
 
+        private int ConvertTypeToInt(string style)
+        {
+            switch (style)
+            {
+                case "Line":
+                    return 0;
+                case "One way association":
+                    return 1;
+                case "Two way association":
+                    return 2;
+                case "Heritage":
+                    return 3;
+                case "Aggregation":
+                    return 4;
+                case "Composition":
+                    return 5;
+                default:
+                    return 0;
+            }
+        }
+
+        private string ConvertTypeToString(int style)
+        {
+            switch (style)
+            {
+                case 0:
+                    return "Line";
+                case 1:
+                    return "One way association";
+                case 2:
+                    return "Two way association";
+                case 3:
+                    return "Heritage";
+                case 4:
+                    return "Aggregation";
+                case 5:
+                    return "Composition";
+                default:
+                    return "Line";
+            }
+        }
+
         protected void NotifyPropertyChanged(string info)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
     }
 }

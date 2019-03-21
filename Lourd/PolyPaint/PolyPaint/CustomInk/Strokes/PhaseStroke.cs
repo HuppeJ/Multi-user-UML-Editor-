@@ -17,7 +17,7 @@ namespace PolyPaint.CustomInk
 
         public PhaseStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.PHASE;
+            strokeType = (int)StrokeTypes.PHASE;
             path = new List<Coordinates>();
             double x = shapeStyle.coordinates.x;
             double y = shapeStyle.coordinates.y;
@@ -49,7 +49,7 @@ namespace PolyPaint.CustomInk
 
         public override BasicShape GetBasicShape()
         {
-            return new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
+            return new BasicShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom);
         }
     }
 }

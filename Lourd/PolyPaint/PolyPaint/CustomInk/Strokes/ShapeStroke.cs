@@ -41,7 +41,7 @@ namespace PolyPaint.CustomInk
         {
             guid = Guid.Parse(basicShape.id);
             name = basicShape.name;
-            type = basicShape.type;
+            strokeType = basicShape.type;
             shapeStyle = basicShape.shapeStyle;
 
             Point point = new Point(shapeStyle.coordinates.x, shapeStyle.coordinates.y);
@@ -86,7 +86,7 @@ namespace PolyPaint.CustomInk
         
         public virtual BasicShape GetBasicShape()
         {
-            BasicShape basicShape = new BasicShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom);
+            BasicShape basicShape = new BasicShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom);
             return basicShape;
         }
 
