@@ -120,6 +120,12 @@ namespace PolyPaint.Services
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
         }
 
+        public static void JoinCanvas(string roomName, string password)
+        {
+            EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);
+            socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
+        }
+
         public static void LeaveCanvas()
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);

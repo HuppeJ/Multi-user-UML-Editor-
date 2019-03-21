@@ -41,13 +41,15 @@
                                Text="{Binding name}" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
                             <TextBlock Text="Protected" x:Name="LockedIcon" Visibility="Visible" HorizontalAlignment="Right"/>
-                            <TextBlock Text="Unprotected" x:Name="UnlockedIcon" Visibility="Collapsed" HorizontalAlignment="Right"/>
-                            <Button Content="Join" x:Name="ButtonJoinUnprotected" Visibility="Visible"
-                                    Command="{Binding Path=DataContext.JoinUnprotectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                            <Button Content="Join protect" x:Name="ButtonJoinProtected" Visibility="Visible"
+                                    Click="JoinProtectedCanvas"
+                                    Command="{Binding Path=DataContext.SelectProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
                                     Width="75" Height="20" Padding="0,0,0,0" Margin="20,0,0,0"/>
-                            <Button Content="Join" x:Name="ButtonJoinProtected" Visibility="Collapsed"
-                                    Command="{Binding Path=DataContext.JoinProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+
+                            <TextBlock Text="Unprotected" x:Name="UnlockedIcon" Visibility="Collapsed" HorizontalAlignment="Right"/>
+                            <Button Content="Join unprotec" x:Name="ButtonJoinUnprotected" Visibility="Collapsed"
+                                    Command="{Binding Path=DataContext.JoinUnprotectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
                                     Width="75" Height="20" Padding="0,0,0,0" Margin="20,0,0,0"/>
                         </StackPanel>
@@ -57,8 +59,6 @@
                     <DataTrigger Binding="{Binding password}" Value="">
                         <Setter Property="Visibility" TargetName="LockedIcon" Value="Collapsed"/>
                         <Setter Property="Visibility" TargetName="ButtonJoinProtected" Value="Collapsed"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding password}" Value="">
                         <Setter Property="Visibility" TargetName="UnlockedIcon" Value="Visible"/>
                         <Setter Property="Visibility" TargetName="ButtonJoinUnprotected" Value="Visible"/>
                     </DataTrigger>
@@ -110,6 +110,9 @@
             <Button Content="Reset Server" Margin="581,644,369,24" Command="{Binding ResetServerCommand}" Width="150"/>
             <Popup x:Name="popUpCreateCanvas" Placement="Center">
                 <Vues:CreateCanvasPopup x:Name="popUpCreateCanvasVue"/>
+            </Popup>
+            <Popup x:Name="popUpJoinProtectedCanvas" Placement="Center">
+                <Vues:JoinProtectedCanvasPopup x:Name="popUpJoinProtectedCanvasVue"/>
             </Popup>
         </Grid>
         

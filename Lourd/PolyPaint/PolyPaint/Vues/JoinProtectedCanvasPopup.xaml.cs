@@ -4,14 +4,14 @@ using System.Windows;
 namespace PolyPaint.Vues
 {
     /// <summary>
-    /// Interaction logic for CreateCanvasPopup.xaml
+    /// Interaction logic for JoinProtectedCanvasPopup.xaml
     /// </summary>
-    public partial class CreateCanvasPopup : INotifyPropertyChanged
+    public partial class JoinProtectedCanvasPopup : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private GalleryView galleryview = null;
 
-        public CreateCanvasPopup()
+        public JoinProtectedCanvasPopup()
         {
             InitializeComponent();
         }

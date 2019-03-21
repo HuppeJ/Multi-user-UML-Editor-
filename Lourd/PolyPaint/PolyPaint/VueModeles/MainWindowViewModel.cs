@@ -142,28 +142,41 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private List<Templates.Canvas> _publicCanvase = new List<Templates.Canvas>();
+        private List<Templates.Canvas> _publicCanvases = new List<Templates.Canvas>();
         public List<Templates.Canvas> PublicCanvases
         {
-            get { return _publicCanvase; }
+            get { return _publicCanvases; }
             set
             {
-                if (_publicCanvase == value) return;
+                if (_publicCanvases == value) return;
 
-                _publicCanvase = value;
+                _publicCanvases = value;
                 OnPropertyChanged();
             }
         }
 
-        private List<Templates.Canvas> _privateCanvase = new List<Templates.Canvas>();
+        private List<Templates.Canvas> _privateCanvases = new List<Templates.Canvas>();
         public List<Templates.Canvas> PrivateCanvases
         {
-            get { return _privateCanvase; }
+            get { return _privateCanvases; }
             set
             {
-                if (_privateCanvase == value) return;
+                if (_privateCanvases == value) return;
 
-                _privateCanvase = value;
+                _privateCanvases = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Templates.Canvas _selectedCanvas = new Templates.Canvas();
+        public Templates.Canvas SelectedCanvas
+        {
+            get { return _selectedCanvas; }
+            set
+            {
+                if (_selectedCanvas == value) return;
+
+                _selectedCanvas = value;
                 OnPropertyChanged();
             }
         }
@@ -373,9 +386,28 @@ namespace PolyPaint.VueModeles
 
         private void CancelCanvasCreation(object o)
         {
+            var passwordBox = o as PasswordBox;
+            passwordBox.Password = "";
             CanvasName = "";
             CanvasPrivacy = "Public";
             CanvasProtection = "Unprotected";
+        }
+        #endregion
+
+        #region CancelCanvasJoin Command
+        private ICommand _cancelCanvasJoinCommand;
+        public ICommand CancelCanvasJoinCommand
+        {
+            get
+            {
+                return _cancelCanvasJoinCommand ?? (_cancelCanvasJoinCommand = new RelayCommand<Object>(CancelCanvasJoin));
+            }
+        }
+
+        private void CancelCanvasJoin(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            passwordBox.Password = "";
         }
         #endregion
 
@@ -464,7 +496,24 @@ namespace PolyPaint.VueModeles
 
         private void JoinProtectedCanvas(object o)
         {
-            DrawingService.RefreshCanvases();
+            var passwordBox = o as PasswordBox;
+            DrawingService.JoinCanvas(SelectedCanvas.name, passwordBox.Password);
+        }
+        #endregion
+
+        #region SelectProtectedCanvas Command
+        private ICommand _selectProtectedCanvasCommand;
+        public ICommand SelectProtectedCanvasCommand
+        {
+            get
+            {
+                return _selectProtectedCanvasCommand ?? (_selectProtectedCanvasCommand = new RelayCommand<Object>(SelectProtectedCanvas));
+            }
+        }
+
+        private void SelectProtectedCanvas(object o)
+        {
+            SelectedCanvas = o as Templates.Canvas;            
         }
         #endregion
 
@@ -481,6 +530,7 @@ namespace PolyPaint.VueModeles
         private void ResetServer(object o)
         {
             DrawingService.ResetServer();
+            DrawingService.RefreshCanvases();
         }
         #endregion
 
@@ -586,7 +636,6 @@ namespace PolyPaint.VueModeles
             chatService.GetChatrooms += GetChatrooms;
 
             //rooms.Add(new Room { name = "Everyone" });
-
         }
     }
 }

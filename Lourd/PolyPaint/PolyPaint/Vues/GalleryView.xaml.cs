@@ -32,9 +32,17 @@ namespace PolyPaint.Vues
             IsEnabled = false;
         }
 
+        private void JoinProtectedCanvas(object sender, RoutedEventArgs e)
+        {
+            popUpJoinProtectedCanvas.IsOpen = true;
+            popUpJoinProtectedCanvasVue.Initialize();
+            IsEnabled = false;
+        }
+
         public void ClosePopUp()
         {
             popUpCreateCanvas.IsOpen = false;
+            popUpJoinProtectedCanvas.IsOpen = false;
             IsEnabled = true;
         }
     }

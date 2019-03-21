@@ -71,7 +71,7 @@
                         </PasswordBox>
                     </StackPanel>
                     <Button Content="Create canvas" Margin="0,10,0,0" Width="150" IsDefault="True" Click="Close" Command="{Binding CreateCanvasCommand}" CommandParameter="{Binding ElementName=PasswordTextBox}"/>
-                    <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close" Command="{Binding CancelCanvasCreationCommand}"/>
+                    <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close" Command="{Binding CancelCanvasCreationCommand}" CommandParameter="{Binding ElementName=PasswordTextBox}"/>
                 </StackPanel>
             </Border>
         </Grid>

@@ -238,6 +238,9 @@
     <Compile Include="Vues\ClassPopup.xaml.cs">
       <DependentUpon>ClassPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\JoinProtectedCanvasPopup.xaml.cs">
+      <DependentUpon>JoinProtectedCanvasPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\CreateCanvasPopup.xaml.cs">
       <DependentUpon>CreateCanvasPopup.xaml</DependentUpon>
     </Compile>
@@ -324,6 +327,10 @@
     <Page Include="Vues\ClassPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\JoinProtectedCanvasPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\CreateCanvasPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
