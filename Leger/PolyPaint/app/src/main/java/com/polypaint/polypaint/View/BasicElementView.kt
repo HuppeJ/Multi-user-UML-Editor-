@@ -80,6 +80,9 @@ open class BasicElementView: ConstraintLayout {
     }
 
     override fun setSelected(selected: Boolean) {
+        if(this.isSelected && !selected){
+            emitDeselection()
+        }
         if(selected){
             //first_line.text = "Focus"
             borderResizableLayout.setBackgroundResource(R.drawable.borders_blue)
@@ -88,15 +91,26 @@ open class BasicElementView: ConstraintLayout {
             resizeButton.visibility = View.VISIBLE
             setAnchorsVisible(true)
             emitSelection()
-        }else{
+        }else {
             //first_line.text = "NoFocus"
-            borderResizableLayout.setBackgroundResource(R.drawable.borders_white)
+            if(!this.isSelectedByOther) {
+                borderResizableLayout.setBackgroundResource(R.drawable.borders_white)
+            }
             editButton.visibility = View.INVISIBLE
             deleteButton.visibility = View.INVISIBLE
             resizeButton.visibility = View.INVISIBLE
             setAnchorsVisible(false)
         }
         return super.setSelected(selected)
+    }
+
+    fun setIsSelectedByOther(isSelectedByOther: Boolean){
+        this.isSelectedByOther = isSelectedByOther
+        if(isSelectedByOther){
+            borderResizableLayout.setBackgroundResource(R.drawable.borders_red)
+        } else {
+            borderResizableLayout.setBackgroundResource(R.drawable.borders_white)
+        }
     }
 
     fun setAnchorsVisible(isVisible: Boolean){
@@ -701,6 +715,15 @@ open class BasicElementView: ConstraintLayout {
         if(response !="") {
             Log.d("emitingSelection", response)
             socket?.emit(SocketConstants.SELECT_FORMS, response)
+        }
+    }
+
+    private fun emitDeselection(){
+        val response: String = this.createFormsUpdateEvent()
+
+        if(response !="") {
+            Log.d("emitingDeselection", response)
+            socket?.emit(SocketConstants.DESELECT_FORMS, response)
         }
     }
 

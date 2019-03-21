@@ -13,31 +13,37 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.github.nkzawa.socketio.client.Socket
+import com.google.gson.Gson
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Enum.LinkTypes
 import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
-import com.polypaint.polypaint.Model.AnchorPoint
-import com.polypaint.polypaint.Model.Canevas
-import com.polypaint.polypaint.Model.Coordinates
-import com.polypaint.polypaint.Model.Link
+import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
+import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
+import com.polypaint.polypaint.SocketReceptionModel.LinksUpdateEvent
 import kotlinx.android.synthetic.main.basic_element.view.*
 
 class LinkView: View{
     private var socket: Socket? = null
     private val paint: Paint = Paint()
+
     var link: Link? = null
     var start: Coordinates = Coordinates(0.0,0.0)
     var end: Coordinates = Coordinates(0.0,0.0)
+
+    private var isSelectedByOther: Boolean = false
+
     var region: Region = Region()
     var rect :RectF = RectF()
+
+    var dialog: DialogFragment? = null
     var multiplicityFrom: TextView? = null
     var multiplicityTo: TextView? = null
     var nameView: TextView? = null
-    var dialog: DialogFragment? = null
-
     var editButton: ImageButton? = null
     var angleButtons: ArrayList<ImageButton> = ArrayList()
     var startAnchorButton : ImageButton? = null
@@ -50,13 +56,21 @@ class LinkView: View{
     var canvas: Canvas? = null
     var thickness: Float = 10f
 
-
+    fun setIsSelectedByOther(isSelectedByOther: Boolean){
+        this.isSelectedByOther = isSelectedByOther
+        if(isSelectedByOther){
+            paint.color = Color.RED
+        } else {
+            setPaintColorWithLinkStyle()
+        }
+    }
     constructor(context: Context) : super(context) {
         initialise()
         val activity: AppCompatActivity = context as AppCompatActivity
         val app: PolyPaint = activity.application as PolyPaint
         this.socket = app.socket
     }
+
 
     private fun initialise(){
         paint.color = Color.BLACK
@@ -340,7 +354,8 @@ class LinkView: View{
         parentView.addView(nameView)
     }
 
-    private fun deleteLink(){
+    fun deleteLink(){
+        emitDelete()
         val fromId = link?.from?.formId
         if(fromId != null && fromId != ""){
             val fromShape = ViewShapeHolder.getInstance().canevas.findShape(fromId)
@@ -352,8 +367,13 @@ class LinkView: View{
             toShape?.linksTo?.remove(link?.id)
         }
         removeButtonsAndTexts()
+        val localLink: Link? = link
+        if(localLink != null){
+            ViewShapeHolder.getInstance().remove(localLink)
+        }
         val parent = this.parent as RelativeLayout
         parent.removeView(this)
+
     }
 
     private fun removeButtonsAndTexts(){
@@ -391,20 +411,26 @@ class LinkView: View{
     }
 
     override fun setSelected(selected: Boolean) {
-        val parentView = this.parent as RelativeLayout
+        if(this.isSelected && !selected){
+            emitDeselection()
+        }
         if(selected){
-
+            emitSelection()
             paint.color = Color.BLUE
-
-        }else{
-            when(link?.style?.color){
-                "BLACK"->paint.color = Color.BLACK
-                "GREEN"->paint.color = Color.GREEN
-                "YELLOW"->paint.color = Color.YELLOW
-            }
+        }else if(!this.isSelectedByOther){
+            setPaintColorWithLinkStyle()
 
         }
         return super.setSelected(selected)
+    }
+
+    fun setPaintColorWithLinkStyle(){
+        when(link?.style?.color){
+            "BLACK"->paint.color = Color.BLACK
+            "GREEN"->paint.color = Color.GREEN
+            "YELLOW"->paint.color = Color.YELLOW
+            else -> paint.color = Color.BLACK
+        }
     }
 
     private var onTouchListenerBody = View.OnTouchListener { v, event ->
@@ -412,9 +438,11 @@ class LinkView: View{
         Log.d("region", region.bounds.toString())
 
         if(region.contains(event.x.toInt(), event.y.toInt())){
-            val parentView = v.parent as RelativeLayout
-            parentView.dispatchSetSelected(false)
-            v.isSelected = true
+            if(!this.isSelectedByOther) {
+                val parentView = v.parent as RelativeLayout
+                parentView.dispatchSetSelected(false)
+                v.isSelected = true
+            }
 
             true
         }else{
@@ -489,6 +517,8 @@ class LinkView: View{
                 val middlePoint = middlePoints[index]
                 angleButtons.indexOf(v)
                 link?.path?.add(index + 1, Coordinates(v.x.toDouble(), v.y.toDouble() ))
+
+                emitUpdate()
                 invalidate()
                 requestLayout()
             }
@@ -590,6 +620,8 @@ class LinkView: View{
                 Log.d("AnchorFormId","Forms id" + link!!.from.formId)
                 link?.path?.first()?.x = v.x.toDouble()
                 link?.path?.first()?.y = v.y.toDouble()
+
+                emitUpdate()
                 invalidate()
                 requestLayout()
             }
@@ -689,6 +721,8 @@ class LinkView: View{
                 Log.d("AnchorFormId","Forms id" + link!!.to.formId)
                 link?.path?.last()?.x = v.x.toDouble()
                 link?.path?.last()?.y = v.y.toDouble()
+
+                emitUpdate()
                 invalidate()
                 requestLayout()
             }
@@ -746,28 +780,50 @@ class LinkView: View{
             }
         }
     }
-//
 
-//    private fun emitSelection(){
-//        val response: String = this.createResponseObject()
-//
-//        if(response !="") {
-//            Log.d("emitingSelection", response)
-//            socket?.emit(SocketConstants.SELECT_FORMS, response)
-//        }
-//    }
-//
-//    private fun createResponseObject(): String{
-//        val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(this))
-//
-//        var obj: String =""
-//        if(basicShape !=null) {
-//            val gson = Gson()
-//            val response: DrawingActivity.Response =
-//                DrawingActivity.Response(UserHolder.getInstance().username, basicShape)
-//            obj = gson.toJson(response)
-//        }
-//        return obj
-//    }
+
+    fun emitUpdate(){
+        val response: String = this.createLinksUpdateEvent()
+        if(response !="") {
+            Log.d("emitingUpdate", response)
+            socket?.emit(SocketConstants.UPDATE_LINKS, response)
+        }
+    }
+    private fun emitDelete(){
+        val response: String = this.createLinksUpdateEvent()
+
+        if(response !="") {
+            Log.d("emitingDeletion", response)
+            socket?.emit(SocketConstants.DELETE_LINKS, response)
+        }
+    }
+    private fun emitSelection(){
+        val response: String = this.createLinksUpdateEvent()
+
+        if(response !="") {
+            Log.d("emitingSelection", response)
+            socket?.emit(SocketConstants.SELECT_LINKS, response)
+        }
+    }
+    private fun emitDeselection(){
+        val response: String = this.createLinksUpdateEvent()
+
+        if(response !="") {
+            Log.d("emitingDeselection", response)
+            socket?.emit(SocketConstants.DESELECT_LINKS, response)
+        }
+    }
+    private fun createLinksUpdateEvent(): String{
+        val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(ViewShapeHolder.getInstance().linkMap.getValue(this))
+        val linksArray: ArrayList<Link> = ArrayList()
+        var obj: String =""
+        if(link !=null) {
+            linksArray.add(link)
+            val gson = Gson()
+            val response: LinksUpdateEvent = LinksUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, linksArray)
+            obj = gson.toJson(response)
+        }
+        return obj
+    }
 
 }

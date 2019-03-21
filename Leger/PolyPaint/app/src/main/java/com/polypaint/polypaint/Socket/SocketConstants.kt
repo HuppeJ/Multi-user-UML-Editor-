@@ -47,9 +47,9 @@ class SocketConstants{
         const val UPDATE_LINKS_RESPONSE: String = "updateLinksResponse"
         const val LINKS_UPDATED: String = "linksUpdated"
 
-        const val DELETE_LINKS: String = ""
-        const val DELETE_LINKS_RESPONSE: String = ""
-        const val LINKS_DELETED: String = ""
+        const val DELETE_LINKS: String = "deleteLinks"
+        const val DELETE_LINKS_RESPONSE: String = "deleteLinksResponse"
+        const val LINKS_DELETED: String = "linksDeleted"
 
         const val SELECT_LINKS: String = "selectLinks"
         const val SELECT_LINKS_RESPONSE: String = "selectLinksResponse"

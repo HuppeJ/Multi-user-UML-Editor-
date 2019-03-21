@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.Link
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.View.LinkView
 
 class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListener {
     var link: Link? = null
@@ -119,9 +120,14 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
         link?.style?.thickness = thickness
         link?.style?.type = style
 
-        ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.invalidate()
-        ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.requestLayout()
-        ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]?.dialog = null
+        val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[link?.id]
+
+        if(linkView != null){
+            linkView.emitUpdate()
+            linkView.invalidate()
+            linkView.requestLayout()
+            linkView.dialog = null
+        }
 
         super.onDestroy()
     }
