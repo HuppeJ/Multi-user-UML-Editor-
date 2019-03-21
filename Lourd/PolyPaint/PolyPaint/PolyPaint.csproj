@@ -208,6 +208,7 @@
     <Compile Include="Services\IDialogService.cs" />
     <Compile Include="Templates\AnchorPoint.cs" />
     <Compile Include="Templates\BasicShape.cs" />
+    <Compile Include="Templates\EditCanvas.cs" />
     <Compile Include="Templates\Canvas.cs" />
     <Compile Include="Templates\CanvasSocketCommunication.cs" />
     <Compile Include="Templates\ChatroomJoin.cs" />

@@ -14,6 +14,7 @@ using PolyPaint.Templates;
 using PolyPaint.Utilitaires;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace PolyPaint.VueModeles
 {
@@ -24,7 +25,8 @@ namespace PolyPaint.VueModeles
         private IDialogService dialogService;
         private TaskFactory ctxTaskFactory;
 
-        private string _userName = "g";
+        #region Properties
+        private string _userName = "a";
         public string username
         {
             get { return _userName; }
@@ -100,6 +102,47 @@ namespace PolyPaint.VueModeles
                 OnPropertyChanged();
             }
         }
+
+        private string _canvasName = "";
+        public string CanvasName
+        {
+            get { return _canvasName; }
+            set
+            {
+                if (_canvasName == value) return;
+
+                _canvasName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _canvasPrivacy = "Public";
+        public string CanvasPrivacy
+        {
+            get { return _canvasPrivacy; }
+            set
+            {
+                if (_canvasPrivacy == value) return;
+
+                _canvasPrivacy = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _canvasProtection = "Unprotected";
+        public string CanvasProtection
+        {
+            get { return _canvasProtection; }
+            set
+            {
+                if (_canvasProtection == value) return;
+
+                _canvasProtection = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
 
         #region Connect Command
         private ICommand _connectCommand;
@@ -289,6 +332,57 @@ namespace PolyPaint.VueModeles
         {
             return (!string.IsNullOrEmpty(textMessage) && !string.IsNullOrWhiteSpace(textMessage)
                 && _selectedRoom != null && IsConnected);
+        }
+        #endregion
+
+        #region CancelCanvasCreation Command
+        private ICommand _cancelCanvasCreationCommand;
+        public ICommand CancelCanvasCreationCommand
+        {
+            get
+            {
+                return _cancelCanvasCreationCommand ?? (_cancelCanvasCreationCommand = new RelayCommand<Object>(CancelCanvasCreation));
+            }
+        }
+
+        private void CancelCanvasCreation(object o)
+        {
+            CanvasName = "";
+            CanvasPrivacy = "Public";
+            CanvasProtection = "Unprotected";
+        }
+        #endregion
+
+        #region
+        private ICommand _createCanvasCommand;
+        public ICommand CreateCanvasCommand
+        {
+            get
+            {
+                return _createCanvasCommand ?? (_createCanvasCommand = new RelayCommand<Object>(CreateCanvas, CanCreateCanvas));
+            }
+        }
+
+        private void CreateCanvas(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
+            int accessibility = CanvasProtection == "Unprotected" ? 0 : 1;
+            int[] dimensions = { 1, 1 };
+
+            Templates.Canvas canvas = new Templates.Canvas(new Guid().ToString(), CanvasName, username, username,
+                                                            accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions);
+
+            DrawingService.CreateCanvas(canvas);
+        }
+
+        private bool CanCreateCanvas(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
+            bool unprotectedOrPassword = (CanvasProtection == "Unprotected") || !string.IsNullOrEmpty(password);
+
+            return !string.IsNullOrEmpty(CanvasName) && unprotectedOrPassword;
         }
         #endregion
 

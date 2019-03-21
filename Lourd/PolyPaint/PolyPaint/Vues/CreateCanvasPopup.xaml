@@ -70,8 +70,8 @@
                                      materialDesign:HintAssist.Hint="Password">
                         </PasswordBox>
                     </StackPanel>
-                    <Button Content="Create canvas" Margin="0,10,0,0" Width="150"/>
-                    <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close"/>
+                    <Button Content="Create canvas" Margin="0,10,0,0" Width="150" Click="Close" Command="{Binding CreateCanvasCommand}" CommandParameter="{Binding ElementName=PasswordTextBox}"/>
+                    <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close" Command="{Binding CancelCanvasCreationCommand}"/>
                 </StackPanel>
             </Border>
         </Grid>
