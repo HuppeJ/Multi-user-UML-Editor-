@@ -46,6 +46,7 @@ namespace PolyPaint.Services
                 if (response.isCreated)
                 {
                     canvasName = response.canvasName;
+                    DrawingService.RefreshCanvases();
                 }
             });
 
@@ -109,6 +110,8 @@ namespace PolyPaint.Services
                     }
                 }
             });
+
+            RefreshCanvases();
         }
 
         public static void CreateCanvas(Templates.Canvas canvas)

@@ -4,6 +4,6 @@ namespace PolyPaint.Templates
 {
     public class PrivateCanvases
     {
-        public List<Canvas> privateCanvases { get; set; }
+        public List<Canvas> privateCanvas { get; set; }
     }
 }

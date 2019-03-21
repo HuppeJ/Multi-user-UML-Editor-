@@ -19,7 +19,22 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <local:VueModele x:Key="VueModele" />
+
+            <DataTemplate x:Key="CanvasDataTemplate">
+                <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}"
+                    Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
+                    Height="50" Margin="-2,0,0,0">
+                    <Grid>
+                        <!--Name-->
+                        <TextBlock HorizontalAlignment="Left"
+                               Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                               Text="{Binding name}" />
+                    </Grid>
+                </Border>
+            </DataTemplate>
         </ResourceDictionary>
+
+        
     </UserControl.Resources>
 
     <i:Interaction.Triggers>
@@ -33,19 +48,31 @@
         
         <Grid>
             <TextBlock Height="50" Width="400" Margin="14,18,686,632" FontSize="35" FontFamily="Comic Sans MS">Your gallery</TextBlock>
-            <Button Content="New Canvas" Margin="923,31,27,637" Click="CreateCanvas" Width="150"/>
             <Rectangle HorizontalAlignment="Stretch" Fill="Black" Margin="11,75,300,620"></Rectangle>
+
+            <TextBlock Height="50" Width="400" Margin="14,114,686,536" FontSize="35" FontFamily="Comic Sans MS">Private canvases</TextBlock>
+            <StackPanel Margin="12,165,620,73">
+                <ListBox ItemsSource="{Binding PrivateCanvases}" 
+                     ItemTemplate="{DynamicResource CanvasDataTemplate}"
+                     ItemContainerStyle="{DynamicResource roomsListBoxItemStyle}"                 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,40"/>
+            </StackPanel>
+            <TextBlock Height="50" Width="400" Margin="529,118,171,532" FontSize="35" FontFamily="Comic Sans MS">Public canvases</TextBlock>
+            <StackPanel Margin="512,169,120,69">
+                <ListBox ItemsSource="{Binding PublicCanvases}" 
+                     ItemTemplate="{DynamicResource CanvasDataTemplate}"
+                     ItemContainerStyle="{DynamicResource roomsListBoxItemStyle}"                 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,40"/>
+            </StackPanel>
+            <Rectangle VerticalAlignment="Stretch" Fill="Black" Margin="491,132,604,68"></Rectangle>
+            
+            <Button Content="New Canvas" Margin="923,31,27,637" Click="CreateCanvas" Width="150"/>
+            
             <Button Content="DrawingView" Margin="930,645,20,23" Command="{Binding DrawingViewCommand}" Width="150"/>
             <Button Content="Disconnect" Margin="20,648,930,20" Command="{Binding LogoutCommand}" Width="150"/>
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding PublicCanvases}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
+            
             <Button Content="Refresh canvas" Margin="758,644,192,24" Command="{Binding RefreshCanvasesCommand}" Width="150"/>
             <Button Content="Reset Server" Margin="581,644,369,24" Command="{Binding ResetServerCommand}" Width="150"/>
             <Popup x:Name="popUpCreateCanvas" Placement="Center">

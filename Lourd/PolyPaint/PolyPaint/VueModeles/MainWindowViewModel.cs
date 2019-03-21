@@ -514,7 +514,7 @@ namespace PolyPaint.VueModeles
 
         private void UpdatePrivateCanvases(PrivateCanvases canvas)
         {
-            PrivateCanvases = canvas.privateCanvases;
+            PrivateCanvases = canvas.privateCanvas;
         }
         #endregion
 
@@ -535,7 +535,8 @@ namespace PolyPaint.VueModeles
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;
 
-            // rooms.Add(new Room { name = "Everyone" });
+            //rooms.Add(new Room { name = "Everyone" });
+
         }
     }
 }
