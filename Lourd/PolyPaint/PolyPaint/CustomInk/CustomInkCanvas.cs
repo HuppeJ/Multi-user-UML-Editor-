@@ -181,10 +181,12 @@ namespace PolyPaint.CustomInk
 
             clipboard = new StrokeCollection();
 
+            /*
             canvas = new Templates.Canvas(Guid.NewGuid().ToString(), "qwe", ConnectionService.username,
                 ConnectionService.username, 0, null, new List<BasicShape>(), new List<Link>(), new int[] { 1, 1 });
             DrawingService.CreateCanvas(canvas);
             DrawingService.JoinCanvas("qwe");
+            */
 
             DrawingService.AddStroke += OnRemoteStroke;
             DrawingService.RemoveStrokes += OnRemoveStrokes;
