@@ -1,12 +1,18 @@
 package com.polypaint.polypaint.Adapter
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import java.io.ByteArrayOutputStream
+import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.polypaint.polypaint.Enum.AccessibilityTypes
+import android.graphics.drawable.BitmapDrawable
 import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.R
@@ -82,6 +88,7 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
         }
 
     }
+
     private inner class PublicImageHolder internal constructor(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         internal var nameText: TextView = itemView.findViewById(R.id.canevas_name_text) as TextView
@@ -92,10 +99,17 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
             itemView.setOnClickListener { listener.onItemClick(canevas) }
             if(canevas.owner == user){
                 nameText.text = canevas.name + " owned by you"
-            }else{
+            } else {
                 nameText.text = canevas.name + " owned by " + canevas.owner
             }
-            imageView.setImageResource(R.drawable.ic_delete)
+
+
+            if(canevas.thumbnailLeger != "" && canevas.thumbnailLeger != null) {
+                imageView.setImageDrawable(getDrawableThumbnail(canevas.thumbnailLeger))
+            } else {
+                imageView.setImageResource(R.drawable.ic_picture)
+            }
+
             if(canevas.password != ""){
                 lockImage.setImageResource(R.drawable.ic_padlock)
             }
@@ -105,6 +119,28 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
             //val formatter = SimpleDateFormat("HH:mm:ss")
             //timeText.text = formatter.format( message.createdAt)
             //DateUtils.formatDateTime(context, message.createdAt, DateUtils.FORMAT_SHOW_TIME)
+        }
+
+    }
+
+    private fun getDrawableThumbnail(thumbnailString: String): BitmapDrawable {
+        val bitmap: Bitmap? = stringToBitMap(thumbnailString)
+        val resized = Bitmap.createScaledBitmap(bitmap, (bitmap!!.width!!.times(0.6)).toInt(), (bitmap!!.height!!.times(0.6)).toInt(), true);
+
+        return bitmapToDrawable(resized!!)
+    }
+
+    private fun bitmapToDrawable(bitmap:Bitmap): BitmapDrawable {
+        return BitmapDrawable(bitmap)
+    }
+
+    private fun stringToBitMap(encodedString: String): Bitmap? {
+        try {
+            val encodeByte = Base64.decode(encodedString, Base64.DEFAULT)
+            return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
+        } catch (e: Exception) {
+            e.message
+            return null
         }
 
     }

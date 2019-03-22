@@ -48,6 +48,12 @@ export default class CanvasRoom {
         return this.canvas.password === data.password;
     }
 
+    
+    public isCanvasSaved(data: IEditCanevasData) {
+        this.canvas.thumbnailLeger = data.canevas.thumbnailLeger;
+        return true;
+    }
+
     /***********************************************
     * Functions related to Forms
     ************************************************/

@@ -132,9 +132,23 @@ export default class CanvasSocketEvents {
                 }
             });
 
-            socket.on("saveCanvas", function (data: any) {
+            socket.on("saveCanvas", function (dataStr: string) {
                 try {
-                    // TODO  
+                    const data: IEditCanevasData = JSON.parse(dataStr);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
+
+                    const response = {
+                        isCanvasSaved: canvasManager.saveCanvas(canvasRoomId, data)
+                    };
+
+                    if (response.isCanvasSaved) {
+                        console.log(socket.id + " saved canvas " + data.canevas.name);
+                        // io.to(canvasRoomId).emit("canvasDeselected", dataStr);
+                    } else {
+                        console.log(socket.id + " failed to save canvas " + data.canevas.name);
+                    }
+
+                    socket.emit("saveCanvasResponse", JSON.stringify(response));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }

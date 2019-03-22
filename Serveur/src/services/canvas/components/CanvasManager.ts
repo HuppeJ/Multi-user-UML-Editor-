@@ -19,6 +19,16 @@ export default class CanvasManager {
         return true;
     }
 
+    public saveCanvas(canvasRoomId: string, data: IEditCanevasData): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.isCanvasSaved(data);
+
+    }
+
     public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
