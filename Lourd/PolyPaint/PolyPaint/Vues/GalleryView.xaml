@@ -43,7 +43,9 @@
                                Text="{Binding name}" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
                             <Button Content="Edit protection" x:Name="EditButton" Visibility="Collapsed"
-                                    Margin="0,0,10,0" Width="100" Height="23" Padding="0"></Button>
+                                    Command="{Binding Path=DataContext.SelectProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                                    CommandParameter="{Binding}"
+                                    Margin="0,0,10,0" Width="100" Height="23" Padding="0" Click="ChangeCanvasProtection"/>
                             <TextBlock Text="Protected" x:Name="LockedIcon" Visibility="Visible" HorizontalAlignment="Right"/>
                             <Button Content="Join" x:Name="ButtonJoinProtected" Visibility="Visible"
                                     Click="JoinProtectedCanvas"
@@ -110,7 +112,8 @@
                     MaxHeight="450"
                     ItemsSource="{Binding PublicCanvases}" 
                     ItemTemplate="{DynamicResource CanvasDataTemplate}"
-                    ItemContainerStyle="{DynamicResource CanvasListBoxItemStyle}"/>
+                    ItemContainerStyle="{DynamicResource CanvasListBoxItemStyle}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"/>
             </StackPanel>
             
             <Rectangle VerticalAlignment="Stretch" Fill="Black" Margin="491,132,604,68"></Rectangle>
@@ -127,6 +130,9 @@
             </Popup>
             <Popup x:Name="popUpJoinProtectedCanvas" Placement="Center">
                 <Vues:JoinProtectedCanvasPopup x:Name="popUpJoinProtectedCanvasVue"/>
+            </Popup>
+            <Popup x:Name="popUpChangeCanvasProtection" Placement="Center">
+                <Vues:ChangeCanvasProtectionPopup x:Name="popUpChangeCanvasProtectionVue"/>
             </Popup>
         </Grid>
         

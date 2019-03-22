@@ -394,6 +394,24 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region CancelCanvasProtectionChange Command
+        private ICommand _cancelCanvasProtectionChangeCommand;
+        public ICommand CancelCanvasProtectionChangeCommand
+        {
+            get
+            {
+                return _cancelCanvasProtectionChangeCommand ?? (_cancelCanvasProtectionChangeCommand = new RelayCommand<Object>(CancelCanvasProtectionChange));
+            }
+        }
+
+        private void CancelCanvasProtectionChange(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            passwordBox.Password = "";
+            CanvasProtection = "Unprotected";
+        }
+        #endregion
+
         #region CancelCanvasJoin Command
         private ICommand _cancelCanvasJoinCommand;
         public ICommand CancelCanvasJoinCommand
@@ -448,6 +466,28 @@ namespace PolyPaint.VueModeles
             bool unprotectedOrPassword = (CanvasProtection == "Unprotected") || !string.IsNullOrEmpty(password);
 
             return !string.IsNullOrEmpty(CanvasName) && unprotectedOrPassword;
+        }
+        #endregion
+
+        #region ChangeCanvasProtection Command
+        private ICommand _changeCanvasProtection;
+        public ICommand ChangeCanvasProtectionCommand
+        {
+            get
+            {
+                return _changeCanvasProtection ?? (_changeCanvasProtection = new RelayCommand<Object>(ChangeCanvasProtection));
+            }
+        }
+
+        private void ChangeCanvasProtection(object o)
+        {
+            var passwordBox = o as PasswordBox;
+            var password = passwordBox.Password;
+
+            //DrawingService.ChangeCanvasProtection(SelectedCanvas.name, password);
+
+            passwordBox.Password = "";
+            CanvasProtection = "Unprotected";
         }
         #endregion
 
