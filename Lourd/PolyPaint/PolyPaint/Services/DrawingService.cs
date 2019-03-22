@@ -113,13 +113,7 @@ namespace PolyPaint.Services
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
             socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
         }
-
-        public static void JoinCanvas(string roomName)
-        {
-            EditGalleryData editGalleryData = new EditGalleryData(username, roomName);
-            socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
-        }
-
+        
         public static void JoinCanvas(string roomName, string password)
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);

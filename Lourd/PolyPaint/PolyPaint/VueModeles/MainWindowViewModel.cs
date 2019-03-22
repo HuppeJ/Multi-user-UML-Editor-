@@ -480,7 +480,7 @@ namespace PolyPaint.VueModeles
         private void JoinUnprotectedCanvas(object o)
         {
             var canvas = o as Templates.Canvas;
-            DrawingService.JoinCanvas(canvas.name);
+            DrawingService.JoinCanvas(canvas.name, "");
         }
         #endregion
 
