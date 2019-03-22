@@ -654,6 +654,10 @@ namespace PolyPaint.VueModeles
             {
                 UserMode = UserModes.Drawing;
             }
+            else
+            {
+                dialogService.ShowNotification("Could not join chatroom: wrong password");
+            }
         }
         #endregion
 
