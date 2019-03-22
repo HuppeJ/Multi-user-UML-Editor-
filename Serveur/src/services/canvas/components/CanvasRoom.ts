@@ -48,6 +48,11 @@ export default class CanvasRoom {
         return this.canvas.password === data.password;
     }
 
+    public updataCanvasPassword(data: IEditGalleryData) {
+        this.canvas.password = data.password;
+        return true;
+    }
+
     /***********************************************
     * Functions related to Forms
     ************************************************/
