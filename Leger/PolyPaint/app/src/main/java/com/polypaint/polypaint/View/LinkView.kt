@@ -486,18 +486,58 @@ class LinkView: View{
         Log.d("event", event.x.toString()+" "+ event.y.toString())
         Log.d("region", region.bounds.toString())
 
-        if(region.contains(event.x.toInt(), event.y.toInt())){
-            if(!this.isSelectedByOther) {
-                val parentView = v.parent as RelativeLayout
-                parentView.dispatchSetSelected(false)
-                v.isSelected = true
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                oldFrameRawX = event.rawX
+                oldFrameRawY = event.rawY
+                if(region.contains(event.x.toInt(), event.y.toInt())){
+                    if(!this.isSelectedByOther) {
+                        val parentView = v.parent as RelativeLayout
+                        parentView.dispatchSetSelected(false)
+                        v.isSelected = true
+                    }
+
+                    true
+                }else{
+                    false
+                }
             }
-
-            true
-        }else{
-            false
+            MotionEvent.ACTION_MOVE ->{
+                if(v.isSelected){
+                    val deltaX = event.rawX - oldFrameRawX
+                    val deltaY = event.rawY - oldFrameRawY
+                    val localLink = link
+                    if(localLink != null) {
+                        for (point in localLink.path) {
+                            if((point == localLink.path.first() && localLink.from.formId != "")
+                                ||(point == localLink.path.last() && localLink.to.formId != "")) {
+                                continue
+                            }
+                            point.x += deltaX
+                            point.y += deltaY
+                        }
+                    }
+                    v.invalidate()
+                    v.requestLayout()
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+                    true
+                } else {
+                    false
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                if(v.isSelected) {
+                    emitUpdate()
+                    true
+                } else {
+                    false
+                }
+            }
+            else -> {
+                false
+            }
         }
-
     }
 
     private fun showModal(){
