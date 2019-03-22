@@ -48,6 +48,7 @@ import android.util.Base64
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.view.MotionEvent
+import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -56,6 +57,8 @@ class DrawingActivity : AppCompatActivity(){
     var oldFrameRawY : Float = 0.0F
     var mMinimumWidth : Float = 300F
     var mMinimumHeight : Float = 100F
+    var mMaximumWidth : Float = 1550F
+    var mMaximumHeight : Float = 1200F
 
     private var inflater : LayoutInflater? = null
 
@@ -99,10 +102,15 @@ class DrawingActivity : AppCompatActivity(){
             toolbar = activityToolbar
         }
 
+        Log.d("initializeViewFromCanevas0000000","********")
+
         ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
         canevas_title.text = ViewShapeHolder.getInstance().canevas.name
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        Log.d("initializeViewFromCanevas1111111","********")
+
 
         initializeViewFromCanevas()
 
@@ -159,10 +167,25 @@ class DrawingActivity : AppCompatActivity(){
 
     private fun initializeViewFromCanevas(){
         //Shape
+        Log.d("initializeViewFromCanevas","********")
+
         if(ViewShapeHolder.getInstance().canevas != null){
-            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
+            val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas!!)
+            val gson = Gson()
+            val sendObj = gson.toJson(canvasEvent)
+
+            Log.d("init","****"+ViewShapeHolder.getInstance().canevas+"****")
+            Log.d("initializeViewFromCanevas3333",sendObj)
+
+
+            //val gson = Gson()
+
+           // val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
+
             for(shape in ViewShapeHolder.getInstance().canevas.shapes){
-                addOnCanevas(shape)
+                runOnUiThread {
+                    addOnCanevas(shape)
+                }
             }
             //TODO: LINKS
 
@@ -643,10 +666,10 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     open fun resize(newWidth:Int, newHeight:Int){
-        if(newWidth >= mMinimumWidth){
+        if(newWidth >= mMinimumWidth && newHeight <= mMaximumWidth){
             parent_relative_layout.layoutParams.width = newWidth
         }
-        if(newHeight >= mMinimumHeight){
+        if(newHeight >= mMinimumHeight && newHeight <= mMaximumHeight){
             parent_relative_layout.layoutParams.height = newHeight
         }
         parent_relative_layout.requestLayout()
