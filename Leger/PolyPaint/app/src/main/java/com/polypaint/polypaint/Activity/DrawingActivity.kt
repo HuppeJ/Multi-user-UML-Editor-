@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,9 +25,7 @@ import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
-import com.polypaint.polypaint.Particles.ParticleSystem
 import com.polypaint.polypaint.R
-import com.polypaint.polypaint.ResponseModel.LinksUpdateResponse
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
 import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
@@ -54,16 +50,9 @@ import kotlinx.android.synthetic.main.view_class.view.*
 import kotlinx.android.synthetic.main.view_comment.view.*
 import kotlinx.android.synthetic.main.view_image_element.view.*
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.os.Environment
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import android.util.Base64
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.view.MotionEvent
-import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -171,6 +160,13 @@ class DrawingActivity : AppCompatActivity(){
         unstack_button.setOnClickListener{
             unstackView()
         }
+
+        save_button.setOnClickListener{
+            saveCanevas()
+        }
+
+        resizeCanvevasButton.setOnTouchListener(onTouchListenerResizeButton)
+
 
     }
 
