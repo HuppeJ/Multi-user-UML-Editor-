@@ -73,7 +73,6 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
         parentView.removeView(this)
     }
     override fun onDraw(canvas: Canvas?) {
-        val parentView = this.parent as RelativeLayout
 
         canvas?.drawRect(rect, paint)
 
@@ -149,7 +148,7 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
 
                     invalidate()
                     requestLayout()
-                    // todo emitupdate
+                    linkView.emitUpdate()
                 }
             }
         }
