@@ -100,9 +100,6 @@ namespace PolyPaint.CustomInk
         {
             ShapeStroke newStroke = (ShapeStroke)Clone();
 
-            // Changer les bounds? Gi
-            //newStroke.GetBounds().Transform(rotation.Value);
-
             newStroke.shapeStyle.rotation = rotation;
             return newStroke;
         }

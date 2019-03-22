@@ -184,9 +184,14 @@ namespace PolyPaint.Vues
 
             stroke.linkType = linkType;
             stroke.addStylusPointsToLink();
-            // gi
-            //stroke.
-            stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
+            // dotted
+            if(stroke.style.type == 1){
+                stroke.DrawingAttributes.Color = Colors.White;
+            }
+            else // normal line
+            {
+                stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
+            }
             stroke.DrawingAttributes.Width = linkThickness;
             stroke.DrawingAttributes.Height = linkThickness;
 

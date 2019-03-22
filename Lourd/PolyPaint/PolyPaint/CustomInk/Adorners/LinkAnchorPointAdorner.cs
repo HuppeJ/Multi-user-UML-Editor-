@@ -124,13 +124,13 @@ namespace PolyPaint.CustomInk
 
             if ((sender as Thumb) == anchors[1])
             {
-                linkPreviewGeom.StartPoint = new Point(linkStroke.path[0].x, linkStroke.path[0].y);
+                linkPreviewGeom.StartPoint = linkStroke.path[linkStroke.path.Count - 2].ToPoint();
                 linkPreviewGeom.EndPoint = pos;
             }
             else if ((sender as Thumb) == anchors[0])
             {
                 linkPreviewGeom.StartPoint = pos;
-                linkPreviewGeom.EndPoint = new Point(linkStroke.path[linkStroke.path.Count - 1].x, linkStroke.path[linkStroke.path.Count - 1].y);
+                linkPreviewGeom.EndPoint = linkStroke.path[1].ToPoint();
             }
 
             linkPreview.Data = linkPreviewGeom;
