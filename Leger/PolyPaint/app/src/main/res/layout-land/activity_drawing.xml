@@ -12,8 +12,10 @@
              android:layout_height="?attr/actionBarSize" android:id="@+id/include"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="0dp"
-                    tools:layout_editor_absoluteX="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/include" app:layout_constraintBottom_toBottomOf="parent">
+                                                       tools:layout_editor_absoluteX="147dp"
+                                                       app:layout_constraintTop_toBottomOf="@+id/include"
+                                                       app:layout_constraintBottom_toBottomOf="parent"
+                                                       app:layout_constraintVertical_bias="1.0">
         <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="wrap_content"
                                                            android:layout_height="match_parent"
                                                            app:layout_constraintStart_toStartOf="parent"
@@ -219,14 +221,39 @@
 
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/parent_relative_layout"
+                        android:id="@+id/background_relative_layout"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:orientation="vertical"
-                        android:background="#DDD"
+                        android:background="#ff0"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/constraintLayout"
                         app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
+
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:id="@+id/parent_relative_layout"
+                            android:layout_width="250dp"
+                            android:layout_height="250dp"
+                            android:orientation="vertical"
+                            android:background="#fff"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+            </RelativeLayout>
+
+            <ImageButton
+                    android:id="@+id/resizeCanvevasButton"
+                    android:src="@drawable/ic_resize"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="-1dp"
+                    android:layout_below="@+id/parent_relative_layout"
+                    android:layout_toEndOf="@+id/parent_relative_layout"
+                    android:layout_toRightOf="@+id/parent_relative_layout" android:layout_marginLeft="-3dp"
+                    android:layout_marginStart="-3dp"/>
+
         </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

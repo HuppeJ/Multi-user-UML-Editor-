@@ -47,9 +47,16 @@ import java.io.FileOutputStream
 import android.util.Base64
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.view.MotionEvent
 
 
 class DrawingActivity : AppCompatActivity(){
+
+    var oldFrameRawX : Float = 0.0F
+    var oldFrameRawY : Float = 0.0F
+    var mMinimumWidth : Float = 300F
+    var mMinimumHeight : Float = 100F
+
     private var inflater : LayoutInflater? = null
 
     private var drawer: Drawer? = null
@@ -144,6 +151,9 @@ class DrawingActivity : AppCompatActivity(){
         save_button.setOnClickListener {
             saveCanevas()
         }
+
+        resizeCanvevasButton.setOnTouchListener(onTouchListenerResizeButton)
+
 
     }
 
@@ -601,7 +611,56 @@ class DrawingActivity : AppCompatActivity(){
         return temp
     }
 
+    open protected var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
 
+        when(event.action){
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDownResize"
+                oldFrameRawX = event.rawX
+                oldFrameRawY = event.rawY
+            }
+            MotionEvent.ACTION_MOVE -> {
+                var deltaX: Int = (event.rawX - oldFrameRawX).toInt()
+                var deltaY: Int = (event.rawY - oldFrameRawY).toInt()
+                val newWidth = parent_relative_layout.width + deltaX
+                val newHeight = parent_relative_layout.height + deltaY
+
+                resize(newWidth, newHeight)
+
+                oldFrameRawX = event.rawX
+                oldFrameRawY = event.rawY
+            }
+            MotionEvent.ACTION_UP -> {
+                // TODO:
+                /* val activity: AppCompatActivity = context as AppCompatActivity
+                if(activity is DrawingActivity){
+                    val drawingActivity : DrawingActivity = activity as DrawingActivity
+                    drawingActivity.syncCanevasFromLayout()
+                }
+                emitUpdate()*/
+            }
+        }
+        true
+    }
+
+    open fun resize(newWidth:Int, newHeight:Int){
+        if(newWidth >= mMinimumWidth){
+            parent_relative_layout.layoutParams.width = newWidth
+        }
+        if(newHeight >= mMinimumHeight){
+            parent_relative_layout.layoutParams.height = newHeight
+        }
+        parent_relative_layout.requestLayout()
+        // requestLayout()
+    }
+
+    private fun emitUpdate(){
+        //val response: String = this.createFormsUpdateEvent()
+
+        /*if(response !="") {
+            Log.d("emitingUpdate", response)
+            socket?.emit(SocketConstants.UPDATE_FORMS, response)
+        }*/
+    }
 
     /*override fun onBackPressed() {
         socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
