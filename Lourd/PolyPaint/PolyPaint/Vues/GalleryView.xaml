@@ -92,10 +92,10 @@
     <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="1100" Height="700" Margin="0">
         
         <Grid>
-            <TextBlock Height="50" Width="400" Margin="14,18,686,632" FontSize="35" FontFamily="Comic Sans MS">Your gallery</TextBlock>
+            <TextBlock Height="50" Width="400" Margin="14,18,686,632" FontSize="35">Your gallery</TextBlock>
             <Rectangle HorizontalAlignment="Stretch" Fill="Black" Margin="11,75,300,620"></Rectangle>
 
-            <TextBlock Height="50" Width="400" Margin="14,114,686,536" FontSize="35" FontFamily="Comic Sans MS">Private canvases</TextBlock>
+            <TextBlock Height="50" Width="400" Margin="14,114,686,536" FontSize="30">Private canvases</TextBlock>
 
             <StackPanel Margin="12,165,620,70" VerticalAlignment="Top">
                 <ListBox 
@@ -106,7 +106,7 @@
                     ScrollViewer.VerticalScrollBarVisibility="Visible"/>
             </StackPanel>
 
-            <TextBlock Height="50" Width="400" Margin="529,118,171,532" FontSize="35" FontFamily="Comic Sans MS">Public canvases</TextBlock>
+            <TextBlock Height="50" Width="400" Margin="529,118,171,532" FontSize="30">Public canvases</TextBlock>
             <StackPanel Margin="512,165,120,70"  VerticalAlignment="Top">
                 <ListBox 
                     MaxHeight="450"
@@ -121,10 +121,9 @@
             <Button Content="New Canvas" Margin="923,31,27,637" Click="CreateCanvas" Width="150"/>
             
             <Button Content="DrawingView" Margin="930,645,20,23" Command="{Binding DrawingViewCommand}" Width="150"/>
-            <Button Content="Disconnect" Margin="20,648,930,20" Command="{Binding LogoutCommand}" Width="150"/>
+            <Button Content="Disconnect" Margin="20,645,930,23" Command="{Binding LogoutCommand}" Width="150"/>
             
-            <Button Content="Refresh canvas" Margin="758,644,192,24" Command="{Binding RefreshCanvasesCommand}" Width="150"/>
-            <Button Content="Reset Server" Margin="581,644,369,24" Command="{Binding ResetServerCommand}" Width="150"/>
+            <Button Content="Reset Server" Margin="735,645,215,23" Command="{Binding ResetServerCommand}" Width="150"/>
             <Popup x:Name="popUpCreateCanvas" Placement="Center">
                 <Vues:CreateCanvasPopup x:Name="popUpCreateCanvasVue"/>
             </Popup>
