@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -129,11 +130,11 @@ class LinkView: View{
     }
 
     private fun addButtons(parentView: RelativeLayout){
+        val layoutParams = ViewGroup.LayoutParams(100, 100)
         parentView.removeView(deleteButton)
         deleteButton = ImageButton(context)
         deleteButton?.setImageResource(R.drawable.ic_delete)
-        deleteButton?.layoutParams?.height = 24
-        deleteButton?.layoutParams?.width = 24
+        deleteButton?.layoutParams=layoutParams
         deleteButton?.x = start.x.toFloat() + 50
         deleteButton?.y = start.y.toFloat() - 50
         deleteButton?.setOnClickListener{
@@ -145,21 +146,19 @@ class LinkView: View{
         parentView.removeView(startAnchorButton)
         startAnchorButton = ImageButton(context)
         startAnchorButton?.setImageResource(R.drawable.ic_resize)
-        startAnchorButton?.layoutParams?.height = 24
-        startAnchorButton?.layoutParams?.width = 24
-        startAnchorButton?.x = start.x.toFloat()
-        startAnchorButton?.y = start.y.toFloat()
+        startAnchorButton?.layoutParams = layoutParams
+        startAnchorButton?.x = start.x.toFloat() - startAnchorButton?.layoutParams?.width!! / 2
+        startAnchorButton?.y = start.y.toFloat() - startAnchorButton?.layoutParams?.height!! / 2
         startAnchorButton?.setOnTouchListener(onTouchListenerStartAnchorButton)
-        startAnchorButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+        startAnchorButton?.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
         parentView.addView(startAnchorButton)
 
         parentView.removeView(endAnchorButton)
         endAnchorButton = ImageButton(context)
         endAnchorButton?.setImageResource(R.drawable.ic_resize)
-        endAnchorButton?.layoutParams?.height = 24
-        endAnchorButton?.layoutParams?.width = 24
-        endAnchorButton?.x = end.x.toFloat()
-        endAnchorButton?.y = end.y.toFloat()
+        endAnchorButton?.layoutParams = layoutParams
+        endAnchorButton?.x = end.x.toFloat() - endAnchorButton?.layoutParams?.width!! / 2
+        endAnchorButton?.y = end.y.toFloat() - endAnchorButton?.layoutParams?.height!! / 2
         endAnchorButton?.setOnTouchListener(onTouchListenerEndAnchorButton)
         endAnchorButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
         parentView.addView(endAnchorButton)
@@ -171,10 +170,9 @@ class LinkView: View{
         for(middlePoint: Coordinates in middlePoints){
             val angleButton = ImageButton(context)
             angleButton.setImageResource(R.drawable.ic_resize)
-            angleButton.layoutParams?.height = 12
-            angleButton.layoutParams?.width = 12
-            angleButton.x = middlePoint.x.toFloat()
-            angleButton.y = middlePoint.y.toFloat()
+            angleButton.layoutParams = layoutParams
+            angleButton.x = middlePoint.x.toFloat() - angleButton.layoutParams?.width!! / 2
+            angleButton.y = middlePoint.y.toFloat() - angleButton.layoutParams?.height!! / 2
             angleButton.setOnTouchListener(onTouchListenerAngleButton)
             angleButton.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
             angleButtons.add(angleButton)
@@ -184,10 +182,23 @@ class LinkView: View{
         parentView.removeView(editButton)
         editButton = ImageButton(context)
         editButton?.setImageResource(R.drawable.ic_edit)
-        editButton?.layoutParams?.height = 24
-        editButton?.layoutParams?.width = 24
-        editButton?.x = start.x.toFloat() + (end.x.toFloat() - start.x.toFloat()) /2  +15
-        editButton?.y = start.y.toFloat() + (end.y.toFloat() - start.y.toFloat()) /2
+        editButton?.layoutParams = layoutParams
+        var point: Coordinates =Coordinates(0.0,0.0)
+        val localLink = link
+        if(localLink != null) {
+            if (localLink.path.size > 1 && localLink.path.size % 2 != 0) {
+                point = localLink.path[(localLink.path.size - 1) / 2]
+            } else {
+                val firstPoint = localLink.path[(localLink.path.size - 1 )/ 2]
+                val secondPoint = localLink.path[(localLink.path.size - 1 )/ 2 + 1]
+                point = Coordinates(
+                    firstPoint.x + (secondPoint.x - firstPoint.x) / 2.0 + 40,
+                    firstPoint.y + (secondPoint.y - firstPoint.y) / 2.0
+                )
+            }
+        }
+        editButton?.x = point.x.toFloat()
+        editButton?.y = point.y.toFloat()
         editButton?.setOnClickListener{
             showModal()
         }
@@ -217,20 +228,20 @@ class LinkView: View{
                 firstLineAngle = angle
             }
             path.moveTo(
-                previousPoint.x.toFloat() - thickness / 2 * Math.cos(angle2).toFloat(),
-                previousPoint.y.toFloat() - thickness / 2 * Math.sin(angle2).toFloat()
+                previousPoint.x.toFloat() - 20 * Math.cos(angle2).toFloat(),
+                previousPoint.y.toFloat() - 20 * Math.sin(angle2).toFloat()
             )
             path.lineTo(
-                point.x.toFloat() - thickness / 2 * Math.cos(angle2).toFloat(),
-                point.y.toFloat() - thickness / 2 * Math.sin(angle2).toFloat()
+                point.x.toFloat() - 20  * Math.cos(angle2).toFloat(),
+                point.y.toFloat() - 20  * Math.sin(angle2).toFloat()
             )
             path.lineTo(
-                point.x.toFloat() + thickness / 2 * Math.cos(angle2).toFloat(),
-                point.y.toFloat() + thickness / 2 * Math.sin(angle2).toFloat()
+                point.x.toFloat() + 20 * Math.cos(angle2).toFloat(),
+                point.y.toFloat() + 20 * Math.sin(angle2).toFloat()
             )
             path.lineTo(
-                previousPoint.x.toFloat() + thickness / 2 * Math.cos(angle2).toFloat(),
-                previousPoint.y.toFloat() + thickness / 2 * Math.sin(angle2).toFloat()
+                previousPoint.x.toFloat() + 20 * Math.cos(angle2).toFloat(),
+                previousPoint.y.toFloat() + 20 * Math.sin(angle2).toFloat()
             )
             path.close()
 
@@ -371,8 +382,22 @@ class LinkView: View{
         parentView.addView(multiplicityTo)
 
         nameView = TextView(context)
-        nameView?.x =start.x.toFloat() + (end.x.toFloat() - start.x.toFloat()) /2  +15
-        nameView?.y =start.y.toFloat() + (end.y.toFloat() - start.y.toFloat()) /2
+        var point: Coordinates =Coordinates(0.0,0.0)
+        val localLink = link
+        if(localLink != null) {
+            if (localLink.path.size > 1 && localLink.path.size % 2 != 0) {
+                point = localLink.path[(localLink.path.size - 1) / 2]
+            } else {
+                val firstPoint = localLink.path[(localLink.path.size - 1 )/ 2]
+                val secondPoint = localLink.path[(localLink.path.size - 1 )/ 2 + 1]
+                point = Coordinates(
+                    firstPoint.x + (secondPoint.x - firstPoint.x) / 2.0,
+                    firstPoint.y + (secondPoint.y - firstPoint.y) / 2.0
+                )
+            }
+        }
+        nameView?.x =point.x.toFloat() + 40
+        nameView?.y =point.y.toFloat() - 80
         nameView?.setText(link?.name)
         parentView.addView(nameView)
     }
@@ -526,7 +551,7 @@ class LinkView: View{
 
                 if(localLink != null){
                     previewLink.path.add(localLink.path[index])
-                    previewLink.path.add(Coordinates(v.x.toDouble(), v.y.toDouble()))
+                    previewLink.path.add(Coordinates(v.x.toDouble() + v.layoutParams.width / 2, v.y.toDouble() + v.layoutParams.height / 2))
                     previewLink.path.add(localLink.path[index+1])
                     previewLinkView?.setLinkAndAnchors(previewLink)
                 }
@@ -559,7 +584,7 @@ class LinkView: View{
                 val deltaY = event.rawY - oldFrameRawY
                 val middlePoint = middlePoints[index]
                 angleButtons.indexOf(v)
-                link?.path?.add(index + 1, Coordinates(v.x.toDouble(), v.y.toDouble() ))
+                link?.path?.add(index + 1, Coordinates(v.x.toDouble() + v.layoutParams.width / 2, v.y.toDouble() + v.layoutParams.height / 2))
 
                 emitUpdate()
                 invalidate()
@@ -587,6 +612,7 @@ class LinkView: View{
 
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
+                v.visibility = View.INVISIBLE
             }
             MotionEvent.ACTION_MOVE -> {
                 val deltaX = event.rawX - oldFrameRawX
@@ -594,7 +620,7 @@ class LinkView: View{
                 v.x += deltaX
                 v.y += deltaY
 
-                colorAnchorOnHover(v.x.toInt(), v.y.toInt())
+                colorAnchorOnHover((v.x + v.layoutParams.width / 2.0).toInt(), (v.y + v.layoutParams.height / 2).toInt())
 
                 oldFrameRawY = event.rawY
                 oldFrameRawX = event.rawX
@@ -603,18 +629,19 @@ class LinkView: View{
                 if(localLink != null){
                     previewLinkView?.end = localLink.path[1]
                 }
-                previewLinkView?.start = Coordinates(v.x.toDouble(), v.y.toDouble())
+                previewLinkView?.start = Coordinates(v.x.toDouble() + v.layoutParams.width / 2, v.y.toDouble() + v.layoutParams.height / 2)
                 oldPreviewLink = previewLinkView
                 parentView.addView(previewLinkView)
             }
             MotionEvent.ACTION_UP -> {
+                v.visibility = View.VISIBLE
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                     basicView.setAnchorsVisible(false)
                 }
                 var anchorPointStart: AnchorPoint = AnchorPoint()
                 var otherBasicView: BasicElementView? = null
-                val x = v.x.toInt()
-                val y = v.y.toInt()
+                val x = (v.x.toDouble() + v.layoutParams.width / 2).toInt()
+                val y = (v.y.toDouble() + v.layoutParams.height / 2).toInt()
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
                     if(!basicView.isSelectedByOther) {
                         val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
@@ -685,8 +712,8 @@ class LinkView: View{
                     }
                 }
                 Log.d("AnchorFormId","Forms id" + link!!.from.formId)
-                link?.path?.first()?.x = v.x.toDouble()
-                link?.path?.first()?.y = v.y.toDouble()
+                link?.path?.first()?.x = v.x.toDouble() + v.layoutParams.width / 2
+                link?.path?.first()?.y = v.y.toDouble() + v.layoutParams.height / 2
 
                 emitFormsUpdate(formsToUpdate)
                 emitUpdate()
@@ -708,6 +735,7 @@ class LinkView: View{
             MotionEvent.ACTION_DOWN -> {
                 previewLinkView = LinkView(context)
 
+                v.visibility = View.INVISIBLE
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                     if (!basicView.isSelectedByOther) {
                         basicView.setAnchorsVisible(true)
@@ -731,20 +759,21 @@ class LinkView: View{
                 if(localLink != null){
                     previewLinkView?.start = localLink.path[localLink.path.size - 2]
                 }
-                previewLinkView?.end = Coordinates(v.x.toDouble(), v.y.toDouble())
+                previewLinkView?.end = Coordinates(v.x.toDouble() + v.layoutParams.width / 2, v.y.toDouble() + v.layoutParams.height / 2)
                 oldPreviewLink = previewLinkView
                 parentView.addView(previewLinkView)
 
             }
             MotionEvent.ACTION_UP -> {
+                v.visibility = View.VISIBLE
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                     basicView.setAnchorsVisible(false)
                 }
 
                 var anchorPointEnd: AnchorPoint = AnchorPoint()
                 var otherBasicView: BasicElementView? = null
-                val x = v.x.toInt()
-                val y = v.y.toInt()
+                val x = (v.x.toDouble() + v.layoutParams.width / 2).toInt()
+                val y = (v.y.toDouble() + v.layoutParams.height / 2).toInt()
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
                     if(!basicView.isSelectedByOther) {
                         val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
@@ -814,8 +843,8 @@ class LinkView: View{
                     }
                 }
                 Log.d("AnchorFormId","Forms id" + link!!.to.formId)
-                link?.path?.last()?.x = v.x.toDouble()
-                link?.path?.last()?.y = v.y.toDouble()
+                link?.path?.last()?.x = v.x.toDouble() + v.layoutParams.width / 2.0
+                link?.path?.last()?.y = v.y.toDouble() + v.layoutParams.height / 2.0
 
                 emitFormsUpdate(formsToUpdate)
                 emitUpdate()
