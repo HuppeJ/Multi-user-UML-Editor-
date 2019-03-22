@@ -18,9 +18,19 @@ namespace PolyPaint.CustomInk
 
         public ClassStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.CLASS_SHAPE;
+            strokeType = (int)StrokeTypes.CLASS_SHAPE;
             attributes = new List<string>();
             methods = new List<string>();
+
+            shapeStyle.width = 150;
+            Point lastPoint = pts[pts.Count - 1].ToPoint();
+            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
+            {
+                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
+                {
+                    StylusPoints.Add(new StylusPoint(i, j));
+                }
+            }
         }
 
         public ClassStroke(ClassShape classShape, StylusPointCollection pts) : base(pts, classShape)
@@ -47,14 +57,14 @@ namespace PolyPaint.CustomInk
 
             TransformGroup transform = new TransformGroup();
 
-            transform.Children.Add(new RotateTransform(rotation, x, y));
+            transform.Children.Add(new RotateTransform(shapeStyle.rotation, x, y));
 
             drawingContext.PushTransform(transform);
         }
 
         public override BasicShape GetBasicShape()
         {
-            return new ClassShape(guid.ToString(), type, name, shapeStyle, linksTo, linksFrom, attributes, methods);
+            return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
         }
     }
 }

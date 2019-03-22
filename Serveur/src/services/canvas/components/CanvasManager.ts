@@ -59,7 +59,7 @@ export default class CanvasManager {
 
     public addUserToCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && !canvasRoom.hasUser(data.username)) {
+        if (canvasRoom) {
             canvasRoom.addUser(data.username);
             return true;
         }
@@ -69,7 +69,7 @@ export default class CanvasManager {
 
     public removeUserFromCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && canvasRoom.hasUser(data.username)) {
+        if (canvasRoom) {
             canvasRoom.removeUser(data.username);
             return true;
         }

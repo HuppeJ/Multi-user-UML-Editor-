@@ -10,11 +10,18 @@
         {
         }
 
-        public LinkStyle(string color, int thickness, int type)
+        public LinkStyle(string color, int thickness, int type, string multiplicityFrom, string multiplicityTo)
         {
             this.color = color;
             this.thickness = thickness;
             this.type = type;
+        }
+
+        public void SetDefaults()
+        {
+            color = "#FF000000";
+            thickness = 2;
+            type = 0; //(int)StrokeTypes.LINK;
         }
     }
 }

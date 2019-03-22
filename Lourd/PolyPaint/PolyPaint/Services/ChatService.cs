@@ -28,8 +28,8 @@ namespace PolyPaint.Services
 
             socket.On("getChatroomsResponse", (data) =>
             {
-                RoomList roomlist = serializer.Deserialize<RoomList>((string)data);
-                GetChatrooms?.Invoke(roomlist);
+                // RoomList roomlist = serializer.Deserialize<RoomList>((string)data);
+                // GetChatrooms?.Invoke(roomlist);
             });
             
             socket.Emit("createChatroom", serializer.Serialize(new Chatroom("Everyone")));

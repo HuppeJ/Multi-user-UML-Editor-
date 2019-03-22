@@ -1,4 +1,6 @@
-﻿namespace PolyPaint.Templates
+﻿using System;
+
+namespace PolyPaint.Templates
 {
     public class AnchorPoint
     {
@@ -15,6 +17,13 @@
             this.formId = formId;
             this.anchor = anchor;
             this.multiplicity = multiplicity;
+        }
+
+        internal void SetDefaults()
+        {
+            formId = null;
+            anchor = 0;
+            multiplicity = "";
         }
     }
 }

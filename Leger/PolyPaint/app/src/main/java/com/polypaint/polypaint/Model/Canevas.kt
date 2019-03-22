@@ -44,6 +44,16 @@ class Canevas(var id: String, var name: String, var author: String, var owner: S
         return false
     }
 
+    fun updateLink(link: Link): Boolean{
+        for( i in 0 ..links.size-1){
+            if(links[i].id == link.id){
+                links[i] = link
+                return true
+            }
+        }
+        return false
+    }
+
     fun removeShape(id: String): Boolean {
         for(shape in shapes){
             if(shape.id == id){

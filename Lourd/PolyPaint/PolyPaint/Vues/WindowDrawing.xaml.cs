@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Templates;
+using System.Windows.Threading;
+using PolyPaint.Services;
 
 namespace PolyPaint.Vues
 {
@@ -52,8 +54,6 @@ namespace PolyPaint.Vues
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();
 
-        private void RotateSelection(object sender, RoutedEventArgs e) => surfaceDessin.RotateStrokes();
-
         private void RefreshChildren(object sender, RoutedEventArgs e)
         {
             // pcq click et command ne fonctionnent pas ensemble
@@ -61,6 +61,17 @@ namespace PolyPaint.Vues
             btn.Command.Execute(btn.CommandParameter);
 
             surfaceDessin.RefreshChildren();
+        }
+
+        private void surfaceDessin_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                if (surfaceDessin.SelectedStrokes.Count > 0)
+                {
+                    surfaceDessin.DeleteStrokes(surfaceDessin.SelectedStrokes);
+                }
+            }
         }
 
         // Quand une nouvelle nouvelle stroke a ete ajoute
@@ -102,10 +113,15 @@ namespace PolyPaint.Vues
             StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
             if(strokes.Count == 1)
             {
-                if (((CustomStroke)strokes[0]).type == (int)StrokeTypes.CLASS_SHAPE)
+                if ((strokes[0] as CustomStroke).strokeType == (int)StrokeTypes.CLASS_SHAPE)
                 {
                     popUpClassVue.setParameters(strokes[0] as ClassStroke);
                     popUpClass.IsOpen = true;
+                }
+                else if((strokes[0] as CustomStroke).strokeType == (int)StrokeTypes.LINK)
+                {
+                    popUpLinkVue.setParameters();
+                    popUpLink.IsOpen = true;
                 }
                 else
                 {
@@ -150,6 +166,29 @@ namespace PolyPaint.Vues
             {
                 stroke.methods.Add(line);
             }
+
+            surfaceDessin.RefreshChildren();
+            IsEnabled = true;
+        }
+
+        public void EditLink(string linkName, int linkType, int linkStyle, string selectedColor, int linkThickness, string multiplicityFrom, string multiplicityTo)
+        {
+            popUpLink.IsOpen = false;
+            LinkStroke stroke = (LinkStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = linkName;
+            stroke.style.type = linkStyle;
+            stroke.style.color = selectedColor;
+            stroke.style.thickness = linkThickness;
+            stroke.from.multiplicity = multiplicityFrom;
+            stroke.to.multiplicity = multiplicityTo;
+
+            stroke.linkType = linkType;
+            stroke.addStylusPointsToLink();
+            // gi
+            //stroke.
+            stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
+            stroke.DrawingAttributes.Width = linkThickness;
+            stroke.DrawingAttributes.Height = linkThickness;
 
             surfaceDessin.RefreshChildren();
             IsEnabled = true;

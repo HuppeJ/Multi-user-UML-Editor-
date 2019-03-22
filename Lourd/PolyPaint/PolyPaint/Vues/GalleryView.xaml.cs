@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,27 @@ namespace PolyPaint.Vues
         public GalleryView()
         {
             InitializeComponent();
+        }
+
+        private void CreateCanvas(object sender, RoutedEventArgs e)
+        {
+            popUpCreateCanvas.IsOpen = true;
+            popUpCreateCanvasVue.Initialize();
+            IsEnabled = false;
+        }
+
+        private void JoinProtectedCanvas(object sender, RoutedEventArgs e)
+        {
+            popUpJoinProtectedCanvas.IsOpen = true;
+            popUpJoinProtectedCanvasVue.Initialize();
+            IsEnabled = false;
+        }
+
+        public void ClosePopUp()
+        {
+            popUpCreateCanvas.IsOpen = false;
+            popUpJoinProtectedCanvas.IsOpen = false;
+            IsEnabled = true;
         }
     }
 }

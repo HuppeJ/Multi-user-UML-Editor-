@@ -17,6 +17,7 @@ import com.google.gson.Gson
 import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
@@ -50,7 +51,7 @@ class EnterDrawingPasswordDialogFragment : DialogFragment(){
                 validatePassword(passwordText)
             }
             builder.setView(view)
-                .setPositiveButton("Close",
+                .setNegativeButton("Close",
                     DialogInterface.OnClickListener { dialog, id ->
 
                     })
@@ -87,6 +88,7 @@ class EnterDrawingPasswordDialogFragment : DialogFragment(){
                 Log.d("canvasJoined", "created" + canevas?.name)
                 val intent = Intent(context, DrawingActivity::class.java)
                 intent.putExtra("canevas", canevas!!)
+                //ViewShapeHolder.getInstance().canevas = canevas!!
                 startActivity(intent)
             } else {
                 Log.d("Erreur", "selectionCanevas")
