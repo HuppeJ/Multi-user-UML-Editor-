@@ -5,10 +5,10 @@ using System.Windows.Media;
 
 namespace PolyPaint.CustomInk
 {
-    class ClassAdorner : Adorner
+    class PhaseAdorner : Adorner
     {
         private CustomStroke stroke;
-        private ClassTextBox classTextBox;
+        private CustomTextBox customTextBox;
         private CustomInkCanvas canvas;
         private Rect rectangle;
 
@@ -19,28 +19,29 @@ namespace PolyPaint.CustomInk
         RotateTransform rotation;
 
         // Be sure to call the base class constructor.
-        public ClassAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
+        public PhaseAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
             this.stroke = stroke;
             this.canvas = canvas;
             Rect bounds = stroke.GetBounds();
             center = stroke.GetCenter();
-            rotation = new RotateTransform(stroke.rotation, center.X, center.Y);
+            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
-            rectangle = new Rect(bounds.TopLeft.X, bounds.TopLeft.Y, bounds.Width, bounds.Height);
+            rectangle = new Rect(bounds.TopLeft.X, bounds.TopLeft.Y, bounds.Width, 20);
 
-            AddClass(stroke, canvas);
+            AddPhase(stroke, canvas);
         }
 
-        private void AddClass(CustomStroke stroke, CustomInkCanvas canvas)
+        private void AddPhase(CustomStroke stroke, CustomInkCanvas canvas)
         {
             visualChildren = new VisualCollection(this);
-            classTextBox = new ClassTextBox(stroke as ClassStroke);
-            classTextBox.Background = Brushes.White;
-            classTextBox.LayoutTransform = new RotateTransform(stroke.rotation, center.X, center.Y);
+            customTextBox = new CustomTextBox(stroke.name, stroke.GetBounds().Width, stroke.GetBounds().Height);
+            customTextBox.BorderThickness = new Thickness(3);
+            customTextBox.BorderBrush = new SolidColorBrush();
+            customTextBox.LayoutTransform = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
-            visualChildren.Add(classTextBox);
+            visualChildren.Add(customTextBox);
         }
 
         protected override Size MeasureOverride(Size constraint)
@@ -67,7 +68,7 @@ namespace PolyPaint.CustomInk
             }
 
             // Draws the rectangle
-            classTextBox.Arrange(rectangle);
+            customTextBox.Arrange(rectangle);
 
             return finalSize;
         }

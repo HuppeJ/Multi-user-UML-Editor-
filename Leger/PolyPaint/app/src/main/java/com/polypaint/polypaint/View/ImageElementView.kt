@@ -2,6 +2,9 @@ package com.polypaint.polypaint.View
 
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -15,14 +18,14 @@ import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
-import kotlinx.android.synthetic.main.view_class.view.*
+import kotlinx.android.synthetic.main.view_image_element.view.*
 
 
 class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementView(context) {
     override var mMinimumWidth : Float = 220F
     override var mMinimumHeight : Float = 320F
     private var shapeType : ShapeTypes? = shapeType
-
+    private var imgBackground : ImageView? = null
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -43,7 +46,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         */
 
         var img: ImageView = child.findViewById(R.id.image_element) as ImageView
-
+        imgBackground = img
         when(this.shapeType){
             ShapeTypes.DEFAULT->{ }
 
@@ -52,6 +55,8 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
             }
             ShapeTypes.ACTIVITY -> {
                 img.setBackgroundResource(R.drawable.ic_activity)
+
+
             }
             ShapeTypes.ROLE -> {
                 img.setBackgroundResource(R.drawable.ic_actor)
@@ -86,5 +91,14 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         borderResizableLayout.requestLayout()
         requestLayout()
+    }
+
+    override fun outlineColor(color : String){
+        when(color){
+            "BLACK" -> {imgBackground!!.background.mutate().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN)}
+            "GREEN" -> {imgBackground!!.background.mutate().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)}
+            "YELLOW" -> {imgBackground!!.background.mutate().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN)}
+        }
+
     }
 }

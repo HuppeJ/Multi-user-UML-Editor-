@@ -25,8 +25,10 @@ import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Fragment.EnterDrawingPasswordDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.ResponseModel.CanvasCreationResponse
 import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
 import com.polypaint.polypaint.ResponseModel.GetPrivateCanvasResponse
 import com.polypaint.polypaint.ResponseModel.GetPublicCanvasResponse
@@ -52,9 +54,13 @@ class GalleryActivity:AppCompatActivity(){
         val app = application as PolyPaint
         socket = app.socket
 
+        socket?.off(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
         socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
         socket?.on(SocketConstants.GET_PRIVATE_CANVAS_RESPONSE, onGetPrivateCanvasResponse)
         socket?.on(SocketConstants.GET_PUBLIC_CANVAS_RESPONSE, onGetPublicCanvasResponse)
+
+
+        socket?.on(SocketConstants.CANVAS_CREATED, onCanvasCreated)
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
@@ -147,7 +153,7 @@ class GalleryActivity:AppCompatActivity(){
     }
 
     private fun requestCanevas(){
-        socket?.emit(SocketConstants.GET_PRIVATE_CANVAS)
+        socket?.emit(SocketConstants.GET_PRIVATE_CANVAS, UserHolder.getInstance().username)
         socket?.emit(SocketConstants.GET_PUBLIC_CANVAS)
     }
 
@@ -181,7 +187,7 @@ class GalleryActivity:AppCompatActivity(){
 
 
     private var onJoinCanvasResponse: Emitter.Listener = Emitter.Listener {
-        Log.d("onJoinCanvasResponse", "alllooo")
+        Log.d("onJoinCanvasResponse", "alllooo22222")
 
         val gson = Gson()
         val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
@@ -191,12 +197,23 @@ class GalleryActivity:AppCompatActivity(){
             if(selectedCanevas != null && selectedCanevas?.name == obj.canvasName) {
                 Log.d("canvasJoined", "created" + obj.canvasName)
                 val intent = Intent(this, DrawingActivity::class.java)
-                intent.putExtra("canevas", selectedCanevas)
+                Log.d("selectedCanevas", "created" + selectedCanevas)
+
+                intent.putExtra("canevas", selectedCanevas!!)
+                //ViewShapeHolder.getInstance().canevas = selectedCanevas!!
                 startActivity(intent)
             } else {
                 Log.d("Erreur", "selectionCanevas")
             }
         }
+    }
+
+    private var onCanvasCreated: Emitter.Listener = Emitter.Listener {
+        Log.d("onCanvasCreated", "alllooo")
+
+        //val gson = Gson()
+        //val obj: CanvasCreationResponse = gson.fromJson(it[0].toString())
+        requestCanevas()
     }
 
     override fun onBackPressed() {

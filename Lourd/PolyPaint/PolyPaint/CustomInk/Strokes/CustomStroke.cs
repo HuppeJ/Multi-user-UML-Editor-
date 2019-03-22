@@ -3,6 +3,7 @@ using System.Windows.Input;
 using System.Windows;
 using System;
 using PolyPaint.Templates;
+using PolyPaint.CustomInk.Strokes;
 
 namespace PolyPaint.CustomInk
 {
@@ -10,7 +11,7 @@ namespace PolyPaint.CustomInk
     {
         public Guid guid;
         public string name;
-        public int type;
+        public int strokeType;
         public double rotation;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)
@@ -31,11 +32,6 @@ namespace PolyPaint.CustomInk
 
        public virtual CustomStroke CloneRotated(double rotation) {
             CustomStroke newStroke = (CustomStroke)Clone();
-
-            // Changer les bounds? Gi
-            //newStroke.GetBounds().Transform(rotation.Value);
-
-            newStroke.rotation = rotation;
             return newStroke;
         }
 
@@ -75,13 +71,13 @@ namespace PolyPaint.CustomInk
             return tmpPoint.ToPoint();
         }
 
-        public Point rotatePoint(double x, double y)
+        public bool isLinkStroke()
         {
-            double rotationInRad = rotation * Math.PI / 180;
-            double cosTheta = Math.Cos(rotationInRad);
-            double sinTheta = Math.Sin(rotationInRad);
+            return GetType() == typeof(LinkStroke);
+        }
 
-            return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+        public virtual void updatePosition()
+        {
         }
     }
 }

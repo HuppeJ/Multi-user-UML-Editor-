@@ -14,7 +14,16 @@ namespace PolyPaint.CustomInk
     {
         public ActorStroke(StylusPointCollection pts) : base(pts)
         {
-            type = (int)StrokeTypes.ROLE;
+            strokeType = (int)StrokeTypes.ROLE;
+
+            Point lastPoint = pts[pts.Count - 1].ToPoint();
+            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
+            {
+                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
+                {
+                    StylusPoints.Add(new StylusPoint(i, j));
+                }
+            }
         }
 
         public ActorStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
@@ -49,7 +58,7 @@ namespace PolyPaint.CustomInk
 
             TransformGroup transform = new TransformGroup();
 
-            transform.Children.Add(new RotateTransform(rotation, x, y));
+            transform.Children.Add(new RotateTransform(shapeStyle.rotation, x, y));
 
             drawingContext.PushTransform(transform);
 

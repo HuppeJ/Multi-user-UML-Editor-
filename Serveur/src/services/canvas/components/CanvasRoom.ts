@@ -124,6 +124,7 @@ export default class CanvasRoom {
             // If one form doesn't exist an Error will be thrown
             this.doFormsExist(data);
 
+            /*
             // Check if all forms are not selected, if a form is already selected throw an Error.
             data.forms.forEach((form) => {
                 if (this.selectedForms.has(form.id)) {
@@ -135,6 +136,7 @@ export default class CanvasRoom {
             data.forms.forEach((form) => {
                 this.selectedForms.set(form.id, data.username);
             });
+            */
 
             return true;
         } catch (e) {
