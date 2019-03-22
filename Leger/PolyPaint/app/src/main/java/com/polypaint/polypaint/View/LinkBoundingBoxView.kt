@@ -29,6 +29,11 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
     var fingersCoords : Array<Coordinates> = Array(4) { Coordinates(0.0,0.0) }
     var downWasInBox: Boolean = false
 
+    var initialHeight: Double = 0.0
+    var initialWidth: Double = 0.0
+    var initialPath: ArrayList<Coordinates> = ArrayList()
+    var newPath: ArrayList<Coordinates> = ArrayList()
+
     init {
         paint.color = Color.DKGRAY
         paint.style = Paint.Style.STROKE
@@ -74,37 +79,78 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
 
         resizeButton?.x = rect.right
         resizeButton?.y = rect.bottom
-        resizeButton?.visibility = this.visibility
+
+        resizeButton?.visibility = INVISIBLE
+        val linkId: String? = ViewShapeHolder.getInstance().linkMap[linkView]
+        if(linkId != null) {
+            val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+            if (link != null) {
+                if (link.from.formId == "" && link.to.formId == "") {
+                    resizeButton?.visibility = this.visibility
+                }
+            }
+        }
+
     }
 
     private var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
         //val txt = first_line.text
         //first_line.text = txt.toString() + "onTouchListenerResizeButton"
 
-        when(event.action){
-            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDownResize"
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
-            }
-            MotionEvent.ACTION_MOVE -> {
-                val deltaX: Float = (event.rawX - oldFrameRawX)
-                val deltaY: Float = (event.rawY - oldFrameRawY)
-                v.x += deltaX
-                v.y += deltaY
-                rect.right += deltaX
-                rect.bottom += deltaY
+        val linkId: String? = ViewShapeHolder.getInstance().linkMap[linkView]
+        if(linkId != null) {
+            val link: Link? = ViewShapeHolder.getInstance().canevas.findLink(linkId)
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDownResize"
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+                    initialHeight = rect.height().toDouble()
+                    initialWidth = rect.width().toDouble()
+                    if (link != null) {
+                        initialPath = link.path.clone() as ArrayList<Coordinates>
+                        newPath = link.path.clone() as ArrayList<Coordinates>
+                    }
 
 
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val deltaX: Float = (event.rawX - oldFrameRawX)
+                    val deltaY: Float = (event.rawY - oldFrameRawY)
+                    v.x += deltaX
+                    v.y += deltaY
+                    rect.right += deltaX
+                    rect.bottom += deltaY
 
 
 
-            }
-            MotionEvent.ACTION_UP -> {
-                invalidate()
-                requestLayout()
-                // todo emitupdate
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+
+                    invalidate()
+                    requestLayout()
+
+                }
+                MotionEvent.ACTION_UP -> {
+                    val heightRatio = rect.height() / initialHeight
+                    val widthRatio = rect.width() / initialWidth
+
+                    if (link != null) {
+                        if (link.from.formId == "" && link.to.formId == "") {
+                            for (i in 0..(link.path.size - 1)) {
+                                val distY = initialPath[i].y - rect.top
+                                val distX = initialPath[i].x - rect.left
+                                link.path[i].y = rect.top + distY * heightRatio
+                                link.path[i].x = rect.left + distX * widthRatio
+                            }
+                            linkView.invalidate()
+                            linkView.requestLayout()
+                        }
+                    }
+
+                    invalidate()
+                    requestLayout()
+                    // todo emitupdate
+                }
             }
         }
         true
@@ -112,15 +158,10 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
 
     private var onTouchListenerBody = View.OnTouchListener { v, event ->
         val region: Region = Region(rect.left.toInt(), rect.top.toInt(), rect.right.toInt(), rect.bottom.toInt())
-        var totalRotation  = 0f
+        var totalRotation: Float
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                Log.d("rectangle", rect.toString())
-                Log.d("x", event.x.toString())
-                Log.d("y", event.y.toString())
-                Log.d("contains", region.contains(event.x.toInt(), event.y.toInt()).toString())
                 if (region.contains(event.x.toInt(), event.y.toInt())) {
-                    Log.d("contains", "true")
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
 
@@ -155,9 +196,6 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
                         //Calculate Angle
                         val angle = calculateDeltaAngle()
 
-
-                        //Rotate
-//                        rotation += angle.toInt()
                         totalRotation = angle
 
                         val linkId: String? = ViewShapeHolder.getInstance().linkMap[linkView]
@@ -175,7 +213,6 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
 
                                         point.x = rect.centerX() + newX
                                         point.y = rect.centerY() + newY
-
                                     }
                                     linkView.invalidate()
                                     linkView.requestLayout()
@@ -183,27 +220,21 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
                             }
                         }
 
-
-                        //Log.d("Angle", ""+angle)
-                        //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
-                        //Log.d("ACTU COORD", ""+fingersCoords[2]+"::"+fingersCoords[3])
-
                         //Save for next step
                         fingersCoords[0].x = fingersCoords[2].x
                         fingersCoords[0].y = fingersCoords[2].y
                         fingersCoords[1].x = fingersCoords[3].x
                         fingersCoords[1].y = fingersCoords[3].y
-                    } else {
-                        val deltaX = event.rawX - oldFrameRawX
-                        val deltaY = event.rawY - oldFrameRawY
-                        linkView.moveLink(deltaX.toDouble(), deltaY.toDouble())
-//                    this.x = this.x + deltaX
-//                    this.y = this.y + deltaY
-//                    leftX += deltaX
-//                    topY += deltaY
-                        oldFrameRawX = event.rawX
-                        oldFrameRawY = event.rawY
                     }
+
+
+                    val deltaX = event.rawX - oldFrameRawX
+                    val deltaY = event.rawY - oldFrameRawY
+                    linkView.moveLink(deltaX.toDouble(), deltaY.toDouble())
+
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+
 
                     true
                 } else {
@@ -211,6 +242,9 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
                 }
             }
             MotionEvent.ACTION_UP -> {
+                if(downWasInBox){
+                    linkView.emitUpdate()
+                }
                 downWasInBox = false
                 pointerFinger1 = -1
                 true

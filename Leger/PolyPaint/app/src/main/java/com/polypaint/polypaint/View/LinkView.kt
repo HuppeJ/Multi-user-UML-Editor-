@@ -512,21 +512,12 @@ class LinkView: View{
         Log.d("region", region.bounds.toString())
 
           val parentView = v.parent as RelativeLayout
-//        if(boundingBox != null){
-//            parentView.removeView(boundingBox)
-//        }
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
-                pointerFinger1 = event.getPointerId(event.actionIndex)
-                fingersCoords[0].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
-                fingersCoords[0].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
                 if(region.contains(event.x.toInt(), event.y.toInt())){
                     if(!this.isSelectedByOther) {
 
-//                        boundingBox = LinkBoundingBoxView(context, rect)
-//                        parentView.addView(boundingBox)
                         parentView.dispatchSetSelected(false)
 
                         v.isSelected = true
@@ -537,73 +528,7 @@ class LinkView: View{
                     false
                 }
             }
-            MotionEvent.ACTION_MOVE ->{
-                if(v.isSelected){
-                    val deltaX = event.rawX - oldFrameRawX
-                    val deltaY = event.rawY - oldFrameRawY
-                    val localLink = link
 
-
-                    if(pointerFinger1 != -1 && pointerFinger2 != -1) {
-                        Log.d("twoFingerMove", "allo")
-                        fingersCoords[2].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
-                        fingersCoords[2].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
-                        fingersCoords[3].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
-                        fingersCoords[3].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
-                        //Calculate Angle
-                        val angle = calculateDeltaAngle()
-
-
-                        //Rotate
-                        rotation += angle.toInt()
-
-
-
-                        //Log.d("Angle", ""+angle)
-                        //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
-                        //Log.d("ACTU COORD", ""+fingersCoords[2]+"::"+fingersCoords[3])
-
-                        //Save for next step
-                        fingersCoords[0].x = fingersCoords[2].x
-                        fingersCoords[0].y = fingersCoords[2].y
-                        fingersCoords[1].x = fingersCoords[3].x
-                        fingersCoords[1].y = fingersCoords[3].y
-                    } else {
-                        if(localLink != null) {
-                            for (point in localLink.path) {
-                                if((point == localLink.path.first() && localLink.from.formId != "")
-                                    ||(point == localLink.path.last() && localLink.to.formId != "")) {
-                                    continue
-                                }
-                                point.x += deltaX
-                                point.y += deltaY
-                            }
-                        }
-                    }
-
-
-//                    boundingBox = LinkBoundingBoxView(context, rect)
-//                    parentView.addView(boundingBox)
-                    v.invalidate()
-                    v.requestLayout()
-                    oldFrameRawX = event.rawX
-                    oldFrameRawY = event.rawY
-                    true
-                } else {
-                    false
-                }
-            }
-            MotionEvent.ACTION_UP -> {
-                pointerFinger1 = -1
-                if(v.isSelected) {
-//                    boundingBox = LinkBoundingBoxView(context, rect)
-//                    parentView.addView(boundingBox)
-                    emitUpdate()
-                    true
-                } else {
-                    false
-                }
-            }
             else -> {
                 false
             }
