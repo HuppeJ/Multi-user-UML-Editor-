@@ -7,6 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:PolyPaint.VueModeles"
              xmlns:Vues="clr-namespace:PolyPaint.Vues"
+             xmlns:Converters="clr-namespace:PolyPaint.Convertisseurs"
              mc:Ignorable="d"              
              >
     <UserControl.Resources>
@@ -19,6 +20,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <local:VueModele x:Key="VueModele" />
+            <Converters:MultiValueEqualityConverter x:Key="MultiValueEqualityConverter"/>
 
             <Style x:Key="CanvasListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
                 <Setter Property="Background" Value="Transparent"/>
@@ -40,18 +42,20 @@
                                Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" FontSize="16"
                                Text="{Binding name}" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                            <Button Content="Edit protection" x:Name="EditButton" Visibility="Collapsed"
+                                    Margin="0,0,10,0" Width="100" Height="23" Padding="0"></Button>
                             <TextBlock Text="Protected" x:Name="LockedIcon" Visibility="Visible" HorizontalAlignment="Right"/>
-                            <Button Content="Join protect" x:Name="ButtonJoinProtected" Visibility="Visible"
+                            <Button Content="Join" x:Name="ButtonJoinProtected" Visibility="Visible"
                                     Click="JoinProtectedCanvas"
                                     Command="{Binding Path=DataContext.SelectProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
-                                    Width="75" Height="20" Padding="0,0,0,0" Margin="20,0,0,0"/>
+                                    Width="75" Height="23" Padding="0,0,0,0" Margin="20,0,0,0"/>
 
                             <TextBlock Text="Unprotected" x:Name="UnlockedIcon" Visibility="Collapsed" HorizontalAlignment="Right"/>
-                            <Button Content="Join unprotec" x:Name="ButtonJoinUnprotected" Visibility="Collapsed"
+                            <Button Content="Join" x:Name="ButtonJoinUnprotected" Visibility="Collapsed"
                                     Command="{Binding Path=DataContext.JoinUnprotectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
-                                    Width="75" Height="20" Padding="0,0,0,0" Margin="20,0,0,0"/>
+                                    Width="75" Height="23" Padding="0,0,0,0" Margin="20,0,0,0"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -61,6 +65,15 @@
                         <Setter Property="Visibility" TargetName="ButtonJoinProtected" Value="Collapsed"/>
                         <Setter Property="Visibility" TargetName="UnlockedIcon" Value="Visible"/>
                         <Setter Property="Visibility" TargetName="ButtonJoinUnprotected" Value="Visible"/>
+                    </DataTrigger>
+                    <DataTrigger Value="true">
+                        <DataTrigger.Binding>
+                            <MultiBinding Converter="{StaticResource MultiValueEqualityConverter}">
+                                <Binding Path="DataContext.username" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type UserControl}}" Mode="OneWay" />
+                                <Binding Path="author" Mode="OneWay"/>
+                            </MultiBinding>
+                        </DataTrigger.Binding>
+                        <Setter Property="Visibility" TargetName="EditButton" Value="Visible"/>
                     </DataTrigger>
                 </DataTemplate.Triggers>
             </DataTemplate>
@@ -83,11 +96,12 @@
             <TextBlock Height="50" Width="400" Margin="14,114,686,536" FontSize="35" FontFamily="Comic Sans MS">Private canvases</TextBlock>
 
             <StackPanel Margin="12,165,620,70" VerticalAlignment="Top">
-                <ListBox MaxHeight="450"
-                         ItemsSource="{Binding PrivateCanvases}" 
-                         ItemTemplate="{DynamicResource CanvasDataTemplate}"
-                         ItemContainerStyle="{DynamicResource CanvasListBoxItemStyle}"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                <ListBox 
+                    MaxHeight="450"
+                    ItemsSource="{Binding PrivateCanvases}" 
+                    ItemTemplate="{DynamicResource CanvasDataTemplate}"
+                    ItemContainerStyle="{DynamicResource CanvasListBoxItemStyle}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"/>
             </StackPanel>
 
             <TextBlock Height="50" Width="400" Margin="529,118,171,532" FontSize="35" FontFamily="Comic Sans MS">Public canvases</TextBlock>

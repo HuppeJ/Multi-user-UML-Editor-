@@ -169,6 +169,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="Convertisseurs\MultiValueEqualityConverter.cs" />
     <Compile Include="CustomInk\PhaseAdorner.cs" />
     <Compile Include="CustomInk\CommentAdorner.cs" />
     <Compile Include="CustomInk\ClassAdorner.cs" />
