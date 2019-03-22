@@ -57,9 +57,15 @@ class LinkView: View{
     var canvas: Canvas? = null
     var thickness: Float = 10f
 
-
     var previewLinkView: LinkView? = null
     var oldPreviewLink: LinkView? = null
+
+    var boundingBox : LinkBoundingBoxView? = null
+
+    var pointerFinger1 : Int = -1
+    var pointerFinger2 : Int = -1
+
+    var fingersCoords : Array<Coordinates> = Array(4) { Coordinates(0.0,0.0) }
 
     fun setIsSelectedByOther(isSelectedByOther: Boolean){
         this.isSelectedByOther = isSelectedByOther
@@ -78,9 +84,11 @@ class LinkView: View{
 
 
     private fun initialise(){
+
         paint.color = Color.BLACK
         paint.strokeWidth = 5f
         paint.style = Paint.Style.FILL_AND_STROKE
+
     }
 
     fun setLinkAndAnchors(link: Link){
@@ -275,6 +283,16 @@ class LinkView: View{
         region.setPath(path, Region(rect.left.toInt(), rect.top.toInt(), rect.right.toInt(), rect.bottom.toInt()))
 
 
+        val parentView = this.parent as RelativeLayout
+
+        if(this.isSelected) {
+            boundingBox?.setVisible(true)
+            boundingBox?.rect = rect
+            boundingBox?.invalidate()
+            boundingBox?.requestLayout()
+        } else {
+            boundingBox?.setVisible(false)
+        }
 
         when(link?.type){
             LinkTypes.AGGREGATION.ordinal->drawAggregation(canvas,angle, thickness)
@@ -447,6 +465,9 @@ class LinkView: View{
         if(endAnchorButton != null){
             parent.removeView(endAnchorButton)
         }
+        if(boundingBox != null){
+            boundingBox?.delete()
+        }
         for(angleButton in angleButtons) {
             if (angleButton != null) {
                 parent.removeView(angleButton)
@@ -456,6 +477,10 @@ class LinkView: View{
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         setOnTouchListener(onTouchListenerBody)
+        val parentView = this.parent as RelativeLayout
+        boundingBox = LinkBoundingBoxView(context, this)
+        boundingBox?.setVisible(false)
+        parentView.addView(boundingBox)
     }
 
     override fun setSelected(selected: Boolean) {
@@ -486,14 +511,24 @@ class LinkView: View{
         Log.d("event", event.x.toString()+" "+ event.y.toString())
         Log.d("region", region.bounds.toString())
 
+          val parentView = v.parent as RelativeLayout
+//        if(boundingBox != null){
+//            parentView.removeView(boundingBox)
+//        }
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
+                pointerFinger1 = event.getPointerId(event.actionIndex)
+                fingersCoords[0].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
+                fingersCoords[0].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
                 if(region.contains(event.x.toInt(), event.y.toInt())){
                     if(!this.isSelectedByOther) {
-                        val parentView = v.parent as RelativeLayout
+
+//                        boundingBox = LinkBoundingBoxView(context, rect)
+//                        parentView.addView(boundingBox)
                         parentView.dispatchSetSelected(false)
+
                         v.isSelected = true
                     }
 
@@ -507,16 +542,48 @@ class LinkView: View{
                     val deltaX = event.rawX - oldFrameRawX
                     val deltaY = event.rawY - oldFrameRawY
                     val localLink = link
-                    if(localLink != null) {
-                        for (point in localLink.path) {
-                            if((point == localLink.path.first() && localLink.from.formId != "")
-                                ||(point == localLink.path.last() && localLink.to.formId != "")) {
-                                continue
+
+
+                    if(pointerFinger1 != -1 && pointerFinger2 != -1) {
+                        Log.d("twoFingerMove", "allo")
+                        fingersCoords[2].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
+                        fingersCoords[2].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
+                        fingersCoords[3].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
+                        fingersCoords[3].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
+                        //Calculate Angle
+                        val angle = calculateDeltaAngle()
+
+
+                        //Rotate
+                        rotation += angle.toInt()
+
+
+
+                        //Log.d("Angle", ""+angle)
+                        //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
+                        //Log.d("ACTU COORD", ""+fingersCoords[2]+"::"+fingersCoords[3])
+
+                        //Save for next step
+                        fingersCoords[0].x = fingersCoords[2].x
+                        fingersCoords[0].y = fingersCoords[2].y
+                        fingersCoords[1].x = fingersCoords[3].x
+                        fingersCoords[1].y = fingersCoords[3].y
+                    } else {
+                        if(localLink != null) {
+                            for (point in localLink.path) {
+                                if((point == localLink.path.first() && localLink.from.formId != "")
+                                    ||(point == localLink.path.last() && localLink.to.formId != "")) {
+                                    continue
+                                }
+                                point.x += deltaX
+                                point.y += deltaY
                             }
-                            point.x += deltaX
-                            point.y += deltaY
                         }
                     }
+
+
+//                    boundingBox = LinkBoundingBoxView(context, rect)
+//                    parentView.addView(boundingBox)
                     v.invalidate()
                     v.requestLayout()
                     oldFrameRawX = event.rawX
@@ -527,7 +594,10 @@ class LinkView: View{
                 }
             }
             MotionEvent.ACTION_UP -> {
+                pointerFinger1 = -1
                 if(v.isSelected) {
+//                    boundingBox = LinkBoundingBoxView(context, rect)
+//                    parentView.addView(boundingBox)
                     emitUpdate()
                     true
                 } else {
@@ -537,9 +607,40 @@ class LinkView: View{
             else -> {
                 false
             }
+
         }
     }
 
+    private fun calculateDeltaAngle() : Float{
+        val angle1 : Double = Math.atan2( (fingersCoords[1].y - fingersCoords[0].y), (fingersCoords[1].x - fingersCoords[0].x))
+        val angle2 : Double = Math.atan2( (fingersCoords[3].y - fingersCoords[2].y), (fingersCoords[3].x - fingersCoords[2].x))
+
+        var angle = (Math.toDegrees(angle2 - angle1) % 360).toFloat()
+
+        if (angle < -180.0f){
+            angle += 360.0f
+        }else if (angle > 180.0f){
+            angle -= 360.0f
+        }
+
+        return angle
+    }
+
+    fun moveLink(deltaX: Double, deltaY: Double){
+        val localLink = link
+        if(localLink != null) {
+            for (point in localLink.path) {
+                if((point == localLink.path.first() && localLink.from.formId != "")
+                    ||(point == localLink.path.last() && localLink.to.formId != "")) {
+                    continue
+                }
+                point.x += deltaX
+                point.y += deltaY
+            }
+        }
+        invalidate()
+        requestLayout()
+    }
     private fun showModal(){
         var activity: AppCompatActivity = context as AppCompatActivity
 
@@ -560,11 +661,16 @@ class LinkView: View{
         if(oldPreviewLink != null){
             parentView.removeView(oldPreviewLink)
         }
+//        if(boundingBox != null){
+//            parentView.removeView(boundingBox)
+//        }
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
                 previewLinkView = LinkView(context)
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
+//                boundingBox = LinkBoundingBoxView(context, rect)
+//                parentView.addView(boundingBox)
             }
             MotionEvent.ACTION_MOVE -> {
                 val index = angleButtons.indexOf(v)
@@ -626,9 +732,13 @@ class LinkView: View{
                 angleButtons.indexOf(v)
                 link?.path?.add(index + 1, Coordinates(v.x.toDouble() + v.layoutParams.width / 2, v.y.toDouble() + v.layoutParams.height / 2))
 
+
                 emitUpdate()
                 invalidate()
                 requestLayout()
+
+//                boundingBox = LinkBoundingBoxView(context, rect)
+//                parentView.addView(boundingBox)
             }
         }
 
@@ -640,6 +750,9 @@ class LinkView: View{
         if(oldPreviewLink != null){
             parentView.removeView(oldPreviewLink)
         }
+//        if(boundingBox != null){
+//            parentView.removeView(boundingBox)
+//        }
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 previewLinkView = LinkView(context)
@@ -755,10 +868,15 @@ class LinkView: View{
                 link?.path?.first()?.x = v.x.toDouble() + v.layoutParams.width / 2
                 link?.path?.first()?.y = v.y.toDouble() + v.layoutParams.height / 2
 
+
+
                 emitFormsUpdate(formsToUpdate)
                 emitUpdate()
                 invalidate()
                 requestLayout()
+
+//                boundingBox = LinkBoundingBoxView(context, rect)
+//                parentView.addView(boundingBox)
             }
         }
 
@@ -770,6 +888,9 @@ class LinkView: View{
         if(oldPreviewLink != null){
             parentView.removeView(oldPreviewLink)
         }
+//        if(boundingBox != null){
+//            parentView.removeView(boundingBox)
+//        }
         when (event.action) {
 
             MotionEvent.ACTION_DOWN -> {
@@ -781,6 +902,10 @@ class LinkView: View{
                         basicView.setAnchorsVisible(true)
                     }
                 }
+
+//                boundingBox = LinkBoundingBoxView(context, rect)
+//                parentView.addView(boundingBox)
+
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
             }
@@ -886,10 +1011,15 @@ class LinkView: View{
                 link?.path?.last()?.x = v.x.toDouble() + v.layoutParams.width / 2.0
                 link?.path?.last()?.y = v.y.toDouble() + v.layoutParams.height / 2.0
 
+
+
                 emitFormsUpdate(formsToUpdate)
                 emitUpdate()
                 invalidate()
                 requestLayout()
+//
+//                boundingBox = LinkBoundingBoxView(context, rect)
+//                parentView.addView(boundingBox)
             }
         }
 
