@@ -38,7 +38,7 @@
                     Height="30" Margin="0,0,0,0">
                     <Grid>
                         <!--Name-->
-                        <TextBlock HorizontalAlignment="Left"
+                        <TextBlock HorizontalAlignment="Left" MaxWidth="160"
                                Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" FontSize="16"
                                Text="{Binding name}" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
@@ -46,14 +46,16 @@
                                     Command="{Binding Path=DataContext.SelectProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
                                     Margin="0,0,10,0" Width="100" Height="23" Padding="0" Click="ChangeCanvasProtection"/>
-                            <TextBlock Text="Protected" x:Name="LockedIcon" Visibility="Visible" HorizontalAlignment="Right"/>
+                            <TextBlock Text="Protected" x:Name="LockedIcon" Visibility="Visible" HorizontalAlignment="Right"
+                                       Background="Tomato" VerticalAlignment="Center" Padding="5,5,5,5"/>
                             <Button Content="Join" x:Name="ButtonJoinProtected" Visibility="Visible"
                                     Click="JoinProtectedCanvas"
                                     Command="{Binding Path=DataContext.SelectProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
                                     Width="75" Height="23" Padding="0,0,0,0" Margin="20,0,0,0"/>
 
-                            <TextBlock Text="Unprotected" x:Name="UnlockedIcon" Visibility="Collapsed" HorizontalAlignment="Right"/>
+                            <TextBlock Text="Unprotected" x:Name="UnlockedIcon" Visibility="Collapsed" HorizontalAlignment="Right"
+                                       Background="SpringGreen" VerticalAlignment="Center" Padding="5,5,5,5"/>
                             <Button Content="Join" x:Name="ButtonJoinUnprotected" Visibility="Collapsed"
                                     Command="{Binding Path=DataContext.JoinUnprotectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
