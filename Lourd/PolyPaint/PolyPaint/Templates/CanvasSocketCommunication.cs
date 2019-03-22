@@ -67,4 +67,9 @@ namespace PolyPaint.Templates
         public bool isCanvasRoomJoined { get; set; }
         public string canvasName { get; set; }
     }
+
+    class UpdateCanvasPasswordResponse
+    {
+        public bool isPasswordUpdated { get; set; }
+    }
 }

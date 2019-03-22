@@ -484,7 +484,7 @@ namespace PolyPaint.VueModeles
             var passwordBox = o as PasswordBox;
             var password = passwordBox.Password;
 
-            //DrawingService.ChangeCanvasProtection(SelectedCanvas.name, password);
+            DrawingService.ChangeCanvasProtection(SelectedCanvas.name, password);
 
             passwordBox.Password = "";
             CanvasProtection = "Unprotected";

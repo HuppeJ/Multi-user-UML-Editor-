@@ -42,6 +42,15 @@ namespace PolyPaint.Services
                 }
             });
 
+            socket.On("updateCanvasPasswordResponse", (data) =>
+            {
+                UpdateCanvasPasswordResponse response = serializer.Deserialize<UpdateCanvasPasswordResponse>((string)data);
+                if (response.isPasswordUpdated)
+                {
+                    RefreshCanvases();
+                }
+            });
+
             socket.On("joinCanvasRoomResponse", (data) =>
             {
                 JoinCanvasRoomResponse response = serializer.Deserialize<JoinCanvasRoomResponse>((string)data);
@@ -116,8 +125,8 @@ namespace PolyPaint.Services
 
         public static void ChangeCanvasProtection(string canvasName, string password)
         {
-            // EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
-            // socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
+            EditGalleryData editGallerysData = new EditGalleryData(username, canvasName, password);
+            socket.Emit("updateCanvasPassword", serializer.Serialize(editGallerysData));
         }
 
         public static void JoinCanvas(string roomName, string password)
