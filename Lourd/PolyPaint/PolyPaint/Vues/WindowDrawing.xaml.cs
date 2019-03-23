@@ -29,6 +29,18 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
             DataContext = new VueModele();
+            this.Loaded += WindowDrawing_Loaded;
+        }
+
+        void WindowDrawing_Loaded(object sender, RoutedEventArgs e)
+        {
+            Window window = Window.GetWindow(this);
+            window.Closing += window_Closing;
+        }
+
+        void window_Closing(object sender, global::System.ComponentModel.CancelEventArgs e)
+        {
+            DrawingService.LeaveCanvas();
         }
 
         // Pour gérer les points de contrôles.

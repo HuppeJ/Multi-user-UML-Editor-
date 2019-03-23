@@ -59,6 +59,31 @@ export default class CanvasGallerySocketEvents {
                 }
             });
 
+            socket.on("updateCanvasPassword", function (dataStr: string) { 
+                try {
+                    const data: IEditGalleryData = JSON.parse(dataStr);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+
+                    const response = {
+                        isPasswordUpdated: canvasManager.updataCanvasPassword(canvasRoomId, data)
+                    };
+
+                    if (response.isPasswordUpdated) {
+                        console.log(socket.id + " updated canvas password " + data.canevasName);
+                        if (data.password !== "") {
+                            io.to(canvasRoomId).emit("canvasPasswordUpdated");
+                        }
+                    } else {
+                        console.log(socket.id + " failed to update canvas password" + data.canevasName);
+                    }
+
+                    socket.emit("updateCanvasPasswordResponse", JSON.stringify(response));
+
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
+
         });
 
     }

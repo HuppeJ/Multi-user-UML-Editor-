@@ -169,9 +169,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
-    <Compile Include="CustomInk\Adorners\PhaseAdorner.cs" />
-    <Compile Include="CustomInk\Adorners\CommentAdorner.cs" />
-    <Compile Include="CustomInk\Adorners\ClassAdorner.cs" />
+    <Compile Include="Convertisseurs\MultiValueEqualityConverter.cs" />
+    <Compile Include="CustomInk\PhaseAdorner.cs" />
+    <Compile Include="CustomInk\CommentAdorner.cs" />
+    <Compile Include="CustomInk\ClassAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\Adorners\EditionAdorner.cs" />
@@ -236,13 +237,16 @@
     <Compile Include="Vues\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Vues\ClassPopup.xaml.cs">
+    <Compile Include="Vues\Popups\ClassPopup.xaml.cs">
       <DependentUpon>ClassPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Vues\JoinProtectedCanvasPopup.xaml.cs">
+    <Compile Include="Vues\Popups\ChangeCanvasProtectionPopup.xaml.cs">
+      <DependentUpon>ChangeCanvasProtectionPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\JoinProtectedCanvasPopup.xaml.cs">
       <DependentUpon>JoinProtectedCanvasPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Vues\CreateCanvasPopup.xaml.cs">
+    <Compile Include="Vues\Popups\CreateCanvasPopup.xaml.cs">
       <DependentUpon>CreateCanvasPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\DrawingChatView.xaml.cs">
@@ -251,7 +255,7 @@
     <Compile Include="Vues\GalleryView.xaml.cs">
       <DependentUpon>GalleryView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Vues\LinkPopup.xaml.cs">
+    <Compile Include="Vues\Popups\LinkPopup.xaml.cs">
       <DependentUpon>LinkPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\LoginView.xaml.cs">
@@ -260,7 +264,7 @@
     <Compile Include="Vues\CreateUserView.xaml.cs">
       <DependentUpon>CreateUserView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Vues\RenamePopup.xaml.cs">
+    <Compile Include="Vues\Popups\RenamePopup.xaml.cs">
       <DependentUpon>RenamePopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\WindowDrawing.xaml.cs">
@@ -325,15 +329,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Vues\ClassPopup.xaml">
+    <Page Include="Vues\Popups\ClassPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Vues\JoinProtectedCanvasPopup.xaml">
+    <Page Include="Vues\Popups\ChangeCanvasProtectionPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Vues\CreateCanvasPopup.xaml">
+    <Page Include="Vues\Popups\JoinProtectedCanvasPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\CreateCanvasPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -345,7 +353,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Vues\LinkPopup.xaml">
+    <Page Include="Vues\Popups\LinkPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -357,7 +365,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Vues\RenamePopup.xaml">
+    <Page Include="Vues\Popups\RenamePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
