@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using System.Globalization;
 using PolyPaint.Templates;
 using System.Collections.Generic;
+using PolyPaint.Enums;
 
 namespace PolyPaint.CustomInk
 {
@@ -46,11 +47,14 @@ namespace PolyPaint.CustomInk
 
             Point point = new Point(shapeStyle.coordinates.x, shapeStyle.coordinates.y);
 
-            for (double i = point.X; i < shapeStyle.width + point.X; i += 0.5)
+            if(basicShape.type != (int)StrokeTypes.PHASE)
             {
-                for (double j = point.Y; j < shapeStyle.height + point.Y; j += 0.5)
+                for (double i = point.X; i < shapeStyle.width + point.X; i += 0.5)
                 {
-                    StylusPoints.Add(new StylusPoint(i, j));
+                    for (double j = point.Y; j < shapeStyle.height + point.Y; j += 0.5)
+                    {
+                        StylusPoints.Add(new StylusPoint(i, j));
+                    }
                 }
             }
         }
