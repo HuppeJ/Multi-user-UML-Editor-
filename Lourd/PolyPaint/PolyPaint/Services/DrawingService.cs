@@ -41,7 +41,8 @@ namespace PolyPaint.Services
             {
                 if(canvasName != null)
                 {
-                    JoinCanvas(canvasName);
+                    // Stocker le mot de passe? ADD
+                    JoinCanvas(canvasName, "");
                 }
             });
 
@@ -186,6 +187,21 @@ namespace PolyPaint.Services
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
         }
 
+        public static void DrawCanvas(Templates.Canvas canvas)
+        {
+            foreach(Link link in canvas.links)
+            {
+
+            }
+
+            foreach(BasicShape shape in canvas.shapes)
+            {
+                ShapeStroke shapeStroke = ShapeStrokeFromShape(shape);
+                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(shapeStroke);
+                Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+            }
+        }
+
         public static void LeaveCanvas()
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
@@ -284,5 +300,42 @@ namespace PolyPaint.Services
             return shapeStroke;
         }
 
+        private static ShapeStroke ShapeStrokeFromShape(BasicShape shape)
+        {
+            StrokeTypes type = (StrokeTypes)shape.type;
+            ShapeStroke shapeStroke;
+
+            StylusPointCollection points = new StylusPointCollection();
+            StylusPoint point = new StylusPoint(shape.shapeStyle.coordinates.x, shape.shapeStyle.coordinates.y);
+            points.Add(point);
+
+            switch (type)
+            {
+                case StrokeTypes.CLASS_SHAPE:
+                    shapeStroke = new ClassStroke((ClassShape)shape, points);
+                    break;
+                case StrokeTypes.ARTIFACT:
+                    shapeStroke = new ArtifactStroke(shape, points);
+                    break;
+                case StrokeTypes.ACTIVITY:
+                    shapeStroke = new ActivityStroke(shape, points);
+                    break;
+                case StrokeTypes.ROLE:
+                    shapeStroke = new ActorStroke(shape, points);
+                    break;
+                case StrokeTypes.COMMENT:
+                    shapeStroke = new CommentStroke(shape, points);
+                    break;
+                case StrokeTypes.PHASE:
+                    shapeStroke = new PhaseStroke(shape, points);
+                    break;
+                default:
+                    shapeStroke = new ClassStroke(shape as ClassShape, points);
+                    break;
+
+            }
+
+            return shapeStroke;
+        }
     }
 }

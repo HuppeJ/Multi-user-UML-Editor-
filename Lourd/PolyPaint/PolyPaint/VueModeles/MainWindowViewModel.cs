@@ -521,6 +521,7 @@ namespace PolyPaint.VueModeles
         {
             var canvas = o as Templates.Canvas;
             DrawingService.JoinCanvas(canvas.name, "");
+            DrawingService.DrawCanvas(canvas);
         }
         #endregion
 
@@ -538,6 +539,7 @@ namespace PolyPaint.VueModeles
         {
             var passwordBox = o as PasswordBox;
             DrawingService.JoinCanvas(SelectedCanvas.name, passwordBox.Password);
+            DrawingService.DrawCanvas(SelectedCanvas);
         }
         #endregion
 
