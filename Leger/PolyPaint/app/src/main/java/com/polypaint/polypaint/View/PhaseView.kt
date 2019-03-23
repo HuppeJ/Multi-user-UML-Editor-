@@ -34,7 +34,7 @@ class PhaseView(context: Context): BasicElementView(context) {
 
         child = activity.layoutInflater.inflate(R.layout.view_phase, null)
 
-        var nameText: TextView = child!!.findViewById(R.id.name) as TextView
+        var nameText: TextView = child!!.findViewById(R.id.view_phase_name) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
         nameText.text = "basictElement.name"
 

@@ -34,7 +34,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         var child: View = activity.layoutInflater.inflate(R.layout.view_image_element, null)
 
-        var nameText: TextView = child.findViewById(R.id.name) as TextView
+        var nameText: TextView = child.findViewById(R.id.view_image_element_name) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
         nameText.text = "basictElement.name"
 

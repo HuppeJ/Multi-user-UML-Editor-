@@ -49,6 +49,7 @@ import kotlinx.android.synthetic.main.dialog_edit_class.view.*
 import kotlinx.android.synthetic.main.view_class.view.*
 import kotlinx.android.synthetic.main.view_comment.view.*
 import kotlinx.android.synthetic.main.view_image_element.view.*
+import kotlinx.android.synthetic.main.view_phase.view.*
 import android.graphics.Bitmap
 import java.io.ByteArrayOutputStream
 import android.util.Base64
@@ -165,19 +166,27 @@ class DrawingActivity : AppCompatActivity(){
             saveCanevas()
         }
 
+        VFXHolder.getInstance().vfxView = VfxView(this)
+        parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
+
         resizeCanvevasButton.setOnTouchListener(onTouchListenerResizeButton)
-
-
     }
 
     private fun initializeViewFromCanevas(){
         //Shape
         if(ViewShapeHolder.getInstance().canevas != null){
+
             Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
-            for(shape in ViewShapeHolder.getInstance().canevas.shapes){
-                addOnCanevas(shape)
+            Log.d("333","****"+ViewShapeHolder.getInstance().map.toString()+"****")
+
+            for(form: BasicShape in ViewShapeHolder.getInstance().canevas.shapes){
+                addOnCanevas(form)
             }
             //TODO: LINKS
+            Log.d("4444","****"+ViewShapeHolder.getInstance().map+"****")
+
+            Log.d("ENDinit","****"+ViewShapeHolder.getInstance().canevas.name+"****")
+
 
         }
 
@@ -204,6 +213,8 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun addOnCanevas(shapeType: ShapeTypes){
+                            Log.d("55555","****"+ViewShapeHolder.getInstance().map+"****")
+
         var shape = newShapeOnCanevas(shapeType)
         var view = newViewOnCanevas(shapeType)
 
@@ -235,6 +246,8 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun addOnCanevas(basicShape: BasicShape){
+                    Log.d("6666","****"+ViewShapeHolder.getInstance().map+"****")
+
         //TODO: Probablement une meilleure facon de mapper la value à l'enum ...
         when(basicShape.type){
             ShapeTypes.DEFAULT.value()-> {
@@ -322,6 +335,8 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun newViewOnCanevas(shapeType : ShapeTypes) : BasicElementView{
+        Log.d("777777","****"+ViewShapeHolder.getInstance().map+"****")
+
         var viewType : BasicElementView = BasicElementView(this)
         val viewContainer = inflater!!.inflate(R.layout.basic_element, null)
 
@@ -459,7 +474,7 @@ class DrawingActivity : AppCompatActivity(){
                         }
                     }
                     ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
-                        view.name.text = basicShape.name
+                        view.view_image_element_name.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor)
                     }
 
@@ -468,7 +483,7 @@ class DrawingActivity : AppCompatActivity(){
                         view.outlineColor(basicShape.shapeStyle.borderColor)
                     }
                     ShapeTypes.PHASE.value()-> {
-                        view.name.text = basicShape.name
+                        view.view_phase_name.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor)
                     }
 
