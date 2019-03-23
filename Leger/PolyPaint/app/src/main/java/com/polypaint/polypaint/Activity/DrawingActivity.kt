@@ -54,6 +54,7 @@ import android.graphics.Bitmap
 import java.io.ByteArrayOutputStream
 import android.util.Base64
 import android.view.MotionEvent
+import android.widget.CompoundButton
 import android.widget.TextView
 import com.github.salomonbrys.kotson.toJsonArray
 import org.w3c.dom.Comment
@@ -67,6 +68,8 @@ class DrawingActivity : AppCompatActivity(){
     var mMinimumHeight : Float = 100F
     var mMaximumWidth : Float = 1520F
     var mMaximumHeight : Float = 1200F
+
+    var isCanvasSelectedByYou : Boolean = false
 
     private var inflater : LayoutInflater? = null
 
@@ -110,8 +113,6 @@ class DrawingActivity : AppCompatActivity(){
 
             toolbar = activityToolbar
         }
-
-        Log.d("initializeViewFromCanevas0000000","********")
 
         ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
         canevas_title.text = ViewShapeHolder.getInstance().canevas.name
@@ -170,6 +171,9 @@ class DrawingActivity : AppCompatActivity(){
             saveCanevas()
         }
 
+
+        select_canevas_button.setOnCheckedChangeListener(onSelectCanvevas)
+
         VFXHolder.getInstance().vfxView = VfxView(this)
         parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
 
@@ -218,13 +222,14 @@ class DrawingActivity : AppCompatActivity(){
         socket?.on(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
         socket?.on(SocketConstants.FORM_CREATED, onFormsCreated)
         socket?.on(SocketConstants.LINK_CREATED, onLinkCreated)
+        socket?.on(SocketConstants.CANVAS_RESIZED, onCanevasResized)
+        socket?.on(SocketConstants.CANVAS_SELECTED, onCanevasSelected)
+        socket?.on(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
 
         //socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
     }
 
     private fun addOnCanevas(shapeType: ShapeTypes){
-                            Log.d("55555","****"+ViewShapeHolder.getInstance().map+"****")
-
         var shape = newShapeOnCanevas(shapeType)
         var view = newViewOnCanevas(shapeType)
 
@@ -528,6 +533,11 @@ class DrawingActivity : AppCompatActivity(){
 
     }
 
+    public fun syncCanevasPropsFromLayout(){
+        ViewShapeHolder.getInstance().canevas.dimensions.x = (parent_relative_layout.layoutParams.width).toDouble()
+        ViewShapeHolder.getInstance().canevas.dimensions.y = (parent_relative_layout.layoutParams.height).toDouble()
+    }
+
     private fun emitClearCanvas(){
         val gson = Gson()
         val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas)
@@ -720,8 +730,6 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
-
-
     private var onCanvasReinitialized: Emitter.Listener = Emitter.Listener {
         Log.d("onCanvasReinitialized", "alllooo")
         runOnUiThread {
@@ -767,9 +775,62 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
+    private var onCanevasResized: Emitter.Listener = Emitter.Listener {
+        Log.d("onCanevasResized", "alllooo")
+
+        val gson = Gson()
+        val obj: CanvasEvent =  gson.fromJson(it[0].toString())
+
+        if(obj.username != UserHolder.getInstance().username) {
+            runOnUiThread {
+                ViewShapeHolder.getInstance().canevas.dimensions = obj.canevas.dimensions
+                parent_relative_layout.layoutParams.width = (obj.canevas.dimensions.x).toInt()
+                parent_relative_layout.layoutParams.height = (obj.canevas.dimensions.y).toInt()
+                parent_relative_layout.requestLayout()
+            }
+        }
+    }
+
+    private var onCanevasSelected: Emitter.Listener = Emitter.Listener {
+        Log.d("onCanevasSelected", "alllooo")
+
+        val gson = Gson()
+        val obj: GalleryEditEvent =  gson.fromJson(it[0].toString())
+
+        if(obj.username != UserHolder.getInstance().username) {
+            isCanvasSelectedByYou = false
+            runOnUiThread {
+                select_canevas_button.setChecked(false)
+                select_canevas_button.setEnabled(false)
+                parent_relative_layout.setBackgroundResource(R.drawable.borders_red_bg_white)
+            }
+        } else {
+            isCanvasSelectedByYou = true
+            runOnUiThread {
+                select_canevas_button.setChecked(true)
+                select_canevas_button.setEnabled(true)
+                parent_relative_layout.setBackgroundResource(R.drawable.borders_blue_bg_white)
+                resizeCanvevasButton.setBackgroundResource(R.drawable.ic_resize)
+            }
+        }
+    }
+
+    private var onCanevasDeselected: Emitter.Listener = Emitter.Listener {
+        Log.d("onCanevasDeselected", "alllooo")
+
+        val gson = Gson()
+        val obj: GalleryEditEvent =  gson.fromJson(it[0].toString())
+
+        runOnUiThread {
+            isCanvasSelectedByYou = false
+            select_canevas_button.setChecked(false)
+            select_canevas_button.setEnabled(true)
+            parent_relative_layout.setBackgroundResource(R.drawable.borders_transparent_bg_white)
+            resizeCanvevasButton.setBackgroundResource(0)
+        }
+    }
+
     override fun onPause(){
-//        socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
-//        socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
         socket?.off(SocketConstants.FORMS_UPDATED, onFormsUpdated)
         socket?.off(SocketConstants.FORMS_DESELECTED, onFormsDeselected)
         socket?.off(SocketConstants.FORMS_SELECTED, onFormsSelected)
@@ -781,6 +842,10 @@ class DrawingActivity : AppCompatActivity(){
         socket?.off(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
         socket?.off(SocketConstants.FORM_CREATED, onFormsCreated)
         socket?.off(SocketConstants.LINK_CREATED, onLinkCreated)
+        socket?.off(SocketConstants.CANVAS_RESIZED, onCanevasResized)
+        socket?.off(SocketConstants.CANVAS_SELECTED, onCanevasSelected)
+        socket?.off(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
+
         super.onPause()
     }
 
@@ -833,31 +898,32 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     open protected var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
-
         when(event.action){
-            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDownResize"
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
+            MotionEvent.ACTION_DOWN -> {
+                if (isCanvasSelectedByYou) {
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+                }
             }
             MotionEvent.ACTION_MOVE -> {
-                var deltaX: Int = (event.rawX - oldFrameRawX).toInt()
-                var deltaY: Int = (event.rawY - oldFrameRawY).toInt()
-                val newWidth = parent_relative_layout.width + deltaX
-                val newHeight = parent_relative_layout.height + deltaY
+                if (isCanvasSelectedByYou) {
+                    var deltaX: Int = (event.rawX - oldFrameRawX).toInt()
+                    var deltaY: Int = (event.rawY - oldFrameRawY).toInt()
+                    val newWidth = parent_relative_layout.width + deltaX
+                    val newHeight = parent_relative_layout.height + deltaY
 
-                resize(newWidth, newHeight)
+                    resize(newWidth, newHeight)
 
-                oldFrameRawX = event.rawX
-                oldFrameRawY = event.rawY
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+                }
             }
             MotionEvent.ACTION_UP -> {
-                // TODO:
-                /* val activity: AppCompatActivity = context as AppCompatActivity
-                if(activity is DrawingActivity){
-                    val drawingActivity : DrawingActivity = activity as DrawingActivity
-                    drawingActivity.syncCanevasFromLayout()
+                if (isCanvasSelectedByYou) {
+                    syncCanevasPropsFromLayout()
+                    emitCanevasUpdate()
                 }
-                emitUpdate()*/
+
             }
         }
         true
@@ -871,16 +937,36 @@ class DrawingActivity : AppCompatActivity(){
             parent_relative_layout.layoutParams.height = newHeight
         }
         parent_relative_layout.requestLayout()
-        // requestLayout()
     }
 
-    private fun emitUpdate(){
-        //val response: String = this.createFormsUpdateEvent()
+    private fun emitCanevasUpdate(){
+        val dataStr: String = this.createCanevasUpdateEvent()
 
-        /*if(response !="") {
-            Log.d("emitingUpdate", response)
-            socket?.emit(SocketConstants.UPDATE_FORMS, response)
-        }*/
+        if(dataStr !="") {
+            Log.d("emitingUpdate", dataStr)
+            socket?.emit(SocketConstants.RESIZE_CANVAS, dataStr)
+        }
+    }
+
+    private fun createCanevasUpdateEvent(): String {
+        val gson = Gson()
+        val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas)
+        val sendObj: String = gson.toJson(canvasEvent)
+        return sendObj
+    }
+
+
+    open protected var onSelectCanvevas = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+        val gson = Gson()
+        val canvasEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, "")
+        val dataStr: String = gson.toJson(canvasEvent)
+
+        if(isChecked) {
+            socket?.emit(SocketConstants.SELECT_CANVAS, dataStr)
+        } else {
+            socket?.emit(SocketConstants.DESELECT_CANVAS, dataStr)
+
+        }
     }
 
     /*override fun onBackPressed() {

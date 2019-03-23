@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.Model.Canevas
+import com.polypaint.polypaint.Model.Coordinates
 import com.polypaint.polypaint.Model.Link
 import com.polypaint.polypaint.View.BasicElementView
 import com.polypaint.polypaint.View.LinkView
@@ -13,7 +14,7 @@ class ViewShapeHolder(){
     var map: BiMap<BasicElementView, String> = HashBiMap.create()
     var linkMap : BiMap<LinkView, String> = HashBiMap.create()
     var stackShapeCreatedId : Stack<String> = Stack<String>()
-    var canevas : Canevas = Canevas("default","default name","aa-author", "aa-owner", 2, "", ArrayList<BasicShape>(), ArrayList<Link>(), "")
+    var canevas : Canevas = Canevas("default","default name","aa-author", "aa-owner", 2, "", ArrayList<BasicShape>(), ArrayList<Link>(), "", Coordinates(0.0,0.0))
     companion object {
         private val viewShapeHolder: ViewShapeHolder = ViewShapeHolder()
 

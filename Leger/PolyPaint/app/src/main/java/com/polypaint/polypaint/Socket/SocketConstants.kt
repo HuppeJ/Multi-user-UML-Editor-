@@ -98,6 +98,13 @@ class SocketConstants{
         const val SAVE_CANVAS_RESPONSE: String = "saveCanvasResponse"
 
 
+        const val SELECT_CANVAS: String = "selectCanvas"
+        const val SELECT_CANVAS_RESPONSE: String = "selectCanvasResponse"
+        const val CANVAS_SELECTED: String = "canvasSelected"
+
+        const val DESELECT_CANVAS: String = "deselectCanvas"
+        const val DESELECT_CANVAS_RESPONSE: String = "deselectCanvasResponse"
+        const val CANVAS_DESELECTED: String = "canvasDeselected"
 
 
         const val JOIN_CANVAS_TEST: String = "joinCanvasTest"

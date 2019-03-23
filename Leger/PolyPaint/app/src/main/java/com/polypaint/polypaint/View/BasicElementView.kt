@@ -591,9 +591,6 @@ open class BasicElementView: ConstraintLayout {
     }
 
     open protected var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
-        //val txt = first_line.text
-        //first_line.text = txt.toString() + "onTouchListenerResizeButton"
-
         when(event.action){
             MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDownResize"
                 oldFrameRawX = event.rawX
