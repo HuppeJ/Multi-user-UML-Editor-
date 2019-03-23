@@ -49,7 +49,7 @@
                         <sys:String>Public</sys:String>
                         <sys:String>Private</sys:String>
                     </ListBox>
-                    <TextBlock Margin="0, 10, 0, 0">Choose canvas privacy:</TextBlock>
+                    <TextBlock Margin="0, 10, 0, 0">Choose canvas protection:</TextBlock>
                     <ListBox Name="ProtectionList" SelectedValue="{Binding CanvasProtection, Mode=TwoWay}">
                         <sys:String>Unprotected</sys:String>
                         <sys:String>Protected</sys:String>

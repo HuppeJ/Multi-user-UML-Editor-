@@ -7,6 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:PolyPaint.VueModeles"
              xmlns:Vues="clr-namespace:PolyPaint.Vues"
+             xmlns:Converters="clr-namespace:PolyPaint.Convertisseurs"
              mc:Ignorable="d"              
              >
     <UserControl.Resources>
@@ -19,6 +20,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <local:VueModele x:Key="VueModele" />
+            <Converters:MultiValueEqualityConverter x:Key="MultiValueEqualityConverter"/>
 
             <Style x:Key="CanvasListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
                 <Setter Property="Background" Value="Transparent"/>
@@ -36,22 +38,28 @@
                     Height="30" Margin="0,0,0,0">
                     <Grid>
                         <!--Name-->
-                        <TextBlock HorizontalAlignment="Left"
+                        <TextBlock HorizontalAlignment="Left" MaxWidth="160"
                                Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" FontSize="16"
                                Text="{Binding name}" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
-                            <TextBlock Text="Protected" x:Name="LockedIcon" Visibility="Visible" HorizontalAlignment="Right"/>
-                            <Button Content="Join protect" x:Name="ButtonJoinProtected" Visibility="Visible"
+                            <Button Content="Edit protection" x:Name="EditButton" Visibility="Collapsed"
+                                    Command="{Binding Path=DataContext.SelectProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                                    CommandParameter="{Binding}"
+                                    Margin="0,0,10,0" Width="100" Height="23" Padding="0" Click="ChangeCanvasProtection"/>
+                            <TextBlock Text="Protected" x:Name="LockedIcon" Visibility="Visible" HorizontalAlignment="Right"
+                                       Background="Tomato" VerticalAlignment="Center" Padding="5,5,5,5"/>
+                            <Button Content="Join" x:Name="ButtonJoinProtected" Visibility="Visible"
                                     Click="JoinProtectedCanvas"
                                     Command="{Binding Path=DataContext.SelectProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
-                                    Width="75" Height="20" Padding="0,0,0,0" Margin="20,0,0,0"/>
+                                    Width="75" Height="23" Padding="0,0,0,0" Margin="20,0,0,0"/>
 
-                            <TextBlock Text="Unprotected" x:Name="UnlockedIcon" Visibility="Collapsed" HorizontalAlignment="Right"/>
-                            <Button Content="Join unprotec" x:Name="ButtonJoinUnprotected" Visibility="Collapsed"
+                            <TextBlock Text="Unprotected" x:Name="UnlockedIcon" Visibility="Collapsed" HorizontalAlignment="Right"
+                                       Background="SpringGreen" VerticalAlignment="Center" Padding="5,5,5,5"/>
+                            <Button Content="Join" x:Name="ButtonJoinUnprotected" Visibility="Collapsed"
                                     Command="{Binding Path=DataContext.JoinUnprotectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}"
-                                    Width="75" Height="20" Padding="0,0,0,0" Margin="20,0,0,0"/>
+                                    Width="75" Height="23" Padding="0,0,0,0" Margin="20,0,0,0"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -61,6 +69,15 @@
                         <Setter Property="Visibility" TargetName="ButtonJoinProtected" Value="Collapsed"/>
                         <Setter Property="Visibility" TargetName="UnlockedIcon" Value="Visible"/>
                         <Setter Property="Visibility" TargetName="ButtonJoinUnprotected" Value="Visible"/>
+                    </DataTrigger>
+                    <DataTrigger Value="true">
+                        <DataTrigger.Binding>
+                            <MultiBinding Converter="{StaticResource MultiValueEqualityConverter}">
+                                <Binding Path="DataContext.username" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type UserControl}}" Mode="OneWay" />
+                                <Binding Path="author" Mode="OneWay"/>
+                            </MultiBinding>
+                        </DataTrigger.Binding>
+                        <Setter Property="Visibility" TargetName="EditButton" Value="Visible"/>
                     </DataTrigger>
                 </DataTemplate.Triggers>
             </DataTemplate>
@@ -77,26 +94,28 @@
     <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="1100" Height="700" Margin="0">
         
         <Grid>
-            <TextBlock Height="50" Width="400" Margin="14,18,686,632" FontSize="35" FontFamily="Comic Sans MS">Your gallery</TextBlock>
+            <TextBlock Height="50" Width="400" Margin="14,18,686,632" FontSize="35">Your gallery</TextBlock>
             <Rectangle HorizontalAlignment="Stretch" Fill="Black" Margin="11,75,300,620"></Rectangle>
 
-            <TextBlock Height="50" Width="400" Margin="14,114,686,536" FontSize="35" FontFamily="Comic Sans MS">Private canvases</TextBlock>
+            <TextBlock Height="50" Width="400" Margin="14,114,686,536" FontSize="30">Private canvases</TextBlock>
 
             <StackPanel Margin="12,165,620,70" VerticalAlignment="Top">
-                <ListBox MaxHeight="450"
-                         ItemsSource="{Binding PrivateCanvases}" 
-                         ItemTemplate="{DynamicResource CanvasDataTemplate}"
-                         ItemContainerStyle="{DynamicResource CanvasListBoxItemStyle}"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                <ListBox 
+                    MaxHeight="450"
+                    ItemsSource="{Binding PrivateCanvases}" 
+                    ItemTemplate="{DynamicResource CanvasDataTemplate}"
+                    ItemContainerStyle="{DynamicResource CanvasListBoxItemStyle}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"/>
             </StackPanel>
 
-            <TextBlock Height="50" Width="400" Margin="529,118,171,532" FontSize="35" FontFamily="Comic Sans MS">Public canvases</TextBlock>
+            <TextBlock Height="50" Width="400" Margin="529,118,171,532" FontSize="30">Public canvases</TextBlock>
             <StackPanel Margin="512,165,120,70"  VerticalAlignment="Top">
                 <ListBox 
                     MaxHeight="450"
                     ItemsSource="{Binding PublicCanvases}" 
                     ItemTemplate="{DynamicResource CanvasDataTemplate}"
-                    ItemContainerStyle="{DynamicResource CanvasListBoxItemStyle}"/>
+                    ItemContainerStyle="{DynamicResource CanvasListBoxItemStyle}"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"/>
             </StackPanel>
             
             <Rectangle VerticalAlignment="Stretch" Fill="Black" Margin="491,132,604,68"></Rectangle>
@@ -104,15 +123,17 @@
             <Button Content="New Canvas" Margin="923,31,27,637" Click="CreateCanvas" Width="150"/>
             
             <Button Content="DrawingView" Margin="930,645,20,23" Command="{Binding DrawingViewCommand}" Width="150"/>
-            <Button Content="Disconnect" Margin="20,648,930,20" Command="{Binding LogoutCommand}" Width="150"/>
+            <Button Content="Disconnect" Margin="20,645,930,23" Command="{Binding LogoutCommand}" Width="150"/>
             
-            <Button Content="Refresh canvas" Margin="758,644,192,24" Command="{Binding RefreshCanvasesCommand}" Width="150"/>
-            <Button Content="Reset Server" Margin="581,644,369,24" Command="{Binding ResetServerCommand}" Width="150"/>
+            <Button Content="Reset Server" Margin="735,645,215,23" Command="{Binding ResetServerCommand}" Width="150"/>
             <Popup x:Name="popUpCreateCanvas" Placement="Center">
                 <Vues:CreateCanvasPopup x:Name="popUpCreateCanvasVue"/>
             </Popup>
             <Popup x:Name="popUpJoinProtectedCanvas" Placement="Center">
                 <Vues:JoinProtectedCanvasPopup x:Name="popUpJoinProtectedCanvasVue"/>
+            </Popup>
+            <Popup x:Name="popUpChangeCanvasProtection" Placement="Center">
+                <Vues:ChangeCanvasProtectionPopup x:Name="popUpChangeCanvasProtectionVue"/>
             </Popup>
         </Grid>
         

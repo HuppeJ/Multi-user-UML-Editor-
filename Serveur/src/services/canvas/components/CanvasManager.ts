@@ -227,6 +227,14 @@ export default class CanvasManager {
         return canvasRoom.deselectCanvas(data);
     }
 
+    public updataCanvasPassword(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.updataCanvasPassword(data);
+    }
 
     /***********************************************
     * Serialize / Deserialize

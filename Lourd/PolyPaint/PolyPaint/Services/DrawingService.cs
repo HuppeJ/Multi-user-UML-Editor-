@@ -25,6 +25,7 @@ namespace PolyPaint.Services
 
         public static event Action<PublicCanvases> UpdatePublicCanvases;
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
+        public static event Action BackToGallery;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -52,6 +53,26 @@ namespace PolyPaint.Services
                     canvasName = response.canvasName;
                     RefreshCanvases();
                 }
+            });
+
+            socket.On("canvasCreated", (data) =>
+            {
+                RefreshCanvases();
+            });
+
+            socket.On("updateCanvasPasswordResponse", (data) =>
+            {
+                UpdateCanvasPasswordResponse response = serializer.Deserialize<UpdateCanvasPasswordResponse>((string)data);
+                if (response.isPasswordUpdated)
+                {
+                    RefreshCanvases();
+                }
+            });
+            
+            socket.On("canvasPasswordUpdated", (data) =>
+            {
+                LeaveCanvas();
+                Application.Current.Dispatcher.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
             });
 
             socket.On("joinCanvasRoomResponse", (data) =>
@@ -153,10 +174,10 @@ namespace PolyPaint.Services
             socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
         }
 
-        public static void JoinCanvas(string roomName)
+        public static void ChangeCanvasProtection(string canvasName, string password)
         {
-            EditGalleryData editGalleryData = new EditGalleryData(username, roomName);
-            socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
+            EditGalleryData editGallerysData = new EditGalleryData(username, canvasName, password);
+            socket.Emit("updateCanvasPassword", serializer.Serialize(editGallerysData));
         }
 
         public static void JoinCanvas(string roomName, string password)
