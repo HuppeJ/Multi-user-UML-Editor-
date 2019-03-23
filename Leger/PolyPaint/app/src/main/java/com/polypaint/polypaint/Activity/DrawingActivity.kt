@@ -178,7 +178,12 @@ class DrawingActivity : AppCompatActivity(){
 //        socket?.on(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
         socket?.on(SocketConstants.FORMS_UPDATED, onFormsUpdated)
         socket?.on(SocketConstants.FORMS_SELECTED, onFormsSelected)
+        socket?.on(SocketConstants.FORMS_DESELECTED, onFormsDeselected)
         socket?.on(SocketConstants.FORMS_DELETED, onFormsDeleted)
+        socket?.on(SocketConstants.LINKS_UPDATED, onLinksUpdated)
+        socket?.on(SocketConstants.LINKS_SELECTED, onLinksSelected)
+        socket?.on(SocketConstants.LINKS_DESELECTED, onLinksDeselected)
+        socket?.on(SocketConstants.LINKS_DELETED, onLinksDeleted)
         socket?.on(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
         socket?.on(SocketConstants.FORM_CREATED, onFormsCreated)
         socket?.on(SocketConstants.LINK_CREATED, onLinkCreated)
@@ -425,6 +430,8 @@ class DrawingActivity : AppCompatActivity(){
             if(basicShape != null) {
                 view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
                 view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
+                view.leftX = view.x
+                view.topY = view.y
                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                 view.rotation = basicShape.shapeStyle.rotation.toFloat()
 
@@ -501,29 +508,7 @@ class DrawingActivity : AppCompatActivity(){
         obj = gson.toJson(formsUpdate)
         Log.d("emitingDelete", obj)
         socket?.emit(SocketConstants.DELETE_FORMS, obj)
-
     }
-
-
-    public class Response(var username: String, var basicShape: BasicShape){}
-    public class UserResponse(var username: String){}
-
-//    private var onCanvasUpdate: Emitter.Listener = Emitter.Listener {
-//
-//        val gson = Gson()
-//        val obj: Response = gson.fromJson(it[0].toString())
-//        if(obj.username != UserHolder.getInstance().username) {
-//            Log.d("canvasUpdate", obj.username + obj.basicShape.name)
-//            runOnUiThread {
-//                addOnCanevas(obj.basicShape)
-//            }
-//        }
-//
-//    }
-
-//    private var onJoinCanvas: Emitter.Listener = Emitter.Listener {
-//        Log.d("joinCanvas", it.get(0).toString())
-//    }
 
     private var onFormsUpdated: Emitter.Listener = Emitter.Listener {
         Log.d("onFormsUpdated", "alllooo")
@@ -554,8 +539,28 @@ class DrawingActivity : AppCompatActivity(){
                 runOnUiThread {
                     val view: BasicElementView? = ViewShapeHolder.getInstance().map.inverse()[form.id]
                     if(view != null) {
-                        view.borderResizableLayout?.setBackgroundResource(R.drawable.borders_red)
-                        view.isSelectedByOther = true
+                        view.setIsSelectedByOther(true)
+                    }
+
+                    syncLayoutFromCanevas()
+                }
+            }
+        }
+    }
+
+    private var onFormsDeselected: Emitter.Listener = Emitter.Listener {
+        Log.d("onFormsDeselected", "alllooo")
+
+        val gson = Gson()
+
+        val obj: FormsUpdateEvent = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            for(form: BasicShape in obj.forms) {
+                Log.d("formsDeselect", obj.username + form.name)
+                runOnUiThread {
+                    val view: BasicElementView? = ViewShapeHolder.getInstance().map.inverse()[form.id]
+                    if(view != null) {
+                        view.setIsSelectedByOther(false)
                     }
 
                     syncLayoutFromCanevas()
@@ -573,21 +578,107 @@ class DrawingActivity : AppCompatActivity(){
             for(form: BasicShape in obj.forms) {
                 Log.d("formsDeleted", obj.username + form.name)
                 runOnUiThread {
+                    val view: BasicElementView? = ViewShapeHolder.getInstance().map.inverse()[form.id]
+                    if(view != null) {
+                        parent_relative_layout?.removeView(view)
+                    }
                     ViewShapeHolder.getInstance().remove(form)
                     ViewShapeHolder.getInstance().stackShapeCreatedId.remove(form.id)
-                    syncLayoutFromCanevas()
+
                 }
             }
         }
     }
+
+    private var onLinksUpdated: Emitter.Listener = Emitter.Listener {
+        Log.d("onLinksUpdated", "alllooo")
+
+        val gson = Gson()
+
+        val obj: LinksUpdateEvent = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            for(link: Link in obj.links) {
+                Log.d("linksUpdate", obj.username + link.name)
+                runOnUiThread {
+                    val view: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[link.id]
+                    ViewShapeHolder.getInstance().canevas.updateLink(link)
+                    if(view != null) {
+                        view.setLinkAndAnchors(link)
+                        view.invalidate()
+                        view.requestLayout()
+                    }
+                }
+            }
+        }
+    }
+
+    private var onLinksSelected: Emitter.Listener = Emitter.Listener {
+        Log.d("onLinksSelected", "alllooo")
+
+        val gson = Gson()
+
+        val obj: LinksUpdateEvent = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            for(link: Link in obj.links) {
+                Log.d("linksSelect", obj.username + link.name)
+                runOnUiThread {
+                    val view: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[link.id]
+                    if(view != null) {
+                        view.setIsSelectedByOther(true)
+                        view.invalidate()
+                        view.requestLayout()
+                    }
+                }
+            }
+        }
+    }
+
+    private var onLinksDeselected: Emitter.Listener = Emitter.Listener {
+        Log.d("onLinksDeselected", "alllooo")
+
+        val gson = Gson()
+
+        val obj: LinksUpdateEvent = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            for(link: Link in obj.links) {
+                Log.d("linksDeselect", obj.username + link.name)
+                runOnUiThread {
+                    val view: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[link.id]
+                    if(view != null) {
+                        view.setIsSelectedByOther(false)
+                        view.invalidate()
+                        view.requestLayout()
+                    }
+                }
+            }
+        }
+    }
+
+    private var onLinksDeleted: Emitter.Listener = Emitter.Listener {
+        Log.d("onLinksDeleted", "alllooo")
+
+        val gson = Gson()
+        val obj: LinksUpdateEvent = gson.fromJson(it[0].toString())
+        if(obj.username != UserHolder.getInstance().username) {
+            for(link: Link in obj.links) {
+                Log.d("linksDeleted", obj.username + link.name)
+                runOnUiThread {
+                    val linkView: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[link.id]
+                    linkView?.deleteLink()
+                }
+            }
+        }
+    }
+
+
 
     private var onCanvasReinitialized: Emitter.Listener = Emitter.Listener {
         Log.d("onCanvasReinitialized", "alllooo")
         runOnUiThread {
             ViewShapeHolder.getInstance().removeAll()
             ViewShapeHolder.getInstance().stackShapeCreatedId = Stack<String>()
+            parent_relative_layout?.removeAllViews()
             parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
-            syncLayoutFromCanevas()
         }
     }
 
@@ -630,10 +721,16 @@ class DrawingActivity : AppCompatActivity(){
 //        socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
 //        socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
         socket?.off(SocketConstants.FORMS_UPDATED, onFormsUpdated)
+        socket?.off(SocketConstants.FORMS_DESELECTED, onFormsDeselected)
         socket?.off(SocketConstants.FORMS_SELECTED, onFormsSelected)
         socket?.off(SocketConstants.FORMS_DELETED, onFormsDeleted)
+        socket?.off(SocketConstants.LINKS_UPDATED, onLinksUpdated)
+        socket?.off(SocketConstants.LINKS_SELECTED, onLinksSelected)
+        socket?.off(SocketConstants.LINKS_DESELECTED, onLinksDeselected)
+        socket?.off(SocketConstants.LINKS_DELETED, onLinksDeleted)
         socket?.off(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
         socket?.off(SocketConstants.FORM_CREATED, onFormsCreated)
+        socket?.off(SocketConstants.LINK_CREATED, onLinkCreated)
         super.onPause()
     }
 
