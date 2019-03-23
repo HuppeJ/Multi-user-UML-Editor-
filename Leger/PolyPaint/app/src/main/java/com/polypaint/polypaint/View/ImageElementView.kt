@@ -32,7 +32,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         val activity : AppCompatActivity = context as AppCompatActivity
 
-        var child: View = activity.layoutInflater.inflate(R.layout.view_image_element, null)
+        var child = activity.layoutInflater.inflate(R.layout.view_image_element, null)
 
         var nameText: TextView = child.findViewById(R.id.view_image_element_name) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
@@ -55,14 +55,11 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
             }
             ShapeTypes.ACTIVITY -> {
                 img.setBackgroundResource(R.drawable.ic_activity)
-
-
             }
             ShapeTypes.ROLE -> {
                 img.setBackgroundResource(R.drawable.ic_actor)
 
             }
-
         }
 
         borderResizableLayout.addView(child)
@@ -73,8 +70,8 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-        linearLayoutCompat.layoutParams.height = (9*mMinimumHeight/10).toInt()
-        linearLayoutCompat2.layoutParams.height = (1*mMinimumHeight/10).toInt()
+        linearLayoutCompatImg.layoutParams.height = (9*mMinimumHeight/10).toInt()
+        linearLayoutCompat2Img.layoutParams.height = (1*mMinimumHeight/10).toInt()
 
     }
 
@@ -85,8 +82,9 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
-            linearLayoutCompat.layoutParams.height = (9*newHeight / 10)
-            linearLayoutCompat2.layoutParams.height = (1 * newHeight / 10)
+            // TODO :  is null : linearLayoutCompatImg & linearLayoutCompat2Img
+            // linearLayoutCompatImg.layoutParams.height = (9*newHeight / 10)
+            //linearLayoutCompat2Img.layoutParams.height = (1 * newHeight / 10)
         }
 
         borderResizableLayout.requestLayout()

@@ -54,6 +54,9 @@ import android.graphics.Bitmap
 import java.io.ByteArrayOutputStream
 import android.util.Base64
 import android.view.MotionEvent
+import android.widget.TextView
+import com.github.salomonbrys.kotson.toJsonArray
+import org.w3c.dom.Comment
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -62,13 +65,15 @@ class DrawingActivity : AppCompatActivity(){
     var oldFrameRawY : Float = 0.0F
     var mMinimumWidth : Float = 300F
     var mMinimumHeight : Float = 100F
-    var mMaximumWidth : Float = 1550F
+    var mMaximumWidth : Float = 1520F
     var mMaximumHeight : Float = 1200F
 
     private var inflater : LayoutInflater? = null
 
     private var drawer: Drawer? = null
     private var socket: Socket? = null
+
+    private var shapesToAdd: ArrayList<BasicShape> = ArrayList<BasicShape>()
 
     private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
     private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
@@ -113,7 +118,6 @@ class DrawingActivity : AppCompatActivity(){
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        initializeViewFromCanevas()
 
         parent_relative_layout.setOnClickListener{
             it as RelativeLayout
@@ -170,6 +174,16 @@ class DrawingActivity : AppCompatActivity(){
         parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
 
         resizeCanvevasButton.setOnTouchListener(onTouchListenerResizeButton)
+
+        SyncShapeHolder.getInstance().drawingActivity = this
+
+        // TODO : Jé's fix
+        if(ViewShapeHolder.getInstance().canevas.shapes !== null && !ViewShapeHolder.getInstance().canevas.shapes.isEmpty()) {
+            shapesToAdd.addAll(ViewShapeHolder.getInstance().canevas.shapes)
+
+            ViewShapeHolder.getInstance().canevas.shapes.clear()
+        }
+        initializeViewFromCanevas()
     }
 
     private fun initializeViewFromCanevas(){
@@ -177,17 +191,13 @@ class DrawingActivity : AppCompatActivity(){
         if(ViewShapeHolder.getInstance().canevas != null){
 
             Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
-            Log.d("333","****"+ViewShapeHolder.getInstance().map.toString()+"****")
 
-            for(form: BasicShape in ViewShapeHolder.getInstance().canevas.shapes){
+            for(form: BasicShape in shapesToAdd){
+                Log.d("INFORLOOP","********")
+                ViewShapeHolder.getInstance().canevas.addShape(form)
                 addOnCanevas(form)
             }
             //TODO: LINKS
-            Log.d("4444","****"+ViewShapeHolder.getInstance().map+"****")
-
-            Log.d("ENDinit","****"+ViewShapeHolder.getInstance().canevas.name+"****")
-
-
         }
 
     }
@@ -255,49 +265,49 @@ class DrawingActivity : AppCompatActivity(){
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.CLASS_SHAPE.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.ARTIFACT.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.ARTIFACT)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.ACTIVITY.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.ACTIVITY)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.ROLE.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.ROLE)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.COMMENT.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.COMMENT)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.PHASE.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.PHASE)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
 
         }
@@ -459,9 +469,10 @@ class DrawingActivity : AppCompatActivity(){
                 view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
                 view.leftX = view.x
                 view.topY = view.y
-                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                 view.rotation = basicShape.shapeStyle.rotation.toFloat()
 
+                // TODO : Jé's Fix : j'ai bougé les view.resize dans les différents case pour que la fonction redéfinie des enfants de BasicShape soit appelée (ex.: pour que la fonction .resize de ImageElementView soit appelée)
+                // TODO : les attributs xml des différentes View ne sont pas reconnues même avec le cast de la view (ex.:view as ImageElementView), voir les "// TODO : is null" ci-dessous, je n'ai pas trouvé pourquoi ça faisait cela^^
                 when(basicShape.type){
                     ShapeTypes.DEFAULT.value()-> { }
                     ShapeTypes.CLASS_SHAPE.value()-> {
@@ -470,21 +481,33 @@ class DrawingActivity : AppCompatActivity(){
                             view.class_name.text = basicShape.name
                             view.class_attributes.text = basicShape.attributes.toString()
                             view.class_methods.text = basicShape.methods.toString()
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                             view.outlineColor("BLACK")
                         }
                     }
                     ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
-                        view.view_image_element_name.text = basicShape.name
-                        view.outlineColor(basicShape.shapeStyle.borderColor)
+                            view as ImageElementView
+                            // TODO :  is null : view_image_element_name
+                            // view.view_image_element_name.text = basicShape.name
+                            view.outlineColor(basicShape.shapeStyle.borderColor)
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                     }
 
                     ShapeTypes.COMMENT.value()-> {
-                        view.comment_text.text = basicShape.name
+                        view as CommentView
+                        // TODO : is null : comment_text 
+                        //var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
+                        //commentText.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor)
+                        view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+
                     }
                     ShapeTypes.PHASE.value()-> {
-                        view.view_phase_name.text = basicShape.name
+                        view as PhaseView
+                        // TODO : is null :view_phase_name  
+                        // view.view_phase_name.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor)
+                        view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                     }
 
                 }
@@ -762,6 +785,9 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     override fun onBackPressed() {
+        // TODO : Jé's Fix
+        ViewShapeHolder.getInstance().map.clear()
+
         val gson = Gson()
         val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, ViewShapeHolder.getInstance().canevas.password)
         val sendObj = gson.toJson(galleryEditEvent)
