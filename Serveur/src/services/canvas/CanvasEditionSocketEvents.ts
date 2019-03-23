@@ -141,6 +141,9 @@ export default class CanvasEditionSocketEvents {
                 try {
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
                     const selectedForms: string = canvasManager.getSelectedFormsInCanvasRoomSERI(canvasRoomId);
+                    console.log("getSelectedForms")
+                    console.log(selectedForms.toString())
+
                     socket.emit("selectedForms", selectedForms);
                 } catch (e) {
                     console.log("[Error]: ", e);
@@ -275,6 +278,19 @@ export default class CanvasEditionSocketEvents {
                 }
             });
 
+            socket.on("getSelectedLinks", function (canvasName: string) {
+                try {
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
+                    const selectedLinks: string = canvasManager.getSelectedLinksInCanvasRoomSERI(canvasRoomId);
+                    console.log("getSelectedLinks")
+                    console.log(selectedLinks.toString())
+
+                    socket.emit("selectedLinks", selectedLinks);
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
+            
             /***********************************************
             * Events related to the Canvas
             ************************************************/

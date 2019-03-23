@@ -57,6 +57,8 @@ import android.view.MotionEvent
 import android.widget.CompoundButton
 import android.widget.TextView
 import com.github.salomonbrys.kotson.toJsonArray
+import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
+import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
 import org.w3c.dom.Comment
 
 
@@ -77,6 +79,7 @@ class DrawingActivity : AppCompatActivity(){
     private var socket: Socket? = null
 
     private var shapesToAdd: ArrayList<BasicShape> = ArrayList<BasicShape>()
+    private var linksToAdd: ArrayList<Link> = ArrayList<Link>()
 
     private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
     private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
@@ -184,24 +187,44 @@ class DrawingActivity : AppCompatActivity(){
         // TODO : Jé's fix
         if(ViewShapeHolder.getInstance().canevas.shapes !== null && !ViewShapeHolder.getInstance().canevas.shapes.isEmpty()) {
             shapesToAdd.addAll(ViewShapeHolder.getInstance().canevas.shapes)
-
             ViewShapeHolder.getInstance().canevas.shapes.clear()
+
+            // TODO : review Adding LINKS
+            linksToAdd.addAll(ViewShapeHolder.getInstance().canevas.links)
+            ViewShapeHolder.getInstance().canevas.links.clear()
         }
         initializeViewFromCanevas()
     }
 
     private fun initializeViewFromCanevas(){
-        //Shape
         if(ViewShapeHolder.getInstance().canevas != null){
-
             Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
 
+            // Adding SHAPES
             for(form: BasicShape in shapesToAdd){
                 Log.d("INFORLOOP","********")
                 ViewShapeHolder.getInstance().canevas.addShape(form)
                 addOnCanevas(form)
             }
-            //TODO: LINKS
+
+            // TODO : review Adding LINKS
+           for(link: Link in linksToAdd) {
+                    ViewShapeHolder.getInstance().canevas.addLink(link)
+                    val linkView: LinkView = LinkView(this)
+                    linkView.setLinkAndAnchors(link)
+                    ViewShapeHolder.getInstance().linkMap.forcePut(linkView, link.id)
+                    parent_relative_layout?.addView(linkView)
+            }
+
+            // Sizing the Canvas
+            parent_relative_layout.layoutParams.width = (ViewShapeHolder.getInstance().canevas.dimensions.x).toInt()
+            parent_relative_layout.layoutParams.height = (ViewShapeHolder.getInstance().canevas.dimensions.y).toInt()
+
+            // Selecting selected Forms and Links
+            val app = application as PolyPaint
+            app.socket?.emit(SocketConstants.GET_SELECTED_FORMS, ViewShapeHolder.getInstance().canevas.name)
+            app.socket?.emit(SocketConstants.GET_SELECTED_LINKS, ViewShapeHolder.getInstance().canevas.name)
+
         }
 
     }
@@ -225,6 +248,8 @@ class DrawingActivity : AppCompatActivity(){
         socket?.on(SocketConstants.CANVAS_RESIZED, onCanevasResized)
         socket?.on(SocketConstants.CANVAS_SELECTED, onCanevasSelected)
         socket?.on(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
+        socket?.on(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
+        socket?.on(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
 
         //socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
     }
@@ -350,8 +375,6 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun newViewOnCanevas(shapeType : ShapeTypes) : BasicElementView{
-        Log.d("777777","****"+ViewShapeHolder.getInstance().map+"****")
-
         var viewType : BasicElementView = BasicElementView(this)
         val viewContainer = inflater!!.inflate(R.layout.basic_element, null)
 
@@ -830,6 +853,38 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
+    private var onGetSelectedForms: Emitter.Listener = Emitter.Listener {
+        Log.d("onGetSelectedForms", "alllooo")
+
+        val gson = Gson()
+        val obj: GetSelectedFormsResponse =  gson.fromJson(it[0].toString())
+
+        for(formId: String in obj.selectedForms) {
+            runOnUiThread {
+                val view: BasicElementView? = ViewShapeHolder.getInstance().map.inverse()[formId]
+                if(view != null) {
+                    view.setIsSelectedByOther(true)
+                }
+            }
+        }
+    }
+
+    private var onGetSelectedLinks: Emitter.Listener = Emitter.Listener {
+        Log.d("onGetSelectedLinks", "alllooo")
+
+        val gson = Gson()
+        val obj: GetSelectedLinksResponse =  gson.fromJson(it[0].toString())
+
+        for(linkId: String in obj.selectedLinks) {
+            runOnUiThread {
+                val view: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                if(view != null) {
+                    view.setIsSelectedByOther(true)
+                }
+            }
+        }
+    }
+
     override fun onPause(){
         socket?.off(SocketConstants.FORMS_UPDATED, onFormsUpdated)
         socket?.off(SocketConstants.FORMS_DESELECTED, onFormsDeselected)
@@ -845,6 +900,8 @@ class DrawingActivity : AppCompatActivity(){
         socket?.off(SocketConstants.CANVAS_RESIZED, onCanevasResized)
         socket?.off(SocketConstants.CANVAS_SELECTED, onCanevasSelected)
         socket?.off(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
+        socket?.off(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
+        socket?.off(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
 
         super.onPause()
     }

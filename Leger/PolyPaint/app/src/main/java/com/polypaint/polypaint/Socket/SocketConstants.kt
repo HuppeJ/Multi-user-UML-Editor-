@@ -35,7 +35,8 @@ class SocketConstants{
         const val GET_SELECTED_FORMS: String = "getSelectedForms"
         const val SELECTED_FORMS: String = "selectedForms"
 
-
+        const val GET_SELECTED_LINKS: String = "getSelectedLinks"
+        const val SELECTED_LINKS: String = "selectedLinks"
 
 
         // Edition of links

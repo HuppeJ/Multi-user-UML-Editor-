@@ -14,7 +14,7 @@ class ViewShapeHolder(){
     var map: BiMap<BasicElementView, String> = HashBiMap.create()
     var linkMap : BiMap<LinkView, String> = HashBiMap.create()
     var stackShapeCreatedId : Stack<String> = Stack<String>()
-    var canevas : Canevas = Canevas("default","default name","aa-author", "aa-owner", 2, "", ArrayList<BasicShape>(), ArrayList<Link>(), "", Coordinates(0.0,0.0))
+    var canevas : Canevas = Canevas("default","default name","aa-author", "aa-owner", 2, "", ArrayList<BasicShape>(), ArrayList<Link>(), "", Coordinates(1100.0,800.0))
     companion object {
         private val viewShapeHolder: ViewShapeHolder = ViewShapeHolder()
 
