@@ -25,7 +25,7 @@ namespace PolyPaint.CustomInk
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             Coordinates coordinates = new Coordinates(lastPoint.X, lastPoint.Y);
 
-            shapeStyle = new ShapeStyle(coordinates,100,100,0, "#FFFFFFFF", 0,"none");
+            shapeStyle = new ShapeStyle(coordinates,1,1,0, "#FFFFFFFF", 0,"none");
 
             while (StylusPoints.Count > 1)
             {

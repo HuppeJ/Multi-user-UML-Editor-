@@ -294,7 +294,20 @@ namespace PolyPaint.CustomInk
         {
             foreach (CustomStroke stroke in SelectedStrokes)
             {
-                stroke.updatePosition(e.NewRectangle);
+                Vector delta = new Vector(e.NewRectangle.X - e.OldRectangle.X, e.NewRectangle.Y - e.OldRectangle.Y);
+                double rotationInRad = (stroke as ShapeStroke).shapeStyle.rotation * Math.PI / 180;
+
+                double m11 = Math.Cos(-rotationInRad);
+                double m12 = -Math.Sin(-rotationInRad);
+                double m21 = Math.Sin(-rotationInRad);
+                double m22 = Math.Cos(-rotationInRad);
+
+                Matrix rotationMatrix = new Matrix(m11, m12, m21, m22, 0, 0);
+
+                delta = rotationMatrix.Transform(delta);
+
+                (stroke as ShapeStroke).shapeStyle.coordinates.x += delta.X;
+                (stroke as ShapeStroke).shapeStyle.coordinates.y += delta.Y;
             }
             base.OnSelectionMoving(e);
         }
@@ -327,7 +340,40 @@ namespace PolyPaint.CustomInk
                     (stroke as ShapeStroke).shapeStyle.width *= widthRatio;
                     (stroke as ShapeStroke).shapeStyle.height *= heightRatio;
 
-                    (stroke as ShapeStroke).updatePosition(e.NewRectangle);
+                    RotateTransform oldRotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation,
+                                                             (stroke as ShapeStroke).GetCenter().X,
+                                                             (stroke as ShapeStroke).GetCenter().Y);
+
+                    RotateTransform newRotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation,
+                                                             e.NewRectangle.Left + e.NewRectangle.Width / 2,
+                                                             e.NewRectangle.Top + e.NewRectangle.Height / 2);
+
+                    Point point = oldRotation.Transform(e.NewRectangle.TopLeft);
+                    Point result = newRotation.Inverse.Transform(point);
+
+                    (stroke as ShapeStroke).shapeStyle.coordinates = new Coordinates(result);
+
+
+                    /*Point newRectCenter = new Point(e.NewRectangle.Left + e.NewRectangle.Width / 2,
+                                                    e.NewRectangle.Top + e.NewRectangle.Height / 2);
+
+                    Point oldRectCenter = new Point(e.OldRectangle.Left + e.OldRectangle.Width / 2,
+                                                    e.OldRectangle.Top + e.OldRectangle.Height / 2);
+
+                    Vector delta = new Vector(newRectCenter.X  - oldRectCenter.X, newRectCenter.Y - oldRectCenter.Y);
+                    double rotationInRad = (stroke as ShapeStroke).shapeStyle.rotation * Math.PI / 180;
+
+                    double m11 = Math.Cos(-rotationInRad);
+                    double m12 = -Math.Sin(-rotationInRad);
+                    double m21 = Math.Sin(-rotationInRad);
+                    double m22 = Math.Cos(-rotationInRad);
+
+                    Matrix rotationMatrix = new Matrix(m11, m12, m21, m22, 0, 0);
+
+                    delta = rotationMatrix.Transform(delta);
+
+                    (stroke as ShapeStroke).shapeStyle.coordinates.x += delta.X;
+                    (stroke as ShapeStroke).shapeStyle.coordinates.y += delta.Y;*/
                 }
             }
         }
@@ -815,7 +861,7 @@ namespace PolyPaint.CustomInk
                 StrokeCollection strokes = new StrokeCollection();
                 foreach (CustomStroke stroke in Strokes)
                 {
-                    if(stroke is ActorStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    if(stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
                     {
                         if (strokes.Any())
                             strokes.Clear();
@@ -832,7 +878,7 @@ namespace PolyPaint.CustomInk
                 StrokeCollection strokes = new StrokeCollection();
                 foreach (CustomStroke stroke in Strokes)
                 {
-                    if (stroke is ActorStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
                     {
                         if (strokes.Any())
                             strokes.Clear();
