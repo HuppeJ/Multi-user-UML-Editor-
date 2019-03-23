@@ -659,6 +659,11 @@ namespace PolyPaint.VueModeles
                 dialogService.ShowNotification("Could not join chatroom: wrong password");
             }
         }
+
+        private void BackToGallery()
+        {
+            UserMode = UserModes.Gallery;
+        }
         #endregion
 
         public MainWindowViewModel(IDialogService diagSvc)
@@ -675,6 +680,7 @@ namespace PolyPaint.VueModeles
             DrawingService.UpdatePublicCanvases += UpdatePublicCanvases;
             DrawingService.UpdatePrivateCanvases += UpdatePrivateCanvases;
             DrawingService.JoinCanvasRoom += JoinCanvasRoom;
+            DrawingService.BackToGallery += BackToGallery;
 
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;

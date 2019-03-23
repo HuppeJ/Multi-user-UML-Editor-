@@ -21,6 +21,7 @@ namespace PolyPaint.Services
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
         public static event Action<PublicCanvases> UpdatePublicCanvases;
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
+        public static event Action BackToGallery;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -42,6 +43,11 @@ namespace PolyPaint.Services
                 }
             });
 
+            socket.On("canvasCreated", (data) =>
+            {
+                RefreshCanvases();
+            });
+
             socket.On("updateCanvasPasswordResponse", (data) =>
             {
                 UpdateCanvasPasswordResponse response = serializer.Deserialize<UpdateCanvasPasswordResponse>((string)data);
@@ -49,6 +55,12 @@ namespace PolyPaint.Services
                 {
                     RefreshCanvases();
                 }
+            });
+            
+            socket.On("canvasPasswordUpdated", (data) =>
+            {
+                LeaveCanvas();
+                Application.Current.Dispatcher.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
             });
 
             socket.On("joinCanvasRoomResponse", (data) =>

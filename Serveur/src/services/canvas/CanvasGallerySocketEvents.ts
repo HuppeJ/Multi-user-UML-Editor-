@@ -70,7 +70,9 @@ export default class CanvasGallerySocketEvents {
 
                     if (response.isPasswordUpdated) {
                         console.log(socket.id + " updated canvas password " + data.canevasName);
-                        io.to(canvasRoomId).emit("canvasPasswordUpdated");
+                        if (data.password !== "") {
+                            io.to(canvasRoomId).emit("canvasPasswordUpdated");
+                        }
                     } else {
                         console.log(socket.id + " failed to update canvas password" + data.canevasName);
                     }
