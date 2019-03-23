@@ -86,7 +86,7 @@ namespace PolyPaint.Vues
                 if (newStroke.GetType() != typeof(LinkStroke))
                 {
                     Path path = new Path();
-                    path.Data = newStroke.GetGeometry();
+                    path.Data = new RectangleGeometry(newStroke.GetBounds());
                     surfaceDessin.Children.Add(path);
                     AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                     myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));

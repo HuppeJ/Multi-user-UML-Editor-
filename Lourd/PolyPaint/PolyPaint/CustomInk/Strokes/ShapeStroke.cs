@@ -90,20 +90,19 @@ namespace PolyPaint.CustomInk
             return basicShape;
         }
 
-        public override void updatePosition()
+        public override void updatePosition(Rect newRect)
         {
-            Coordinates newCoordinates = new Coordinates(GetBounds().X, GetBounds().Y);
-            shapeStyle.coordinates = newCoordinates;
+            double diffX = newRect.X - GetBounds().X;
+            double diffY = newRect.Y - GetBounds().Y;
+            shapeStyle.coordinates.x += diffX;
+            shapeStyle.coordinates.y += diffY;
         }
 
         public override CustomStroke CloneRotated(double rotation)
         {
             ShapeStroke newStroke = (ShapeStroke)Clone();
 
-            // Changer les bounds? Gi
-            //newStroke.GetBounds().Transform(rotation.Value);
-
-            newStroke.shapeStyle.rotation = rotation;
+            newStroke.shapeStyle.rotation += rotation;
             return newStroke;
         }
 
