@@ -44,6 +44,8 @@ namespace PolyPaint.CustomInk
             name = basicShape.name;
             strokeType = basicShape.type;
             shapeStyle = basicShape.shapeStyle;
+            linksTo = new List<string>();
+            linksFrom = new List<string>();
 
             Point point = new Point(shapeStyle.coordinates.x, shapeStyle.coordinates.y);
 
@@ -57,6 +59,7 @@ namespace PolyPaint.CustomInk
                     }
                 }
             }
+
         }
 
         public Point GetAnchorPoint(int anchorNumber)
