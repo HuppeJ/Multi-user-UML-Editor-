@@ -62,13 +62,14 @@ class CommentView(context: Context): BasicElementView(context) {
     }
 
     override fun outlineColor(color: String) {
-        var lDrawable = child!!.comment_text.background.mutate() as LayerDrawable
-        var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
-        when(color){
+        // TODO :  is null : comment_text 
+        // var lDrawable = child!!.comment_text.background.mutate() as LayerDrawable
+        //var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
+       /* when(color){
             "BLACK" -> gDrawable.setStroke(3, Color.BLACK)
             "GREEN" -> gDrawable.setStroke(3, Color.GREEN)
             "YELLOW" -> gDrawable.setStroke(3, Color.YELLOW)
-        }
+        }*/
 
     }
 }

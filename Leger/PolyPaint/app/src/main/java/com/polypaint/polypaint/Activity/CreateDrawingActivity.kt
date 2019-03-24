@@ -124,7 +124,7 @@ class CreateDrawingActivity: AppCompatActivity(){
             accessibility = AccessibilityTypes.PUBLIC.ordinal
         }
 
-        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, accessibility, password,  ArrayList(), ArrayList(), "")
+        canevas = Canevas(UUID.randomUUID().toString(), name, UserHolder.getInstance().username, UserHolder.getInstance().username, accessibility, password,  ArrayList(), ArrayList(), "", Coordinates(1100.0,800.0))
 
 
         val gson = Gson()
