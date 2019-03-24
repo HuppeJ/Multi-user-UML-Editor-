@@ -521,7 +521,7 @@ namespace PolyPaint.VueModeles
         {
             var canvas = o as Templates.Canvas;
             DrawingService.JoinCanvas(canvas.name, "");
-            DrawingService.DrawCanvas(canvas);
+            SelectedCanvas = canvas;
         }
         #endregion
 
@@ -539,7 +539,6 @@ namespace PolyPaint.VueModeles
         {
             var passwordBox = o as PasswordBox;
             DrawingService.JoinCanvas(SelectedCanvas.name, passwordBox.Password);
-            DrawingService.DrawCanvas(SelectedCanvas);
         }
         #endregion
 
@@ -654,11 +653,15 @@ namespace PolyPaint.VueModeles
         {
             if (response.isCanvasRoomJoined)
             {
-                UserMode = UserModes.Drawing;
+                if(UserMode != UserModes.Drawing)
+                {
+                    UserMode = UserModes.Drawing;
+                    DrawingService.DrawCanvas(SelectedCanvas);
+                }
             }
             else
             {
-                dialogService.ShowNotification("Could not join chatroom: wrong password");
+                dialogService.ShowNotification("Could not join chatroom");
             }
         }
 
