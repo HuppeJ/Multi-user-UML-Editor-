@@ -21,7 +21,6 @@ namespace PolyPaint.CustomInk
         public Dictionary<string, CustomStroke> StrokesDictionary = new Dictionary<string, CustomStroke>();
 
         private StrokeCollection clipboard;
-        private Templates.Canvas canvas;
         StrokeCollection oldSelectedStrokes = new StrokeCollection();
 
         public StylusPoint firstPoint;
@@ -270,6 +269,16 @@ namespace PolyPaint.CustomInk
         }
 
         #region On.. event handlers
+        // we don't want Ctrl + C and Ctrl + V
+        protected override void OnPreviewKeyDown(KeyEventArgs e) {
+            if ((e.Key == Key.C || e.Key == Key.V) && (Keyboard.Modifiers & ModifierKeys.Control) ==
+                ModifierKeys.Control)
+            {
+                //do nothing
+                e.Handled = true;
+            }
+        }
+
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
         }
 
@@ -646,11 +655,12 @@ namespace PolyPaint.CustomInk
 
             StrokeCollection newStrokes = new StrokeCollection();
 
-            foreach (Stroke stroke in strokes)
+            foreach (CustomStroke stroke in strokes)
             {
-                Stroke newStroke = stroke.Clone();
+                CustomStroke newStroke = stroke.Clone() as CustomStroke;
+                newStroke.guid = Guid.NewGuid();
 
-                if((newStroke as CustomStroke).isLinkStroke())
+                if(newStroke.isLinkStroke())
                 {
                     LinkStroke linkStroke = newStroke as LinkStroke;
                     linkStroke.from = new AnchorPoint();
@@ -659,8 +669,8 @@ namespace PolyPaint.CustomInk
                     linkStroke.to.SetDefaults();
                 } else
                 {
-                    (newStroke as ShapeStroke).linksTo.Clear();
-                    (newStroke as ShapeStroke).linksFrom.Clear();
+                    (newStroke as ShapeStroke).linksTo = new List<string> { };
+                    (newStroke as ShapeStroke).linksFrom = new List<string> { };
                 }
 
                 // TODO : 2 options. 1- Avoir un compteur de Paste qui incremente a chaque Paste, le reinitialiser quand 
@@ -671,6 +681,12 @@ namespace PolyPaint.CustomInk
                 newStroke.Transform(translateMatrix, false);
 
                 AddStroke(newStroke as CustomStroke);
+
+                if (!newStroke.isLinkStroke())
+                {
+                    DrawingService.CreateShape(newStroke as ShapeStroke);
+                }
+
                 newStrokes.Add(newStroke);
             }
 
