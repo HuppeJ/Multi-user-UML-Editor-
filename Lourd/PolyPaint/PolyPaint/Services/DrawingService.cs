@@ -362,24 +362,24 @@ namespace PolyPaint.Services
                         // If there are 8 attributes, it's a class, else, it's a basicShape
                         if (shapes[i].Count == 8)
                         {
-                            string id = shapes[0]["id"];
-                            int type = shapes[0]["type"];
-                            string name = shapes[0]["name"];
-                            var shapeStyle = GetShapeStyle(shapes[0]["shapeStyle"]);
-                            List<string> linksTo = GetStringList(shapes[0]["linksTo"]);
-                            List<string> linksFrom = GetStringList(shapes[0]["linksFrom"]);
-                            List<string> attributes = GetStringList(shapes[0]["attributes"]);
-                            List<string> methods = GetStringList(shapes[0]["methods"]);
+                            string id = shapes[i]["id"];
+                            int type = shapes[i]["type"];
+                            string name = shapes[i]["name"];
+                            var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
+                            List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
+                            List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
+                            List<string> attributes = GetStringList(shapes[i]["attributes"]);
+                            List<string> methods = GetStringList(shapes[i]["methods"]);
                             basicShapeList.Add(new ClassShape(id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
                         }
                         else
                         {
-                            string id = shapes[0]["id"];
-                            int type = shapes[0]["type"];
-                            string name = shapes[0]["name"];
-                            var shapeStyle = GetShapeStyle(shapes[0]["shapeStyle"]);
-                            List<string> linksTo = GetStringList(shapes[0]["linksTo"]);
-                            List<string> linksFrom = GetStringList(shapes[0]["linksFrom"]);
+                            string id = shapes[i]["id"];
+                            int type = shapes[i]["type"];
+                            string name = shapes[i]["name"];
+                            var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
+                            List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
+                            List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
                             basicShapeList.Add(new BasicShape(id, type, name, shapeStyle, linksTo, linksFrom));
                         }
                     }

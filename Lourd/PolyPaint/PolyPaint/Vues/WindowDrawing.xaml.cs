@@ -149,6 +149,9 @@ namespace PolyPaint.Vues
             popUpName.IsOpen = false;
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
         }
@@ -179,6 +182,10 @@ namespace PolyPaint.Vues
                 stroke.methods.Add(line);
             }
 
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
+
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
         }
@@ -201,6 +208,10 @@ namespace PolyPaint.Vues
             stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
             stroke.DrawingAttributes.Width = linkThickness;
             stroke.DrawingAttributes.Height = linkThickness;
+
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
 
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
