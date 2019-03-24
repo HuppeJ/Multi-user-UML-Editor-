@@ -84,5 +84,9 @@ namespace PolyPaint.CustomInk
         {
             return false;
         }
+        internal virtual bool HitTestPointIncludingEdition(Point point)
+        {
+            return false;
+        }
     }
 }

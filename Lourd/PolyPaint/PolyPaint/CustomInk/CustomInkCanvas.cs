@@ -29,6 +29,8 @@ namespace PolyPaint.CustomInk
         public bool isUpdatingLink = false;
     
         public List<string> remoteSelectionIds = new List<string>();
+        private StrokeCollection beingSelected = new StrokeCollection();
+        private PathFigure selectionPath = new PathFigure();
 
         #region 
         public void AddStroke(CustomStroke stroke)
@@ -854,47 +856,123 @@ namespace PolyPaint.CustomInk
         }
         #endregion
 
+        
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
         {
+            SelectedStrokes = GetSelectedStrokes();
             if (EditingMode == InkCanvasEditingMode.Select)
             {
-                StrokeCollection strokes = new StrokeCollection();
-                foreach (CustomStroke stroke in Strokes)
+                selectionPath.StartPoint = e.GetPosition(this);
+                selectionPath.Segments = new PathSegmentCollection();
+                selectionPath.IsClosed = true;
+                beingSelected.Clear();
+                foreach (CustomStroke stroke in SelectedStrokes)
                 {
-                    if(stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    if (stroke.HitTestPointIncludingEdition(e.GetPosition(this)))
                     {
-                        if (strokes.Any())
-                            strokes.Clear();
-                        strokes.Add(stroke);
+                        base.OnPreviewMouseDown(e);
+                        return;
                     }
-
                 }
-
-                if (strokes.Any())
-                    Select(strokes);
-            }
-            else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
-            {
-                StrokeCollection strokes = new StrokeCollection();
+                selectionPath.Segments.Add(new LineSegment(e.GetPosition(this), true));
                 foreach (CustomStroke stroke in Strokes)
                 {
                     if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
                     {
-                        if (strokes.Any())
-                            strokes.Clear();
-                        strokes.Add(stroke);
+                        if (beingSelected.Any())
+                            beingSelected.Clear();
+                        beingSelected.Add(stroke);
                     }
-
-                }
-
-                if (strokes.Any())
-                {
-                    Strokes.Remove(strokes);
-                    DrawingService.RemoveShapes(strokes);
-                    RefreshChildren();
                 }
             }
-            base.OnPreviewMouseDown(e);
+            else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
+            {
+                beingSelected = new StrokeCollection();
+                foreach (CustomStroke stroke in Strokes)
+                {
+                    if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    {
+                        beingSelected.Add(stroke);
+                    }
+                }
+                if (beingSelected.Any())
+                {
+                    Strokes.Remove(beingSelected);
+                    DrawingService.RemoveShapes(beingSelected);
+                    RefreshChildren();
+                    beingSelected.Clear();
+                }
+            } else
+            {
+                base.OnPreviewMouseDown(e);
+            }
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (EditingMode == InkCanvasEditingMode.Select)
+            {
+                if (selectionPath.Segments.Any())
+                    selectionPath.Segments.Add(new LineSegment(e.GetPosition(this), true));
+            }
+            else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
+            {
+                beingSelected = new StrokeCollection();
+                foreach (CustomStroke stroke in Strokes)
+                {
+                    if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    {
+                        beingSelected.Add(stroke);
+                    }
+                }
+                if (beingSelected.Any())
+                {
+                    Strokes.Remove(beingSelected);
+                    DrawingService.RemoveShapes(beingSelected);
+                    RefreshChildren();
+                    beingSelected.Clear();
+                }
+            }
+            else
+            {
+                base.OnMouseMove(e);
+            }
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            if (EditingMode == InkCanvasEditingMode.Select)
+            {
+                if (selectionPath.Segments.Any())
+                {
+                    if (selectionPath.Segments.Count < 5)
+                    {
+                        SelectedStrokes.Clear();
+                        Select(beingSelected);
+                        selectionPath.Segments.Clear();
+                    } else
+                    {
+                        beingSelected.Clear();
+                        SelectedStrokes.Clear();
+                        PathFigureCollection figures = new PathFigureCollection { selectionPath };
+                        PathGeometry geometry = new PathGeometry(figures);
+                        foreach (CustomStroke stroke in Strokes)
+                        {
+                            RectangleGeometry strokeBound = new RectangleGeometry(stroke.GetBounds());
+                            if (geometry.FillContains(strokeBound))
+                            {
+                                beingSelected.Add(stroke);
+                            }
+                        }
+                        Select(beingSelected);
+                        selectionPath.Segments.Clear();
+                    }
+                }
+            }
+            else
+            {
+                base.OnMouseUp(e);
+            }
         }
     }
 }

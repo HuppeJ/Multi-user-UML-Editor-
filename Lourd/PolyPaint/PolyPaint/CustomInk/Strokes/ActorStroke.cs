@@ -40,32 +40,17 @@ namespace PolyPaint.CustomInk
         
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
         {
-            if (drawingContext == null)
-            {
-                throw new ArgumentNullException("drawingContext");
-            }
-            if (null == drawingAttributes)
-            {
-                throw new ArgumentNullException("drawingAttributes");
-            }
-            DrawingAttributes originalDa = drawingAttributes.Clone();
-            Brush brush1 = Brushes.Blue;
-            Brush brush2 = Brushes.Red;
-            Pen pen = new Pen(brush2, 3);
-
-            Pen pen2 = new Pen(brush2, 1);
-            pen.DashStyle = DashStyles.Dash;
-            
+            base.DrawCore(drawingContext, drawingAttributes);
             UpdateShapePoints();
 
-            TransformGroup transform = new TransformGroup();
+            /*
+            Rect editionBorder = new Rect(shapeStyle.coordinates.x - 15, shapeStyle.coordinates.y - 15,
+                WIDTH * shapeStyle.width + 30, HEIGHT * shapeStyle.height + 30);
+            */
 
-            transform.Children.Add(new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y));
+            // drawingContext.DrawRectangle(null, pen2, editionBorder);
 
-            // drawingContext.DrawRectangle(null, pen2, GetBounds());
-            drawingContext.PushTransform(transform);
-
-            drawingContext.DrawEllipse(brush1, pen, headCenter, headRadiusX, headRadiusY);
+            drawingContext.DrawEllipse(fillColor, pen, headCenter, headRadiusX, headRadiusY);
             drawingContext.DrawLine(pen, neck, hip);
             drawingContext.DrawLine(pen, torso, leftHand);
             drawingContext.DrawLine(pen, torso, rightHand);
@@ -90,7 +75,15 @@ namespace PolyPaint.CustomInk
             return GetBounds().Contains(rotationTransform.Inverse.Transform(point));
         }
 
-        
+        internal override bool HitTestPointIncludingEdition(Point point)
+        {
+            Rect editionBorder = new Rect(shapeStyle.coordinates.x - 15, shapeStyle.coordinates.y - 15,
+                WIDTH * shapeStyle.width + 30, HEIGHT * shapeStyle.height + 30);
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            return editionBorder.Contains(rotationTransform.Inverse.Transform(point));
+        }
+
+
         private void UpdateShapePoints()
         {
             double width = shapeStyle.width * WIDTH;

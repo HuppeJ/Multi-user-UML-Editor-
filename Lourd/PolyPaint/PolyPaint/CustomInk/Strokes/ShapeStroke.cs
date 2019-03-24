@@ -16,6 +16,8 @@ namespace PolyPaint.CustomInk
         public List<string> linksTo;
         public List<string> linksFrom;
         public List<Point> anchorPoints;
+        protected Pen pen;
+        protected SolidColorBrush fillColor;
 
         public ShapeStroke(StylusPointCollection pts) : base(pts)
         {
@@ -25,7 +27,7 @@ namespace PolyPaint.CustomInk
             Point lastPoint = pts[pts.Count - 1].ToPoint();
             Coordinates coordinates = new Coordinates(lastPoint.X, lastPoint.Y);
 
-            shapeStyle = new ShapeStyle(coordinates,1,1,0, "#FFFFFFFF", 0,"none");
+            shapeStyle = new ShapeStyle(coordinates,1,1,0, "#000000", 0, null);
 
             while (StylusPoints.Count > 1)
             {
@@ -53,6 +55,42 @@ namespace PolyPaint.CustomInk
                     StylusPoints.Add(new StylusPoint(i, j));
                 }
             }
+        }
+
+        protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
+        {
+            if (drawingContext == null)
+            {
+                throw new ArgumentNullException("drawingContext");
+            }
+            if (null == drawingAttributes)
+            {
+                throw new ArgumentNullException("drawingAttributes");
+            }
+
+            SolidColorBrush borderColor;
+            if (shapeStyle.borderColor != null)
+                borderColor = (SolidColorBrush)(new BrushConverter().ConvertFrom(shapeStyle.borderColor));
+            else
+                borderColor = null;
+            
+            if (shapeStyle.backgroundColor != null)
+                fillColor = (SolidColorBrush)(new BrushConverter().ConvertFrom(shapeStyle.backgroundColor));
+            else
+                fillColor = null;
+
+            // TODO: add border weight
+            pen = new Pen(borderColor, 1);
+
+            // TODO: add border style
+            // pen.DashStyle = DashStyles.Dash;
+
+            TransformGroup transform = new TransformGroup();
+
+            transform.Children.Add(new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y));
+
+            // drawingContext.DrawRectangle(null, pen2, GetBounds());
+            drawingContext.PushTransform(transform);
         }
 
         public Point GetAnchorPoint(int anchorNumber)

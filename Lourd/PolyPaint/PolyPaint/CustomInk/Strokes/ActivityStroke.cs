@@ -35,30 +35,9 @@ namespace PolyPaint.CustomInk
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
         {
-            if (drawingContext == null)
-            {
-                throw new ArgumentNullException("drawingContext");
-            }
-            if (null == drawingAttributes)
-            {
-                throw new ArgumentNullException("drawingAttributes");
-            }
-            DrawingAttributes originalDa = drawingAttributes.Clone();
-            Brush brush1 = Brushes.Blue;
-            Brush brush2 = Brushes.Red;
-            Pen pen = new Pen(brush2, 3);
-
-            Pen pen2 = new Pen(brush2, 1);
-            pen.DashStyle = DashStyles.Dash;
+            base.DrawCore(drawingContext, drawingAttributes);
 
             UpdateShapePoints();
-
-            TransformGroup transform = new TransformGroup();
-
-            transform.Children.Add(new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y));
-
-            // drawingContext.DrawRectangle(null, pen2, GetBounds());
-            drawingContext.PushTransform(transform);
 
             LineSegment topRightSeg = new LineSegment(topRight, true);
             LineSegment rightSeg = new LineSegment(right, true);
@@ -73,7 +52,7 @@ namespace PolyPaint.CustomInk
             PathGeometry geometry = new PathGeometry();
             geometry.Figures = figures;
 
-            drawingContext.DrawGeometry(brush1, pen, geometry);
+            drawingContext.DrawGeometry(fillColor, pen, geometry);
         }
 
         public override Rect GetBounds()
@@ -93,6 +72,13 @@ namespace PolyPaint.CustomInk
             return GetBounds().Contains(rotationTransform.Inverse.Transform(point));
         }
 
+        internal override bool HitTestPointIncludingEdition(Point point)
+        {
+            Rect editionBorder = new Rect(shapeStyle.coordinates.x - 15, shapeStyle.coordinates.y - 15,
+                WIDTH * shapeStyle.width + 30, HEIGHT * shapeStyle.height + 30);
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            return editionBorder.Contains(rotationTransform.Inverse.Transform(point));
+        }
 
         private void UpdateShapePoints()
         {
