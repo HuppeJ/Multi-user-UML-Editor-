@@ -157,7 +157,36 @@ open class BasicElementView: ConstraintLayout {
                     val activity = context as AppCompatActivity
                     val toolbarView: View= activity.findViewById(R.id.toolbar)
 
-                    start = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
+
+                    var point: Coordinates = Coordinates(0.0,0.0)
+                    val centerX = (leftX + this.measuredWidth / 2.0)
+                    val centerY = (topY + this.measuredHeight / 2.0)
+                    var newX: Double = 0.0
+                    var newY: Double = 0.0
+                    when (v){
+                        anchorPoint3->{
+                            Log.d("Rotation", rotation.toString())
+                            newX = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                            newY = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                        }
+                        anchorPoint1->{
+                            newX = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                            newY = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                        }
+                        anchorPoint0->{
+                            newX = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                            newY = - (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                        }
+                        anchorPoint2 ->{
+                            newX = -(borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                            newY = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                        }
+                    }
+                    point.y = centerY + newY
+                    point.x = centerX + newX
+
+//                    start = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
+                    start = point
 
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
@@ -183,7 +212,7 @@ open class BasicElementView: ConstraintLayout {
                     for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
                         if(basicView != this && !basicView.isSelectedByOther) {
                             val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
-                            if (isViewInBounds(basicView.anchorPoint0, x, y)) {
+                            if (basicView.isViewInBounds(basicView.anchorPoint0, x, y)) {
                                 otherAnchor = basicView.anchorPoint0
                                 otherBasicView = basicView
                                 if(basicShapeId != null){
@@ -193,7 +222,7 @@ open class BasicElementView: ConstraintLayout {
                                     basicView.anchorPoint0.requestLayout()
                                 }
                                 break
-                            } else if (isViewInBounds(basicView.anchorPoint1, x, y)) {
+                            } else if (basicView.isViewInBounds(basicView.anchorPoint1, x, y)) {
                                 otherAnchor = basicView.anchorPoint1
                                 otherBasicView = basicView
                                 if(basicShapeId != null){
@@ -203,7 +232,7 @@ open class BasicElementView: ConstraintLayout {
                                     basicView.anchorPoint1.requestLayout()
                                 }
                                 break
-                            } else if (isViewInBounds(basicView.anchorPoint2, x, y)) {
+                            } else if (basicView.isViewInBounds(basicView.anchorPoint2, x, y)) {
                                 otherAnchor = basicView.anchorPoint2
                                 otherBasicView = basicView
                                 if(basicShapeId != null){
@@ -213,7 +242,7 @@ open class BasicElementView: ConstraintLayout {
                                     basicView.anchorPoint2.requestLayout()
                                 }
                                 break
-                            } else if (isViewInBounds(basicView.anchorPoint3, x, y)) {
+                            } else if (basicView.isViewInBounds(basicView.anchorPoint3, x, y)) {
                                 otherAnchor = basicView.anchorPoint3
                                 otherBasicView = basicView
                                 if(basicShapeId != null){
@@ -242,11 +271,39 @@ open class BasicElementView: ConstraintLayout {
 
                     if(otherAnchor != null && anchorPointEnd.formId != "" && otherBasicView != null){
 
-                        val coord = IntArray(2)
-                        otherAnchor.getLocationOnScreen(coord)
-                        val activity = context as AppCompatActivity
-                        val toolbarView: View= activity.findViewById(R.id.toolbar)
-                        link.end = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
+//                        val coord = IntArray(2)
+//                        otherAnchor.getLocationOnScreen(coord)
+//                        val activity = context as AppCompatActivity
+//                        val toolbarView: View= activity.findViewById(R.id.toolbar)
+//                        link.end = Coordinates((coord[0]-parentView.x + v.measuredWidth/2).toDouble(), (coord[1]-toolbarView.measuredHeight - v.measuredWidth/2).toDouble())
+
+                        var point: Coordinates = Coordinates(0.0,0.0)
+                        val centerX = (otherBasicView.leftX + otherBasicView.measuredWidth / 2.0)
+                        val centerY = (otherBasicView.topY + otherBasicView.measuredHeight / 2.0)
+                        var newX: Double = 0.0
+                        var newY: Double = 0.0
+                        when (anchorPointEnd.anchor){
+                            3->{
+                                Log.d("Rotation", rotation.toString())
+                                newX = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                            }
+                            1->{
+                                newX = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                            }
+                            0->{
+                                newX = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = - (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                            }
+                            2 ->{
+                                newX = -(borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                            }
+                        }
+                        point.y = centerY + newY
+                        point.x = centerX + newX
+                        link.end = point
 
                     }
 
@@ -316,16 +373,51 @@ open class BasicElementView: ConstraintLayout {
     }
 
     fun isViewInBounds(view: View, x: Int, y: Int): Boolean{
-        val activity = context as AppCompatActivity
-        val toolbarView: View= activity.findViewById(R.id.toolbar)
-        val parentView = view.parent.parent.parent as RelativeLayout
-        val outRect = Rect();
-        val location = IntArray(2);
-        view.getDrawingRect(outRect);
-        view.getLocationOnScreen(location);
-        outRect.offset((location[0] - parentView.x).toInt(), location[1] - toolbarView.measuredHeight - view.measuredWidth/2 - (24 * resources.displayMetrics.density / 2).toInt() );
-        outRect.left -= 5
-        outRect.right += 5
+//        val activity = context as AppCompatActivity
+//        val toolbarView: View= activity.findViewById(R.id.toolbar)
+//        val parentView = view.parent.parent.parent as RelativeLayout
+//        val outRect = Rect();
+//        val location = IntArray(2);
+//        view.getDrawingRect(outRect);
+//        view.getLocationOnScreen(location);
+//        outRect.offset((location[0] - parentView.x).toInt(), location[1] - toolbarView.measuredHeight - view.measuredWidth/2 - (24 * resources.displayMetrics.density / 2).toInt() );
+//        outRect.left -= 5
+//        outRect.right += 5
+
+
+        var point: Coordinates = Coordinates(0.0,0.0)
+        val centerX = (leftX + this.measuredWidth / 2.0)
+        val centerY = (topY + this.measuredHeight / 2.0)
+        var newX: Double = 0.0
+        var newY: Double = 0.0
+        when (view){
+            anchorPoint3->{
+                Log.d("Rotation", rotation.toString())
+                newX = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newY = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+            }
+            anchorPoint1->{
+                newX = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newY = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+            }
+            anchorPoint0->{
+                newX = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newY = - (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+            }
+            anchorPoint2 ->{
+                newX = -(borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newY = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+            }
+        }
+        point.y = centerY + newY
+        point.x = centerX + newX
+
+        val left = point.x - anchorPoint0.layoutParams.width
+        val right = point.x + anchorPoint0.layoutParams.width
+        val top = point.y - anchorPoint0.layoutParams.height
+        val bottom = point.y + anchorPoint0.layoutParams.height
+
+        val outRect: Rect = Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
         return outRect.contains(x, y);
     }
 
