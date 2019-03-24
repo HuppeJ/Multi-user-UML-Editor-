@@ -4,6 +4,7 @@ using PolyPaint.Services;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -291,15 +292,15 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionMoving(InkCanvasSelectionEditingEventArgs e)
         {
+            foreach (CustomStroke stroke in SelectedStrokes)
+            {
+                stroke.updatePosition(e.NewRectangle);
+            }
             base.OnSelectionMoving(e);
         }
         
         protected override void OnSelectionMoved(EventArgs e)
         {
-            foreach (CustomStroke stroke in SelectedStrokes)
-            {
-                stroke.updatePosition();
-            }
             DrawingService.UpdateShapes(SelectedStrokes);
             RefreshLinks();
             RefreshChildren();
@@ -313,10 +314,9 @@ namespace PolyPaint.CustomInk
 
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
         {
-            base.OnSelectionResizing(e);
-
             // Update selected strokes height and width
             StrokeCollection strokes = GetSelectedStrokes();
+
             double heightRatio = e.NewRectangle.Height / e.OldRectangle.Height;
             double widthRatio = e.NewRectangle.Width / e.OldRectangle.Width;
 
@@ -326,6 +326,8 @@ namespace PolyPaint.CustomInk
                 {
                     (stroke as ShapeStroke).shapeStyle.width *= widthRatio;
                     (stroke as ShapeStroke).shapeStyle.height *= heightRatio;
+
+                    (stroke as ShapeStroke).updatePosition(e.NewRectangle);
                 }
             }
         }
@@ -746,7 +748,10 @@ namespace PolyPaint.CustomInk
                     myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                 }
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
-                if(selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
+                Point center = selectedStroke.GetCenter();
+                RotateTransform rotationTransform = new RotateTransform((selectedStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+                myAdornerLayer.RenderTransform = rotationTransform;
+                if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                 {
                     myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
                 }
@@ -818,6 +823,48 @@ namespace PolyPaint.CustomInk
             //}
         }
         #endregion
-        
+
+        protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
+        {
+            if (EditingMode == InkCanvasEditingMode.Select)
+            {
+                StrokeCollection strokes = new StrokeCollection();
+                foreach (CustomStroke stroke in Strokes)
+                {
+                    if(stroke is ActorStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    {
+                        if (strokes.Any())
+                            strokes.Clear();
+                        strokes.Add(stroke);
+                    }
+
+                }
+
+                if (strokes.Any())
+                    Select(strokes);
+            }
+            else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
+            {
+                StrokeCollection strokes = new StrokeCollection();
+                foreach (CustomStroke stroke in Strokes)
+                {
+                    if (stroke is ActorStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    {
+                        if (strokes.Any())
+                            strokes.Clear();
+                        strokes.Add(stroke);
+                    }
+
+                }
+
+                if (strokes.Any())
+                {
+                    Strokes.Remove(strokes);
+                    DrawingService.RemoveShapes(strokes);
+                    RefreshChildren();
+                }
+            }
+            base.OnPreviewMouseDown(e);
+        }
     }
 }

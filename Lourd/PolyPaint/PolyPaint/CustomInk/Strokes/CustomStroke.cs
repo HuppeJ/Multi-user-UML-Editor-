@@ -17,7 +17,7 @@ namespace PolyPaint.CustomInk
         {
         }
 
-        public Point GetCenter()
+        public virtual Point GetCenter()
         {
             Rect strokeBounds = GetBounds();
             
@@ -29,7 +29,7 @@ namespace PolyPaint.CustomInk
             return center;
         }
 
-       public virtual CustomStroke CloneRotated(double rotation) {
+        public virtual CustomStroke CloneRotated(double rotation) {
             CustomStroke newStroke = (CustomStroke)Clone();
             return newStroke;
         }
@@ -75,8 +75,13 @@ namespace PolyPaint.CustomInk
             return GetType() == typeof(LinkStroke);
         }
 
-        public virtual void updatePosition()
+        public virtual void updatePosition(Rect newRect)
         {
+        }
+
+        internal virtual bool HitTestPoint(Point point)
+        {
+            return false;
         }
     }
 }

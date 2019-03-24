@@ -15,11 +15,15 @@ export default class CanvasRoom {
     }
 
     public addUser(username: string) {
-        this.connectedUsers.add(username);
+        if (!this.hasUser(username)) {
+            this.connectedUsers.add(username);
+        }
     }
 
     public removeUser(username: string) {
-        this.connectedUsers.delete(username);
+        if (this.hasUser(username)) {
+            this.connectedUsers.delete(username);
+        }
     }
 
     public hasUser(username: string) {
@@ -46,6 +50,11 @@ export default class CanvasRoom {
 
     public isPasswordValid(data: IEditGalleryData) {
         return this.canvas.password === data.password;
+    }
+
+    public updataCanvasPassword(data: IEditGalleryData) {
+        this.canvas.password = data.password;
+        return true;
     }
 
     /***********************************************
