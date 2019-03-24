@@ -170,16 +170,7 @@ namespace PolyPaint.CustomInk
                 return;
             }
 
-            //if(stroke.GetType() == typeof(RoleStroke))
-            //{
-            //    (stroke as RoleStroke).RotateStroke(rotation.Angle - lastAngle);
-            //    center = stroke.GetCenter();
-            //    strokeBounds = stroke.GetBounds();
-            //} else
-            //{
-                canvas.RotateStrokesWithAngle(rotation.Angle);
-            //}
-
+            canvas.RotateStrokesWithAngle(rotation.Angle);
 
             // Save the angle of the last rotation.
             lastAngle = rotation.Angle;

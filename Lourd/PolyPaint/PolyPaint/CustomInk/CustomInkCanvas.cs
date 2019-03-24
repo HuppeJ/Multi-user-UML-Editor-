@@ -29,7 +29,7 @@ namespace PolyPaint.CustomInk
     
         public List<string> remoteSelectionIds = new List<string>();
 
-        #region 
+        #region Dictonary
         public void AddStroke(CustomStroke stroke)
         {
             Strokes.Add(stroke);
