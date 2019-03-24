@@ -205,9 +205,6 @@ namespace PolyPaint.CustomInk
                             }
 
                             linkStroke.addStylusPointsToLink();
-                            
-                            //Select(new StrokeCollection { });
-                            //Select(GetSelectedStrokes());
                         }
 
                     }

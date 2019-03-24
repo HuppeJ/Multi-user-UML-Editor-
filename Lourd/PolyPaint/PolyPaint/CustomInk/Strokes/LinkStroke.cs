@@ -134,7 +134,7 @@ namespace PolyPaint.CustomInk.Strokes
                     break;
                 case LinkTypes.COMPOSITION:
                     //on the to point
-                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
+                    AddCompositionArrow(path[path.Count - 1], path[path.Count - 2]);
                     break;
                 default:
                     break;
@@ -217,24 +217,42 @@ namespace PolyPaint.CustomInk.Strokes
 
         private void AddCompositionArrow(Coordinates toPoint, Coordinates beforeToPoint)
         {
+            Point pointOnStroke = GetPointForArrow(toPoint, beforeToPoint, 10);
+            Point pointBeforeOnStroke = GetPointForArrow(toPoint, beforeToPoint, 20);
 
-            //xStep = (actualArrowPoint1.X - firstPoint.X) / 10;
-            //yStep = (actualArrowPoint1.Y - firstPoint.Y) / 10;
+            Point arrowPoint1 = rotatePoint(pointOnStroke.X - toPoint.x, pointOnStroke.Y - toPoint.y, 45);
+            Point arrowPoint2 = rotatePoint(pointOnStroke.X - toPoint.x, pointOnStroke.Y - toPoint.y, -45);
+
+            double arrowNorm = Math.Cos(Math.PI / 4);
+
+            Point actualArrowPoint1 = new Point(arrowPoint1.X / arrowNorm + toPoint.x, arrowPoint1.Y / arrowNorm + toPoint.y);
+            Point actualArrowPoint2 = new Point(arrowPoint2.X / arrowNorm + toPoint.x, arrowPoint2.Y / arrowNorm + toPoint.y);
+
+            double xStep1 = (actualArrowPoint1.X - pointBeforeOnStroke.X) / 10;
+            double yStep1 = (actualArrowPoint1.Y - pointBeforeOnStroke.Y) / 10;
+            double xStep2 = (actualArrowPoint2.X - pointBeforeOnStroke.X) / 10;
+            double yStep2 = (actualArrowPoint2.Y - pointBeforeOnStroke.Y) / 10;
 
 
-            //for (int i = 1; i < 10; i++)
-            //{
-            //    StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-            //}
+            for (int i = 1; i < 10; i++)
+            {
+                StylusPoints.Add(new StylusPoint(pointBeforeOnStroke.X + i * xStep1, pointBeforeOnStroke.Y + i * yStep1));
+                StylusPoints.Add(new StylusPoint(pointBeforeOnStroke.X + i * xStep2, pointBeforeOnStroke.Y + i * yStep2));
+            }
 
-            //for (double i = firstPoint.X; i <= actualArrowPoint1.X; i+=1)
-            //{
-            //    for (double j = firstPoint.Y; i <= actualArrowPoint1.Y; j += 1)
-            //    {
-            //        StylusPoints.Add(new StylusPoint(i, j));
-            //        //StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-            //    }
-            //}
+            StylusPoints.Add(new StylusPoint(actualArrowPoint1.X, actualArrowPoint1.Y));
+            StylusPoints.Add(new StylusPoint(actualArrowPoint2.X, actualArrowPoint2.Y));
+
+            xStep1 = (toPoint.x - actualArrowPoint1.X) / 10;
+            yStep1 = (toPoint.y - actualArrowPoint1.Y) / 10;
+            xStep2 = (toPoint.x - actualArrowPoint2.X) / 10;
+            yStep2 = (toPoint.y - actualArrowPoint2.Y) / 10;
+
+            for (int i = 1; i < 10; i++)
+            {
+                StylusPoints.Add(new StylusPoint(actualArrowPoint1.X + i * xStep1, actualArrowPoint1.Y + i * yStep1));
+                StylusPoints.Add(new StylusPoint(actualArrowPoint2.X + i * xStep2, actualArrowPoint2.Y + i * yStep2));
+            }
         }
 
         private void AddAssociationArrow(StylusPoint firstPoint, StylusPoint lastPoint)
