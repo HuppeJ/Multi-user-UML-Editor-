@@ -91,6 +91,44 @@ namespace PolyPaint.Services
             {
                 PublicCanvases canvases = serializer.Deserialize<PublicCanvases>((string)data);
 
+                List<Templates.Canvas> canvasesList = canvases.publicCanvas;
+                if(canvasesList.Count > 0)
+                {
+                    foreach(Templates.Canvas canvas in canvasesList)
+                    {
+                        List<BasicShape> basicShapeList = new List<BasicShape>();
+                        dynamic shapes = canvas.shapes;
+                        for(int i=0; i<shapes.Length; i++)
+                        {
+                            // If there are 8 attributes, it's a class, else, it's a basicShape
+                            if(shapes[i].Count == 8)
+                            {
+                                string id = shapes[0]["id"];
+                                int type = shapes[0]["type"];
+                                string name = shapes[0]["name"];
+                                var shapeStyle = GetShapeStyle(shapes[0]["shapeStyle"]);
+                                List<string> linksTo = GetStringList(shapes[0]["linksTo"]);
+                                List<string> linksFrom = GetStringList(shapes[0]["linksFrom"]);
+                                List<string> attributes = GetStringList(shapes[0]["attributes"]);
+                                List<string> methods = GetStringList(shapes[0]["methods"]);
+                                basicShapeList.Add(new ClassShape(id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
+                            }
+                            else
+                            {
+                                string id = shapes[0]["id"];
+                                int type = shapes[0]["type"];
+                                string name = shapes[0]["name"];
+                                var shapeStyle = GetShapeStyle(shapes[0]["shapeStyle"]);
+                                List<string> linksTo = GetStringList(shapes[0]["linksTo"]);
+                                List<string> linksFrom = GetStringList(shapes[0]["linksFrom"]);
+                                basicShapeList.Add(new BasicShape(id, type, name, shapeStyle, linksTo, linksFrom));
+                            }
+                        }
+
+                        canvas.shapes = basicShapeList;
+                    }
+                }
+
                 Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePublicCanvases(canvases); }), DispatcherPriority.Render);
             });
 
@@ -167,6 +205,33 @@ namespace PolyPaint.Services
                 }
             });
             RefreshCanvases();
+        }
+
+        private static dynamic GetShapeStyle(dynamic shapeStyle)
+        {
+            double width = shapeStyle["width"];
+            double height = shapeStyle["height"];
+            double rotation = shapeStyle["rotation"];
+            string borderColor = shapeStyle["borderColor"];
+            int borderStyle = shapeStyle["borderStyle"];
+            string backgroundColor = shapeStyle["backgroundColor"];
+            double x = (double)shapeStyle["coordinates"]["x"];
+            double y = (double)shapeStyle["coordinates"]["y"];
+            Coordinates coordinates = new Coordinates(x, y);
+
+            return new ShapeStyle(coordinates, width, height, rotation, borderColor, borderStyle, backgroundColor);
+        }
+
+        private static dynamic GetStringList(dynamic links)
+        {
+            List<string> list = new List<string>();
+
+            for(int i=0; i<links.Length; i++)
+            {
+                list.Add((string)links[i]);
+            }
+
+            return list;
         }
 
         public static void CreateCanvas(Templates.Canvas canvas)
@@ -253,7 +318,14 @@ namespace PolyPaint.Services
             {
                 if (!customStroke.isLinkStroke())
                 {
-                    forms.Add((customStroke as ShapeStroke).GetBasicShape());
+                    if(customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
+                    {
+                        forms.Add((customStroke as ClassStroke).GetClassShape());
+                    }
+                    else
+                    {
+                        forms.Add((customStroke as ShapeStroke).GetBasicShape());
+                    }
                 }
             }
 
