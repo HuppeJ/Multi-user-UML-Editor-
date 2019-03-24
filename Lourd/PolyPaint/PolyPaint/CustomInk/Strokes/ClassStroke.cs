@@ -16,21 +16,14 @@ namespace PolyPaint.CustomInk
         public List<string> attributes;
         public List<string> methods;
 
+        public static readonly int WIDTH = 150;
+        public static readonly int HEIGHT = 30;
+
         public ClassStroke(StylusPointCollection pts) : base(pts)
         {
             strokeType = (int)StrokeTypes.CLASS_SHAPE;
             attributes = new List<string>();
             methods = new List<string>();
-
-            shapeStyle.width = 150;
-            Point lastPoint = pts[pts.Count - 1].ToPoint();
-            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
-            {
-                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
-                {
-                    StylusPoints.Add(new StylusPoint(i, j));
-                }
-            }
         }
 
         public ClassStroke(ClassShape classShape, StylusPointCollection pts) : base(pts, classShape)
@@ -65,6 +58,37 @@ namespace PolyPaint.CustomInk
         public override BasicShape GetBasicShape()
         {
             return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
+        }
+
+        public override Point GetCenter()
+        {
+            Rect rect = GetBounds();
+            return new Point(rect.X + shapeStyle.width * WIDTH / 2, rect.Y + shapeStyle.height * HEIGHT / 2);
+        }
+
+        public override Rect GetBounds()
+        {
+            double width = shapeStyle.width * WIDTH;
+            double height = shapeStyle.height * HEIGHT;
+
+            Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
+                width, height);
+
+            return rect;
+        }
+
+        internal override bool HitTestPoint(Point point)
+        {
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            return GetBounds().Contains(rotationTransform.Inverse.Transform(point));
+        }
+
+        internal override bool HitTestPointIncludingEdition(Point point)
+        {
+            Rect editionBorder = new Rect(shapeStyle.coordinates.x - 15, shapeStyle.coordinates.y - 15,
+                WIDTH * shapeStyle.width + 30, HEIGHT * shapeStyle.height + 30);
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            return editionBorder.Contains(rotationTransform.Inverse.Transform(point));
         }
     }
 }

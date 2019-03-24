@@ -24,13 +24,13 @@ namespace PolyPaint.CustomInk
             this.selectedStroke = stroke;
 
             ShapeStyle shapeStyle = stroke.shapeStyle;
-            tb1 = new CustomTextBox(stroke.name, shapeStyle.width, shapeStyle.height / 5);
+            tb1 = new CustomTextBox(stroke.name, ClassStroke.WIDTH * shapeStyle.width, ClassStroke.HEIGHT * shapeStyle.height / 5);
             tb1.TextAlignment = TextAlignment.Center;
 
-            tb2 = new CustomTextBox(getString(stroke.attributes), shapeStyle.width, shapeStyle.height * 2 / 5);
+            tb2 = new CustomTextBox(getString(stroke.attributes), ClassStroke.WIDTH * shapeStyle.width, ClassStroke.HEIGHT * shapeStyle.height * 2 / 5);
             tb2.MinLines = 3;
 
-            tb3 = new CustomTextBox(getString(stroke.methods), shapeStyle.width, shapeStyle.height * 2 / 5);
+            tb3 = new CustomTextBox(getString(stroke.methods), ClassStroke.WIDTH * shapeStyle.width, ClassStroke.HEIGHT * shapeStyle.height * 2 / 5);
             tb3.MinLines = 3;
 
             Orientation = Orientation.Vertical;
