@@ -95,9 +95,9 @@ namespace PolyPaint.Vues
                     myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
                 }
             }
-            else if (surfaceDessin.SelectedStrokes.Count == 1 && surfaceDessin.SelectedStrokes[0].GetType() == typeof(LinkStroke))
+            else if (surfaceDessin.GetSelectedStrokes().Count == 1 && surfaceDessin.GetSelectedStrokes()[0].GetType() == typeof(LinkStroke))
             {
-                surfaceDessin.modifyLinkStrokePath(surfaceDessin.SelectedStrokes[0] as LinkStroke, e.GetPosition(surfaceDessin));
+                surfaceDessin.modifyLinkStrokePath(surfaceDessin.GetSelectedStrokes()[0] as LinkStroke, e.GetPosition(surfaceDessin));
 
             }
 
