@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using PolyPaint.CustomInk;
+using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
 using Quobject.SocketIoClientDotNet.Client;
@@ -195,7 +196,9 @@ namespace PolyPaint.Services
         {
             foreach(Link link in canvas.links)
             {
-
+                LinkStroke linkStroke = LinkStrokeFromLink(link);
+                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(linkStroke);
+                Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             }
 
             foreach(BasicShape shape in canvas.shapes)
@@ -228,6 +231,13 @@ namespace PolyPaint.Services
             StrokeCollection strokes = new StrokeCollection();
             strokes.Add(shapeStroke);
             socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(strokes)));
+        }
+
+        public static void CreateLink(LinkStroke linkStroke)
+        {
+            StrokeCollection strokes = new StrokeCollection();
+            strokes.Add(linkStroke);
+            socket.Emit("createLink", serializer.Serialize(createUpdateLinksData(strokes)));
         }
 
         public static void RemoveShapes(StrokeCollection strokes)
@@ -269,6 +279,20 @@ namespace PolyPaint.Services
             }
 
             return new UpdateFormsData(username, canvasName, forms);
+        }
+
+        private static UpdateLinksData createUpdateLinksData(StrokeCollection strokes)
+        {
+            List<Link> links = new List<Link>();
+            foreach (CustomStroke customStroke in strokes)
+            {
+                if (customStroke.isLinkStroke())
+                {
+                    links.Add((customStroke as LinkStroke).GetLinkShape());
+                }
+            }
+
+            return new UpdateLinksData(username, canvasName, links);
         }
 
         private static ShapeStroke createShapeStroke(dynamic shape)
@@ -343,10 +367,22 @@ namespace PolyPaint.Services
                 default:
                     shapeStroke = new ClassStroke(shape as ClassShape, points);
                     break;
-
             }
 
             return shapeStroke;
+        }
+
+        private static LinkStroke LinkStrokeFromLink(Link link)
+        {
+            StrokeTypes type = (StrokeTypes)link.type;
+            StylusPointCollection points = new StylusPointCollection();
+            for(int i=0; i<link.path.Count; i++)
+            {
+                StylusPoint point = new StylusPoint(link.path[i].x, link.path[i].y);
+                points.Add(point);
+            }
+
+            return new LinkStroke(link.id, link.name, link.from, link.to, link.type, link.style.type, link.style, link.path, points);
         }
 
         private static void ExtractCanvasesShapes(List<Templates.Canvas> canvasesList)
@@ -418,5 +454,6 @@ namespace PolyPaint.Services
 
             return list;
         }
+       
     }
 }

@@ -463,6 +463,10 @@ namespace PolyPaint.CustomInk
             {
                 DrawingService.CreateShape(customStroke as ShapeStroke);
             }
+            else
+            {
+                DrawingService.CreateLink(customStroke as LinkStroke);
+            }
             // firstPoint = customStroke.StylusPoints[0];
             SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
 

@@ -56,6 +56,22 @@ namespace PolyPaint.Templates
         }
     }
 
+    class UpdateLinksData
+    {
+        public string username { get; set; }
+        public string canevasName { get; set; }
+        public List<Link> links { get; set; }
+
+        public UpdateLinksData() { }
+
+        public UpdateLinksData(string username, string canevasName, List<Link> links)
+        {
+            this.username = username;
+            this.canevasName = canevasName;
+            this.links = links;
+        }
+    }
+
     class CreateCanvasResponse
     {
         public bool isCreated { get; set; }

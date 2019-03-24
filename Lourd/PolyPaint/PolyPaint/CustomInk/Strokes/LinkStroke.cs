@@ -348,5 +348,10 @@ namespace PolyPaint.CustomInk.Strokes
         //    drawingContext.PushTransform(transform);
         //}
         #endregion
+
+        public virtual Link GetLinkShape()
+        {
+            return new Link(guid.ToString(), name, from, to, strokeType, style, path);
+        }
     }
 }
