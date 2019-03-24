@@ -349,6 +349,18 @@ namespace PolyPaint.CustomInk.Strokes
         //}
         #endregion
 
+        public override void updatePosition(Rect newRect)
+        {
+            double diffX = newRect.X - GetBounds().X;
+            double diffY = newRect.Y - GetBounds().Y;
+
+            for(int i=0; i<path.Count; i++)
+            {
+                path[i].x += diffX;
+                path[i].y += diffY;
+            }
+        }
+
         public virtual Link GetLinkShape()
         {
             return new Link(guid.ToString(), name, from, to, strokeType, style, path);

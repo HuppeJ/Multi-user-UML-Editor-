@@ -250,6 +250,11 @@ namespace PolyPaint.Services
             socket.Emit("updateForms", serializer.Serialize(createUpdateFormsData(strokes)));
         }
 
+        public static void UpdateLinks(StrokeCollection strokes)
+        {
+            socket.Emit("updateLinks", serializer.Serialize(createUpdateLinksData(strokes)));
+        }
+
         public static void SelectShapes(StrokeCollection strokes)
         {
             socket.Emit("selectForms", serializer.Serialize(createUpdateFormsData(strokes)));

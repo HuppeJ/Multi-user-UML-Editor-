@@ -302,6 +302,7 @@ namespace PolyPaint.CustomInk
         protected override void OnSelectionMoved(EventArgs e)
         {
             DrawingService.UpdateShapes(SelectedStrokes);
+            DrawingService.UpdateLinks(SelectedStrokes);
             RefreshLinks();
             RefreshChildren();
         }
