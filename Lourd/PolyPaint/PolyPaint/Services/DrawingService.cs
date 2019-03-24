@@ -41,7 +41,7 @@ namespace PolyPaint.Services
             {
                 if(canvasName != null)
                 {
-                    JoinCanvas(canvasName);
+                    JoinCanvas(canvasName, "");
                 }
             });
 
