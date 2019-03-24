@@ -41,6 +41,7 @@ namespace PolyPaint.Services
             {
                 if(canvasName != null)
                 {
+                    // Stocker le mot de passe? ADD
                     JoinCanvas(canvasName, "");
                 }
             });
@@ -90,12 +91,16 @@ namespace PolyPaint.Services
             {
                 PublicCanvases canvases = serializer.Deserialize<PublicCanvases>((string)data);
 
+                ExtractCanvasesShapes(canvases.publicCanvas);
+
                 Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePublicCanvases(canvases); }), DispatcherPriority.Render);
             });
 
             socket.On("getPrivateCanvasResponse", (data) =>
             {
                 PrivateCanvases canvases = serializer.Deserialize<PrivateCanvases>((string)data);
+
+                ExtractCanvasesShapes(canvases.privateCanvas);
 
                 Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePrivateCanvases(canvases); }), DispatcherPriority.Render);
             });
@@ -186,6 +191,21 @@ namespace PolyPaint.Services
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
         }
 
+        public static void DrawCanvas(Templates.Canvas canvas)
+        {
+            foreach(Link link in canvas.links)
+            {
+
+            }
+
+            foreach(BasicShape shape in canvas.shapes)
+            {
+                ShapeStroke shapeStroke = ShapeStrokeFromShape(shape);
+                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(shapeStroke);
+                Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+            }
+        }
+
         public static void LeaveCanvas()
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
@@ -237,7 +257,14 @@ namespace PolyPaint.Services
             {
                 if (!customStroke.isLinkStroke())
                 {
-                    forms.Add((customStroke as ShapeStroke).GetBasicShape());
+                    if(customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
+                    {
+                        forms.Add((customStroke as ClassStroke).GetClassShape());
+                    }
+                    else
+                    {
+                        forms.Add((customStroke as ShapeStroke).GetBasicShape());
+                    }
                 }
             }
 
@@ -284,5 +311,112 @@ namespace PolyPaint.Services
             return shapeStroke;
         }
 
+        private static ShapeStroke ShapeStrokeFromShape(BasicShape shape)
+        {
+            StrokeTypes type = (StrokeTypes)shape.type;
+            ShapeStroke shapeStroke;
+
+            StylusPointCollection points = new StylusPointCollection();
+            StylusPoint point = new StylusPoint(shape.shapeStyle.coordinates.x, shape.shapeStyle.coordinates.y);
+            points.Add(point);
+
+            switch (type)
+            {
+                case StrokeTypes.CLASS_SHAPE:
+                    shapeStroke = new ClassStroke((ClassShape)shape, points);
+                    break;
+                case StrokeTypes.ARTIFACT:
+                    shapeStroke = new ArtifactStroke(shape, points);
+                    break;
+                case StrokeTypes.ACTIVITY:
+                    shapeStroke = new ActivityStroke(shape, points);
+                    break;
+                case StrokeTypes.ROLE:
+                    shapeStroke = new ActorStroke(shape, points);
+                    break;
+                case StrokeTypes.COMMENT:
+                    shapeStroke = new CommentStroke(shape, points);
+                    break;
+                case StrokeTypes.PHASE:
+                    shapeStroke = new PhaseStroke(shape, points);
+                    break;
+                default:
+                    shapeStroke = new ClassStroke(shape as ClassShape, points);
+                    break;
+
+            }
+
+            return shapeStroke;
+        }
+
+        private static void ExtractCanvasesShapes(List<Templates.Canvas> canvasesList)
+        {
+            if (canvasesList.Count > 0)
+            {
+                foreach (Templates.Canvas canvas in canvasesList)
+                {
+                    List<BasicShape> basicShapeList = new List<BasicShape>();
+                    dynamic shapes = canvas.shapes;
+                    for (int i = 0; i < shapes.Length; i++)
+                    {
+                        // If there are 8 attributes, it's a class, else, it's a basicShape
+                        if (shapes[i].Count == 8)
+                        {
+                            string id = shapes[i]["id"];
+                            int type = shapes[i]["type"];
+                            string name = shapes[i]["name"];
+                            var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
+                            List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
+                            List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
+                            List<string> attributes = GetStringList(shapes[i]["attributes"]);
+                            List<string> methods = GetStringList(shapes[i]["methods"]);
+                            basicShapeList.Add(new ClassShape(id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
+                        }
+                        else
+                        {
+                            string id = shapes[i]["id"];
+                            int type = shapes[i]["type"];
+                            string name = shapes[i]["name"];
+                            var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
+                            List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
+                            List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
+                            basicShapeList.Add(new BasicShape(id, type, name, shapeStyle, linksTo, linksFrom));
+                        }
+                    }
+
+                    canvas.shapes = basicShapeList;
+                }
+            }
+        }
+
+        private static dynamic GetShapeStyle(dynamic shapeStyle)
+        {
+            double width = (double)shapeStyle["width"];
+            double height = (double)shapeStyle["height"];
+            double rotation = (double)shapeStyle["rotation"];
+            string borderColor = shapeStyle["borderColor"];
+            int borderStyle = shapeStyle["borderStyle"];
+            string backgroundColor = shapeStyle["backgroundColor"];
+            double x = (double)shapeStyle["coordinates"]["x"];
+            double y = (double)shapeStyle["coordinates"]["y"];
+            Coordinates coordinates = new Coordinates(x, y);
+
+            return new ShapeStyle(coordinates, width, height, rotation, borderColor, borderStyle, backgroundColor);
+        }
+
+        private static dynamic GetStringList(dynamic items)
+        {
+            List<string> list = new List<string>();
+
+            if (items != null)
+            {
+                for (int i = 0; i < items.Length; i++)
+                {
+                    list.Add((string)items[i]);
+                }
+            }
+
+            return list;
+        }
     }
 }
