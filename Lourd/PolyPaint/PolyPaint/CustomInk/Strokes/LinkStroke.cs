@@ -16,7 +16,9 @@ namespace PolyPaint.CustomInk.Strokes
         public LinkStyle style { get; set; }
         public List<Coordinates> path { get; set; }
         public int linkType { get; set; }
+        public double rotation { get; set; }
 
+        #region constructors
         public LinkStroke(string id, string name, AnchorPoint from, AnchorPoint to, int strokeType, int linkType, LinkStyle style, List<Coordinates> path, StylusPointCollection pts) : base(pts)
         {
             this.guid = new Guid(id);
@@ -52,38 +54,108 @@ namespace PolyPaint.CustomInk.Strokes
             }
             path.Add(new Coordinates(StylusPoints[0].ToPoint()));
 
-            StylusPoints.Add(new StylusPoint(lastPoint.X, lastPoint.Y));
-            path.Add(new Coordinates(lastPoint.X, lastPoint.Y));
+            if(!lastPoint.Equals(firstPoint))
+            {
+                StylusPoints.Add(new StylusPoint(lastPoint.X, lastPoint.Y));
+                path.Add(new Coordinates(lastPoint.X, lastPoint.Y));
+            }
+            else
+            {
+                StylusPoints.Add(new StylusPoint(firstPoint.X + 100, lastPoint.Y + 100));
+                path.Add(new Coordinates(StylusPoints[1].X, StylusPoints[1].Y));
+            }
+        }
 
 
-            //xStep = (actualArrowPoint1.X - firstPoint.X) / 10;
-            //yStep = (actualArrowPoint1.Y - firstPoint.Y) / 10;
+        public LinkStroke(Point pointFrom, string formId, int anchor, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
+        {
+            guid = Guid.NewGuid();
+            name = "";
+            from = new AnchorPoint(formId, anchor, "");
+            to = new AnchorPoint();
+            to.SetDefaults();
+            strokeType = (int)StrokeTypes.LINK;
+            style = new LinkStyle();
+            style.SetDefaults();
+            path = new List<Coordinates>();
+            path.Add(new Coordinates(pointFrom));
+        }
+        #endregion
 
+        public void addStylusPointsToLink()
+        {
+            // garder uniquement le premier point
+            while (StylusPoints.Count > 1)
+            {
+                StylusPoints.RemoveAt(1);
+            }
 
-            //for (int i = 1; i < 10; i++)
-            //{
-            //    StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-            //}
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+                StylusPoints.Add(new StylusPoint(path[i].x, path[i].y));
+            }
 
-            //for (double i = firstPoint.X; i <= actualArrowPoint1.X; i+=1)
-            //{
-            //    for (double j = firstPoint.Y; i <= actualArrowPoint1.Y; j += 1)
-            //    {
-            //        StylusPoints.Add(new StylusPoint(i, j));
-            //        //StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-            //    }
-            //}
+            AddRelationArrows();
+
+            // add the last point
+            StylusPoints.Add(new StylusPoint(path[path.Count - 1].x, path[path.Count - 1].y));
+
+            // remove the first point, which actually is an invalid point (from before move)
+            if (StylusPoints.Count > 1)
+            {
+                StylusPoints.RemoveAt(0);
+            }
 
         }
 
+        private void AddRelationArrows()
+        {
+            switch ((LinkTypes)linkType)
+            {
+                case LinkTypes.LINE:
+                    break;
+                case LinkTypes.ONE_WAY_ASSOCIATION:
+                    //on the to point
+                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
+                    break;
+                case LinkTypes.TWO_WAY_ASSOCIATION:
+                    // on the from point
+                    AddAssociationArrow(path[0], path[1], 0);
+                    //on the to point
+                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
+                    break;
+                case LinkTypes.HERITAGE:
+                    //on the to point
+                    AddHeritageArrow(path[path.Count - 1], path[path.Count - 2]); ;
+                    break;
+                case LinkTypes.AGGREGATION:
+                    //on the to point
+                    AddAggregationArrow(path[path.Count - 1], path[path.Count - 2]);
+                    break;
+                case LinkTypes.COMPOSITION:
+                    //on the to point
+                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void addToPointToLink(Point pointTo, string formId, int anchor)
+        {
+            path.Add(new Coordinates(pointTo));
+            to = new AnchorPoint(formId, anchor, "");
+
+            addStylusPointsToLink();
+        }
+
+        #region AddArrow functions
         private void AddAssociationArrow(Coordinates firstPoint, Coordinates lastPoint, int pathIndex)
         {
             Point pointOnStroke = GetPointForArrow(firstPoint, lastPoint, 10);
-            Point arrowPoint1 = rotatePoint(pointOnStroke.X - firstPoint.x, pointOnStroke.Y - firstPoint.y, 45);
-            Point arrowPoint2 = rotatePoint(pointOnStroke.X - firstPoint.x, pointOnStroke.Y - firstPoint.y, -45);
 
-            Point actualArrowPoint1 = new Point(arrowPoint1.X + firstPoint.x, arrowPoint1.Y + firstPoint.y);
-            Point actualArrowPoint2 = new Point(arrowPoint2.X + firstPoint.x, arrowPoint2.Y + firstPoint.y);
+            Point actualArrowPoint1 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), 45);
+            Point actualArrowPoint2 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), -45);
 
             StylusPoints.Add(new StylusPoint(path[pathIndex].x, path[pathIndex].y));
             StylusPoints.Add(new StylusPoint(actualArrowPoint1.X, actualArrowPoint1.Y));
@@ -143,15 +215,34 @@ namespace PolyPaint.CustomInk.Strokes
             StylusPoints.Add(new StylusPoint(actualArrowPoint1.X, actualArrowPoint1.Y));
         }
 
+        private void AddCompositionArrow(Coordinates toPoint, Coordinates beforeToPoint)
+        {
+
+            //xStep = (actualArrowPoint1.X - firstPoint.X) / 10;
+            //yStep = (actualArrowPoint1.Y - firstPoint.Y) / 10;
+
+
+            //for (int i = 1; i < 10; i++)
+            //{
+            //    StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
+            //}
+
+            //for (double i = firstPoint.X; i <= actualArrowPoint1.X; i+=1)
+            //{
+            //    for (double j = firstPoint.Y; i <= actualArrowPoint1.Y; j += 1)
+            //    {
+            //        StylusPoints.Add(new StylusPoint(i, j));
+            //        //StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
+            //    }
+            //}
+        }
+
         private void AddAssociationArrow(StylusPoint firstPoint, StylusPoint lastPoint)
         {
             Point pointOnStroke = GetPointForArrow(new Coordinates(firstPoint.ToPoint()), new Coordinates(lastPoint.ToPoint()), 10);
 
-            Point arrowPoint1 = rotatePoint(pointOnStroke.X - firstPoint.X, pointOnStroke.Y - firstPoint.Y, 45);
-            Point arrowPoint2 = rotatePoint(pointOnStroke.X - firstPoint.X, pointOnStroke.Y - firstPoint.Y, -45);
-
-            Point actualArrowPoint1 = new Point(arrowPoint1.X + firstPoint.X, arrowPoint1.Y + firstPoint.Y);
-            Point actualArrowPoint2 = new Point(arrowPoint2.X + firstPoint.X, arrowPoint2.Y + firstPoint.Y);
+            Point actualArrowPoint1 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), 45);
+            Point actualArrowPoint2 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), -45);
 
             StylusPoints.Add(new StylusPoint(actualArrowPoint1.X, actualArrowPoint1.Y));
             StylusPoints.Add(StylusPoints[0]);
@@ -159,6 +250,7 @@ namespace PolyPaint.CustomInk.Strokes
             StylusPoints.Add(StylusPoints[0]);
 
         }
+        #endregion
 
         public Point rotatePoint(double x, double y, double rotation)
         {
@@ -169,83 +261,43 @@ namespace PolyPaint.CustomInk.Strokes
             return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
         }
 
-
-        public LinkStroke(Point pointFrom, string formId, int anchor, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
+        public void RotateStroke(double rotationInDegrees)
         {
-            guid = Guid.NewGuid();
-            name = "";
-            from = new AnchorPoint(formId, anchor, "");
-            to = new AnchorPoint();
-            to.SetDefaults();
-            strokeType = (int)StrokeTypes.LINK;
-            style = new LinkStyle();
-            style.SetDefaults();
-            path = new List<Coordinates>();
-            path.Add(new Coordinates(pointFrom));
-        }
+            Point center = GetCenter();
 
-        public void addStylusPointsToLink()
-        {
-            // garder uniquement le premier point
             while (StylusPoints.Count > 1)
-            {
-                StylusPoints.RemoveAt(1);
-            }
-
-            for (int i = 0; i < path.Count - 1; i++)
-            {
-                StylusPoints.Add(new StylusPoint(path[i].x, path[i].y));
-            }
-
-            switch ((LinkTypes) linkType)
-            {
-                case LinkTypes.LINE:
-                    break;
-                case LinkTypes.ONE_WAY_ASSOCIATION:
-                    //on the to point
-                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
-                    break;
-                case LinkTypes.TWO_WAY_ASSOCIATION:
-                    // on the from point
-                    AddAssociationArrow(path[0], path[1], 0);
-                    //on the to point
-                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
-                    break;
-                case LinkTypes.HERITAGE:
-                    //on the to point
-                    AddHeritageArrow(path[path.Count - 1], path[path.Count - 2]); ;
-                    break;
-                case LinkTypes.AGGREGATION:
-                    //on the to point
-                    AddAggregationArrow(path[path.Count - 1], path[path.Count - 2]);
-                    break;
-                case LinkTypes.COMPOSITION:
-                    //on the to point
-                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
-                    break;
-                default:
-                    break;
-            }
-
-            // add the last point
-            StylusPoints.Add(new StylusPoint(path[path.Count - 1].x, path[path.Count - 1].y));
-
-            // remove the first point, which actually is an invalid point (from before move)
-            if (StylusPoints.Count > 1)
             {
                 StylusPoints.RemoveAt(0);
             }
 
+            for (int i = 0; i < path.Count; i++)
+            {
+                Coordinates coords = path[i];
+                Point rotatedPoint = rotatePointAroundPoint(coords.ToPoint(), center, rotationInDegrees);
+                StylusPoints.Add(new StylusPoint(rotatedPoint.X, rotatedPoint.Y));
+
+                path[i] = new Coordinates(rotatedPoint);
+            }
+
+            StylusPoints.RemoveAt(0);
+
+            AddRelationArrows();
+
+            rotation += rotationInDegrees;
+
         }
 
-        
-
-        public void addToPointToLink(Point pointTo, string formId, int anchor)
+        public Point rotatePointAroundPoint(Point pointToRotate, Point center, double rotation)
         {
-            path.Add(new Coordinates(pointTo));
-            to = new AnchorPoint(formId, anchor, "");
+            double rotationInRad = rotation * Math.PI / 180;
+            double cosTheta = Math.Cos(rotationInRad);
+            double sinTheta = Math.Sin(rotationInRad);
+            Vector originToCenter = center - new Point(0,0);
+            Point pointAtOrigin = pointToRotate - originToCenter;
 
-            addStylusPointsToLink();
+            Point pointRotated = new Point(pointAtOrigin.X * cosTheta - pointAtOrigin.Y * sinTheta, pointAtOrigin.X * sinTheta + pointAtOrigin.Y * cosTheta);
+
+            return pointRotated + originToCenter;
         }
 
         public Point GetFromPoint(StrokeCollection strokes)

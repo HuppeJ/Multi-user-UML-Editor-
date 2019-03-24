@@ -30,7 +30,7 @@ namespace PolyPaint.CustomInk
     
         public List<string> remoteSelectionIds = new List<string>();
 
-        #region 
+        #region Dictonary
         public void AddStroke(CustomStroke stroke)
         {
             Strokes.Add(stroke);
@@ -184,7 +184,7 @@ namespace PolyPaint.CustomInk
                         point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
                         linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
 
-                        // si plusieurs points dans le path. gi ne fonctionne pas pour le rresize :/
+                        // si plusieurs points dans le path. gi ne fonctionne pas pour le resize :/
                         for (int i = 1; i < linkStroke.path.Count - 1; i++)
                         {
                            linkStroke.path[i] = new Coordinates(linkStroke.path[i].x + xDiff, linkStroke.path[i].y + yDiff);
@@ -714,10 +714,19 @@ namespace PolyPaint.CustomInk
                 }
             }
 
-            // Add text boxes (names) to all strokes
+            // Add text boxes (names) to all strokes. And add dotted path if linkStroke is dotted
             foreach (CustomStroke stroke in Strokes)
             {
                 AddTextBox(stroke);
+                if (stroke.isLinkStroke() && (stroke as LinkStroke).style.type == 1) // dotted linkStroke
+                {
+                    Path path = new Path();
+                    path.Data = stroke.GetGeometry();
+
+                    Children.Add(path);
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                    myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
+                }
             }
             
             // Select(selectedStrokes);
@@ -734,7 +743,10 @@ namespace PolyPaint.CustomInk
 
             if (!selectedStroke.isLinkStroke())
             {
-                myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                if (GetSelectedStrokes().Count == 1)
+                {
+                    myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                }
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
                 Point center = selectedStroke.GetCenter();
                 RotateTransform rotationTransform = new RotateTransform((selectedStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
@@ -745,6 +757,10 @@ namespace PolyPaint.CustomInk
                 }
             } else
             {
+                if(!(selectedStroke as LinkStroke).isAttached() && GetSelectedStrokes().Count == 1)
+                {
+                    myAdornerLayer.Add(new LinkRotateAdorner(path, selectedStroke as LinkStroke, this));
+                }
                 myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
             }
       

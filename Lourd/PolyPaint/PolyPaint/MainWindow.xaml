@@ -12,7 +12,7 @@
                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                    Background="{DynamicResource MaterialDesignPaper}"
                    DataContext="{Binding Source={StaticResource VMLocator}, Path=MainVM}"
-                   Title="PolyPaint" Height="700" Width="1100" ResizeMode="CanResize" TitleCaps="False" TitleCharacterCasing="Normal" 
+                   Title="PolyPaint" ResizeMode="CanResize" TitleCaps="False" TitleCharacterCasing="Normal" 
                    ShowTitleBar="True" ShowIconOnTitleBar="True" WindowTitleBrush="DodgerBlue"
                    WindowState="Maximized"
                    BorderBrush="{DynamicResource PrimaryHueDarkBrush}">

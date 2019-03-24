@@ -49,7 +49,7 @@ namespace PolyPaint.CustomInk
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             strokeBounds = customStroke.GetBounds();
             center = shapeStroke.GetCenter();
-            rotation = new RotateTransform(shapeStroke.rotation, center.X, center.Y);
+            rotation = new RotateTransform(shapeStroke.shapeStyle.rotation, center.X, center.Y);
 
             anchors = new List<Thumb>();
             anchors.Add(new Thumb());
