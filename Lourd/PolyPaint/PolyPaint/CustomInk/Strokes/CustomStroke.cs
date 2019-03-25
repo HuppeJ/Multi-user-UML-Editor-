@@ -76,9 +76,9 @@ namespace PolyPaint.CustomInk
             return GetType() == typeof(LinkStroke);
         }
 
-        public virtual void updatePosition(Rect newRect)
-        {
-        }
+        public virtual void updatePosition(Rect newRect) { }
+
+        public virtual void updateLinks() { }
 
         internal virtual bool HitTestPoint(Point point)
         {

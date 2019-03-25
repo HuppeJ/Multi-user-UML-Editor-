@@ -18,6 +18,7 @@ namespace PolyPaint.Services
     class DrawingService: ConnectionService
     {
         public static event Action<JoinCanvasRoomResponse> JoinCanvasRoom;
+        public static event Action CanvasRoomJoined;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
@@ -207,6 +208,7 @@ namespace PolyPaint.Services
                 InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(shapeStroke);
                 Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             }
+            Application.Current.Dispatcher.Invoke(new Action(() => { CanvasRoomJoined(); }), DispatcherPriority.Render);
         }
 
         public static void LeaveCanvas()

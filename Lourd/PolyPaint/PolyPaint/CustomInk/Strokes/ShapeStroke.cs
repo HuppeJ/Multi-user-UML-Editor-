@@ -105,6 +105,14 @@ namespace PolyPaint.CustomInk
             shapeStyle.coordinates.y += diffY;
         }
 
+        public override void updateLinks()
+        {
+            foreach (string link in linksFrom)
+            {
+
+            }
+        }
+
         public override CustomStroke CloneRotated(double rotation)
         {
             ShapeStroke newStroke = (ShapeStroke)Clone();

@@ -81,6 +81,7 @@ namespace PolyPaint.Vues
             {
                 if (surfaceDessin.SelectedStrokes.Count > 0)
                 {
+                    DrawingService.RemoveShapes(surfaceDessin.SelectedStrokes);
                     surfaceDessin.DeleteStrokes(surfaceDessin.SelectedStrokes);
                 }
             }

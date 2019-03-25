@@ -249,6 +249,7 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateStroke += OnUpdateStroke;
             DrawingService.UpdateSelection += OnRemoteSelection;
             DrawingService.UpdateDeselection += OnRemoteDeselection;
+            DrawingService.CanvasRoomJoined += RefreshLinks;
         }
 
         #region On.. event handlers
@@ -295,6 +296,10 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke stroke in SelectedStrokes)
             {
                 stroke.updatePosition(e.NewRectangle);
+                if (!stroke.isLinkStroke())
+                {
+                    stroke.updateLinks();
+                }
             }
             base.OnSelectionMoving(e);
         }
@@ -311,6 +316,7 @@ namespace PolyPaint.CustomInk
         {
             RefreshLinks();
             RefreshChildren();
+            DrawingService.UpdateShapes(GetSelectedStrokes());
         }
 
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
@@ -676,6 +682,9 @@ namespace PolyPaint.CustomInk
 
             // To delete the adorners
             RefreshChildren();
+
+            // Send message to server that the stroke is deleted
+            DrawingService.RemoveShapes(selectedStrokes);
         }
         #endregion
 
