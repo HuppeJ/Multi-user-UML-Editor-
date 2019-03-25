@@ -44,6 +44,8 @@ namespace PolyPaint.CustomInk
             name = basicShape.name;
             strokeType = basicShape.type;
             shapeStyle = basicShape.shapeStyle;
+            linksTo = new List<string>();
+            linksFrom = new List<string>();
 
             Point point = new Point(shapeStyle.coordinates.x, shapeStyle.coordinates.y);
 
@@ -57,6 +59,7 @@ namespace PolyPaint.CustomInk
                     }
                 }
             }
+
         }
 
         public Point GetAnchorPoint(int anchorNumber)
@@ -100,6 +103,14 @@ namespace PolyPaint.CustomInk
             double diffY = newRect.Y - GetBounds().Y;
             shapeStyle.coordinates.x += diffX;
             shapeStyle.coordinates.y += diffY;
+        }
+
+        public override void updateLinks()
+        {
+            foreach (string link in linksFrom)
+            {
+
+            }
         }
 
         public override CustomStroke CloneRotated(double rotation)

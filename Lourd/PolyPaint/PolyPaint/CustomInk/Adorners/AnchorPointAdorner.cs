@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Shapes;
 using System;
 using System.Windows.Ink;
+using PolyPaint.Services;
 
 namespace PolyPaint.CustomInk
 {
@@ -196,6 +197,8 @@ namespace PolyPaint.CustomInk
             canvas.Select(new StrokeCollection { linkBeingCreated });
 
             InvalidateArrange();
+
+            DrawingService.CreateLink(linkBeingCreated);
         }
 
         // Override the VisualChildrenCount and 

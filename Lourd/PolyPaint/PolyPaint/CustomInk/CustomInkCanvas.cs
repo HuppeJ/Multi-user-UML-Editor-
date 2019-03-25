@@ -249,6 +249,7 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateStroke += OnUpdateStroke;
             DrawingService.UpdateSelection += OnRemoteSelection;
             DrawingService.UpdateDeselection += OnRemoteDeselection;
+            DrawingService.CanvasRoomJoined += RefreshLinks;
         }
 
         #region On.. event handlers
@@ -295,6 +296,10 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke stroke in SelectedStrokes)
             {
                 stroke.updatePosition(e.NewRectangle);
+                if (!stroke.isLinkStroke())
+                {
+                    stroke.updateLinks();
+                }
             }
             base.OnSelectionMoving(e);
         }
@@ -302,6 +307,7 @@ namespace PolyPaint.CustomInk
         protected override void OnSelectionMoved(EventArgs e)
         {
             DrawingService.UpdateShapes(SelectedStrokes);
+            DrawingService.UpdateLinks(SelectedStrokes);
             RefreshLinks();
             RefreshChildren();
         }
@@ -310,6 +316,7 @@ namespace PolyPaint.CustomInk
         {
             RefreshLinks();
             RefreshChildren();
+            DrawingService.UpdateShapes(GetSelectedStrokes());
         }
 
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
@@ -462,6 +469,10 @@ namespace PolyPaint.CustomInk
             if (!customStroke.isLinkStroke())
             {
                 DrawingService.CreateShape(customStroke as ShapeStroke);
+            }
+            else
+            {
+                DrawingService.CreateLink(customStroke as LinkStroke);
             }
             // firstPoint = customStroke.StylusPoints[0];
             SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
@@ -671,6 +682,9 @@ namespace PolyPaint.CustomInk
 
             // To delete the adorners
             RefreshChildren();
+
+            // Send message to server that the stroke is deleted
+            DrawingService.RemoveShapes(selectedStrokes);
         }
         #endregion
 

@@ -250,7 +250,7 @@ namespace PolyPaint.CustomInk
                 return;
             }
             Point corner = new Point(strokeBounds.X + deltaX, strokeBounds.Y + deltaY);
-            //canvas.ResizeStrokesWithScales(scale.ScaleX, scale.ScaleY, corner);
+            // canvas.ResizeStrokesWithScales(scale.ScaleX, scale.ScaleY, corner);
 
             // Save the angle of the last rotation.
             // lastAngle = rotation.Angle;
