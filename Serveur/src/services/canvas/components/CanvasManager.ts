@@ -19,6 +19,16 @@ export default class CanvasManager {
         return true;
     }
 
+    public saveCanvas(canvasRoomId: string, data: IEditCanevasData): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.isCanvasSaved(data);
+
+    }
+
     public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
@@ -246,6 +256,15 @@ export default class CanvasManager {
         }
 
         return canvasRoom.getSelectedFormsSERI();
+    }
+
+    public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string): string {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return null;
+        }
+
+        return canvasRoom.getSelectedLinksSERI();
     }
 
     public getCanvasSERI(canvasRoomId: string): string {

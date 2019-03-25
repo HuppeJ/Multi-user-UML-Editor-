@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,9 +25,7 @@ import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
-import com.polypaint.polypaint.Particles.ParticleSystem
 import com.polypaint.polypaint.R
-import com.polypaint.polypaint.ResponseModel.LinksUpdateResponse
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
 import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
@@ -53,13 +49,37 @@ import kotlinx.android.synthetic.main.dialog_edit_class.view.*
 import kotlinx.android.synthetic.main.view_class.view.*
 import kotlinx.android.synthetic.main.view_comment.view.*
 import kotlinx.android.synthetic.main.view_image_element.view.*
+import kotlinx.android.synthetic.main.view_phase.view.*
+import android.graphics.Bitmap
+import java.io.ByteArrayOutputStream
+import android.util.Base64
+import android.view.MotionEvent
+import android.widget.CompoundButton
+import android.widget.TextView
+import com.github.salomonbrys.kotson.toJsonArray
+import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
+import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
+import org.w3c.dom.Comment
 
 
 class DrawingActivity : AppCompatActivity(){
+
+    var oldFrameRawX : Float = 0.0F
+    var oldFrameRawY : Float = 0.0F
+    var mMinimumWidth : Float = 300F
+    var mMinimumHeight : Float = 100F
+    var mMaximumWidth : Float = 1520F
+    var mMaximumHeight : Float = 1200F
+
+    var isCanvasSelectedByYou : Boolean = false
+
     private var inflater : LayoutInflater? = null
 
     private var drawer: Drawer? = null
     private var socket: Socket? = null
+
+    private var shapesToAdd: ArrayList<BasicShape> = ArrayList<BasicShape>()
+    private var linksToAdd: ArrayList<Link> = ArrayList<Link>()
 
     private var clipboard: ArrayList<BasicShape> = ArrayList<BasicShape>()
     private var stackBasicShape: Stack<BasicShape> = Stack<BasicShape>()
@@ -102,7 +122,6 @@ class DrawingActivity : AppCompatActivity(){
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        //initializeViewFromCanevas()
 
         parent_relative_layout.setOnClickListener{
             it as RelativeLayout
@@ -151,25 +170,64 @@ class DrawingActivity : AppCompatActivity(){
             unstackView()
         }
 
+        save_button.setOnClickListener{
+            saveCanevas()
+        }
+
+
+        select_canevas_button.setOnCheckedChangeListener(onSelectCanvevas)
+
         VFXHolder.getInstance().vfxView = VfxView(this)
         parent_relative_layout.addView(VFXHolder.getInstance().vfxView)
 
+        resizeCanvevasButton.setOnTouchListener(onTouchListenerResizeButton)
+
         SyncShapeHolder.getInstance().drawingActivity = this
+
+        // TODO : Jé's fix
+        if(ViewShapeHolder.getInstance().canevas.shapes !== null && !ViewShapeHolder.getInstance().canevas.shapes.isEmpty()) {
+            shapesToAdd.addAll(ViewShapeHolder.getInstance().canevas.shapes)
+            ViewShapeHolder.getInstance().canevas.shapes.clear()
+
+            // TODO : review Adding LINKS
+            linksToAdd.addAll(ViewShapeHolder.getInstance().canevas.links)
+            ViewShapeHolder.getInstance().canevas.links.clear()
+        }
+        initializeViewFromCanevas()
     }
 
-//    private fun initializeViewFromCanevas(){
-//        //Shape
-//        if(ViewShapeHolder.getInstance().canevas != null){
-//            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
-//            for(shape in ViewShapeHolder.getInstance().canevas.shapes){
-//                Log.d("initShape","****"+shape.id+"****")
-//                addOnCanevas(shape)
-//            }
-//            //TODO: LINKS
-//
-//        }
-//
-//    }
+    private fun initializeViewFromCanevas(){
+        if(ViewShapeHolder.getInstance().canevas != null){
+            Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
+
+            // Adding SHAPES
+            for(form: BasicShape in shapesToAdd){
+                Log.d("INFORLOOP","********")
+                ViewShapeHolder.getInstance().canevas.addShape(form)
+                addOnCanevas(form)
+            }
+
+            // TODO : review Adding LINKS
+           for(link: Link in linksToAdd) {
+                    ViewShapeHolder.getInstance().canevas.addLink(link)
+                    val linkView: LinkView = LinkView(this)
+                    linkView.setLinkAndAnchors(link)
+                    ViewShapeHolder.getInstance().linkMap.forcePut(linkView, link.id)
+                    parent_relative_layout?.addView(linkView)
+            }
+
+            // Sizing the Canvas
+            parent_relative_layout.layoutParams.width = (ViewShapeHolder.getInstance().canevas.dimensions.x).toInt()
+            parent_relative_layout.layoutParams.height = (ViewShapeHolder.getInstance().canevas.dimensions.y).toInt()
+
+            // Selecting selected Forms and Links
+            val app = application as PolyPaint
+            app.socket?.emit(SocketConstants.GET_SELECTED_FORMS, ViewShapeHolder.getInstance().canevas.name)
+            app.socket?.emit(SocketConstants.GET_SELECTED_LINKS, ViewShapeHolder.getInstance().canevas.name)
+
+        }
+
+    }
     override fun onResume() {
         super.onResume()
         val app = application as PolyPaint
@@ -187,6 +245,11 @@ class DrawingActivity : AppCompatActivity(){
         socket?.on(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
         socket?.on(SocketConstants.FORM_CREATED, onFormsCreated)
         socket?.on(SocketConstants.LINK_CREATED, onLinkCreated)
+        socket?.on(SocketConstants.CANVAS_RESIZED, onCanevasResized)
+        socket?.on(SocketConstants.CANVAS_SELECTED, onCanevasSelected)
+        socket?.on(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
+        socket?.on(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
+        socket?.on(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
 
         //socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
     }
@@ -223,6 +286,8 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun addOnCanevas(basicShape: BasicShape){
+                    Log.d("6666","****"+ViewShapeHolder.getInstance().map+"****")
+
         //TODO: Probablement une meilleure facon de mapper la value à l'enum ...
         when(basicShape.type){
             ShapeTypes.DEFAULT.value()-> {
@@ -230,49 +295,49 @@ class DrawingActivity : AppCompatActivity(){
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.CLASS_SHAPE.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.ARTIFACT.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.ARTIFACT)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.ACTIVITY.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.ACTIVITY)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.ROLE.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.ROLE)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.COMMENT.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.COMMENT)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
             ShapeTypes.PHASE.value()-> {
                 val viewType = newViewOnCanevas(ShapeTypes.PHASE)
                 parent_relative_layout?.addView(viewType)
 
                 //For Sync
-                ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
             }
 
         }
@@ -432,9 +497,10 @@ class DrawingActivity : AppCompatActivity(){
                 view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
                 view.leftX = view.x
                 view.topY = view.y
-                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                 view.rotation = basicShape.shapeStyle.rotation.toFloat()
 
+                // TODO : Jé's Fix : j'ai bougé les view.resize dans les différents case pour que la fonction redéfinie des enfants de BasicShape soit appelée (ex.: pour que la fonction .resize de ImageElementView soit appelée)
+                // TODO : les attributs xml des différentes View ne sont pas reconnues même avec le cast de la view (ex.:view as ImageElementView), voir les "// TODO : is null" ci-dessous, je n'ai pas trouvé pourquoi ça faisait cela^^
                 when(basicShape.type){
                     ShapeTypes.DEFAULT.value()-> { }
                     ShapeTypes.CLASS_SHAPE.value()-> {
@@ -443,21 +509,33 @@ class DrawingActivity : AppCompatActivity(){
                             view.class_name.text = basicShape.name
                             view.class_attributes.text = basicShape.attributes.toString()
                             view.class_methods.text = basicShape.methods.toString()
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                             view.outlineColor("BLACK")
                         }
                     }
                     ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
-                        view.name.text = basicShape.name
-                        view.outlineColor(basicShape.shapeStyle.borderColor)
+                            view as ImageElementView
+                            // TODO :  is null : view_image_element_name
+                            // view.view_image_element_name.text = basicShape.name
+                            view.outlineColor(basicShape.shapeStyle.borderColor)
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                     }
 
                     ShapeTypes.COMMENT.value()-> {
-                        view.comment_text.text = basicShape.name
+                        view as CommentView
+                        // TODO : is null : comment_text 
+                        //var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
+                        //commentText.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor)
+                        view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+
                     }
                     ShapeTypes.PHASE.value()-> {
-                        view.name.text = basicShape.name
+                        view as PhaseView
+                        // TODO : is null :view_phase_name  
+                        // view.view_phase_name.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor)
+                        view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                     }
 
                 }
@@ -476,6 +554,11 @@ class DrawingActivity : AppCompatActivity(){
             shape.shapeStyle.rotation = basicElem.rotation.toDouble()
         }
 
+    }
+
+    public fun syncCanevasPropsFromLayout(){
+        ViewShapeHolder.getInstance().canevas.dimensions.x = (parent_relative_layout.layoutParams.width).toDouble()
+        ViewShapeHolder.getInstance().canevas.dimensions.y = (parent_relative_layout.layoutParams.height).toDouble()
     }
 
     private fun emitClearCanvas(){
@@ -670,8 +753,6 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
-
-
     private var onCanvasReinitialized: Emitter.Listener = Emitter.Listener {
         Log.d("onCanvasReinitialized", "alllooo")
         runOnUiThread {
@@ -717,9 +798,94 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
+    private var onCanevasResized: Emitter.Listener = Emitter.Listener {
+        Log.d("onCanevasResized", "alllooo")
+
+        val gson = Gson()
+        val obj: CanvasEvent =  gson.fromJson(it[0].toString())
+
+        if(obj.username != UserHolder.getInstance().username) {
+            runOnUiThread {
+                ViewShapeHolder.getInstance().canevas.dimensions = obj.canevas.dimensions
+                parent_relative_layout.layoutParams.width = (obj.canevas.dimensions.x).toInt()
+                parent_relative_layout.layoutParams.height = (obj.canevas.dimensions.y).toInt()
+                parent_relative_layout.requestLayout()
+            }
+        }
+    }
+
+    private var onCanevasSelected: Emitter.Listener = Emitter.Listener {
+        Log.d("onCanevasSelected", "alllooo")
+
+        val gson = Gson()
+        val obj: GalleryEditEvent =  gson.fromJson(it[0].toString())
+
+        if(obj.username != UserHolder.getInstance().username) {
+            isCanvasSelectedByYou = false
+            runOnUiThread {
+                select_canevas_button.setChecked(false)
+                select_canevas_button.setEnabled(false)
+                parent_relative_layout.setBackgroundResource(R.drawable.borders_red_bg_white)
+            }
+        } else {
+            isCanvasSelectedByYou = true
+            runOnUiThread {
+                select_canevas_button.setChecked(true)
+                select_canevas_button.setEnabled(true)
+                parent_relative_layout.setBackgroundResource(R.drawable.borders_blue_bg_white)
+                resizeCanvevasButton.setBackgroundResource(R.drawable.ic_resize)
+            }
+        }
+    }
+
+    private var onCanevasDeselected: Emitter.Listener = Emitter.Listener {
+        Log.d("onCanevasDeselected", "alllooo")
+
+        val gson = Gson()
+        val obj: GalleryEditEvent =  gson.fromJson(it[0].toString())
+
+        runOnUiThread {
+            isCanvasSelectedByYou = false
+            select_canevas_button.setChecked(false)
+            select_canevas_button.setEnabled(true)
+            parent_relative_layout.setBackgroundResource(R.drawable.borders_transparent_bg_white)
+            resizeCanvevasButton.setBackgroundResource(0)
+        }
+    }
+
+    private var onGetSelectedForms: Emitter.Listener = Emitter.Listener {
+        Log.d("onGetSelectedForms", "alllooo")
+
+        val gson = Gson()
+        val obj: GetSelectedFormsResponse =  gson.fromJson(it[0].toString())
+
+        for(formId: String in obj.selectedForms) {
+            runOnUiThread {
+                val view: BasicElementView? = ViewShapeHolder.getInstance().map.inverse()[formId]
+                if(view != null) {
+                    view.setIsSelectedByOther(true)
+                }
+            }
+        }
+    }
+
+    private var onGetSelectedLinks: Emitter.Listener = Emitter.Listener {
+        Log.d("onGetSelectedLinks", "alllooo")
+
+        val gson = Gson()
+        val obj: GetSelectedLinksResponse =  gson.fromJson(it[0].toString())
+
+        for(linkId: String in obj.selectedLinks) {
+            runOnUiThread {
+                val view: LinkView? = ViewShapeHolder.getInstance().linkMap.inverse()[linkId]
+                if(view != null) {
+                    view.setIsSelectedByOther(true)
+                }
+            }
+        }
+    }
+
     override fun onPause(){
-//        socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
-//        socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
         socket?.off(SocketConstants.FORMS_UPDATED, onFormsUpdated)
         socket?.off(SocketConstants.FORMS_DESELECTED, onFormsDeselected)
         socket?.off(SocketConstants.FORMS_SELECTED, onFormsSelected)
@@ -731,10 +897,19 @@ class DrawingActivity : AppCompatActivity(){
         socket?.off(SocketConstants.CANVAS_REINITIALIZED, onCanvasReinitialized)
         socket?.off(SocketConstants.FORM_CREATED, onFormsCreated)
         socket?.off(SocketConstants.LINK_CREATED, onLinkCreated)
+        socket?.off(SocketConstants.CANVAS_RESIZED, onCanevasResized)
+        socket?.off(SocketConstants.CANVAS_SELECTED, onCanevasSelected)
+        socket?.off(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
+        socket?.off(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
+        socket?.off(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
+
         super.onPause()
     }
 
     override fun onBackPressed() {
+        // TODO : Jé's Fix
+        ViewShapeHolder.getInstance().map.clear()
+
         val gson = Gson()
         val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, ViewShapeHolder.getInstance().canevas.password)
         val sendObj = gson.toJson(galleryEditEvent)
@@ -743,6 +918,114 @@ class DrawingActivity : AppCompatActivity(){
         finish()
         super.onBackPressed()
     }
+
+    private fun saveCanevas() {
+        Log.d("saveCanevas", "saveCanevasCall")
+
+        val bitmap: Bitmap = loadBitmapFromView(findViewById(R.id.parent_relative_layout), 350, 450);
+        val thumbnailString: String = bitMapToString(bitmap)
+        ViewShapeHolder.getInstance().canevas.thumbnailLeger = thumbnailString
+
+        val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas!!)
+        val gson = Gson()
+        val sendObj = gson.toJson(canvasEvent)
+        Log.d("createObj", sendObj)
+        socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+
+    }
+
+    private fun loadBitmapFromView(v: View, width: Int, height: Int): Bitmap {
+        Log.d("loadBitmapFromView", "loadBitmapFromViewCall")
+
+        val b = Bitmap.createBitmap( v.width, v.height, Bitmap.Config.ARGB_8888)
+        val c = Canvas(b)
+        v.layout(0, 0, v.layoutParams.width, v.layoutParams.height)
+        v.draw(c)
+        Log.d("v.draw(c) (la Bitmap b)", b.toString())
+
+        return b
+    }
+
+    fun bitMapToString(bitmap: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val b = baos.toByteArray()
+        val temp = Base64.encodeToString(b, Base64.DEFAULT)
+        return temp
+    }
+
+    open protected var onTouchListenerResizeButton = View.OnTouchListener { v, event ->
+        when(event.action){
+            MotionEvent.ACTION_DOWN -> {
+                if (isCanvasSelectedByYou) {
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (isCanvasSelectedByYou) {
+                    var deltaX: Int = (event.rawX - oldFrameRawX).toInt()
+                    var deltaY: Int = (event.rawY - oldFrameRawY).toInt()
+                    val newWidth = parent_relative_layout.width + deltaX
+                    val newHeight = parent_relative_layout.height + deltaY
+
+                    resize(newWidth, newHeight)
+
+                    oldFrameRawX = event.rawX
+                    oldFrameRawY = event.rawY
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                if (isCanvasSelectedByYou) {
+                    syncCanevasPropsFromLayout()
+                    emitCanevasUpdate()
+                }
+
+            }
+        }
+        true
+    }
+
+    open fun resize(newWidth:Int, newHeight:Int){
+        if(newWidth >= mMinimumWidth && newHeight <= mMaximumWidth){
+            parent_relative_layout.layoutParams.width = newWidth
+        }
+        if(newHeight >= mMinimumHeight && newHeight <= mMaximumHeight){
+            parent_relative_layout.layoutParams.height = newHeight
+        }
+        parent_relative_layout.requestLayout()
+    }
+
+    private fun emitCanevasUpdate(){
+        val dataStr: String = this.createCanevasUpdateEvent()
+
+        if(dataStr !="") {
+            Log.d("emitingUpdate", dataStr)
+            socket?.emit(SocketConstants.RESIZE_CANVAS, dataStr)
+        }
+    }
+
+    private fun createCanevasUpdateEvent(): String {
+        val gson = Gson()
+        val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas)
+        val sendObj: String = gson.toJson(canvasEvent)
+        return sendObj
+    }
+
+
+    open protected var onSelectCanvevas = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+        val gson = Gson()
+        val canvasEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, "")
+        val dataStr: String = gson.toJson(canvasEvent)
+
+        if(isChecked) {
+            socket?.emit(SocketConstants.SELECT_CANVAS, dataStr)
+        } else {
+            socket?.emit(SocketConstants.DESELECT_CANVAS, dataStr)
+
+        }
+    }
+
     /*override fun onBackPressed() {
         socket?.off(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
         socket?.off(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
