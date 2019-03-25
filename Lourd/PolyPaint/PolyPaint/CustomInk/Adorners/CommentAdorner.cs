@@ -14,10 +14,6 @@ namespace PolyPaint.CustomInk
 
         VisualCollection visualChildren;
 
-        // The center of the strokes.
-        Point center;
-        RotateTransform rotation;
-
         // Be sure to call the base class constructor.
         public CommentAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
@@ -25,8 +21,6 @@ namespace PolyPaint.CustomInk
             this.stroke = stroke;
             this.canvas = canvas;
             Rect bounds = stroke.GetBounds();
-            center = stroke.GetCenter();
-            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             rectangle = new Rect(bounds.TopLeft.X, bounds.TopLeft.Y, bounds.Width, bounds.Height);
 
@@ -37,7 +31,7 @@ namespace PolyPaint.CustomInk
         {
             visualChildren = new VisualCollection(this);
             customTextBox = new CustomTextBox(stroke.name, stroke.GetBounds().Width, stroke.GetBounds().Height);
-            customTextBox.LayoutTransform = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+            customTextBox.BorderBrush = Brushes.Black;
 
             visualChildren.Add(customTextBox);
         }

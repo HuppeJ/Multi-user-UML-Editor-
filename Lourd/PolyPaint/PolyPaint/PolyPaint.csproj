@@ -198,7 +198,6 @@
     <Compile Include="CustomInk\CustomInkCanvas.cs" />
     <Compile Include="CustomInk\Strokes\CustomStroke.cs" />
     <Compile Include="CustomInk\Strokes\LinkStroke.cs" />
-    <Compile Include="CustomInk\Strokes\RoleStroke.cs" />
     <Compile Include="CustomInk\Strokes\ShapeStroke.cs" />
     <Compile Include="Enums\UserModes.cs" />
     <Compile Include="MainWindow.xaml.cs">
