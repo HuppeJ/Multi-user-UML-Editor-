@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace PolyPaint.CustomInk
 {
-    class PhaseAdorner : Adorner
+    class ShapeNameAdorner : Adorner
     {
         private CustomStroke stroke;
         private CustomTextBox customTextBox;
@@ -13,26 +13,35 @@ namespace PolyPaint.CustomInk
         private Rect rectangle;
 
         VisualCollection visualChildren;
-        
+
 
         // Be sure to call the base class constructor.
-        public PhaseAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
+        public ShapeNameAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
             this.stroke = stroke;
             this.canvas = canvas;
-            Rect bounds = stroke.GetBounds();
 
-            rectangle = new Rect(bounds.TopLeft.X, bounds.TopLeft.Y, bounds.Width, 20);
+            AddName(stroke, canvas);
 
-            AddPhase(stroke, canvas);
+            rectangle = new Rect(stroke.GetBounds().BottomLeft.X - 15, 
+                                 stroke.GetBounds().BottomLeft.Y, 
+                                 stroke.GetBounds().Width + 30, 
+                                 customTextBox.MaxHeight);
         }
 
-        private void AddPhase(CustomStroke stroke, CustomInkCanvas canvas)
+        private void AddName(CustomStroke stroke, CustomInkCanvas canvas)
         {
             visualChildren = new VisualCollection(this);
-            customTextBox = new CustomTextBox(stroke.name, stroke.GetBounds().Width, stroke.GetBounds().Height);
+            customTextBox = new CustomTextBox();
+            customTextBox.FontSize = 12;
+            customTextBox.Background = null;
             customTextBox.BorderBrush = null;
+            customTextBox.Text = stroke.name;
+            customTextBox.Width = stroke.GetBounds().Width + 30;
+            customTextBox.BorderBrush = null;
+            customTextBox.TextAlignment = TextAlignment.Center;
+            customTextBox.MaxHeight = 100;
 
             visualChildren.Add(customTextBox);
         }

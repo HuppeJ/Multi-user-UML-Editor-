@@ -172,15 +172,12 @@
     <Compile Include="Convertisseurs\MultiValueEqualityConverter.cs" />
     <Compile Include="CustomInk\Adorners\ClassAdorner.cs" />
     <Compile Include="CustomInk\Adorners\CommentAdorner.cs" />
-<<<<<<< HEAD
-    <Compile Include="CustomInk\Adorners\PhaseAdorner.cs" />
-=======
     <Compile Include="CustomInk\Adorners\DottedPathAdorner.cs" />
     <Compile Include="CustomInk\Adorners\LinkRotateAdorner.cs" />
     <Compile Include="CustomInk\Adorners\PhaseAdorner.cs" />
     <Compile Include="CustomInk\Adorners\ResizeAdorner.cs" />
     <Compile Include="CustomInk\Adorners\ResizeAdorner2.cs" />
->>>>>>> master
+    <Compile Include="CustomInk\Adorners\ShapeNameAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\Adorners\EditionAdorner.cs" />

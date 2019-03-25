@@ -573,6 +573,7 @@ namespace PolyPaint.CustomInk
 
         private void AddTextBox(CustomStroke stroke)
         {
+            Path path = new Path();
             switch (stroke.strokeType)
             {
                 case (int)StrokeTypes.LINK:
@@ -582,31 +583,28 @@ namespace PolyPaint.CustomInk
                     CreateMultiplicityTextBox(stroke.StylusPoints, stroke as LinkStroke);
                     break;
                 case (int)StrokeTypes.CLASS_SHAPE:
-                    Path path = new Path();
                     path.Data = stroke.GetGeometry();
                     Children.Add(path);
                     AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                     myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
                     break;
                 case (int)StrokeTypes.COMMENT:
-                    Path commentPath = new Path();
-                    commentPath.Data = stroke.GetGeometry();
-                    Children.Add(commentPath);
-                    AdornerLayer commentAdorner = AdornerLayer.GetAdornerLayer(commentPath);
-                    commentAdorner.Add(new CommentAdorner(commentPath, stroke, this));
+                    path.Data = stroke.GetGeometry();
+                    Children.Add(path);
+                    AdornerLayer commentAdorner = AdornerLayer.GetAdornerLayer(path);
+                    commentAdorner.Add(new CommentAdorner(path, stroke, this));
                     break;
                 case (int)StrokeTypes.PHASE:
-                    Path phasePath = new Path();
-                    phasePath.Data = stroke.GetGeometry();
-                    Children.Add(phasePath);
-                    AdornerLayer phaseAdorner = AdornerLayer.GetAdornerLayer(phasePath);
-                    phaseAdorner.Add(new PhaseAdorner(phasePath, stroke, this));
+                    path.Data = stroke.GetGeometry();
+                    Children.Add(path);
+                    AdornerLayer phaseAdorner = AdornerLayer.GetAdornerLayer(path);
+                    phaseAdorner.Add(new PhaseAdorner(path, stroke, this));
                     break;
                 default:
-                    Point point = stroke.GetBounds().BottomLeft;
-                    double xDefault = point.X;
-                    double yDefault = point.Y;
-                    CreateNameTextBox(stroke, xDefault, yDefault);
+                    path.Data = stroke.GetGeometry();
+                    Children.Add(path);
+                    AdornerLayer defaultAdorner = AdornerLayer.GetAdornerLayer(path);
+                    defaultAdorner.Add(new ShapeNameAdorner(path, stroke, this));
                     break;
             }
         }
@@ -803,6 +801,9 @@ namespace PolyPaint.CustomInk
 
             Children.Add(path);
             AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+            Point center = selectedStroke.GetCenter();
+            RotateTransform rotationTransform = new RotateTransform((selectedStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+            myAdornerLayer.RenderTransform = rotationTransform;
             myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
 
             if (!selectedStroke.isLinkStroke())
@@ -812,9 +813,6 @@ namespace PolyPaint.CustomInk
                     myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                 }
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
-                Point center = selectedStroke.GetCenter();
-                RotateTransform rotationTransform = new RotateTransform((selectedStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
-                myAdornerLayer.RenderTransform = rotationTransform;
                 if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                 {
                     myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
