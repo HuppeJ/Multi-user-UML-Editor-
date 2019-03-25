@@ -56,9 +56,9 @@ namespace PolyPaint.CustomInk
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
-            StrokeCollection sc = new StrokeCollection();
-            sc.Add(selectedStroke);
-            canvas.Select(sc);
+            //StrokeCollection sc = new StrokeCollection();
+            //sc.Add(selectedStroke);
+            //canvas.Select(sc);
         }
     }
 }

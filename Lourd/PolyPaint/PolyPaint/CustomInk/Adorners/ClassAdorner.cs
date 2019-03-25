@@ -31,7 +31,7 @@ namespace PolyPaint.CustomInk
         {
             visualChildren = new VisualCollection(this);
             classTextBox = new ClassTextBox(stroke as ClassStroke, canvas);
-            classTextBox.Background = Brushes.White;
+            classTextBox.Background = null;
             visualChildren.Add(classTextBox);
         }
 
