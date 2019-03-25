@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace PolyPaint.Templates
 {
@@ -10,7 +10,7 @@ namespace PolyPaint.Templates
         public string owner { get; set; }
         public int accessibility { get; set; }
         public string password { get; set; }
-        public List<BasicShape> shapes { get; set; }
+        public dynamic shapes { get; set; }
         public List<Link> links { get; set; }
         public int[] dimensions { get; set; }
 

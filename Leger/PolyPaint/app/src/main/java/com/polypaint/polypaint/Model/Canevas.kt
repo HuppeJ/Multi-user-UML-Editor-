@@ -2,14 +2,18 @@ package com.polypaint.polypaint.Model
 
 import java.io.Serializable
 
-class Canevas(var id: String, var name: String, var author: String, var owner: String, var accessibility: Int, var password: String, var shapes: ArrayList<BasicShape>, var links: ArrayList<Link>): Serializable{
+class Canevas(var id: String, var name: String, var author: String, var owner: String, var accessibility: Int, var password: String, var shapes: ArrayList<BasicShape>, var links: ArrayList<Link>, var thumbnailLeger: String, var dimensions: Coordinates): Serializable{
 
     fun addShape(shape : BasicShape){
-        shapes.add(shape)
+        if(!shapes.contains(shape)) {
+            shapes.add(shape)
+        }
     }
 
     fun addLink(link : Link){
-        links.add(link)
+        if(!links.contains(link)) {
+            links.add(link)
+        }
     }
 
     fun findLink(id: String): Link?{

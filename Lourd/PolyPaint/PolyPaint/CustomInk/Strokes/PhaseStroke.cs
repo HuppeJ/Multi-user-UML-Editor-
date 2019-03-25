@@ -17,8 +17,17 @@ namespace PolyPaint.CustomInk
 
         public PhaseStroke(StylusPointCollection pts) : base(pts)
         {
+            InitializePhase();
+        }
+        
+        public PhaseStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
+        {
+            InitializePhase();
+        }
+
+        private void InitializePhase()
+        {
             strokeType = (int)StrokeTypes.PHASE;
-            path = new List<Coordinates>();
             double x = shapeStyle.coordinates.x;
             double y = shapeStyle.coordinates.y;
 
@@ -40,11 +49,6 @@ namespace PolyPaint.CustomInk
             DrawingAttributes.Width = 3;
             DrawingAttributes.Height = 3;
             DrawingAttributes.Color = (Color)ColorConverter.ConvertFromString("#FF000000");
-        }
-
-        public PhaseStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
-        {
-            
         }
 
         public override BasicShape GetBasicShape()

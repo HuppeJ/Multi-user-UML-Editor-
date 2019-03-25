@@ -81,6 +81,7 @@ namespace PolyPaint.Vues
             {
                 if (surfaceDessin.SelectedStrokes.Count > 0)
                 {
+                    DrawingService.RemoveShapes(surfaceDessin.SelectedStrokes);
                     surfaceDessin.DeleteStrokes(surfaceDessin.SelectedStrokes);
                 }
             }
@@ -149,6 +150,9 @@ namespace PolyPaint.Vues
             popUpName.IsOpen = false;
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
         }
@@ -179,6 +183,10 @@ namespace PolyPaint.Vues
                 stroke.methods.Add(line);
             }
 
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
+
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
         }
@@ -196,11 +204,20 @@ namespace PolyPaint.Vues
 
             stroke.linkType = linkType;
             stroke.addStylusPointsToLink();
-            // gi
-            //stroke.
-            stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
+            // dotted
+            if(stroke.style.type == 1){
+                stroke.DrawingAttributes.Color = Colors.White;
+            }
+            else // normal line
+            {
+                stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
+            }
             stroke.DrawingAttributes.Width = linkThickness;
             stroke.DrawingAttributes.Height = linkThickness;
+
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
 
             surfaceDessin.RefreshChildren();
             IsEnabled = true;

@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Shapes;
 using System;
 using System.Windows.Ink;
+using PolyPaint.Services;
 
 namespace PolyPaint.CustomInk
 {
@@ -49,7 +50,7 @@ namespace PolyPaint.CustomInk
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             strokeBounds = customStroke.GetBounds();
             center = shapeStroke.GetCenter();
-            rotation = new RotateTransform(shapeStroke.rotation, center.X, center.Y);
+            rotation = new RotateTransform(shapeStroke.shapeStyle.rotation, center.X, center.Y);
 
             anchors = new List<Thumb>();
             anchors.Add(new Thumb());
@@ -196,6 +197,8 @@ namespace PolyPaint.CustomInk
             canvas.Select(new StrokeCollection { linkBeingCreated });
 
             InvalidateArrange();
+
+            DrawingService.CreateLink(linkBeingCreated);
         }
 
         // Override the VisualChildrenCount and 

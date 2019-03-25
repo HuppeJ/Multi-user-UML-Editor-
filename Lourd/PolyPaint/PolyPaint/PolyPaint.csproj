@@ -172,7 +172,15 @@
     <Compile Include="Convertisseurs\MultiValueEqualityConverter.cs" />
     <Compile Include="CustomInk\Adorners\ClassAdorner.cs" />
     <Compile Include="CustomInk\Adorners\CommentAdorner.cs" />
+<<<<<<< HEAD
     <Compile Include="CustomInk\Adorners\PhaseAdorner.cs" />
+=======
+    <Compile Include="CustomInk\Adorners\DottedPathAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\LinkRotateAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\PhaseAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\ResizeAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\ResizeAdorner2.cs" />
+>>>>>>> master
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\Adorners\EditionAdorner.cs" />
@@ -193,6 +201,7 @@
     <Compile Include="CustomInk\CustomInkCanvas.cs" />
     <Compile Include="CustomInk\Strokes\CustomStroke.cs" />
     <Compile Include="CustomInk\Strokes\LinkStroke.cs" />
+    <Compile Include="CustomInk\Strokes\RoleStroke.cs" />
     <Compile Include="CustomInk\Strokes\ShapeStroke.cs" />
     <Compile Include="Enums\UserModes.cs" />
     <Compile Include="MainWindow.xaml.cs">

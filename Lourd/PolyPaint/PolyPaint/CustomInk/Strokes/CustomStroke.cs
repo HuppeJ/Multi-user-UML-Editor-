@@ -12,7 +12,6 @@ namespace PolyPaint.CustomInk
         public Guid guid;
         public string name;
         public int strokeType;
-        public double rotation;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
@@ -76,9 +75,9 @@ namespace PolyPaint.CustomInk
             return GetType() == typeof(LinkStroke);
         }
 
-        public virtual void updatePosition(Rect newRect)
-        {
-        }
+        public virtual void updatePosition(Rect newRect) { }
+
+        public virtual void updateLinks() { }
 
         internal virtual bool HitTestPoint(Point point)
         {
