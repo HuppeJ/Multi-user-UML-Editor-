@@ -12,7 +12,9 @@
              xmlns:utils1="clr-namespace:PolyPaint.Utilitaires"
              Background="{DynamicResource MaterialDesignPaper}"
              mc:Ignorable="d"
-             d:DesignHeight="400" d:DesignWidth="650">
+             d:DesignHeight="400" d:DesignWidth="650"
+                 Height="Auto" Width="475"
+                 >
     <UserControl.Resources>
         <Style x:Key="SendButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent"/>
@@ -270,7 +272,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="175"/>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.RowSpan="2" BorderThickness="0,0,1,0" SnapsToDevicePixels="True"
@@ -309,8 +311,8 @@
                 BorderBrush="{DynamicResource MaterialDesignDivider}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width = "*"/>
+                    <ColumnDefinition Width="50" MinWidth="50"/>
                 </Grid.ColumnDefinitions>
                 <!--Message-->
                 <Border Margin="10,10,0,10" MaxHeight="80"
