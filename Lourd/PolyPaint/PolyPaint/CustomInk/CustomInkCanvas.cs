@@ -657,37 +657,39 @@ namespace PolyPaint.CustomInk
 
             foreach (CustomStroke stroke in strokes)
             {
-                CustomStroke newStroke = stroke.Clone() as CustomStroke;
-                newStroke.guid = Guid.NewGuid();
-
-                if(newStroke.isLinkStroke())
+                
+                if ((stroke as CustomStroke).isLinkStroke())
                 {
-                    LinkStroke linkStroke = newStroke as LinkStroke;
-                    linkStroke.from = new AnchorPoint();
-                    linkStroke.from.SetDefaults();
-                    linkStroke.to = new AnchorPoint();
-                    linkStroke.to.SetDefaults();
+                    LinkStroke linkStroke = new LinkStroke(stroke as LinkStroke, new StylusPointCollection { new StylusPoint(0, 0) });
+
+                    for(int i = 0; i < linkStroke.path.Count; i ++)
+                    {
+                        linkStroke.path[i] = linkStroke.path[i] + new Point(20, 20);
+                    }
+                    linkStroke.addStylusPointsToLink();
+
+                    AddStroke(linkStroke);
+                    newStrokes.Add(linkStroke);
+                    // call DrawingService
                 } else
                 {
-                    (newStroke as ShapeStroke).linksTo = new List<string> { };
-                    (newStroke as ShapeStroke).linksFrom = new List<string> { };
+                    CustomStroke newStroke = stroke.Clone() as CustomStroke;
+                    newStroke.guid = Guid.NewGuid();
+                    // change author???
+
+                    Matrix translateMatrix = new Matrix();
+                    translateMatrix.Translate(20.0, 20.0);
+                    newStroke.Transform(translateMatrix, false);
+
+                    ShapeStroke newShapeStroke = newStroke as ShapeStroke;
+                    newShapeStroke.linksTo = new List<string> { };
+                    newShapeStroke.linksFrom = new List<string> { };
+                    newShapeStroke.shapeStyle.coordinates = newShapeStroke.shapeStyle.coordinates + new Point(20, 20);
+
+                    DrawingService.CreateShape(newShapeStroke);
+                    AddStroke(newShapeStroke);
+                    newStrokes.Add(newShapeStroke);
                 }
-
-                // TODO : 2 options. 1- Avoir un compteur de Paste qui incremente a chaque Paste, le reinitialiser quand 
-                // nouveau OnSelectionChanged. 2- Coller au coin du canvas
-                // Voir quoi faire avec le client leger
-                Matrix translateMatrix = new Matrix();
-                translateMatrix.Translate(20.0, 20.0);
-                newStroke.Transform(translateMatrix, false);
-
-                AddStroke(newStroke as CustomStroke);
-
-                if (!newStroke.isLinkStroke())
-                {
-                    DrawingService.CreateShape(newStroke as ShapeStroke);
-                }
-
-                newStrokes.Add(newStroke);
             }
 
             Select(newStrokes);

@@ -21,7 +21,7 @@ namespace PolyPaint.CustomInk.Strokes
         #region constructors
         public LinkStroke(string id, string name, AnchorPoint from, AnchorPoint to, int strokeType, int linkType, LinkStyle style, List<Coordinates> path, StylusPointCollection pts) : base(pts)
         {
-            this.guid = new Guid(id);
+            guid = new Guid(id);
             this.name = name;
             this.from = from;
             this.to = to;
@@ -29,6 +29,22 @@ namespace PolyPaint.CustomInk.Strokes
             this.linkType = linkType;
             this.style = style;
             this.path = path;
+        }
+        
+        public LinkStroke(LinkStroke linkStroke, StylusPointCollection pts) : base(pts)
+        {
+            guid = Guid.NewGuid();
+            name = linkStroke.name;
+            from = new AnchorPoint();
+            from.SetDefaults();
+            to = new AnchorPoint();
+            to.SetDefaults();
+            strokeType = linkStroke.strokeType;
+            linkType = linkStroke.linkType;
+            style = linkStroke.style;
+            path = new List<Coordinates>();
+            path.AddRange(linkStroke.path);
+            addStylusPointsToLink();
         }
 
         public LinkStroke(StylusPointCollection pts) : base(pts)
@@ -108,6 +124,14 @@ namespace PolyPaint.CustomInk.Strokes
 
         }
 
+        public void addToPointToLink(Point pointTo, string formId, int anchor)
+        {
+            path.Add(new Coordinates(pointTo));
+            to = new AnchorPoint(formId, anchor, "");
+
+            addStylusPointsToLink();
+        }
+
         private void AddRelationArrows()
         {
             switch ((LinkTypes)linkType)
@@ -139,14 +163,6 @@ namespace PolyPaint.CustomInk.Strokes
                 default:
                     break;
             }
-        }
-
-        public void addToPointToLink(Point pointTo, string formId, int anchor)
-        {
-            path.Add(new Coordinates(pointTo));
-            to = new AnchorPoint(formId, anchor, "");
-
-            addStylusPointsToLink();
         }
 
         #region AddArrow functions
@@ -279,6 +295,19 @@ namespace PolyPaint.CustomInk.Strokes
             return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
         }
 
+        public Point rotatePointAroundPoint(Point pointToRotate, Point center, double rotation)
+        {
+            double rotationInRad = rotation * Math.PI / 180;
+            double cosTheta = Math.Cos(rotationInRad);
+            double sinTheta = Math.Sin(rotationInRad);
+            Vector originToCenter = center - new Point(0,0);
+            Point pointAtOrigin = pointToRotate - originToCenter;
+
+            Point pointRotated = new Point(pointAtOrigin.X * cosTheta - pointAtOrigin.Y * sinTheta, pointAtOrigin.X * sinTheta + pointAtOrigin.Y * cosTheta);
+
+            return pointRotated + originToCenter;
+        }
+
         public void RotateStroke(double rotationInDegrees)
         {
             Point center = GetCenter();
@@ -303,19 +332,6 @@ namespace PolyPaint.CustomInk.Strokes
 
             rotation += rotationInDegrees;
 
-        }
-
-        public Point rotatePointAroundPoint(Point pointToRotate, Point center, double rotation)
-        {
-            double rotationInRad = rotation * Math.PI / 180;
-            double cosTheta = Math.Cos(rotationInRad);
-            double sinTheta = Math.Sin(rotationInRad);
-            Vector originToCenter = center - new Point(0,0);
-            Point pointAtOrigin = pointToRotate - originToCenter;
-
-            Point pointRotated = new Point(pointAtOrigin.X * cosTheta - pointAtOrigin.Y * sinTheta, pointAtOrigin.X * sinTheta + pointAtOrigin.Y * cosTheta);
-
-            return pointRotated + originToCenter;
         }
 
         public Point GetFromPoint(StrokeCollection strokes)
@@ -384,7 +400,6 @@ namespace PolyPaint.CustomInk.Strokes
         }
         //public bool 
 
-        // ON DOIT FAIRE LA ROTATION DUN LINKSTROKE??? gi
         #region rotation
         /*public override CustomStroke CloneRotated(double rotation)
         {
