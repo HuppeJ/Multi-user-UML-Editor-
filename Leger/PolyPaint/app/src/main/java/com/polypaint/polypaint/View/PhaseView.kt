@@ -68,15 +68,15 @@ class PhaseView(context: Context): BasicElementView(context) {
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
             // TODO :  is null : linearLayoutCompat & linearLayoutCompat2
-            //linearLayoutCompat.layoutParams.height = (2*newHeight / 10)
-            //linearLayoutCompat2.layoutParams.height = (8 * newHeight / 10)
+            linearLayoutCompat.layoutParams.height = (2*newHeight / 10)
+            linearLayoutCompat2.layoutParams.height = (8 * newHeight / 10)
         }
 
         borderResizableLayout.requestLayout()
         requestLayout()
     }
 
-    override fun outlineColor(color: String) {
+    override fun outlineColor(color: String, borderType: Int) {
         // TODO :  is null : linearLayoutCompat
 
         var lDrawable = child!!.linearLayoutCompat.background.mutate() as LayerDrawable
@@ -84,9 +84,15 @@ class PhaseView(context: Context): BasicElementView(context) {
 
         var lDrawable2 = child!!.linearLayoutCompat2.background.mutate() as LayerDrawable
         var gDrawable2 = lDrawable2.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
+        when(borderType){
+            0 -> {  gDrawable.setStroke(2, Color.parseColor(color))
+                    gDrawable2.setStroke(2, Color.parseColor(color))
+            }
+            1 -> {  gDrawable.setStroke(2, Color.parseColor(color),10F,10F)
+                    gDrawable2.setStroke(2, Color.parseColor(color), 10F,10F)
+            }
+        }
 
-        gDrawable.setStroke(2, Color.parseColor(color))
-        gDrawable2.setStroke(2, Color.parseColor(color))
 
     }
 

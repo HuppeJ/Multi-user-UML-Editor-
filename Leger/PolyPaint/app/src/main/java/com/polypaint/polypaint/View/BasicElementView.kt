@@ -789,7 +789,7 @@ open class BasicElementView: ConstraintLayout {
         requestLayout()
     }
 
-    open fun outlineColor(color: String){}
+    open fun outlineColor(color: String, borderType: Int){}
     open fun backgroundColor(color: String){}
 
     private fun emitUpdate(){

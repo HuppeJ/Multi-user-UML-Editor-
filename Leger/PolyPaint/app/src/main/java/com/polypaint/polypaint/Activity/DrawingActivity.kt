@@ -510,7 +510,7 @@ class DrawingActivity : AppCompatActivity(){
                             view.class_attributes.text = basicShape.attributes.toString()
                             view.class_methods.text = basicShape.methods.toString()
                             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                            view.outlineColor(basicShape.shapeStyle.borderColor)
+                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                             view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                         }
                     }
@@ -518,7 +518,7 @@ class DrawingActivity : AppCompatActivity(){
                             view as ImageElementView
                             // TODO :  is null : view_image_element_name
                             // view.view_image_element_name.text = basicShape.name
-                            view.outlineColor(basicShape.shapeStyle.borderColor)
+                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                             view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
 
@@ -529,7 +529,7 @@ class DrawingActivity : AppCompatActivity(){
                         // TODO : is null : comment_text 
                         //var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
                         //commentText.text = basicShape.name
-                        view.outlineColor(basicShape.shapeStyle.borderColor)
+                        view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                         view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                         view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
 
@@ -538,7 +538,7 @@ class DrawingActivity : AppCompatActivity(){
                         view as PhaseView
                         // TODO : is null :view_phase_name  
                         // view.view_phase_name.text = basicShape.name
-                        view.outlineColor(basicShape.shapeStyle.borderColor)
+                        view.outlineColor(basicShape.shapeStyle.borderColor,basicShape.shapeStyle.borderStyle)
                         view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                         view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                     }

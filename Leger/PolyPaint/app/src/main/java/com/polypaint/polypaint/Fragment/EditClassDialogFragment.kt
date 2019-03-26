@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
@@ -27,7 +28,7 @@ class EditClassDialogFragment: DialogFragment() {
     var viewSelf : View? = null
     var colorBorder : String = ""
     var colorBackground : String = ""
-
+    var styleType : Int = 0
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var shapeId = arguments?.getString("shapeId")
         shape = ViewShapeHolder.getInstance().canevas.findShape(shapeId!!) as ClassShape
@@ -78,6 +79,18 @@ class EditClassDialogFragment: DialogFragment() {
                     .show()
             }
 
+            styleType = shape?.shapeStyle!!.borderStyle
+
+            val radioFull: RadioButton = viewSelf!!.findViewById(R.id.radio_full)
+            val radioDotted: RadioButton = viewSelf!!.findViewById(R.id.radio_dotted)
+            radioFull.isChecked = styleType == 0
+            radioDotted.isChecked = styleType != 0
+            radioFull.setOnClickListener { _->
+                styleType = 0
+            }
+            radioDotted.setOnClickListener { _->
+                styleType = 1
+            }
 
             builder.setView(viewSelf)
                 .setNegativeButton("Close",
@@ -117,6 +130,7 @@ class EditClassDialogFragment: DialogFragment() {
         shape?.methods =  methods
         shape?.shapeStyle!!.borderColor = colorBorder
         shape?.shapeStyle!!.backgroundColor = colorBackground
+        shape?.shapeStyle!!.borderStyle = styleType
 
         SyncShapeHolder.getInstance().drawingActivity!!.syncLayoutFromCanevas()
     }

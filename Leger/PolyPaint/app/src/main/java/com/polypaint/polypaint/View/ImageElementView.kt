@@ -89,16 +89,20 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
             // TODO :  is null : linearLayoutCompatImg & linearLayoutCompat2Img
-            // linearLayoutCompatImg.layoutParams.height = (9*newHeight / 10)
-            //linearLayoutCompat2Img.layoutParams.height = (1 * newHeight / 10)
+            linearLayoutCompatImg.layoutParams.height = (9*newHeight / 10)
+            linearLayoutCompat2Img.layoutParams.height = (1 * newHeight / 10)
         }
 
         borderResizableLayout.requestLayout()
         requestLayout()
     }
 
-    override fun outlineColor(color : String){
-        imgBackground!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
+    override fun outlineColor(color : String, borderType: Int){
+        when(borderType){
+            0->{imgBackground!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)}
+            //TODO: Faire d'autre svg avec les contours en dashed
+            1->{}
+        }
     }
 
     override fun backgroundColor(color : String){

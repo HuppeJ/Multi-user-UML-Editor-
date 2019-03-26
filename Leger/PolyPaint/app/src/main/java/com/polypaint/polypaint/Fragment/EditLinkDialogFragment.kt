@@ -2,6 +2,7 @@ package com.polypaint.polypaint.Fragment
 
 import android.app.Dialog
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -46,14 +47,6 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
                     2-> thickness = 20
                 }
             }
-            R.id.link_color_spinner ->{
-                when(position){
-                    0-> color = "BLACK"
-                    1-> color = "GREEN"
-                    2-> color = "YELLOW"
-                }
-            }
-
         }
     }
 
@@ -66,18 +59,15 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
             val view: View = it.layoutInflater.inflate(R.layout.dialog_edit_link,null)
 
             val typeSpinner: Spinner = view.findViewById(R.id.link_type_spinner)
-            val colorSpinner: Spinner = view.findViewById(R.id.link_color_spinner)
             val thicknessSpinner: Spinner = view.findViewById(R.id.link_thickness_spinner)
             val styleSpinner: Spinner = view.findViewById(R.id.link_style_spinner)
-
-
 
             val colorPickerButton:Button = view.findViewById(R.id.link_color_picker)
             colorPickerButton.setOnClickListener {
                 ColorPickerDialog.Builder(context)
                     .setPositiveButton("Select", ColorEnvelopeListener{ envelope: ColorEnvelope, fromUser: Boolean ->
                         color = "#"+envelope.hexCode
-                        colorPickerButton.text = color
+                        colorPickerButton.setBackgroundColor(Color.parseColor(color))
                     })
                     .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog: DialogInterface?, which: Int ->
                         dialog?.dismiss()
@@ -86,19 +76,17 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
                     .show()
             }
 
-
-
             nameView = view.findViewById(R.id.link_name_text)
             multiplicityFrom = view.findViewById(R.id.link_multiplicity_from_text)
             multiplicityTo = view.findViewById(R.id.link_multiplicity_to_text)
 
             setAdapter(typeSpinner, R.array.link_types_array)
-            setAdapter(colorSpinner, R.array.link_colors_array)
+
             setAdapter(thicknessSpinner, R.array.link_thickness_array)
             setAdapter(styleSpinner, R.array.link_styles_array)
 
             typeSpinner.onItemSelectedListener = this
-            colorSpinner.onItemSelectedListener = this
+
             thicknessSpinner.onItemSelectedListener = this
             styleSpinner.onItemSelectedListener = this
 
@@ -111,11 +99,7 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
             Log.d("linkThickness", link?.style?.thickness.toString())
             Log.d("linkStyle", link?.style?.type.toString())
             typeSpinner.setSelection(link?.type!!)
-            when(link?.style?.color){
-                "BLACK"-> colorSpinner.setSelection(0)
-                "GREEN"-> colorSpinner.setSelection(1)
-                "YELLOW"-> colorSpinner.setSelection(2)
-            }
+
             when(link?.style?.thickness){
                 10-> thicknessSpinner.setSelection(0)
                 15-> thicknessSpinner.setSelection(1)

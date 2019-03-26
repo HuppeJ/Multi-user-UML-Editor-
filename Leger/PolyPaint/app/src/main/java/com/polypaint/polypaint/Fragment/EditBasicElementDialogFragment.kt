@@ -23,6 +23,7 @@ class EditBasicElementDialogFragment: DialogFragment(){
     var viewSelf : View? = null
     var colorBorder : String = ""
     var colorBackground : String = ""
+    var styleType : Int = 0
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var shapeId = arguments?.getString("shapeId")
@@ -72,6 +73,20 @@ class EditBasicElementDialogFragment: DialogFragment(){
                     .show()
             }
 
+            styleType = shape?.shapeStyle!!.borderStyle
+
+            val radioFull: RadioButton = viewSelf!!.findViewById(R.id.radio_full)
+            val radioDotted: RadioButton = viewSelf!!.findViewById(R.id.radio_dotted)
+            radioFull.isChecked = styleType == 0
+            radioDotted.isChecked = styleType != 0
+            radioFull.setOnClickListener { _->
+                styleType = 0
+            }
+            radioDotted.setOnClickListener { _->
+                styleType = 1
+            }
+
+
             builder.setView(viewSelf)
                 .setNegativeButton("Close",
                     DialogInterface.OnClickListener { dialog, id ->
@@ -92,6 +107,7 @@ class EditBasicElementDialogFragment: DialogFragment(){
         shape?.name =  nameText.text.toString()
         shape?.shapeStyle!!.borderColor = colorBorder
         shape?.shapeStyle!!.backgroundColor = colorBackground
+        shape?.shapeStyle!!.borderStyle = styleType
 
         SyncShapeHolder.getInstance().drawingActivity!!.syncLayoutFromCanevas()
     }

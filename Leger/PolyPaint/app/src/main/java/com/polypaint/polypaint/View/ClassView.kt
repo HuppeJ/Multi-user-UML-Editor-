@@ -75,7 +75,7 @@ class ClassView(context: Context): BasicElementView(context) {
         dialog.show(activity.supportFragmentManager, "alllooooo")
     }
 
-    override fun outlineColor(color : String){
+    override fun outlineColor(color : String, borderType: Int){
 
         var lDrawable = child!!.linearLayoutCompat.background.mutate() as LayerDrawable
         var gDrawable = lDrawable.findDrawableByLayerId(R.id.view_class_borders) as GradientDrawable
@@ -88,9 +88,18 @@ class ClassView(context: Context): BasicElementView(context) {
         var lDrawable3 = child!!.linearLayoutCompat3.background.mutate() as LayerDrawable
         var gDrawable3 = lDrawable3.findDrawableByLayerId(R.id.view_class_borders) as GradientDrawable
 
-        gDrawable.setStroke(1, Color.parseColor(color))
-        gDrawable2.setStroke(1, Color.parseColor(color))
-        gDrawable3.setStroke(1, Color.parseColor(color))
+        when(borderType){
+            0 -> {  gDrawable.setStroke(1, Color.parseColor(color))
+                gDrawable2.setStroke(1, Color.parseColor(color))
+                gDrawable3.setStroke(1, Color.parseColor(color))
+            }
+            1 -> {  gDrawable.setStroke(1, Color.parseColor(color), 10F,10F)
+                gDrawable2.setStroke(1, Color.parseColor(color),10F,10F)
+                gDrawable3.setStroke(1, Color.parseColor(color),10F,10F)
+            }
+        }
+
+
     }
 
     override fun backgroundColor(color: String) {

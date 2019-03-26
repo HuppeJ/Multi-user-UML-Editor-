@@ -62,12 +62,16 @@ class CommentView(context: Context): BasicElementView(context) {
         requestLayout()
     }
 
-    override fun outlineColor(color: String) {
+    override fun outlineColor(color: String, borderType: Int) {
         // TODO :  is null : comment_text 
         var lDrawable = child!!.comment_text.background.mutate() as LayerDrawable
         var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
 
-        gDrawable.setStroke(2, Color.parseColor(color))
+        when(borderType){
+            0 -> {  gDrawable.setStroke(2, Color.parseColor(color)) }
+            1 -> {  gDrawable.setStroke(2, Color.parseColor(color),10F,10F) }
+        }
+
     }
     override fun backgroundColor(color: String) {
         child!!.comment_layout2.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
