@@ -32,7 +32,7 @@ namespace PolyPaint.CustomInk
 
             UpdateShapePoints();
 
-            strokeType = (int)StrokeTypes.ROLE;
+            strokeType = (int)StrokeTypes.ARTIFACT;
         }
 
         public ArtifactStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)

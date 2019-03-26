@@ -48,20 +48,6 @@ namespace PolyPaint.CustomInk
             shapeStyle = basicShape.shapeStyle;
             linksTo = new List<string>();
             linksFrom = new List<string>();
-
-            Point point = new Point(shapeStyle.coordinates.x, shapeStyle.coordinates.y);
-
-            if(basicShape.type != (int)StrokeTypes.PHASE)
-            {
-                for (double i = point.X; i < shapeStyle.width + point.X; i += 0.5)
-                {
-                    for (double j = point.Y; j < shapeStyle.height + point.Y; j += 0.5)
-                    {
-                        StylusPoints.Add(new StylusPoint(i, j));
-                    }
-                }
-            }
-
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)

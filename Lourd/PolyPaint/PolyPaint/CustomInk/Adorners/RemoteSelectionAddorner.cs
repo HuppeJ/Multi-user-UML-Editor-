@@ -15,8 +15,6 @@ namespace PolyPaint.CustomInk
         private RectangleGeometry fill;
         private Path border;
 
-        RotateTransform rotation;
-
         VisualCollection visualChildren;
 
         // Be sure to call the base class constructor.
@@ -34,12 +32,7 @@ namespace PolyPaint.CustomInk
             border.Stroke = Brushes.Red;
             border.StrokeThickness = 5;
 
-
-            Point center = stroke.GetCenter();
-            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
-
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            border.RenderTransform = rotation;
 
             visualChildren.Add(border);
         }
@@ -59,7 +52,7 @@ namespace PolyPaint.CustomInk
                 return finalSize;
             }
             
-            border.Arrange(new Rect(finalSize));
+            border.Arrange(strokeBounds);
             return finalSize;
         }
 
