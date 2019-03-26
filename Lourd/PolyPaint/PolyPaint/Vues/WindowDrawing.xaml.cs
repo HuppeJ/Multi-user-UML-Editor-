@@ -118,7 +118,6 @@ namespace PolyPaint.Vues
             // Pour que les boutons soient de la bonne couleur
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
         }
-        
 
         // Bouton pour changer le texte de l'élément sélectionné
         public void RenameSelection()

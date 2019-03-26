@@ -27,10 +27,12 @@ namespace PolyPaint.Services
 
         public static event Action<PublicCanvases> UpdatePublicCanvases;
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
+        public static event Action<Coordinates> OnResizeCanvas;
         public static event Action BackToGallery;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
+        public static Templates.Canvas currentCanvas;
 
         public DrawingService()
         {
@@ -87,6 +89,15 @@ namespace PolyPaint.Services
                 }
 
                 Application.Current.Dispatcher.Invoke(new Action(() => { JoinCanvasRoom(response); }), DispatcherPriority.Render);
+            });
+
+            socket.On("canvasResized", (data) =>
+            {
+                ResizeCanevasData response = serializer.Deserialize<ResizeCanevasData>((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => { OnResizeCanvas(response.dimensions); }), DispatcherPriority.Render);
+                }
             });
 
             socket.On("getPublicCanvasResponse", (data) =>
@@ -178,6 +189,7 @@ namespace PolyPaint.Services
         public static void CreateCanvas(Templates.Canvas canvas)
         {
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
+            currentCanvas = canvas;
             socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
         }
 
@@ -191,6 +203,12 @@ namespace PolyPaint.Services
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
+        }
+
+        public static void ResizeCanvas(Coordinates coordinates)
+        {
+            ResizeCanevasData editCanevasData = new ResizeCanevasData(username, canvasName, coordinates);
+            socket.Emit("resizeCanvas", serializer.Serialize(editCanevasData));
         }
 
         public static void DrawCanvas(Templates.Canvas canvas)

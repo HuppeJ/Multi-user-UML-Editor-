@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData } from "../interfaces/interfaces";
+import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData, IResizeCanevasData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -201,7 +201,7 @@ export default class CanvasManager {
     /***********************************************
     * Functions related to the Canvas
     ************************************************/
-    public resizeCanvas(canvasRoomId: string, data: IEditCanevasData) {
+    public resizeCanvas(canvasRoomId: string, data: IResizeCanevasData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;

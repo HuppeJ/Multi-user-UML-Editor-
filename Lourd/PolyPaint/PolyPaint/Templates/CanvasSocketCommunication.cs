@@ -40,6 +40,20 @@ namespace PolyPaint.Templates
         }
     }
 
+    class ResizeCanevasData
+    {
+        public string username { get; set; }
+        public string canevasName { get; set; }
+        public Coordinates dimensions { get; set; }
+
+        public ResizeCanevasData(string username, string canevasName, Coordinates dimensions)
+        {
+            this.username = username;
+            this.canevasName = canevasName;
+            this.dimensions = dimensions;
+        }
+    }
+
     class UpdateFormsData
     {
         public string username { get; set; }

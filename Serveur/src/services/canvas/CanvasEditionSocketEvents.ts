@@ -1,7 +1,7 @@
 import * as SocketEvents from "../../constants/SocketEvents";
 import { CanvasTestRoom } from "./CanvasSocketEvents";
 import CanvasManager from "./components/CanvasManager";
-import { IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from "./interfaces/interfaces";
+import { IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData, IResizeCanevasData } from "./interfaces/interfaces";
 
 export default class CanvasEditionSocketEvents {
     constructor(io: any, canvasManager: CanvasManager) {
@@ -323,19 +323,19 @@ export default class CanvasEditionSocketEvents {
 
             socket.on("resizeCanvas", function (dataStr: string) {
                 try {
-                    const data: IEditCanevasData = JSON.parse(dataStr);
-                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
+                    const data: IResizeCanevasData = JSON.parse(dataStr);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
 
                     const response = {
                         isCanvasResized: canvasManager.resizeCanvas(canvasRoomId, data)
                     };
 
                     if (response.isCanvasResized) {
-                        console.log(socket.id + " resized canvas " + data.canevas);
+                        console.log(socket.id + " resized canvas " + data.dimensions);
                         // TODO Est-ce qu'on voudrait que le serveur renvoit un canevas de base (vide avec des dimessions prédéfinies)
                         io.to(canvasRoomId).emit("canvasResized", dataStr);
                     } else {
-                        console.log(socket.id + " failed to resize canvas " + data.canevas.name);
+                        console.log(socket.id + " failed to resize canvas " + data.canevasName);
                     }
 
                     socket.emit("resizeCanvasResponse", JSON.stringify(response));

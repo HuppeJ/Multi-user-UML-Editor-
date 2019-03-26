@@ -27,16 +27,17 @@ namespace PolyPaint.CustomInk
 
         public StylusPoint firstPoint;
         public bool isUpdatingLink = false;
-    
+
         public List<string> remoteSelectionIds = new List<string>();
         private StrokeCollection beingSelected = new StrokeCollection();
         private PathFigure selectionPath = new PathFigure();
+        private Size lastSize = new Size(0,0);
 
         #region Dictonary
         public void AddStroke(CustomStroke stroke)
         {
             Strokes.Add(stroke);
-            StrokesDictionary[stroke.guid.ToString()]= stroke;
+            StrokesDictionary[stroke.guid.ToString()] = stroke;
         }
 
         public void RemoveStroke(CustomStroke stroke)
@@ -47,7 +48,7 @@ namespace PolyPaint.CustomInk
 
         public void ReplaceStrokes(Stroke selectedStroke, StrokeCollection newStrokes)
         {
-            foreach(CustomStroke stroke in newStrokes)
+            foreach (CustomStroke stroke in newStrokes)
             {
                 StrokesDictionary[stroke.guid.ToString()] = stroke;
             }
@@ -72,7 +73,7 @@ namespace PolyPaint.CustomInk
                     strokeToAttach?.linksFrom.Add(linkBeingUpdated.guid.ToString());
 
                 }
-                else if(linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
+                else if (linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
                 {
                     RemoveShapeStrokeLinkTo(linkBeingUpdated);
 
@@ -124,7 +125,7 @@ namespace PolyPaint.CustomInk
                         if (SelectedStrokes.Count == 1 && SelectedStrokes.Contains(linkStroke))
                         {
                             // keep the same stylus points if linkstroke is attached and is the only one moved
-                            linkStroke.addStylusPointsToLink(); 
+                            linkStroke.addStylusPointsToLink();
                         }
                         else
                         {
@@ -153,7 +154,7 @@ namespace PolyPaint.CustomInk
                                 StylusPoint point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
                                 linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
                             }
-                            
+
                             // move the attached points of linkStrokes
                             foreach (CustomStroke selectedStroke in SelectedStrokes)
                             {
@@ -169,7 +170,7 @@ namespace PolyPaint.CustomInk
                                     // mettre a jour les positions des points initial et final
                                     linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(toPoint);
                                 }
-                                
+
                             }
 
                             // update the linkstroke (view)
@@ -189,7 +190,7 @@ namespace PolyPaint.CustomInk
                         // si plusieurs points dans le path. gi ne fonctionne pas pour le resize :/
                         for (int i = 1; i < linkStroke.path.Count - 1; i++)
                         {
-                           linkStroke.path[i] = new Coordinates(linkStroke.path[i].x + xDiff, linkStroke.path[i].y + yDiff);
+                            linkStroke.path[i] = new Coordinates(linkStroke.path[i].x + xDiff, linkStroke.path[i].y + yDiff);
                         }
                     }
                 }
@@ -252,6 +253,13 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateSelection += OnRemoteSelection;
             DrawingService.UpdateDeselection += OnRemoteDeselection;
             DrawingService.CanvasRoomJoined += RefreshLinks;
+            DrawingService.OnResizeCanvas += OnResizeCanvas;
+        }
+
+        private void OnResizeCanvas(Coordinates dimensions)
+        {
+            Width = dimensions.x;
+            Height = dimensions.y;
         }
 
         #region On.. event handlers
@@ -802,9 +810,6 @@ namespace PolyPaint.CustomInk
 
             Children.Add(path);
             AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-            Point center = selectedStroke.GetCenter();
-            RotateTransform rotationTransform = new RotateTransform((selectedStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
-            myAdornerLayer.RenderTransform = rotationTransform;
             myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
 
             if (!selectedStroke.isLinkStroke())
@@ -972,6 +977,11 @@ namespace PolyPaint.CustomInk
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
+            if (!lastSize.Equals(RenderSize))
+            {
+                lastSize = RenderSize;
+                DrawingService.ResizeCanvas(new Coordinates(Width, Height));
+            }
             if (EditingMode == InkCanvasEditingMode.Select)
             {
                 if (selectionPath.Segments.Any())
@@ -989,7 +999,7 @@ namespace PolyPaint.CustomInk
                         PathGeometry geometry = new PathGeometry(figures);
                         foreach (CustomStroke stroke in Strokes)
                         {
-                            RectangleGeometry strokeBound = new RectangleGeometry(stroke.GetBounds());
+                            RectangleGeometry strokeBound = new RectangleGeometry(stroke.GetCustomBound());
                             if (geometry.FillContains(strokeBound))
                             {
                                 beingSelected.Add(stroke);

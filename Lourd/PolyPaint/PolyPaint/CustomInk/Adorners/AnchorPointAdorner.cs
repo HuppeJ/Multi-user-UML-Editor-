@@ -27,6 +27,8 @@ namespace PolyPaint.CustomInk
 
         public CustomInkCanvas canvas;
 
+        RotateTransform rotation;
+
         private Path linkPreview;
         LineGeometry linkPreviewGeom = new LineGeometry();
 
@@ -44,14 +46,15 @@ namespace PolyPaint.CustomInk
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = customStroke.GetBounds();
+            strokeBounds = customStroke.GetCustomBound();
+            Point center = customStroke.GetCenter();
+            rotation = new RotateTransform((customStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             anchors = new List<Thumb>();
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
-           
 
             foreach (Thumb anchor in anchors)
             {
@@ -81,7 +84,7 @@ namespace PolyPaint.CustomInk
                 canvas.Children.Add(cheatAnchor);
             }
 
-            strokeBounds = customStroke.GetBounds();
+            strokeBounds = customStroke.GetCustomBound();
 
         }
 
@@ -109,6 +112,7 @@ namespace PolyPaint.CustomInk
                                   strokeBounds.Y + yOffset,
                                   strokeBounds.Width,
                                   strokeBounds.Height);
+            handleRect.Transform(rotation.Value);
 
             // Draws the thumb and the rectangle around the strokes.
             anchors[anchorNumber].Arrange(handleRect);

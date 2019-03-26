@@ -42,9 +42,9 @@ namespace PolyPaint.CustomInk
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = strokeToRotate.GetBounds();
+            strokeBounds = strokeToRotate.GetCustomBound();
             center = stroke.GetCenter();
-            rotation = new RotateTransform(0, center.X, center.Y);
+            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             visualChildren = new VisualCollection(this);
             rotateHandle = new Thumb();
@@ -62,7 +62,7 @@ namespace PolyPaint.CustomInk
 
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             line.RenderTransform = rotation;
-            
+
             visualChildren.Add(line);
             visualChildren.Add(rotateHandle);
         }
@@ -81,7 +81,7 @@ namespace PolyPaint.CustomInk
             {
                 return finalSize;
             }
-            
+
             // The rectangle that determines the position of the Thumb.
             Rect handleRect = new Rect(strokeBounds.X,
                                   strokeBounds.Y - (strokeBounds.Height / 2 +
@@ -95,7 +95,7 @@ namespace PolyPaint.CustomInk
 
             // Draws the thumb and the rectangle around the strokes.
             rotateHandle.Arrange(handleRect);
-            line.Data = new LineGeometry(new Point(center.X, center.Y - (strokeBounds.Height / 2 + 10)), 
+            line.Data = new LineGeometry(new Point(center.X, center.Y - (strokeBounds.Height / 2 + 10)),
                                          new Point(center.X, center.Y - (strokeBounds.Height / 2 + HANDLEMARGIN))
                                         );
             line.Arrange(new Rect(finalSize));
@@ -155,7 +155,7 @@ namespace PolyPaint.CustomInk
 
             // Apply the rotation to the strokes' outline.
             rotation = new RotateTransform(angle, center.X, center.Y);
-            
+
             line.RenderTransform = rotation;
         }
 
@@ -170,7 +170,16 @@ namespace PolyPaint.CustomInk
                 return;
             }
 
-            canvas.RotateStrokesWithAngle(rotation.Angle);
+            //if(stroke.GetType() == typeof(RoleStroke))
+            //{
+            //    (stroke as RoleStroke).RotateStroke(rotation.Angle - lastAngle);
+            //    center = stroke.GetCenter();
+            //    strokeBounds = stroke.GetBounds();
+            //} else
+            //{
+            canvas.RotateStrokesWithAngle(rotation.Angle - (stroke as ShapeStroke).shapeStyle.rotation);
+            //}
+
 
             // Save the angle of the last rotation.
             lastAngle = rotation.Angle;
