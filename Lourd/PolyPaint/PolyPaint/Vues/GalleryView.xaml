@@ -148,6 +148,7 @@
             <Popup x:Name="popUpChangeCanvasProtection" Placement="Center">
                 <Vues:ChangeCanvasProtectionPopup x:Name="popUpChangeCanvasProtectionVue"/>
             </Popup>
+            <Button Content="ChatView" Margin="557,645,393,23" Command="{Binding GoToChatCommand}" Width="150"/>
         </Grid>
         
     </materialDesign:Card>

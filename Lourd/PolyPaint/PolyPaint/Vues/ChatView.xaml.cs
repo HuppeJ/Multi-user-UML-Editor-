@@ -25,5 +25,18 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
         }
+
+        private void CreateRoomPopup(object sender, EventArgs e)
+        {
+            popUpCreateRoomVue.Initialize();
+            popUpCreateRoom.IsOpen = true;
+            IsEnabled = false;
+        }
+
+        public void ClosePopup()
+        {
+            popUpCreateRoom.IsOpen = false;
+            IsEnabled = true;
+        }
     }
 }

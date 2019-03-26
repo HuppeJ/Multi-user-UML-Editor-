@@ -354,6 +354,43 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region GoToChatCommand
+        private ICommand _goToChatCommand;
+        public ICommand GoToChatCommand
+        {
+            get
+            {
+                return _goToChatCommand ?? (_goToChatCommand = new RelayCommand<Object>(GoToChat));
+            }
+        }
+
+        private void GoToChat(object o)
+        {
+            UserMode = UserModes.Chat;
+        }
+        #endregion
+
+        #region CreateChatroomCommand
+        private ICommand _createChatroomCommand;
+        public ICommand CreateChatroomCommand
+        {
+            get
+            {
+                return _createChatroomCommand ?? (_createChatroomCommand = new RelayCommand<Object>(CreateChatroom));
+            }
+        }
+
+        private void CreateChatroom(object o)
+        {
+            Room room = new Room { name = o as string };
+            if (!rooms.Contains(room))
+            {
+                rooms.Add(room);
+            }
+            chatService.CreateChatroom(o as string);
+        }
+        #endregion
+
         #region Send Message Command
         private ICommand _sendMessageCommand;
         public ICommand SendMessageCommand
@@ -596,14 +633,17 @@ namespace PolyPaint.VueModeles
 
         private void GetChatrooms(RoomList chatrooms)
         {
+            /*
             foreach(string room in chatrooms.chatrooms)
             {
-                Room newRoom = new Room { name = room };
+                string roomName = room.Remove(0,10);
+                Room newRoom = new Room { name = roomName };
                 if(!rooms.Contains(newRoom))
                 {
                     rooms.Add(newRoom);
                 }
             }
+            */
         }
 
         private void Connection(bool isConnected)
@@ -633,7 +673,7 @@ namespace PolyPaint.VueModeles
             if (isLoginSuccessful)
             {
                 UserMode = UserModes.Gallery;
-                // selectedRoom = rooms.First();
+                selectedRoom = rooms.First();
                 IsLoggedIn = true;
             }
             else
@@ -693,7 +733,7 @@ namespace PolyPaint.VueModeles
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;
 
-            //rooms.Add(new Room { name = "Everyone" });
+            rooms.Add(new Room { name = "Everyone" });
         }
     }
 }
