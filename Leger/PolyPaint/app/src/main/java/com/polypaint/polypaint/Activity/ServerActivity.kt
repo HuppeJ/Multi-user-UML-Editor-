@@ -30,6 +30,12 @@ class ServerActivity : AppCompatActivity() {
         app.uri = serverUrlView.text.toString().trim()
 
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
+        startActivityForResult(intent, 0)
+//        startActivity(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        finish()
     }
 }

@@ -18,6 +18,7 @@ import com.polypaint.polypaint.R
 import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Socket.SocketConstants
 
 class CreateUserActivity:Activity(){
@@ -88,9 +89,12 @@ class CreateUserActivity:Activity(){
         val gson = Gson()
         val obj: Response = gson.fromJson(it[0].toString())
         if(obj.isUserCreated){
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra("username", username)
-            startActivity(intent)
+            UserHolder.getInstance().username = username
+            setResult(RESULT_OK)
+            finish()
+//            val intent = Intent(this, ChatActivity::class.java)
+//            intent.putExtra("username", username)
+//            startActivity(intent)
         } else {
             runOnUiThread{
                 AlertDialog.Builder(this).setMessage("Pseudonyme déjà utilisé").show()
@@ -100,5 +104,10 @@ class CreateUserActivity:Activity(){
     }
 
     private inner class Response internal constructor(var isUserCreated: Boolean)
+
+    override fun onBackPressed() {
+        setResult(RESULT_CANCELED)
+        super.onBackPressed()
+    }
 
 }
