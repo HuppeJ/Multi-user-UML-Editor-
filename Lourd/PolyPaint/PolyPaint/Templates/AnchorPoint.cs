@@ -21,7 +21,7 @@ namespace PolyPaint.Templates
 
         public AnchorPoint(AnchorPoint anchorPoint)
         {
-            formId = anchorPoint.formId;
+            formId = anchorPoint?.formId;
             anchor = anchorPoint.anchor;
             multiplicity = anchorPoint.multiplicity;
         }

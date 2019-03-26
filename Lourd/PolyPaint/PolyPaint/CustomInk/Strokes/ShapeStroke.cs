@@ -16,7 +16,6 @@ namespace PolyPaint.CustomInk
         public ShapeStyle shapeStyle;
         public List<string> linksTo;
         public List<string> linksFrom;
-        public List<Point> anchorPoints;
 
         public ShapeStroke(StylusPointCollection pts) : base(pts)
         {

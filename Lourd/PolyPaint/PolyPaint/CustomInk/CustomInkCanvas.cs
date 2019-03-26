@@ -335,7 +335,7 @@ namespace PolyPaint.CustomInk
         {
             DrawingService.UpdateShapes(SelectedStrokes);
             DrawingService.UpdateLinks(SelectedStrokes);
-            RefreshLinks();
+            RefreshLinks(true);
             RefreshChildren();
         }
 

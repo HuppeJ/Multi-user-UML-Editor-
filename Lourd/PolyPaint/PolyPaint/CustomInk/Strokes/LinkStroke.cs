@@ -35,8 +35,8 @@ namespace PolyPaint.CustomInk.Strokes
         {
             guid = Guid.NewGuid();
             name = linkStroke.name;
-            from = new AnchorPoint(from);
-            to = new AnchorPoint(to);
+            from = new AnchorPoint(linkStroke.from);
+            to = new AnchorPoint(linkStroke.to);
             strokeType = linkStroke.strokeType;
             linkType = linkStroke.linkType;
             style = new LinkStyle(linkStroke.style);
