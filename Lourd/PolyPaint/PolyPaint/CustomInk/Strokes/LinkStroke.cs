@@ -21,7 +21,7 @@ namespace PolyPaint.CustomInk.Strokes
         #region constructors
         public LinkStroke(string id, string name, AnchorPoint from, AnchorPoint to, int strokeType, int linkType, LinkStyle style, List<Coordinates> path, StylusPointCollection pts) : base(pts)
         {
-            this.guid = new Guid(id);
+            guid = new Guid(id);
             this.name = name;
             this.from = from;
             this.to = to;
@@ -29,6 +29,20 @@ namespace PolyPaint.CustomInk.Strokes
             this.linkType = linkType;
             this.style = style;
             this.path = path;
+        }
+        
+        public LinkStroke(LinkStroke linkStroke, StylusPointCollection pts) : base(pts)
+        {
+            guid = Guid.NewGuid();
+            name = linkStroke.name;
+            from = new AnchorPoint(linkStroke.from);
+            to = new AnchorPoint(linkStroke.to);
+            strokeType = linkStroke.strokeType;
+            linkType = linkStroke.linkType;
+            style = new LinkStyle(linkStroke.style);
+            path = new List<Coordinates>();
+            path.AddRange(linkStroke.path);
+            addStylusPointsToLink();
         }
 
         public LinkStroke(StylusPointCollection pts) : base(pts)
@@ -108,6 +122,14 @@ namespace PolyPaint.CustomInk.Strokes
 
         }
 
+        public void addToPointToLink(Point pointTo, string formId, int anchor)
+        {
+            path.Add(new Coordinates(pointTo));
+            to = new AnchorPoint(formId, anchor, "");
+
+            addStylusPointsToLink();
+        }
+
         private void AddRelationArrows()
         {
             switch ((LinkTypes)linkType)
@@ -134,19 +156,11 @@ namespace PolyPaint.CustomInk.Strokes
                     break;
                 case LinkTypes.COMPOSITION:
                     //on the to point
-                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
+                    AddCompositionArrow(path[path.Count - 1], path[path.Count - 2]);
                     break;
                 default:
                     break;
             }
-        }
-
-        public void addToPointToLink(Point pointTo, string formId, int anchor)
-        {
-            path.Add(new Coordinates(pointTo));
-            to = new AnchorPoint(formId, anchor, "");
-
-            addStylusPointsToLink();
         }
 
         #region AddArrow functions
@@ -217,24 +231,42 @@ namespace PolyPaint.CustomInk.Strokes
 
         private void AddCompositionArrow(Coordinates toPoint, Coordinates beforeToPoint)
         {
+            Point pointOnStroke = GetPointForArrow(toPoint, beforeToPoint, 10);
+            Point pointBeforeOnStroke = GetPointForArrow(toPoint, beforeToPoint, 20);
 
-            //xStep = (actualArrowPoint1.X - firstPoint.X) / 10;
-            //yStep = (actualArrowPoint1.Y - firstPoint.Y) / 10;
+            Point arrowPoint1 = rotatePoint(pointOnStroke.X - toPoint.x, pointOnStroke.Y - toPoint.y, 45);
+            Point arrowPoint2 = rotatePoint(pointOnStroke.X - toPoint.x, pointOnStroke.Y - toPoint.y, -45);
+
+            double arrowNorm = Math.Cos(Math.PI / 4);
+
+            Point actualArrowPoint1 = new Point(arrowPoint1.X / arrowNorm + toPoint.x, arrowPoint1.Y / arrowNorm + toPoint.y);
+            Point actualArrowPoint2 = new Point(arrowPoint2.X / arrowNorm + toPoint.x, arrowPoint2.Y / arrowNorm + toPoint.y);
+
+            double xStep1 = (actualArrowPoint1.X - pointBeforeOnStroke.X) / 10;
+            double yStep1 = (actualArrowPoint1.Y - pointBeforeOnStroke.Y) / 10;
+            double xStep2 = (actualArrowPoint2.X - pointBeforeOnStroke.X) / 10;
+            double yStep2 = (actualArrowPoint2.Y - pointBeforeOnStroke.Y) / 10;
 
 
-            //for (int i = 1; i < 10; i++)
-            //{
-            //    StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-            //}
+            for (int i = 1; i < 10; i++)
+            {
+                StylusPoints.Add(new StylusPoint(pointBeforeOnStroke.X + i * xStep1, pointBeforeOnStroke.Y + i * yStep1));
+                StylusPoints.Add(new StylusPoint(pointBeforeOnStroke.X + i * xStep2, pointBeforeOnStroke.Y + i * yStep2));
+            }
 
-            //for (double i = firstPoint.X; i <= actualArrowPoint1.X; i+=1)
-            //{
-            //    for (double j = firstPoint.Y; i <= actualArrowPoint1.Y; j += 1)
-            //    {
-            //        StylusPoints.Add(new StylusPoint(i, j));
-            //        //StylusPoints.Add(new StylusPoint(firstPoint.X + i * xStep, firstPoint.Y + i * yStep));
-            //    }
-            //}
+            StylusPoints.Add(new StylusPoint(actualArrowPoint1.X, actualArrowPoint1.Y));
+            StylusPoints.Add(new StylusPoint(actualArrowPoint2.X, actualArrowPoint2.Y));
+
+            xStep1 = (toPoint.x - actualArrowPoint1.X) / 10;
+            yStep1 = (toPoint.y - actualArrowPoint1.Y) / 10;
+            xStep2 = (toPoint.x - actualArrowPoint2.X) / 10;
+            yStep2 = (toPoint.y - actualArrowPoint2.Y) / 10;
+
+            for (int i = 1; i < 10; i++)
+            {
+                StylusPoints.Add(new StylusPoint(actualArrowPoint1.X + i * xStep1, actualArrowPoint1.Y + i * yStep1));
+                StylusPoints.Add(new StylusPoint(actualArrowPoint2.X + i * xStep2, actualArrowPoint2.Y + i * yStep2));
+            }
         }
 
         private void AddAssociationArrow(StylusPoint firstPoint, StylusPoint lastPoint)
@@ -261,6 +293,19 @@ namespace PolyPaint.CustomInk.Strokes
             return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
         }
 
+        public Point rotatePointAroundPoint(Point pointToRotate, Point center, double rotation)
+        {
+            double rotationInRad = rotation * Math.PI / 180;
+            double cosTheta = Math.Cos(rotationInRad);
+            double sinTheta = Math.Sin(rotationInRad);
+            Vector originToCenter = center - new Point(0,0);
+            Point pointAtOrigin = pointToRotate - originToCenter;
+
+            Point pointRotated = new Point(pointAtOrigin.X * cosTheta - pointAtOrigin.Y * sinTheta, pointAtOrigin.X * sinTheta + pointAtOrigin.Y * cosTheta);
+
+            return pointRotated + originToCenter;
+        }
+
         public void RotateStroke(double rotationInDegrees)
         {
             Point center = GetCenter();
@@ -285,19 +330,6 @@ namespace PolyPaint.CustomInk.Strokes
 
             rotation += rotationInDegrees;
 
-        }
-
-        public Point rotatePointAroundPoint(Point pointToRotate, Point center, double rotation)
-        {
-            double rotationInRad = rotation * Math.PI / 180;
-            double cosTheta = Math.Cos(rotationInRad);
-            double sinTheta = Math.Sin(rotationInRad);
-            Vector originToCenter = center - new Point(0,0);
-            Point pointAtOrigin = pointToRotate - originToCenter;
-
-            Point pointRotated = new Point(pointAtOrigin.X * cosTheta - pointAtOrigin.Y * sinTheta, pointAtOrigin.X * sinTheta + pointAtOrigin.Y * cosTheta);
-
-            return pointRotated + originToCenter;
         }
 
         public Point GetFromPoint(StrokeCollection strokes)
@@ -366,7 +398,6 @@ namespace PolyPaint.CustomInk.Strokes
         }
         //public bool 
 
-        // ON DOIT FAIRE LA ROTATION DUN LINKSTROKE??? gi
         #region rotation
         /*public override CustomStroke CloneRotated(double rotation)
         {
