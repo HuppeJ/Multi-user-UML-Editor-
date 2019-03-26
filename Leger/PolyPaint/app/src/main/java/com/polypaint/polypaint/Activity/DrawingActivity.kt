@@ -346,7 +346,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun newShapeOnCanevas(shapeType: ShapeTypes) : BasicShape{
-        var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "white", 0, "white")
+        var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "black", 0, "white")
         var shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
 
         when (shapeType) {
@@ -510,7 +510,8 @@ class DrawingActivity : AppCompatActivity(){
                             view.class_attributes.text = basicShape.attributes.toString()
                             view.class_methods.text = basicShape.methods.toString()
                             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                            view.outlineColor("BLACK")
+                            view.outlineColor(basicShape.shapeStyle.borderColor)
+                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                         }
                     }
                     ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
@@ -518,7 +519,9 @@ class DrawingActivity : AppCompatActivity(){
                             // TODO :  is null : view_image_element_name
                             // view.view_image_element_name.text = basicShape.name
                             view.outlineColor(basicShape.shapeStyle.borderColor)
+                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+
                     }
 
                     ShapeTypes.COMMENT.value()-> {
@@ -527,6 +530,7 @@ class DrawingActivity : AppCompatActivity(){
                         //var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
                         //commentText.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor)
+                        view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                         view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
 
                     }
@@ -535,6 +539,7 @@ class DrawingActivity : AppCompatActivity(){
                         // TODO : is null :view_phase_name  
                         // view.view_phase_name.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor)
+                        view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                         view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                     }
 

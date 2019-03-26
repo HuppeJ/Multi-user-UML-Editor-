@@ -3,6 +3,7 @@ package com.polypaint.polypaint.View
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
@@ -63,13 +64,12 @@ class CommentView(context: Context): BasicElementView(context) {
 
     override fun outlineColor(color: String) {
         // TODO :  is null : comment_text 
-        // var lDrawable = child!!.comment_text.background.mutate() as LayerDrawable
-        //var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
-       /* when(color){
-            "BLACK" -> gDrawable.setStroke(3, Color.BLACK)
-            "GREEN" -> gDrawable.setStroke(3, Color.GREEN)
-            "YELLOW" -> gDrawable.setStroke(3, Color.YELLOW)
-        }*/
+        var lDrawable = child!!.comment_text.background.mutate() as LayerDrawable
+        var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
 
+        gDrawable.setStroke(2, Color.parseColor(color))
+    }
+    override fun backgroundColor(color: String) {
+        child!!.comment_layout2.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
     }
 }

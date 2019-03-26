@@ -789,9 +789,9 @@ open class BasicElementView: ConstraintLayout {
         requestLayout()
     }
 
-    open fun outlineColor(color: String){
+    open fun outlineColor(color: String){}
+    open fun backgroundColor(color: String){}
 
-    }
     private fun emitUpdate(){
         val response: String = this.createFormsUpdateEvent()
 

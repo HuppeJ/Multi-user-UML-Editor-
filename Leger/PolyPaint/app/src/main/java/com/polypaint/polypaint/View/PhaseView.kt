@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
@@ -77,28 +78,19 @@ class PhaseView(context: Context): BasicElementView(context) {
 
     override fun outlineColor(color: String) {
         // TODO :  is null : linearLayoutCompat
-/*
+
         var lDrawable = child!!.linearLayoutCompat.background.mutate() as LayerDrawable
         var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
 
         var lDrawable2 = child!!.linearLayoutCompat2.background.mutate() as LayerDrawable
         var gDrawable2 = lDrawable2.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
 
-        when(color){
-            "BLACK" -> {
-                gDrawable.setStroke(2, Color.BLACK)
-                gDrawable2.setStroke(2, Color.BLACK)
-            }
-            "GREEN" -> {
-                gDrawable.setStroke(2, Color.GREEN)
-                gDrawable2.setStroke(2, Color.GREEN)
-            }
-            "YELLOW" -> {
-                gDrawable.setStroke(2, Color.YELLOW)
-                gDrawable2.setStroke(2, Color.YELLOW)
-            }
-        }*/
+        gDrawable.setStroke(2, Color.parseColor(color))
+        gDrawable2.setStroke(2, Color.parseColor(color))
 
+    }
 
+    override fun backgroundColor(color: String) {
+        child!!.phase_layout2.background.mutate().setColorFilter(Color.parseColor(color),PorterDuff.Mode.SRC_IN)
     }
 }

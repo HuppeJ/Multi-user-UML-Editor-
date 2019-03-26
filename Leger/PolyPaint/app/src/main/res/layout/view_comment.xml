@@ -7,15 +7,18 @@
         app:layout_constraintVertical_bias="0.498" xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
+        <RelativeLayout android:id="@+id/comment_layout2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:gravity="center"
+                        android:layout_margin="10dp">
         <TextView
                 android:id="@+id/comment_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Comment text"
                 android:gravity="center"
-                android:background="@drawable/borders_comment"
-
-        />
-
+                android:background="@drawable/borders_comment"/>
+        </RelativeLayout>
 </RelativeLayout>

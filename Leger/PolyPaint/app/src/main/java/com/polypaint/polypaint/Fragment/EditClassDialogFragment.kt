@@ -2,9 +2,11 @@ package com.polypaint.polypaint.Fragment
 
 import android.app.Dialog
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -15,11 +17,16 @@ import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.Model.ClassShape
 import com.polypaint.polypaint.R
+import com.skydoves.colorpickerview.ColorEnvelope
+import com.skydoves.colorpickerview.ColorPickerDialog
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
 class EditClassDialogFragment: DialogFragment() {
 
     var shape : ClassShape? = null
     var viewSelf : View? = null
+    var colorBorder : String = ""
+    var colorBackground : String = ""
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var shapeId = arguments?.getString("shapeId")
@@ -38,6 +45,39 @@ class EditClassDialogFragment: DialogFragment() {
 
             val methodsStr : EditText = viewSelf!!.findViewById(R.id.methods_text)
             methodsStr.setText(shape?.methods!!.joinToString("\n"))
+
+            colorBorder = shape?.shapeStyle!!.borderColor
+            val borderColorPickerButton: Button = viewSelf!!.findViewById(R.id.border_color_picker_button)
+            borderColorPickerButton.setBackgroundColor(Color.parseColor(colorBorder))
+            borderColorPickerButton.setOnClickListener {
+                ColorPickerDialog.Builder(context)
+                    .setPositiveButton("Select", ColorEnvelopeListener{ envelope: ColorEnvelope, fromUser: Boolean ->
+                        colorBorder = "#"+envelope.hexCode
+                        borderColorPickerButton.setBackgroundColor(Color.parseColor(colorBorder))
+                    })
+                    .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog: DialogInterface?, which: Int ->
+                        dialog?.dismiss()
+                    })
+                    .attachAlphaSlideBar(false)
+                    .show()
+            }
+
+            colorBackground = shape?.shapeStyle!!.backgroundColor
+            val backgroundColorPickerButton: Button = viewSelf!!.findViewById(R.id.background_color_picker_button)
+            backgroundColorPickerButton.setBackgroundColor(Color.parseColor(colorBackground))
+            backgroundColorPickerButton.setOnClickListener {
+                ColorPickerDialog.Builder(context)
+                    .setPositiveButton("Select", ColorEnvelopeListener{ envelope: ColorEnvelope, fromUser: Boolean ->
+                        colorBackground = "#"+envelope.hexCode
+                        backgroundColorPickerButton.setBackgroundColor(Color.parseColor(colorBackground))
+                    })
+                    .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog: DialogInterface?, which: Int ->
+                        dialog?.dismiss()
+                    })
+                    .attachAlphaSlideBar(false)
+                    .show()
+            }
+
 
             builder.setView(viewSelf)
                 .setNegativeButton("Close",
@@ -75,6 +115,8 @@ class EditClassDialogFragment: DialogFragment() {
             methods.add(method)
         }
         shape?.methods =  methods
+        shape?.shapeStyle!!.borderColor = colorBorder
+        shape?.shapeStyle!!.backgroundColor = colorBackground
 
         SyncShapeHolder.getInstance().drawingActivity!!.syncLayoutFromCanevas()
     }

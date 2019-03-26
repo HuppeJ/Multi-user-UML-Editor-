@@ -26,6 +26,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
     override var mMinimumHeight : Float = 320F
     private var shapeType : ShapeTypes? = shapeType
     private var imgBackground : ImageView? = null
+    private var imgBackgroundBack : ImageView? = null
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -45,19 +46,24 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         Log.d("*******", shape.toString())
         */
 
-        var img: ImageView = child.findViewById(R.id.image_element) as ImageView
-        imgBackground = img
+        var imgFront: ImageView = child.findViewById(R.id.image_element) as ImageView
+        var imgBack: ImageView = child.findViewById(R.id.image_element_background) as ImageView
+        imgBackground = imgFront
+        imgBackgroundBack = imgBack
         when(this.shapeType){
             ShapeTypes.DEFAULT->{ }
 
             ShapeTypes.ARTIFACT -> {
-                img.setBackgroundResource(R.drawable.ic_artifact)
+                imgFront.setBackgroundResource(R.drawable.ic_artefact)
+                imgBack.setBackgroundResource(R.drawable.ic_artefact_bck)
             }
             ShapeTypes.ACTIVITY -> {
-                img.setBackgroundResource(R.drawable.ic_activity)
+                imgFront.setBackgroundResource(R.drawable.ic_activity)
+                imgBack.setBackgroundResource(R.drawable.ic_activity_bck)
             }
             ShapeTypes.ROLE -> {
-                img.setBackgroundResource(R.drawable.ic_actor)
+                imgFront.setBackgroundResource(R.drawable.ic_actor)
+                imgBack.setBackgroundResource(R.drawable.ic_actor_bck)
 
             }
         }
@@ -92,11 +98,10 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
     }
 
     override fun outlineColor(color : String){
-        when(color){
-            "BLACK" -> {imgBackground!!.background.mutate().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN)}
-            "GREEN" -> {imgBackground!!.background.mutate().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)}
-            "YELLOW" -> {imgBackground!!.background.mutate().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN)}
-        }
+        imgBackground!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
+    }
 
+    override fun backgroundColor(color : String){
+        imgBackgroundBack!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
     }
 }

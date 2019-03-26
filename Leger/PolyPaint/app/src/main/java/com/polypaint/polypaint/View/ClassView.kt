@@ -88,11 +88,14 @@ class ClassView(context: Context): BasicElementView(context) {
         var lDrawable3 = child!!.linearLayoutCompat3.background.mutate() as LayerDrawable
         var gDrawable3 = lDrawable3.findDrawableByLayerId(R.id.view_class_borders) as GradientDrawable
 
-        when(color){
-            "BLACK"-> gDrawable.setStroke(1,Color.BLACK)
-            "GREEN"-> gDrawable2.setStroke(1,Color.GREEN)
-            "YELLOW"-> gDrawable3.setStroke(1,Color.YELLOW)
-        }
+        gDrawable.setStroke(1, Color.parseColor(color))
+        gDrawable2.setStroke(1, Color.parseColor(color))
+        gDrawable3.setStroke(1, Color.parseColor(color))
+    }
+
+    override fun backgroundColor(color: String) {
+        child!!.class_layout2.background.mutate().setColorFilter(Color.parseColor(color),PorterDuff.Mode.SRC_IN)
+
     }
 
 }
