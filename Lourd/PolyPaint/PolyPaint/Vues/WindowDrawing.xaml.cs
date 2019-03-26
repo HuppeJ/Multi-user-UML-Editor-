@@ -145,23 +145,29 @@ namespace PolyPaint.Vues
             }
         }
 
-        public void Rename(string text)
+        public void Rename(string text, Color borderColor, Color fillColor, int lineStyle )
         {
             popUpName.IsOpen = false;
-            CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
+            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
+            stroke.shapeStyle.borderColor = borderColor.ToString();
+            stroke.shapeStyle.backgroundColor = fillColor.ToString();
+            stroke.shapeStyle.borderStyle = lineStyle;
             StrokeCollection sc = new StrokeCollection();
             sc.Add(stroke);
             DrawingService.UpdateShapes(sc);
             surfaceDessin.RefreshChildren();
+            surfaceDessin.RefreshSelectedShape(stroke);
             IsEnabled = true;
         }
 
-        public void Rename(string className, string attributes, string methods)
+        public void Rename(string className, string attributes, string methods, Color borderColor, Color fillColor)
         {
             popUpClass.IsOpen = false;
             ClassStroke stroke = (ClassStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = className;
+            stroke.shapeStyle.borderColor = borderColor.ToString();
+            stroke.shapeStyle.backgroundColor = fillColor.ToString();
 
             stroke.attributes = new List<string>();
             string[] lines = attributes.Split(

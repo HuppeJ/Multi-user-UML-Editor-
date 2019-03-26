@@ -7,7 +7,7 @@ namespace PolyPaint.CustomInk
 {
     class ClassAdorner : Adorner
     {
-        private CustomStroke stroke;
+        private ClassStroke stroke;
         private ClassTextBox classTextBox;
         private CustomInkCanvas canvas;
         private Rect rectangle;
@@ -18,20 +18,19 @@ namespace PolyPaint.CustomInk
         public ClassAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
-            this.stroke = stroke;
+            this.stroke = stroke as ClassStroke;
             this.canvas = canvas;
             Rect bounds = stroke.GetBounds();
 
             rectangle = new Rect(bounds.TopLeft.X, bounds.TopLeft.Y, bounds.Width, bounds.Height);
 
-            AddClass(stroke, canvas);
+            AddClass(canvas);
         }
 
-        private void AddClass(CustomStroke stroke, CustomInkCanvas canvas)
+        private void AddClass(CustomInkCanvas canvas)
         {
             visualChildren = new VisualCollection(this);
-            classTextBox = new ClassTextBox(stroke as ClassStroke, canvas);
-            classTextBox.Background = null;
+            classTextBox = new ClassTextBox(stroke, canvas);
             visualChildren.Add(classTextBox);
         }
 

@@ -34,4 +34,10 @@ namespace PolyPaint.Enums
         AGGREGATION,
         COMPOSITION
     }
+
+    public enum LineStyles
+    {
+        FULL,
+        DASHED
+    }
 }

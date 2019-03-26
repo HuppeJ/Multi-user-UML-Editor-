@@ -70,6 +70,32 @@ namespace PolyPaint.Vues
                 NotifyPropertyChanged("Methods");
             }
         }
+
+        private Color _borderColor;
+        public Color BorderColor
+        {
+            get { return _borderColor; }
+            set
+            {
+                if (_borderColor == value) return;
+
+                _borderColor = value;
+                NotifyPropertyChanged("BorderColor");
+            }
+        }
+
+        private Color _fillColor;
+        public Color FillColor
+        {
+            get { return _fillColor; }
+            set
+            {
+                if (_fillColor == value) return;
+
+                _fillColor = value;
+                NotifyPropertyChanged("FillColor");
+            }
+        }
         #endregion
 
         private void Rename(object sender, RoutedEventArgs e)
@@ -83,7 +109,7 @@ namespace PolyPaint.Vues
             windowDrawing = (WindowDrawing)parent;
             if (windowDrawing != null)
             {
-                windowDrawing.Rename(_className, _attributes, _methods);
+                windowDrawing.Rename(_className, _attributes, _methods, _borderColor, _fillColor);
             }
         }
 
@@ -92,9 +118,13 @@ namespace PolyPaint.Vues
             _className = stroke.name;
             _attributes = ListToString(stroke.attributes);
             _methods = ListToString(stroke.methods);
+            _borderColor = (Color)ColorConverter.ConvertFromString(stroke.shapeStyle.borderColor);
+            _fillColor = (Color)ColorConverter.ConvertFromString(stroke.shapeStyle.backgroundColor);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ClassName"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Attributes"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Methods"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BorderColor"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FillColor"));
         }
 
         private string ListToString(List<string> strings)

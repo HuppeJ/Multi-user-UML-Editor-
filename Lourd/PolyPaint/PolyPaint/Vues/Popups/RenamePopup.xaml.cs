@@ -1,4 +1,5 @@
 ﻿using PolyPaint.CustomInk;
+using PolyPaint.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,6 +45,58 @@ namespace PolyPaint.Vues
             }
         }
 
+        private Color _borderColor;
+        public Color BorderColor
+        {
+            get { return _borderColor; }
+            set
+            {
+                if (_borderColor == value) return;
+
+                _borderColor = value;
+                NotifyPropertyChanged("BorderColor");
+            }
+        }
+
+        private Color _fillColor;
+        public Color FillColor
+        {
+            get { return _fillColor; }
+            set
+            {
+                if (_fillColor == value) return;
+
+                _fillColor = value;
+                NotifyPropertyChanged("FillColor");
+            }
+        }
+
+        private string _lineStyle;
+        public string LineStyle
+        {
+            get { return _lineStyle; }
+            set
+            {
+                if (_lineStyle == value) return;
+
+                _lineStyle = value;
+                NotifyPropertyChanged("LineStyle");
+            }
+        }
+
+        private List<string> _lineStylesList;
+        public List<string> LineStylesList
+        {
+            get { return _lineStylesList; }
+            set
+            {
+                if (_lineStylesList == value) return;
+
+                _lineStylesList = value;
+                NotifyPropertyChanged("LineStylesList");
+            }
+        }
+
         private void Rename(object sender, RoutedEventArgs e)
         {
             var parent = Parent;
@@ -55,14 +108,46 @@ namespace PolyPaint.Vues
             windowDrawing = (WindowDrawing) parent;
             if (windowDrawing != null)
             {
-                windowDrawing.Rename(_label);
+                int lineType;
+                switch (_lineStyle)
+                {
+                    case "Full":
+                        lineType = 0;         
+                        break;
+                    case "Dashed":
+                        lineType = 1;
+                        break;
+                    default:
+                        lineType = 0;
+                        break;
+                }
+                windowDrawing.Rename(_label, _borderColor, _fillColor, lineType);
             }
         }
 
         public void setParameters(CustomStroke stroke)
         {
             _label = stroke.name;
+            _borderColor = (Color)ColorConverter.ConvertFromString((stroke as ShapeStroke).shapeStyle.borderColor);
+            _fillColor = (Color)ColorConverter.ConvertFromString((stroke as ShapeStroke).shapeStyle.backgroundColor);
+            switch((stroke as ShapeStroke).shapeStyle.borderStyle)
+            {
+                case (int)LineStyles.FULL:
+                    _lineStyle = "Full";
+                    break;
+                case (int)LineStyles.DASHED:
+                    _lineStyle = "Dashed";
+                    break;
+                default:
+                    _lineStyle = "Full";
+                    break;
+            }
+            _lineStylesList = new List<string> { "Full", "Dashed" };
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BorderColor"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FillColor"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LineStyle"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LineStylesList"));
         }
 
         protected void NotifyPropertyChanged(string info)

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace PolyPaint.CustomInk
 {
@@ -21,7 +22,7 @@ namespace PolyPaint.CustomInk
         {
             IsHitTestVisible = false;
             this.canvas = canvas;
-            this.selectedStroke = stroke;
+            selectedStroke = stroke;
 
             ShapeStyle shapeStyle = stroke.shapeStyle;
             tb1 = new CustomTextBox(stroke.name, ClassStroke.WIDTH * shapeStyle.width, ClassStroke.HEIGHT * shapeStyle.height / 5);
@@ -32,6 +33,19 @@ namespace PolyPaint.CustomInk
 
             tb3 = new CustomTextBox(getString(stroke.methods), ClassStroke.WIDTH * shapeStyle.width, ClassStroke.HEIGHT * shapeStyle.height * 2 / 5);
             tb3.MinLines = 3;
+
+            if (stroke.shapeStyle.backgroundColor != null)
+            {
+                tb1.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(stroke.shapeStyle.backgroundColor));
+                tb2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(stroke.shapeStyle.backgroundColor));
+                tb3.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(stroke.shapeStyle.backgroundColor));
+            }
+            if (stroke.shapeStyle.borderColor != null)
+            {
+                tb1.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(stroke.shapeStyle.borderColor));
+                tb2.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(stroke.shapeStyle.borderColor));
+                tb3.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(stroke.shapeStyle.borderColor));
+            }
 
             Orientation = Orientation.Vertical;
 

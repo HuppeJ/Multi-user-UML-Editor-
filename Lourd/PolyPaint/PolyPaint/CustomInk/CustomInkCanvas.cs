@@ -311,7 +311,6 @@ namespace PolyPaint.CustomInk
 
                 (stroke as ShapeStroke).shapeStyle.coordinates.x += delta.X;
                 (stroke as ShapeStroke).shapeStyle.coordinates.y += delta.Y;
-                stroke.updatePosition(e.NewRectangle);
                 
                 if (!stroke.isLinkStroke())
                 {
@@ -359,10 +358,14 @@ namespace PolyPaint.CustomInk
                                                              e.NewRectangle.Left + e.NewRectangle.Width / 2,
                                                              e.NewRectangle.Top + e.NewRectangle.Height / 2);
 
-                    Point point = oldRotation.Transform(e.NewRectangle.TopLeft);
-                    Point result = newRotation.Inverse.Transform(point);
+                    Point oldCorner = oldRotation.Inverse.Transform(e.OldRectangle.TopLeft);
+                    Point newCorner = newRotation.Inverse.Transform(e.NewRectangle.TopLeft);
+                    double deltaX = newCorner.X - oldCorner.X;
+                    double deltaY = newCorner.Y - oldCorner.Y;
 
-                    (stroke as ShapeStroke).shapeStyle.coordinates = new Coordinates(result);
+                    (stroke as ShapeStroke).shapeStyle.coordinates.x += deltaX;
+                    (stroke as ShapeStroke).shapeStyle.coordinates.y += deltaX;
+
 
 
                     /*Point newRectCenter = new Point(e.NewRectangle.Left + e.NewRectangle.Width / 2,
@@ -775,7 +778,6 @@ namespace PolyPaint.CustomInk
                     }
                 }
             }
-
             // Add text boxes (names) to all strokes. And add dotted path if linkStroke is dotted
             foreach (CustomStroke stroke in Strokes)
             {
@@ -790,7 +792,6 @@ namespace PolyPaint.CustomInk
                     myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
                 }
             }
-            
             // Select(selectedStrokes);
         }
 
@@ -1003,6 +1004,14 @@ namespace PolyPaint.CustomInk
             {
                 base.OnMouseUp(e);
             }
+        }
+
+        public void RefreshSelectedShape(ShapeStroke stroke)
+        {
+            ShapeStroke strokeCopy = (ShapeStroke)stroke.Clone();
+            StrokeCollection strokes = new StrokeCollection() { strokeCopy };
+            Strokes.Replace(stroke, strokes);
+            Select(strokes);
         }
     }
 }
