@@ -25,5 +25,9 @@
             this.backgroundColor = backgroundColor;
         }
 
+        public ShapeStyle Clone()
+        {
+            return new ShapeStyle(new Coordinates(coordinates.x, coordinates.y), width, height, rotation, borderColor, borderStyle, backgroundColor);
+        }
     }
 }

@@ -15,6 +15,7 @@ using PolyPaint.Utilitaires;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Text;
 
 namespace PolyPaint.VueModeles
 {
@@ -24,6 +25,8 @@ namespace PolyPaint.VueModeles
         private ChatService chatService;
         private IDialogService dialogService;
         private TaskFactory ctxTaskFactory;
+
+        const string EMPTY_CANVAS = "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD//2Q==";
 
         #region Properties
         private string _userName = "a";
@@ -346,7 +349,7 @@ namespace PolyPaint.VueModeles
 
         private void BackToGallery(object o)
         {
-            DrawingService.LeaveCanvas();
+            DrawingService.LeaveCanvas(true);
             UserMode = UserModes.Gallery;
         }
         #endregion
@@ -449,7 +452,7 @@ namespace PolyPaint.VueModeles
             int[] dimensions = { 1, 1 };
 
             Templates.Canvas canvas = new Templates.Canvas(Guid.NewGuid().ToString(), CanvasName, username, username,
-                                                            accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions);
+                                                            accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions, EMPTY_CANVAS);
 
             DrawingService.CreateCanvas(canvas);
 

@@ -200,7 +200,7 @@
                     <DropShadowEffect Opacity="0.3" BlurRadius="10"/>
                 </Border.Effect>
                 <customink:CustomInkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" x:Name="surfaceDessin" 
-                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                           
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"      
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"
                                            SelectionChanged="surfaceDessin_SelectionChanged"
                            MouseUp="surfaceDessin_OnMouseUp"

@@ -3,8 +3,6 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows;
 using System;
-using System.Windows.Media.Imaging;
-using System.Globalization;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
 using System.Collections.Generic;
@@ -15,6 +13,17 @@ namespace PolyPaint.CustomInk
     {
         public List<string> attributes;
         public List<string> methods;
+
+        public override Stroke Clone()
+        {
+            Stroke stroke = base.Clone();
+            (stroke as ClassStroke).attributes = new List<string>();
+            (stroke as ClassStroke).attributes.AddRange(attributes);
+            (stroke as ClassStroke).methods = new List<string>();
+            (stroke as ClassStroke).methods.AddRange(methods);
+
+            return stroke;
+        }
 
         public ClassStroke(StylusPointCollection pts) : base(pts)
         {
