@@ -28,6 +28,7 @@ namespace PolyPaint.Services
         public static event Action<PublicCanvases> UpdatePublicCanvases;
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
         public static event Action BackToGallery;
+        public static event Action SaveCanvas;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -74,7 +75,7 @@ namespace PolyPaint.Services
             
             socket.On("canvasPasswordUpdated", (data) =>
             {
-                LeaveCanvas();
+                LeaveCanvas(true);
                 Application.Current.Dispatcher.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
             });
 
@@ -211,10 +212,24 @@ namespace PolyPaint.Services
             //Application.Current.Dispatcher.Invoke(new Action(() => { CanvasRoomJoined(); }), DispatcherPriority.Render);
         }
 
-        public static void LeaveCanvas()
+        public static void LeaveCanvas(bool saveCanvas)
         {
+            if (saveCanvas)
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
             EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
             socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
+            RefreshCanvases();
+        }
+
+        public static void SendCanvas(string thumbnail)
+        {
+            Templates.Canvas canvas = new Templates.Canvas();
+            canvas.name = canvasName;
+            canvas.thumbnailLourd = thumbnail;
+            EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
+            socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
         }
 
         public static void RefreshCanvases()
