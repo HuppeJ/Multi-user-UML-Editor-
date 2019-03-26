@@ -4,14 +4,19 @@ using PolyPaint.Services;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using Path = System.Windows.Shapes.Path;
 
 namespace PolyPaint.CustomInk
 {
@@ -250,7 +255,9 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateSelection += OnRemoteSelection;
             DrawingService.UpdateDeselection += OnRemoteDeselection;
             DrawingService.CanvasRoomJoined += RefreshLinks;
-        }
+            DrawingService.SaveCanvas += ConvertInkCanvasToByteArray;
+
+    }
 
         #region On.. event handlers
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
@@ -879,6 +886,33 @@ namespace PolyPaint.CustomInk
                 }
             }
             base.OnPreviewMouseDown(e);
+        }
+
+        public void ConvertInkCanvasToByteArray()
+        {
+            var rect = new Rect(RenderSize);
+            var visual = new DrawingVisual();
+
+            using (var dc = visual.RenderOpen())
+            {
+                dc.DrawRectangle(new VisualBrush(this), null, rect);
+            }
+
+            var rtb = new RenderTargetBitmap(
+                (int)rect.Width, (int)rect.Height, 96d, 96d, PixelFormats.Default);
+            rtb.Render(visual);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+
+            using (var stream = new MemoryStream())
+            {
+                encoder.Save(stream);
+                byte[] buffer = stream.ToArray();
+                File.WriteAllBytes(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "image2.jpg"), buffer);
+                string thumbnail = Convert.ToBase64String(buffer);
+                DrawingService.SendCanvas(thumbnail);
+            }
         }
     }
 }

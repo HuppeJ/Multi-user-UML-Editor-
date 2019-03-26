@@ -15,6 +15,7 @@ using PolyPaint.Utilitaires;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Text;
 
 namespace PolyPaint.VueModeles
 {
@@ -346,7 +347,7 @@ namespace PolyPaint.VueModeles
 
         private void BackToGallery(object o)
         {
-            DrawingService.LeaveCanvas();
+            DrawingService.LeaveCanvas(true);
             UserMode = UserModes.Gallery;
         }
         #endregion
@@ -449,7 +450,7 @@ namespace PolyPaint.VueModeles
             int[] dimensions = { 1, 1 };
 
             Templates.Canvas canvas = new Templates.Canvas(Guid.NewGuid().ToString(), CanvasName, username, username,
-                                                            accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions);
+                                                            accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions, "");
 
             DrawingService.CreateCanvas(canvas);
 

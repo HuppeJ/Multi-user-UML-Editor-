@@ -59,7 +59,13 @@ export default class CanvasRoom {
 
     
     public isCanvasSaved(data: IEditCanevasData) {
-        this.canvas.thumbnailLeger = data.canevas.thumbnailLeger;
+        if (data.canevas.thumbnailLeger != "") {
+            this.canvas.thumbnailLeger = data.canevas.thumbnailLeger;
+        }
+
+        if (data.canevas.thumbnailLourd != "") {
+            this.canvas.thumbnailLourd = data.canevas.thumbnailLourd;
+        }
         return true;
     }
 
