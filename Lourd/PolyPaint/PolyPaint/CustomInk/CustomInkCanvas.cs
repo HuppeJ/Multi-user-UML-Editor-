@@ -4,6 +4,7 @@ using PolyPaint.Services;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -904,14 +905,13 @@ namespace PolyPaint.CustomInk
 
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(rtb));
-
+            byte[] buffer;
             using (var stream = new MemoryStream())
             {
                 encoder.Save(stream);
-                byte[] buffer = stream.ToArray();
-                File.WriteAllBytes(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "image2.jpg"), buffer);
-                string thumbnail = Convert.ToBase64String(buffer);
-                DrawingService.SendCanvas(thumbnail);
+                buffer = stream.ToArray();
+                string thumbnailString = Convert.ToBase64String(buffer);
+                DrawingService.SendCanvas(thumbnailString);
             }
         }
     }
