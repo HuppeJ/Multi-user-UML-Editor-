@@ -25,5 +25,7 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
         }
+
+        
     }
 }
