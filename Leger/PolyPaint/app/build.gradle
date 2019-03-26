@@ -37,6 +37,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.2-alpha01'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.2-alpha01'
 
+    implementation "com.github.skydoves:colorpickerview:2.1.1"
 
     implementation 'co.zsmb:materialdrawer-kt:2.0.1'
 

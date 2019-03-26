@@ -19,6 +19,16 @@ export default class CanvasManager {
         return true;
     }
 
+    public saveCanvas(canvasRoomId: string, data: IEditCanevasData): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.isCanvasSaved(data);
+
+    }
+
     public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
@@ -49,7 +59,7 @@ export default class CanvasManager {
 
     public addUserToCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && !canvasRoom.hasUser(data.username)) {
+        if (canvasRoom) {
             canvasRoom.addUser(data.username);
             return true;
         }
@@ -59,7 +69,7 @@ export default class CanvasManager {
 
     public removeUserFromCanvasRoom(canvasRoomId: string, data: IEditGalleryData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        if (canvasRoom && canvasRoom.hasUser(data.username)) {
+        if (canvasRoom) {
             canvasRoom.removeUser(data.username);
             return true;
         }
@@ -227,6 +237,14 @@ export default class CanvasManager {
         return canvasRoom.deselectCanvas(data);
     }
 
+    public updataCanvasPassword(canvasRoomId: string, data: IEditGalleryData) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.updataCanvasPassword(data);
+    }
 
     /***********************************************
     * Serialize / Deserialize
@@ -238,6 +256,15 @@ export default class CanvasManager {
         }
 
         return canvasRoom.getSelectedFormsSERI();
+    }
+
+    public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string): string {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return null;
+        }
+
+        return canvasRoom.getSelectedLinksSERI();
     }
 
     public getCanvasSERI(canvasRoomId: string): string {

@@ -48,6 +48,11 @@ namespace PolyPaint.CustomInk
             methods = classShape.methods;
         }
 
+        public virtual ClassShape GetClassShape()
+        {
+            return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
+        }
+
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
         {
             if (drawingContext == null)

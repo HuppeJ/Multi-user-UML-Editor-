@@ -29,6 +29,18 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
             DataContext = new VueModele();
+            this.Loaded += WindowDrawing_Loaded;
+        }
+
+        void WindowDrawing_Loaded(object sender, RoutedEventArgs e)
+        {
+            Window window = Window.GetWindow(this);
+            window.Closing += window_Closing;
+        }
+
+        void window_Closing(object sender, global::System.ComponentModel.CancelEventArgs e)
+        {
+            DrawingService.LeaveCanvas();
         }
 
         // Pour gérer les points de contrôles.
@@ -69,6 +81,7 @@ namespace PolyPaint.Vues
             {
                 if (surfaceDessin.SelectedStrokes.Count > 0)
                 {
+                    DrawingService.RemoveShapes(surfaceDessin.SelectedStrokes);
                     surfaceDessin.DeleteStrokes(surfaceDessin.SelectedStrokes);
                 }
             }
@@ -86,7 +99,7 @@ namespace PolyPaint.Vues
                 if (newStroke.GetType() != typeof(LinkStroke))
                 {
                     Path path = new Path();
-                    path.Data = newStroke.GetGeometry();
+                    path.Data = new RectangleGeometry(newStroke.GetBounds());
                     surfaceDessin.Children.Add(path);
                     AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                     myAdornerLayer.Add(new RotateAdorner(path, newStroke, surfaceDessin));
@@ -137,6 +150,9 @@ namespace PolyPaint.Vues
             popUpName.IsOpen = false;
             CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
         }
@@ -167,6 +183,10 @@ namespace PolyPaint.Vues
                 stroke.methods.Add(line);
             }
 
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
+
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
         }
@@ -194,6 +214,10 @@ namespace PolyPaint.Vues
             }
             stroke.DrawingAttributes.Width = linkThickness;
             stroke.DrawingAttributes.Height = linkThickness;
+
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
 
             surfaceDessin.RefreshChildren();
             IsEnabled = true;

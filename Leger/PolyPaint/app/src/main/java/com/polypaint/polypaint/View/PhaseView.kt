@@ -34,7 +34,7 @@ class PhaseView(context: Context): BasicElementView(context) {
 
         child = activity.layoutInflater.inflate(R.layout.view_phase, null)
 
-        var nameText: TextView = child!!.findViewById(R.id.name) as TextView
+        var nameText: TextView = child!!.findViewById(R.id.view_phase_name) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
         nameText.text = "basictElement.name"
 
@@ -66,8 +66,9 @@ class PhaseView(context: Context): BasicElementView(context) {
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
-            linearLayoutCompat.layoutParams.height = (2*newHeight / 10)
-            linearLayoutCompat2.layoutParams.height = (8 * newHeight / 10)
+            // TODO :  is null : linearLayoutCompat & linearLayoutCompat2
+            //linearLayoutCompat.layoutParams.height = (2*newHeight / 10)
+            //linearLayoutCompat2.layoutParams.height = (8 * newHeight / 10)
         }
 
         borderResizableLayout.requestLayout()
@@ -75,6 +76,8 @@ class PhaseView(context: Context): BasicElementView(context) {
     }
 
     override fun outlineColor(color: String) {
+        // TODO :  is null : linearLayoutCompat
+/*
         var lDrawable = child!!.linearLayoutCompat.background.mutate() as LayerDrawable
         var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
 
@@ -94,7 +97,7 @@ class PhaseView(context: Context): BasicElementView(context) {
                 gDrawable.setStroke(2, Color.YELLOW)
                 gDrawable2.setStroke(2, Color.YELLOW)
             }
-        }
+        }*/
 
 
     }

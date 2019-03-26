@@ -66,7 +66,8 @@ export interface ICanevas {
     password?: string,  
     shapes: IBasicShape[],  
     links: ILink[],
-    dimensions: number[]
+    dimensions: number[],
+    thumbnailLeger: string,
 } 
 
 export interface IClassShape extends IBasicShape {

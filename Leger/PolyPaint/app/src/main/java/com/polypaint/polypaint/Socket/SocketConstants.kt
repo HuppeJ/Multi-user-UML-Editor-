@@ -35,7 +35,8 @@ class SocketConstants{
         const val GET_SELECTED_FORMS: String = "getSelectedForms"
         const val SELECTED_FORMS: String = "selectedForms"
 
-
+        const val GET_SELECTED_LINKS: String = "getSelectedLinks"
+        const val SELECTED_LINKS: String = "selectedLinks"
 
 
         // Edition of links
@@ -47,9 +48,9 @@ class SocketConstants{
         const val UPDATE_LINKS_RESPONSE: String = "updateLinksResponse"
         const val LINKS_UPDATED: String = "linksUpdated"
 
-        const val DELETE_LINKS: String = ""
-        const val DELETE_LINKS_RESPONSE: String = ""
-        const val LINKS_DELETED: String = ""
+        const val DELETE_LINKS: String = "deleteLinks"
+        const val DELETE_LINKS_RESPONSE: String = "deleteLinksResponse"
+        const val LINKS_DELETED: String = "linksDeleted"
 
         const val SELECT_LINKS: String = "selectLinks"
         const val SELECT_LINKS_RESPONSE: String = "selectLinksResponse"
@@ -94,7 +95,17 @@ class SocketConstants{
 
 
 
+        const val SAVE_CANVAS: String = "saveCanvas"
+        const val SAVE_CANVAS_RESPONSE: String = "saveCanvasResponse"
 
+
+        const val SELECT_CANVAS: String = "selectCanvas"
+        const val SELECT_CANVAS_RESPONSE: String = "selectCanvasResponse"
+        const val CANVAS_SELECTED: String = "canvasSelected"
+
+        const val DESELECT_CANVAS: String = "deselectCanvas"
+        const val DESELECT_CANVAS_RESPONSE: String = "deselectCanvasResponse"
+        const val CANVAS_DESELECTED: String = "canvasDeselected"
 
 
         const val JOIN_CANVAS_TEST: String = "joinCanvasTest"

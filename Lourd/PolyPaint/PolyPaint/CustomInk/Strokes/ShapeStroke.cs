@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using System.Globalization;
 using PolyPaint.Templates;
 using System.Collections.Generic;
+using PolyPaint.Enums;
 
 namespace PolyPaint.CustomInk
 {
@@ -43,16 +44,22 @@ namespace PolyPaint.CustomInk
             name = basicShape.name;
             strokeType = basicShape.type;
             shapeStyle = basicShape.shapeStyle;
+            linksTo = new List<string>();
+            linksFrom = new List<string>();
 
             Point point = new Point(shapeStyle.coordinates.x, shapeStyle.coordinates.y);
 
-            for (double i = point.X; i < shapeStyle.width + point.X; i += 0.5)
+            if(basicShape.type != (int)StrokeTypes.PHASE)
             {
-                for (double j = point.Y; j < shapeStyle.height + point.Y; j += 0.5)
+                for (double i = point.X; i < shapeStyle.width + point.X; i += 0.5)
                 {
-                    StylusPoints.Add(new StylusPoint(i, j));
+                    for (double j = point.Y; j < shapeStyle.height + point.Y; j += 0.5)
+                    {
+                        StylusPoints.Add(new StylusPoint(i, j));
+                    }
                 }
             }
+
         }
 
         public Point GetAnchorPoint(int anchorNumber)
@@ -90,17 +97,27 @@ namespace PolyPaint.CustomInk
             return basicShape;
         }
 
-        public override void updatePosition()
+        public override void updatePosition(Rect newRect)
         {
-            Coordinates newCoordinates = new Coordinates(GetBounds().X, GetBounds().Y);
-            shapeStyle.coordinates = newCoordinates;
+            double diffX = newRect.X - GetBounds().X;
+            double diffY = newRect.Y - GetBounds().Y;
+            shapeStyle.coordinates.x += diffX;
+            shapeStyle.coordinates.y += diffY;
+        }
+
+        public override void updateLinks()
+        {
+            foreach (string link in linksFrom)
+            {
+
+            }
         }
 
         public override CustomStroke CloneRotated(double rotation)
         {
             ShapeStroke newStroke = (ShapeStroke)Clone();
 
-            newStroke.shapeStyle.rotation = rotation;
+            newStroke.shapeStyle.rotation += rotation;
             return newStroke;
         }
 
