@@ -662,6 +662,9 @@ namespace PolyPaint.CustomInk
                 {
                     LinkStroke linkStroke = new LinkStroke(stroke as LinkStroke, new StylusPointCollection { new StylusPoint(0, 0) });
 
+                    linkStroke.from.SetDefaults();
+                    linkStroke.to.SetDefaults();
+
                     for(int i = 0; i < linkStroke.path.Count; i ++)
                     {
                         linkStroke.path[i] = linkStroke.path[i] + new Point(20, 20);
@@ -684,6 +687,7 @@ namespace PolyPaint.CustomInk
                     ShapeStroke newShapeStroke = newStroke as ShapeStroke;
                     newShapeStroke.linksTo = new List<string> { };
                     newShapeStroke.linksFrom = new List<string> { };
+                    newShapeStroke.shapeStyle = (newStroke as ShapeStroke).shapeStyle.Clone();
                     newShapeStroke.shapeStyle.coordinates = newShapeStroke.shapeStyle.coordinates + new Point(20, 20);
 
                     DrawingService.CreateShape(newShapeStroke);

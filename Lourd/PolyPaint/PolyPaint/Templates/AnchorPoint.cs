@@ -19,6 +19,13 @@ namespace PolyPaint.Templates
             this.multiplicity = multiplicity;
         }
 
+        public AnchorPoint(AnchorPoint anchorPoint)
+        {
+            formId = anchorPoint.formId;
+            anchor = anchorPoint.anchor;
+            multiplicity = anchorPoint.multiplicity;
+        }
+
         internal void SetDefaults()
         {
             formId = null;

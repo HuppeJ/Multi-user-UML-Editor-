@@ -35,13 +35,11 @@ namespace PolyPaint.CustomInk.Strokes
         {
             guid = Guid.NewGuid();
             name = linkStroke.name;
-            from = new AnchorPoint();
-            from.SetDefaults();
-            to = new AnchorPoint();
-            to.SetDefaults();
+            from = new AnchorPoint(from);
+            to = new AnchorPoint(to);
             strokeType = linkStroke.strokeType;
             linkType = linkStroke.linkType;
-            style = linkStroke.style;
+            style = new LinkStyle(linkStroke.style);
             path = new List<Coordinates>();
             path.AddRange(linkStroke.path);
             addStylusPointsToLink();
