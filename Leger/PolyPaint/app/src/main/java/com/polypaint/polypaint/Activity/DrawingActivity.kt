@@ -73,6 +73,8 @@ class DrawingActivity : AppCompatActivity(){
     var mMaximumWidth : Float = 1520F
     var mMaximumHeight : Float = 1200F
 
+    var lassoView: LassoView? = null
+
     var isCanvasSelectedByYou : Boolean = false
 
     private var inflater : LayoutInflater? = null
@@ -176,6 +178,11 @@ class DrawingActivity : AppCompatActivity(){
         save_button.setOnClickListener{
             saveCanevas()
         }
+
+//        selection_button.setOnClickListener {
+//            parent_relative_layout?.addView(LassoView(this))
+//        }
+        selection_button.setOnCheckedChangeListener(onSelectLasso)
 
 
         select_canevas_button.setOnCheckedChangeListener(onSelectCanvevas)
@@ -1039,6 +1046,17 @@ class DrawingActivity : AppCompatActivity(){
         } else {
             socket?.emit(SocketConstants.DESELECT_CANVAS, dataStr)
 
+        }
+    }
+
+    open protected var onSelectLasso = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+
+        if(isChecked) {
+            lassoView = LassoView(this)
+            parent_relative_layout?.addView(lassoView)
+            parent_relative_layout?.dispatchSetSelected(false)
+        } else {
+            parent_relative_layout?.removeView(lassoView)
         }
     }
 
