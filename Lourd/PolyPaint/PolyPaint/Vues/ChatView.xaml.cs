@@ -29,6 +29,7 @@ namespace PolyPaint.Vues
         private void CreateRoomPopup(object sender, EventArgs e)
         {
             popUpCreateRoomVue.Initialize();
+            popUpCreateRoomVue.RoomNameTextBox.Text = "";
             popUpCreateRoom.IsOpen = true;
             IsEnabled = false;
         }

@@ -254,6 +254,8 @@ namespace PolyPaint.VueModeles
             var password = passwordBox.Password;
             ChatService.LoginUser(username, password);
             chatService.RequestChatrooms();
+            // Joins this room by default
+            chatService.JoinChatroom("Everyone");
         }
 
         private bool CanLogin(object o)
@@ -382,12 +384,14 @@ namespace PolyPaint.VueModeles
 
         private void CreateChatroom(object o)
         {
-            Room room = new Room { name = o as string };
+            string roomName = o as string;
+            Room room = new Room { name = roomName };
             if (!rooms.Contains(room))
             {
                 rooms.Add(room);
             }
-            chatService.CreateChatroom(o as string);
+            chatService.CreateChatroom(roomName);
+            chatService.JoinChatroom(roomName);
         }
         #endregion
 
@@ -625,10 +629,13 @@ namespace PolyPaint.VueModeles
                 isOriginNative = (message.username == username)
             };
 
-            if (!_selectedRoom.Chatter.Contains(cm)){
-                ctxTaskFactory.StartNew(() => _selectedRoom.Chatter.Add(cm)).Wait();
+            foreach (Room room in rooms)
+            {
+                if (room.name == message.chatroomName && !room.Chatter.Contains(cm))
+                {
+                    ctxTaskFactory.StartNew(() => room.Chatter.Add(cm)).Wait();
+                }
             }
-
         }
 
         private void GetChatrooms(RoomList chatrooms)
