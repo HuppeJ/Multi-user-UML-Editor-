@@ -10,7 +10,7 @@
         xmlns:Vues="clr-namespace:PolyPaint.Vues"
     xmlns:customink="clr-namespace:PolyPaint.CustomInk"
     mc:Ignorable="d"
-        Height="700" Width="900" Background="#CBD4E4" MinWidth="627" MinHeight="200">
+    VerticalAlignment="Stretch" Width="Auto" Background="#CBD4E4" MinWidth="627" MinHeight="200">
     <UserControl.Resources>
         <convertisseurs:ConvertisseurBordure x:Key="convertisseurBordure" />
         <convertisseurs:ConvertisseurCouleurFond x:Key="convertisseurCouleurFond" />
@@ -122,15 +122,7 @@
                         <Image Source="/Resources/efface.png" />
                     </StackPanel>
                 </Button>
-                <Button x:Name="chat" Width="40" Height="40" Margin="5" Padding="0,0"
-                        BorderBrush="{Binding OutilSelectionne, ConverterParameter=chat, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding OutilSelectionne, ConverterParameter=chat, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
-                        Command="{Binding ChoisirOutil}"
-                        CommandParameter="chat">
-                    <StackPanel>
-                        <Image Source="/Resources/chat.png" />
-                    </StackPanel>
-                </Button>
+
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
@@ -174,7 +166,7 @@
             </StackPanel>
         </Border>
 
-        <Grid DockPanel.Dock="Left" Margin="0,1,0,0" Width="1052">
+        <Grid DockPanel.Dock="Left" Margin="0,1,0,0" Width="2000">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="colonne" Width="550" />
                 <ColumnDefinition Width="6" />
