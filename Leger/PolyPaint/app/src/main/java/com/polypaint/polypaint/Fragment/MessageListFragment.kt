@@ -32,10 +32,16 @@ import com.polypaint.polypaint.Adapter.MessageListAdapter
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Holder.MessagesHolder
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
+import com.polypaint.polypaint.Model.Link
 import com.polypaint.polypaint.Model.Message
 import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.Model.User
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
+import com.polypaint.polypaint.SocketReceptionModel.ChatroomEvent
+import com.polypaint.polypaint.SocketReceptionModel.LinksUpdateEvent
+import com.polypaint.polypaint.SocketReceptionModel.MessageEvent
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -66,15 +72,15 @@ class MessageListFragment: Fragment(){
 
         setHasOptionsMenu(true)
 
-        val app = activity!!.application as PolyPaint
-        socket = app.socket
-        socket?.on(Socket.EVENT_CONNECT, onConnect)
-        socket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
-        socket?.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
-        socket?.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError)
-        socket?.on("messageSent", onNewMessage)
-
-        socket?.emit("joinChatroom")
+//        val app = activity!!.application as PolyPaint
+//        socket = app.socket
+//        socket?.on(Socket.EVENT_CONNECT, onConnect)
+//        socket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
+//        socket?.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
+//        socket?.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError)
+//        socket?.on("messageSent", onNewMessage)
+//
+//        socket?.emit("joinChatroom")
 //        socket?.on("user joined", onUserJoined)
 //        socket?.on("user left", onUserLeft)
 //        socket?.on("typing", onTyping)
@@ -82,6 +88,21 @@ class MessageListFragment: Fragment(){
 //        socket?.connect()
 //
 //        startSignIn()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val app = activity!!.application as PolyPaint
+        socket = app.socket
+        socket?.on(Socket.EVENT_CONNECT, onConnect)
+        socket?.on(Socket.EVENT_DISCONNECT, onDisconnect)
+        socket?.on(Socket.EVENT_CONNECT_ERROR, onConnectError)
+        socket?.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError)
+
+        // TODO: verifier l'event et la room qui joined.
+        socket?.on(SocketConstants.MESSAGE_SENT, onNewMessage)
+
+        socket?.emit(SocketConstants.JOIN_CHATROOM, ChatroomEvent(UserHolder.getInstance().username, "MainRoom"))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -137,7 +158,9 @@ class MessageListFragment: Fragment(){
     }
 
     private fun trySend(){
-        if(! socket!!.connected()){
+        val localSocket = socket
+
+        if(localSocket == null || !localSocket.connected()){
             Toast.makeText(activity?.applicationContext, "not  connected", Toast.LENGTH_SHORT).show()
             return
         }
@@ -155,13 +178,25 @@ class MessageListFragment: Fragment(){
         val messageObject = Message(message, username!!, System.currentTimeMillis() )
         //addMessage(messageObject)
 
-        val obj: JsonObject = jsonObject(
-            "sender" to username,
-            "text" to message,
-            "createdAt" to System.currentTimeMillis()
-        )
+//        val obj: JsonObject = jsonObject(
+//            "sender" to username,
+//            "text" to message,
+//            "createdAt" to System.currentTimeMillis()
+//        )
 
-        socket?.emit("sendMessage", obj)
+
+        var obj: String =""
+        val gson = Gson()
+        val response: MessageEvent = MessageEvent(UserHolder.getInstance().username, "MainRoom", messageObject.createdAt.toString(), messageObject.text)
+        obj = gson.toJson(response)
+
+
+        if(obj !="") {
+            Log.d("emitingSendMessage", obj)
+            socket?.emit(SocketConstants.SEND_MESSAGE, obj)
+        }
+
+
     }
 
     private fun addMessage(message: Message){
@@ -201,7 +236,8 @@ class MessageListFragment: Fragment(){
         activity?.runOnUiThread {
             Log.d("*-*****", it[0].toString())
             val gson = Gson()
-            val message: Message = gson.fromJson(it[0].toString())
+            val messageEvent: MessageEvent = gson.fromJson(it[0].toString())
+            val message: Message = Message(messageEvent.message, messageEvent.username, messageEvent.createdAt.toLong())
             //val data: JSONObject = it[0] as JSONObject
             /*var username: String? = null
             var message: String? = null
