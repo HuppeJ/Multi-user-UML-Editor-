@@ -22,8 +22,6 @@ import com.google.gson.Gson
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.ShapeTypes
-import com.polypaint.polypaint.Holder.UserHolder
-import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -43,20 +41,22 @@ import androidx.core.os.HandlerCompat.postDelayed
 import android.provider.SyncStateContract.Helpers.update
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
-import com.polypaint.polypaint.Holder.SyncShapeHolder
-import com.polypaint.polypaint.Holder.VFXHolder
 import kotlinx.android.synthetic.main.dialog_edit_class.view.*
 import kotlinx.android.synthetic.main.view_class.view.*
 import kotlinx.android.synthetic.main.view_comment.view.*
 import kotlinx.android.synthetic.main.view_image_element.view.*
 import kotlinx.android.synthetic.main.view_phase.view.*
 import android.graphics.Bitmap
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.net.Uri
 import java.io.ByteArrayOutputStream
 import android.util.Base64
 import android.view.MotionEvent
 import android.widget.CompoundButton
 import android.widget.TextView
 import com.github.salomonbrys.kotson.toJsonArray
+import com.polypaint.polypaint.Holder.*
 import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
 import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
 import org.w3c.dom.Comment
@@ -283,6 +283,9 @@ class DrawingActivity : AppCompatActivity(){
         VFXHolder.getInstance().fireVFX(
             (shape.shapeStyle.coordinates.x + shape.shapeStyle.width/2).toFloat(),
             (shape.shapeStyle.coordinates.y + shape.shapeStyle.height/2).toFloat(),this)
+        //Play Sound VFX
+        PlaySoundHolder.getInstance().playNotification1(this)
+
     }
 
     private fun addOnCanevas(basicShape: BasicShape){
