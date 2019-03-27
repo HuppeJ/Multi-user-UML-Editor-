@@ -118,7 +118,9 @@ namespace PolyPaint.CustomInk
                 }
             }
         }
+        #endregion
 
+        #region RefreshLinks
         public void RefreshLinks(bool isStrokesMoved)
         {
             StrokeCollection selectedStrokes = GetSelectedStrokes();
@@ -150,19 +152,20 @@ namespace PolyPaint.CustomInk
                                 {
                                     linkStroke.path[i] = new Coordinates(linkStroke.path[i].x + xDiff, linkStroke.path[i].y + yDiff);
                                 }
+
+                                // update the free points of linkStrokes (from view)
+                                if (linkStroke.from?.formId == null)
+                                {
+                                    point = linkStroke.StylusPoints[0];
+                                    linkStroke.path[0] = new Coordinates(point.ToPoint());
+                                }
+                                else if (linkStroke.to?.formId == null)
+                                {
+                                    point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
+                                    linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
+                                }
                             }
-                            // update the free points of linkStrokes (from view)
-                            if (linkStroke.from?.formId == null)
-                            {
-                                StylusPoint point = linkStroke.StylusPoints[0];
-                                linkStroke.path[0] = new Coordinates(point.ToPoint());
-                            }
-                            else if (linkStroke.to?.formId == null)
-                            {
-                                StylusPoint point = linkStroke.StylusPoints[linkStroke.StylusPoints.Count - 1];
-                                linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(point.ToPoint());
-                            }
-                            
+
                             // move the attached points of linkStrokes
                             foreach (CustomStroke selectedStroke in selectedStrokes)
                             {
