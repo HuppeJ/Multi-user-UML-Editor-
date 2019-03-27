@@ -789,7 +789,7 @@ namespace PolyPaint.VueModeles
                 {
                     rooms.Add(room);
                 }
-                selectedRoom = room;
+                selectedRoom = rooms.ElementAt(rooms.IndexOf(room));
             }
         }
         #endregion
