@@ -24,12 +24,15 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class WindowDrawing : UserControl
     {
+        double width = 32;
+        double height = 32;
 
         public WindowDrawing()
         {
             InitializeComponent();
             DataContext = new VueModele();
             this.Loaded += WindowDrawing_Loaded;
+            DrawingService.OnResizeCanvas += OnResizeCanvas;
         }
 
         void WindowDrawing_Loaded(object sender, RoutedEventArgs e)
@@ -45,12 +48,31 @@ namespace PolyPaint.Vues
 
         // Pour gérer les points de contrôles.
         private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
-        private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
+        private void GlisserTermine(object sender, DragCompletedEventArgs e)
+        {
+            (sender as Thumb).Background = Brushes.White;
+
+            DrawingService.ResizeCanvas(new Coordinates(width, height));
+        }
         private void GlisserMouvementRecu(object sender, DragDeltaEventArgs e)
         {
             String nom = (sender as Thumb).Name;
-            if (nom == "horizontal" || nom == "diagonal") colonne.Width = new GridLength(Math.Max(32, colonne.Width.Value + e.HorizontalChange));
-            if (nom == "vertical" || nom == "diagonal") ligne.Height = new GridLength(Math.Max(32, ligne.Height.Value + e.VerticalChange));
+            if (nom == "horizontal" || nom == "diagonal")
+            {
+                width = Math.Max(32, colonne.Width.Value + e.HorizontalChange);
+                colonne.Width = new GridLength(width);
+            }
+            if (nom == "vertical" || nom == "diagonal")
+            {
+                height = Math.Max(32, ligne.Height.Value + e.VerticalChange);
+                ligne.Height = new GridLength(height);
+            }
+        }
+
+        private void OnResizeCanvas(Coordinates dimensions)
+        {
+            colonne.Width = new GridLength(dimensions.x);
+            ligne.Height = new GridLength(dimensions.y);
         }
 
         // Pour la gestion de l'affichage de position du pointeur.

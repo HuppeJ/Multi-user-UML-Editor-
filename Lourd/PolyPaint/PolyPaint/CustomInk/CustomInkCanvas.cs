@@ -31,7 +31,6 @@ namespace PolyPaint.CustomInk
         public List<string> remoteSelectionIds = new List<string>();
         private StrokeCollection beingSelected = new StrokeCollection();
         private PathFigure selectionPath = new PathFigure();
-        private Size lastSize = new Size(0,0);
 
         #region Dictonary
         public void AddStroke(CustomStroke stroke)
@@ -977,11 +976,6 @@ namespace PolyPaint.CustomInk
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
-            if (!lastSize.Equals(RenderSize))
-            {
-                lastSize = RenderSize;
-                DrawingService.ResizeCanvas(new Coordinates(Width, Height));
-            }
             if (EditingMode == InkCanvasEditingMode.Select)
             {
                 if (selectionPath.Segments.Any())

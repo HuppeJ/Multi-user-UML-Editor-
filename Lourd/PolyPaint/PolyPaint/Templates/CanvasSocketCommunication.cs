@@ -52,6 +52,8 @@ namespace PolyPaint.Templates
             this.canevasName = canevasName;
             this.dimensions = dimensions;
         }
+
+        public ResizeCanevasData() { }
     }
 
     class UpdateFormsData
