@@ -29,6 +29,7 @@ namespace PolyPaint.CustomInk
         private Path linkPreview;
         LineGeometry linkPreviewGeom = new LineGeometry();
         int linkStrokeAnchor;
+        CustomStroke anchoredShapeStroke = null;
 
         public LinkAnchorPointAdorner(UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
@@ -114,6 +115,15 @@ namespace PolyPaint.CustomInk
             if(linkStrokeAnchor == 0 || linkStrokeAnchor == linkStroke.path.Count - 1)
             {
                 canvas.addAnchorPoints();
+                string formId = "";
+                if(linkStrokeAnchor == 0)
+                {
+                    formId = linkStroke.from?.formId;
+                } else
+                {
+                    formId = linkStroke.to?.formId;
+                }
+                canvas.StrokesDictionary.TryGetValue(formId, out anchoredShapeStroke);
             }
             canvas.isUpdatingLink = true;
         }
@@ -173,7 +183,50 @@ namespace PolyPaint.CustomInk
                     }
                 }
             }
-            
+
+            if (anchoredShapeStroke != null)
+            {
+                if(linkStrokeAnchor == 0) //from is changing
+                {
+
+                }
+                else // to is changing
+                {
+
+                }
+            }
+
+            if (shapeStroke.strokeType == (int)StrokeTypes.ROLE)
+            {
+                if (strokeTo?.GetType() == typeof(ActivityStroke))
+                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
+                else
+                    MessageBox.Show("A role can only be linked to an activity.");
+            }
+            else if (shapeStroke.strokeType == (int)StrokeTypes.ARTIFACT)
+            {
+                if (strokeTo?.GetType() == typeof(ActivityStroke))
+                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
+                else
+                    MessageBox.Show("An artifact can only be linked to an activity.");
+            }
+            else if (shapeStroke.strokeType == (int)StrokeTypes.ACTIVITY)
+            {
+                if (strokeTo?.GetType() == typeof(ArtifactStroke))
+                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
+                else
+                    MessageBox.Show("An activity can only be linked to an artifact.");
+            }
+            else if (strokeTo?.GetType() == typeof(ArtifactStroke) || strokeTo?.GetType() == typeof(ActorStroke) || strokeTo?.GetType() == typeof(ActivityStroke))
+            {
+                MessageBox.Show("Cannot create link.");
+            }
+            else
+            {
+                CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.LINE, pos);
+            }
+
+
             canvas.updateLink(linkStrokeAnchor, linkStroke, strokeTo as ShapeStroke, number, actualPos);
 
             InvalidateArrange();
