@@ -280,7 +280,7 @@
                      ItemContainerStyle="{DynamicResource roomsListBoxItemStyle}"
                      SelectedItem="{Binding selectedRoom}"                     
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,121"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,77"
                      MaxHeight="300"/>
 
         </Border>
@@ -339,17 +339,20 @@
                         FocusManager.FocusedElement="{Binding ElementName=MessageTxtBox}"/>
             </Grid>
         </Border>
-        <Button x:Name="CreateChatroomButton" Margin="10,324,10,41"
-            Content="Create A Chatroom"
-            Click="CreateRoomPopup" Grid.RowSpan="2"/>
+        <Button x:Name="CreateChatroomButton" Margin="62,320,63,0" Padding="0"
+            Content="Create"
+            Click="CreateRoomPopup"/>
         <Popup x:Name="popUpCreateRoom" Placement="Center">
             <Vues:CreateRoomPopup x:Name="popUpCreateRoomVue"/>
         </Popup>
-        <Button x:Name="JoinChatroomButton" Margin="10,290,10,30"
-            Content="Join A Chatroom"
+        <Button x:Name="JoinChatroomButton" Margin="10,320,115,0" Padding="0"
+            Content="Join"
             Click="JoinRoomPopup" Tag="{Binding joinableRooms}"/>
         <Popup x:Name="popUpJoinRoom" Placement="Center">
             <Vues:JoinRoomPopup x:Name="popUpJoinRoomVue"/>
         </Popup>
+        <Button x:Name="LeaveChatroomButton" Margin="115,320,10,0" Padding="0"
+            Content="Leave"
+            Command="{Binding LeaveChatroomCommand}" CommandParameter="{Binding selectedRoom}"/>
     </Grid>
 </UserControl>

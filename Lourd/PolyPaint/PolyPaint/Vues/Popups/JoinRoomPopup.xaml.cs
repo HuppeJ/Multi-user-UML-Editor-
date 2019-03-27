@@ -13,7 +13,6 @@ namespace PolyPaint.Vues
         public event PropertyChangedEventHandler PropertyChanged;
         private ChatView chatview = null;
         public AsyncObservableCollection<Room> joinableRooms = new AsyncObservableCollection<Room>();
-        public Room selectedRoom;
 
         public JoinRoomPopup()
         {

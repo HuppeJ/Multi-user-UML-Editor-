@@ -68,8 +68,11 @@ namespace PolyPaint.VueModeles
             get { return _selectedRoom; }
             set
             {
-                _selectedRoom = value;
-                OnPropertyChanged();
+                if(value != null)
+                {
+                    _selectedRoom = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -417,6 +420,27 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region LeaveChatroomCommand
+        private ICommand _leaveChatroomCommand;
+        public ICommand LeaveChatroomCommand
+        {
+            get
+            {
+                return _leaveChatroomCommand ?? (_leaveChatroomCommand = new RelayCommand<Object>(LeaveChatroom));
+            }
+        }
+
+        private void LeaveChatroom(object o)
+        {
+            if(o != null)
+            {
+                Room room = o as Room;
+                chatService.LeaveChatroom(room.name);
+                rooms.Remove(room);
+            }
+        }
+        #endregion
+
         #region Send Message Command
         private ICommand _sendMessageCommand;
         public ICommand SendMessageCommand
@@ -745,13 +769,7 @@ namespace PolyPaint.VueModeles
         {
             if (response.isCreated)
             {
-                Room room = new Room { name = response.chatroomName };
-                if (!rooms.Contains(room))
-                {
-                    rooms.Add(room);
-                }
                 chatService.JoinChatroom(response.chatroomName);
-                selectedRoom = room;
             }
             else
             {

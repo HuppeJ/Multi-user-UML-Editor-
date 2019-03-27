@@ -47,6 +47,11 @@ namespace PolyPaint.Services
                 RequestChatrooms();
             });
 
+            socket.On("leaveChatroomResponse", (data) =>
+            {
+                RequestChatrooms();
+            });
+
             socket.On("chatroomCreated", (data) =>
             {
                 RequestChatrooms();
@@ -75,7 +80,12 @@ namespace PolyPaint.Services
 
         public void JoinChatroom(string chatroomName)
         {
-            socket.Emit("joinChatroom", serializer.Serialize(new ChatroomJoin(chatroomName, username)));
+            socket.Emit("joinChatroom", serializer.Serialize(new EditChatroomData(chatroomName, username)));
+        }
+
+        public void LeaveChatroom(string chatroomName)
+        {
+            socket.Emit("leaveChatroom", serializer.Serialize(new EditChatroomData(chatroomName, username)));
         }
 
         public void CreateChatroom(string chatroomName)
