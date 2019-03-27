@@ -62,6 +62,10 @@ namespace PolyPaint.Vues
 
         }
 
+        private void AlignLeft(object sender, RoutedEventArgs e) => surfaceDessin.AlignLeft();
+
+        private void AlignCenter(object sender, RoutedEventArgs e) => surfaceDessin.AlignCenter();
+
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
         private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutStrokes();

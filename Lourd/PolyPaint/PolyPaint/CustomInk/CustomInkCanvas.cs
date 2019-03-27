@@ -94,7 +94,7 @@ namespace PolyPaint.CustomInk
             }
 
         }
-
+        
         private void RemoveShapeStrokeLinkTo(LinkStroke linkBeingUpdated)
         {
             if (linkBeingUpdated.to?.formId != null)
@@ -132,7 +132,7 @@ namespace PolyPaint.CustomInk
                     {
                         if (selectedStrokes.Count == 1 && selectedStrokes.Contains(linkStroke) && !isStrokesMoved)
                         {
-                            // keep the same stylus points if linkstroke is attached and is the only one moved
+                            // keep the same stylus points if linkstroke is attached and is the only one resized
                             linkStroke.addStylusPointsToLink(); 
                         }
                         else
@@ -140,8 +140,6 @@ namespace PolyPaint.CustomInk
                             // si plusieurs points dans le path, les mettre a jour si la selectedStroke a bouge
                             if (selectedStrokes.Contains(linkStroke))
                             {
-                                List<Coordinates> pathCopy = new List<Coordinates>(linkStroke.path);
-
                                 StylusPoint point = linkStroke.StylusPoints[0];
                                 double xDiff = point.X - linkStroke.path[0].x;
                                 double yDiff = point.Y - linkStroke.path[0].y;
@@ -212,7 +210,7 @@ namespace PolyPaint.CustomInk
 
                             linkStroke.addStylusPointsToLink();
                         }
-
+                        DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
                     }
                 }
             }
@@ -745,6 +743,86 @@ namespace PolyPaint.CustomInk
         }
         #endregion
 
+        #region Align
+        internal void AlignLeft()
+        {
+            Rect selectionBounds = GetSelectionBounds();
+
+            double leftMostX = selectionBounds.X;
+            Align(leftMostX);
+        }
+
+        internal void AlignCenter()
+        {
+            Rect selectionBounds = GetSelectionBounds();
+
+            double centerX = selectionBounds.X + selectionBounds.Width/2;
+            Align(centerX);
+        }
+
+        private void Align(double xToAlignTo)
+        {
+            StrokeCollection selectedStrokes = GetSelectedStrokes();
+
+            // faire pour les liens egalement
+            foreach (CustomStroke stroke in selectedStrokes)
+            {
+                double xDiff = xToAlignTo - stroke.GetBounds().X;
+
+                Matrix translateMatrix = new Matrix();
+                translateMatrix.Translate(xDiff, 0);
+
+                if (stroke.isLinkStroke())
+                {
+                    LinkStroke linkStroke = stroke as LinkStroke;
+
+                    if (!linkStroke.isAttached())
+                    {
+                        stroke.Transform(translateMatrix, false);
+                    }
+                }
+                else
+                {
+                    stroke.Transform(translateMatrix, false);
+
+                    ShapeStroke shapeStroke = stroke as ShapeStroke;
+                    shapeStroke.shapeStyle.coordinates += new Point(xDiff, 0);
+
+                    if (shapeStroke.linksTo?.Count > 0)
+                    {
+                        foreach (string linkGuid in shapeStroke.linksTo)
+                        {
+                            CustomStroke linkStroke;
+                            if (StrokesDictionary.TryGetValue(linkGuid, out linkStroke))
+                            {
+                                if ((linkStroke as LinkStroke).GetBounds().X != xToAlignTo)
+                                {
+                                    (linkStroke as LinkStroke).Transform(translateMatrix, false);
+                                }
+                            }
+                        }
+                    }
+                    if (shapeStroke.linksFrom?.Count > 0)
+                    {
+                        foreach (string linkGuid in shapeStroke.linksFrom)
+                        {
+                            CustomStroke linkStroke;
+                            if (StrokesDictionary.TryGetValue(linkGuid, out linkStroke))
+                            {
+                                if ((linkStroke as LinkStroke).GetBounds().X != xToAlignTo)
+                                {
+                                    (linkStroke as LinkStroke).Transform(translateMatrix, false);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            RefreshLinks(true);
+            RefreshChildren();
+            DrawingService.UpdateShapes(selectedStrokes);
+        }
+        #endregion
 
         internal void DeleteStrokes(StrokeCollection selectedStrokes)
         {
