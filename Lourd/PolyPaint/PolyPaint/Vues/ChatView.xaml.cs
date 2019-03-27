@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PolyPaint.Modeles;
+using PolyPaint.Utilitaires;
 using PolyPaint.VueModeles;
 
 namespace PolyPaint.Vues
@@ -34,9 +36,18 @@ namespace PolyPaint.Vues
             IsEnabled = false;
         }
 
+        private void JoinRoomPopup(object sender, EventArgs e)
+        {
+            popUpJoinRoomVue.Initialize();
+            popUpJoinRoomVue.joinableRooms = ((Button)sender).Tag as AsyncObservableCollection<Room>;
+            popUpJoinRoom.IsOpen = true;
+            IsEnabled = false;
+        }
+
         public void ClosePopup()
         {
             popUpCreateRoom.IsOpen = false;
+            popUpJoinRoom.IsOpen = false;
             IsEnabled = true;
         }
     }

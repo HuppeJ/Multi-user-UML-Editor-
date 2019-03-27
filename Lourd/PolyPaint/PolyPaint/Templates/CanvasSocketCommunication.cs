@@ -90,6 +90,12 @@ namespace PolyPaint.Templates
         public string chatroomName { get; set; }
     }
 
+    class JoinChatroomResponse
+    {
+        public bool isChatroomJoined { get; set; }
+        public string chatroomName { get; set; }
+    }
+
     class UpdateCanvasPasswordResponse
     {
         public bool isPasswordUpdated { get; set; }

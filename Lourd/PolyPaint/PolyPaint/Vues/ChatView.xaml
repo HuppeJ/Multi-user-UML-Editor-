@@ -280,7 +280,8 @@
                      ItemContainerStyle="{DynamicResource roomsListBoxItemStyle}"
                      SelectedItem="{Binding selectedRoom}"                     
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,89"/>
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,121"
+                     MaxHeight="300"/>
 
         </Border>
         <!--Back to gallery button-->
@@ -338,11 +339,17 @@
                         FocusManager.FocusedElement="{Binding ElementName=MessageTxtBox}"/>
             </Grid>
         </Border>
-        <Button x:Name="CreateChatroomButton" Margin="10,320,10,45"
+        <Button x:Name="CreateChatroomButton" Margin="10,324,10,41"
             Content="Create A Chatroom"
             Click="CreateRoomPopup" Grid.RowSpan="2"/>
         <Popup x:Name="popUpCreateRoom" Placement="Center">
             <Vues:CreateRoomPopup x:Name="popUpCreateRoomVue"/>
+        </Popup>
+        <Button x:Name="JoinChatroomButton" Margin="10,290,10,30"
+            Content="Join A Chatroom"
+            Click="JoinRoomPopup" Tag="{Binding joinableRooms}"/>
+        <Popup x:Name="popUpJoinRoom" Placement="Center">
+            <Vues:JoinRoomPopup x:Name="popUpJoinRoomVue"/>
         </Popup>
     </Grid>
 </UserControl>

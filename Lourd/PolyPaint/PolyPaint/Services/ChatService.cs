@@ -10,6 +10,7 @@ namespace PolyPaint.Services
     {
         public event Action<ChatMessageTemplate> NewMessage;
         public event Action<CreateChatroomResponse> RoomCreation;
+        public event Action<JoinChatroomResponse> RoomJoin;
         public event Action<RoomList> GetChatrooms;
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
 
@@ -37,6 +38,18 @@ namespace PolyPaint.Services
             {
                 CreateChatroomResponse response = serializer.Deserialize<CreateChatroomResponse>((string)data);
                 RoomCreation?.Invoke(response);
+            });
+
+            socket.On("joinChatroomResponse", (data) =>
+            {
+                JoinChatroomResponse response = serializer.Deserialize<JoinChatroomResponse>((string)data);
+                RoomJoin?.Invoke(response);
+                RequestChatrooms();
+            });
+
+            socket.On("chatroomCreated", (data) =>
+            {
+                RequestChatrooms();
             });
 
             // Makes sure the chatroom "Everyone" is on the server

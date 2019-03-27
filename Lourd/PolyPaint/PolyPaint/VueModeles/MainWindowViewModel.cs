@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Inspired from: Meshack Musundi
  * Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
  */
@@ -47,6 +47,17 @@ namespace PolyPaint.VueModeles
             set
             {
                 _rooms = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private AsyncObservableCollection<Room> _joinableRooms = new AsyncObservableCollection<Room>();
+        public AsyncObservableCollection<Room> joinableRooms
+        {
+            get { return _joinableRooms; }
+            set
+            {
+                _joinableRooms = value;
                 OnPropertyChanged();
             }
         }
@@ -372,6 +383,23 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region JoinChatroomCommand
+        private ICommand _joinChatroomCommand;
+        public ICommand JoinChatroomCommand
+        {
+            get
+            {
+                return _joinChatroomCommand ?? (_joinChatroomCommand = new RelayCommand<Object>(JoinChatroom));
+            }
+        }
+
+        private void JoinChatroom(object o)
+        {
+            Room room = o as Room;
+            chatService.JoinChatroom(room.name);
+        }
+        #endregion
+
         #region CreateChatroomCommand
         private ICommand _createChatroomCommand;
         public ICommand CreateChatroomCommand
@@ -634,17 +662,16 @@ namespace PolyPaint.VueModeles
 
         private void GetChatrooms(RoomList chatrooms)
         {
-            /*
+            joinableRooms = new AsyncObservableCollection<Room>();
             foreach(string room in chatrooms.chatrooms)
             {
                 string roomName = room.Remove(0,10);
                 Room newRoom = new Room { name = roomName };
                 if(!rooms.Contains(newRoom))
                 {
-                    rooms.Add(newRoom);
+                    joinableRooms.Add(newRoom);
                 }
             }
-            */
         }
 
         private void Connection(bool isConnected)
@@ -705,7 +732,7 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                dialogService.ShowNotification("Could not join chatroom");
+                dialogService.ShowNotification("Could not join canvasroom");
             }
         }
 
@@ -716,12 +743,36 @@ namespace PolyPaint.VueModeles
 
         private void CreateRoom(CreateChatroomResponse response)
         {
-            Room room = new Room { name = response.chatroomName };
-            if (!rooms.Contains(room))
+            if (response.isCreated)
             {
-                rooms.Add(room);
+                Room room = new Room { name = response.chatroomName };
+                if (!rooms.Contains(room))
+                {
+                    rooms.Add(room);
+                }
+                chatService.JoinChatroom(response.chatroomName);
+                selectedRoom = room;
             }
-            chatService.JoinChatroom(response.chatroomName);
+            else
+            {
+                if(response.chatroomName != "MainRoom")
+                {
+                    dialogService.ShowNotification("This room already exists");
+                }
+            }
+        }
+
+        private void JoinRoom(JoinChatroomResponse response)
+        {
+            if (response.isChatroomJoined)
+            {
+                Room room = new Room { name = response.chatroomName };
+                if (!rooms.Contains(room))
+                {
+                    rooms.Add(room);
+                }
+                selectedRoom = room;
+            }
         }
         #endregion
 
@@ -744,6 +795,7 @@ namespace PolyPaint.VueModeles
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;
             chatService.RoomCreation += CreateRoom;
+            chatService.RoomJoin += JoinRoom;
 
             rooms.Add(new Room { name = "MainRoom" });
         }
