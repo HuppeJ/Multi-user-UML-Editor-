@@ -38,9 +38,34 @@ namespace PolyPaint.CustomInk
             base.DrawCore(drawingContext, drawingAttributes);
 
             UpdateShapePoints();
+
+            drawingContext.DrawRectangle(fillColor, pen, new Rect(topLeft, bottomRight));
+
+            FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                new Typeface("Arial"), 12, Brushes.Black);
+
+            formattedText.MaxTextWidth = shapeStyle.width * WIDTH;
+            formattedText.MaxTextHeight = shapeStyle.height * HEIGHT;
+            formattedText.Trimming = TextTrimming.CharacterEllipsis;
+
+            drawingContext.DrawText(formattedText, GetCustomBound().TopLeft);
         }
 
         public override Rect GetBounds()
+        {
+            double width = shapeStyle.width * WIDTH;
+            double height = shapeStyle.height * HEIGHT;
+
+            Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
+                width, height);
+
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            rect.Transform(rotationTransform.Value);
+
+            return rect;
+        }
+
+        public override Rect GetCustomBound()
         {
             double width = shapeStyle.width * WIDTH;
             double height = shapeStyle.height * HEIGHT;
@@ -54,7 +79,7 @@ namespace PolyPaint.CustomInk
         internal override bool HitTestPoint(Point point)
         {
             RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
-            return GetBounds().Contains(rotationTransform.Inverse.Transform(point));
+            return GetCustomBound().Contains(rotationTransform.Inverse.Transform(point));
         }
 
         internal override bool HitTestPointIncludingEdition(Point point)
@@ -85,7 +110,7 @@ namespace PolyPaint.CustomInk
 
         public override Point GetCenter()
         {
-            Rect rect = GetBounds();
+            Rect rect = GetCustomBound();
             return new Point(rect.X + shapeStyle.width * WIDTH / 2, rect.Y + shapeStyle.height * HEIGHT / 2);
         }
     }

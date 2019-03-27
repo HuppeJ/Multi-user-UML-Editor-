@@ -14,6 +14,7 @@ namespace PolyPaint.CustomInk
 
         VisualCollection visualChildren;
 
+        RotateTransform rotation;
 
         // Be sure to call the base class constructor.
         public ShapeNameAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)

@@ -596,25 +596,25 @@ namespace PolyPaint.CustomInk
                     path.Data = stroke.GetGeometry();
                     Children.Add(path);
                     AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                    myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
+                    // myAdornerLayer.Add(new ClassAdorner(path, stroke, this));
                     break;
                 case (int)StrokeTypes.COMMENT:
                     path.Data = stroke.GetGeometry();
                     Children.Add(path);
                     AdornerLayer commentAdorner = AdornerLayer.GetAdornerLayer(path);
-                    commentAdorner.Add(new CommentAdorner(path, stroke, this));
+                    // commentAdorner.Add(new CommentAdorner(path, stroke, this));
                     break;
                 case (int)StrokeTypes.PHASE:
                     path.Data = stroke.GetGeometry();
                     Children.Add(path);
                     AdornerLayer phaseAdorner = AdornerLayer.GetAdornerLayer(path);
-                    phaseAdorner.Add(new PhaseAdorner(path, stroke, this));
+                    // phaseAdorner.Add(new PhaseAdorner(path, stroke, this));
                     break;
                 default:
                     path.Data = stroke.GetGeometry();
                     Children.Add(path);
                     AdornerLayer defaultAdorner = AdornerLayer.GetAdornerLayer(path);
-                    defaultAdorner.Add(new ShapeNameAdorner(path, stroke, this));
+                    // defaultAdorner.Add(new ShapeNameAdorner(path, stroke, this));
                     break;
             }
         }
@@ -818,10 +818,10 @@ namespace PolyPaint.CustomInk
                     myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                 }
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
-                if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
+                /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                 {
                     myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
-                }
+                }*/
             } else
             {
                 if(!(selectedStroke as LinkStroke).isAttached() && GetSelectedStrokes().Count == 1)

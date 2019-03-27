@@ -16,6 +16,15 @@ namespace PolyPaint.CustomInk
         public List<string> attributes;
         public List<string> methods;
 
+        private Point topLeft;
+        private Point topRight;
+        private Point middleLeft1;
+        private Point middleRight1;
+        private Point middleLeft2;
+        private Point middleRight2;
+        private Point bottomRight;
+        private Point bottomLeft;
+
         public static readonly int WIDTH = 150;
         public static readonly int HEIGHT = 30;
 
@@ -39,25 +48,54 @@ namespace PolyPaint.CustomInk
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
         {
-            if (drawingContext == null)
+            base.DrawCore(drawingContext, drawingAttributes);
+
+            UpdateShapePoints();
+
+            drawingContext.DrawRectangle(fillColor, pen, new Rect(topLeft, bottomRight));
+
+            drawingContext.DrawLine(pen, middleLeft1, middleRight1);
+
+            drawingContext.DrawLine(pen, middleLeft2, middleRight2);
+
+            FormattedText title = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                new Typeface("Arial"), 12, Brushes.Black);
+
+            title.MaxTextWidth = shapeStyle.width * WIDTH;
+            title.MaxLineCount = 1;
+            title.Trimming = TextTrimming.CharacterEllipsis;
+
+            drawingContext.DrawText(title, topLeft);
+
+            string attributesStr = "";
+            foreach (string attribute in attributes)
             {
-                throw new ArgumentNullException("drawingContext");
+                attributesStr += attribute;
             }
-            if (null == drawingAttributes)
+
+            FormattedText attributesText = new FormattedText(attributesStr, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                new Typeface("Arial"), 12, Brushes.Black);
+
+            attributesText.MaxTextWidth = shapeStyle.width * WIDTH;
+            attributesText.MaxTextHeight = (shapeStyle.height * HEIGHT - 20) / 2;
+            attributesText.Trimming = TextTrimming.CharacterEllipsis;
+
+            drawingContext.DrawText(attributesText, middleLeft1);
+
+            string methodsStr = "";
+            foreach (string method in methods)
             {
-                throw new ArgumentNullException("drawingAttributes");
+                methodsStr += method;
             }
-            DrawingAttributes originalDa = drawingAttributes.Clone();
 
-            Rect bounds = GetBounds();
-            double x = (bounds.Right + bounds.Left) / 2;
-            double y = (bounds.Bottom + bounds.Top) / 2;
+            FormattedText methodsText = new FormattedText(methodsStr, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                new Typeface("Arial"), 12, Brushes.Black);
 
-            TransformGroup transform = new TransformGroup();
+            methodsText.MaxTextWidth = shapeStyle.width * WIDTH;
+            methodsText.MaxTextHeight = (shapeStyle.height * HEIGHT - 20) / 2;
+            methodsText.Trimming = TextTrimming.CharacterEllipsis;
 
-            transform.Children.Add(new RotateTransform(shapeStyle.rotation, x, y));
-
-            drawingContext.PushTransform(transform);
+            drawingContext.DrawText(methodsText, middleLeft2);
         }
 
         public override BasicShape GetBasicShape()
@@ -67,11 +105,25 @@ namespace PolyPaint.CustomInk
 
         public override Point GetCenter()
         {
-            Rect rect = GetBounds();
+            Rect rect = GetCustomBound();
             return new Point(rect.X + shapeStyle.width * WIDTH / 2, rect.Y + shapeStyle.height * HEIGHT / 2);
         }
 
         public override Rect GetBounds()
+        {
+            double width = shapeStyle.width * WIDTH;
+            double height = shapeStyle.height * HEIGHT;
+
+            Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
+                width, height);
+
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            rect.Transform(rotationTransform.Value);
+
+            return rect;
+        }
+
+        public override Rect GetCustomBound()
         {
             double width = shapeStyle.width * WIDTH;
             double height = shapeStyle.height * HEIGHT;
@@ -85,7 +137,7 @@ namespace PolyPaint.CustomInk
         internal override bool HitTestPoint(Point point)
         {
             RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
-            return GetBounds().Contains(rotationTransform.Inverse.Transform(point));
+            return GetCustomBound().Contains(rotationTransform.Inverse.Transform(point));
         }
 
         internal override bool HitTestPointIncludingEdition(Point point)
@@ -94,6 +146,31 @@ namespace PolyPaint.CustomInk
                 WIDTH * shapeStyle.width + 30, HEIGHT * shapeStyle.height + 30);
             RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
             return editionBorder.Contains(rotationTransform.Inverse.Transform(point));
+        }
+
+        private void UpdateShapePoints()
+        {
+            if (shapeStyle.height < 0.2)
+                shapeStyle.height = 0.2;
+
+            double width = shapeStyle.width * WIDTH;
+            double height = shapeStyle.height * HEIGHT;
+
+            topLeft = shapeStyle.coordinates.ToPoint();
+
+            topRight = new Point(topLeft.X + width, topLeft.Y);
+
+            middleLeft1 = new Point(topLeft.X, topLeft.Y + 20);
+
+            middleRight1 = new Point(topLeft.X + width, topLeft.Y + 20);
+
+            middleLeft2 = new Point(topLeft.X, topLeft.Y + 20 + (height - 20) / 2);
+
+            middleRight2 = new Point(topLeft.X + width, topLeft.Y + 20 + (height - 20) / 2);
+
+            bottomLeft = new Point(topLeft.X, topLeft.Y + height);
+
+            bottomRight = new Point(topLeft.X + width, topLeft.Y + height);
         }
     }
 }

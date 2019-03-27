@@ -7,30 +7,42 @@ namespace PolyPaint.CustomInk
 {
     class ClassAdorner : Adorner
     {
-        private ClassStroke stroke;
+        private CustomStroke stroke;
         private ClassTextBox classTextBox;
         private CustomInkCanvas canvas;
         private Rect rectangle;
 
         VisualCollection visualChildren;
 
+        // The center of the strokes.
+        Point center;
+        RotateTransform rotation;
+
         // Be sure to call the base class constructor.
         public ClassAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
-            this.stroke = stroke as ClassStroke;
+            this.stroke = stroke;
             this.canvas = canvas;
             Rect bounds = stroke.GetBounds();
+            center = stroke.GetCenter();
+            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             rectangle = new Rect(bounds.TopLeft.X, bounds.TopLeft.Y, bounds.Width, bounds.Height);
 
-            AddClass(canvas);
+            AddClass(stroke, canvas);
         }
 
-        private void AddClass(CustomInkCanvas canvas)
+        private void AddClass(CustomStroke stroke, CustomInkCanvas canvas)
         {
             visualChildren = new VisualCollection(this);
-            classTextBox = new ClassTextBox(stroke, canvas);
+            classTextBox = new ClassTextBox(stroke as ClassStroke, canvas);
+            classTextBox.Background = Brushes.White;
+            classTextBox.RenderTransform = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation,
+                rectangle.Width / 2, rectangle.Height / 2);
+                // ClassStroke.WIDTH * (stroke as ShapeStroke).shapeStyle.width / 2, 0);
+                // ClassStroke.HEIGHT * (stroke as ShapeStroke).shapeStyle.height / 2);
+
             visualChildren.Add(classTextBox);
         }
 
@@ -58,6 +70,7 @@ namespace PolyPaint.CustomInk
             }
 
             // Draws the rectangle
+            rectangle.Transform(rotation.Value);
             classTextBox.Arrange(rectangle);
 
             return finalSize;

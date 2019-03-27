@@ -5,6 +5,7 @@ using System.Windows;
 using System;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
+using System.Globalization;
 
 namespace PolyPaint.CustomInk
 {
@@ -56,6 +57,15 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawLine(pen, torso, rightHand);
             drawingContext.DrawLine(pen, hip, leftFoot);
             drawingContext.DrawLine(pen, hip, rightFoot);
+
+            FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, 
+                new Typeface("Arial"), 12, Brushes.Black);
+
+            formattedText.MaxTextWidth = shapeStyle.width * WIDTH;
+            formattedText.TextAlignment = TextAlignment.Center;
+            formattedText.MaxTextHeight = 100;
+
+            drawingContext.DrawText(formattedText, GetCustomBound().BottomLeft);
         }
 
         public override Rect GetBounds()
