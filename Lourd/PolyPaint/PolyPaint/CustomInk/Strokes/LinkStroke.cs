@@ -509,7 +509,7 @@ namespace PolyPaint.CustomInk.Strokes
             return bounds.Contains(point);
         }
 
-        private Rect GetEditingBounds()
+        public override Rect GetEditingBounds()
         {
             Rect bounds = GetBounds();
             double minX = Math.Min(Math.Min(Math.Min(bounds.TopLeft.X, bounds.TopRight.X), bounds.BottomLeft.X), bounds.BottomRight.X);

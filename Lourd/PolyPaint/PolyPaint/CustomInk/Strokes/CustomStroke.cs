@@ -96,5 +96,7 @@ namespace PolyPaint.CustomInk
         {
             return false;
         }
+
+        public abstract Rect GetEditingBounds();
     }
 }

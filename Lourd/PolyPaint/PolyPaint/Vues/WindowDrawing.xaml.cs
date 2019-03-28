@@ -130,10 +130,15 @@ namespace PolyPaint.Vues
                     myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
                 }
             }
-            else if (surfaceDessin.GetSelectedStrokes().Count == 1 && surfaceDessin.GetSelectedStrokes()[0].GetType() == typeof(LinkStroke))
+            else
             {
-                surfaceDessin.modifyLinkStrokePath(surfaceDessin.GetSelectedStrokes()[0] as LinkStroke, e.GetPosition(surfaceDessin));
-
+                foreach (CustomStroke stroke in surfaceDessin.GetSelectedStrokes())
+                {
+                    if (stroke is LinkStroke)
+                    {
+                        surfaceDessin.modifyLinkStrokePath(stroke as LinkStroke, e.GetPosition(surfaceDessin));
+                    }
+                }
             }
 
 

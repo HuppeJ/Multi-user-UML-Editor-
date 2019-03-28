@@ -330,6 +330,17 @@ namespace PolyPaint.CustomInk
             {
                 DrawingService.DeselectShapes(strokesToRemove);
             }
+            if (GetSelectedStrokes().Count > 1)
+            {
+                ResizeEnabled = false;
+            } else if (GetSelectedStrokes().Count == 1 && 
+                       GetSelectedStrokes()[0] is LinkStroke && 
+                       (GetSelectedStrokes()[0] as LinkStroke).isAttached()){
+                ResizeEnabled = false;
+            }
+            {
+                ResizeEnabled = true;
+            }
             RefreshChildren();
         }
 
@@ -344,7 +355,11 @@ namespace PolyPaint.CustomInk
                     (stroke as ShapeStroke).shapeStyle.coordinates.y += delta.Y;
                 } else
                 {
-                    (stroke as LinkStroke).updatePosition(e.NewRectangle);
+                    foreach (Coordinates point in (stroke as LinkStroke).path)
+                    {
+                        point.x += delta.X;
+                        point.y += delta.Y;
+                    }
                 }
             }
             // base.OnSelectionMoving(e);
@@ -369,6 +384,7 @@ namespace PolyPaint.CustomInk
         {
             // Update selected strokes height and width
             StrokeCollection strokes = GetSelectedStrokes();
+
             heightRatio = e.NewRectangle.Height / e.OldRectangle.Height;
             widthRatio = e.NewRectangle.Width / e.OldRectangle.Width;
 
@@ -930,6 +946,37 @@ namespace PolyPaint.CustomInk
                 foreach (CustomStroke stroke in SelectedStrokes)
                 {
                     if (stroke.HitTestPointIncludingEdition(e.GetPosition(this)))
+                    {
+                        base.OnPreviewMouseDown(e);
+                        return;
+                    }
+                }
+                if (SelectedStrokes.Count > 0)
+                {
+                    double minX = 9999999;
+                    double maxX = -9999999;
+                    double minY = 9999999;
+                    double maxY = -9999999;
+                    foreach (CustomStroke stroke in SelectedStrokes)
+                    {
+                        if(stroke.GetEditingBounds().X < minX)
+                        {
+                            minX = stroke.GetEditingBounds().X;
+                        }
+                        if (stroke.GetEditingBounds().Y < minY)
+                        {
+                            minY = stroke.GetEditingBounds().Y;
+                        }
+                        if (stroke.GetEditingBounds().BottomRight.X > maxX)
+                        {
+                            maxX = stroke.GetEditingBounds().BottomRight.X;
+                        }
+                        if (stroke.GetEditingBounds().BottomRight.Y > maxY)
+                        {
+                            maxY = stroke.GetEditingBounds().BottomRight.Y;
+                        }
+                    }
+                    if (new Rect(new Point(minX, minY), new Point(maxX, maxY)).Contains(e.GetPosition(this)))
                     {
                         base.OnPreviewMouseDown(e);
                         return;

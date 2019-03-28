@@ -105,7 +105,7 @@ namespace PolyPaint.CustomInk
             return bounds.Contains(point);
         }
 
-        private Rect GetEditingBounds()
+        public override Rect GetEditingBounds()
         {
             Rect bounds = GetCustomBound();
             RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
