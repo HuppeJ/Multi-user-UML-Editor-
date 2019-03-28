@@ -243,6 +243,9 @@
     <Compile Include="Vues\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\ChatPopup.xaml.cs">
+      <DependentUpon>ChatPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Popups\ClassPopup.xaml.cs">
       <DependentUpon>ClassPopup.xaml</DependentUpon>
     </Compile>
@@ -340,6 +343,10 @@
     <Page Include="Vues\ChatView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\ChatPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vues\Popups\ClassPopup.xaml">
       <SubType>Designer</SubType>

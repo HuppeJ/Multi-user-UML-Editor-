@@ -126,7 +126,16 @@ class LoginActivity:Activity(){
     private fun createUser(){
         val intent = Intent(this, CreateUserActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-        startActivity(intent)
+        startActivityForResult(intent, 0)
+//        startActivity(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == RESULT_OK){
+            finish()
+        }
+
     }
 
     // TODO remove, it's temporary for testing
@@ -139,8 +148,9 @@ class LoginActivity:Activity(){
         val obj: Response = gson.fromJson(it[0].toString())
         if(obj.isLoginSuccessful){
             UserHolder.getInstance().username = username
-            val intent = Intent(this, GalleryActivity::class.java)
-            startActivity(intent)
+            finish()
+//            val intent = Intent(this, GalleryActivity::class.java)
+//            startActivity(intent)
         } else {
             runOnUiThread{
                 progressBar?.visibility = View.GONE
@@ -148,6 +158,11 @@ class LoginActivity:Activity(){
             }
 
         }
+    }
+
+    override fun onBackPressed() {
+        socket?.disconnect()
+        super.onBackPressed()
     }
 
     private inner class Response internal constructor(var isLoginSuccessful: Boolean)

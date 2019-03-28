@@ -713,8 +713,8 @@ namespace PolyPaint.CustomInk
                     newStrokes.Add(newShapeStroke);
                 }
             }
-
             Select(newStrokes);
+            SelectedStrokes = newStrokes;
         }
         #endregion
 
@@ -734,6 +734,8 @@ namespace PolyPaint.CustomInk
 
             // cut selection from canvas
             CutSelection();
+
+            SelectedStrokes.Clear();
 
             // To delete the adorners
             RefreshChildren();
