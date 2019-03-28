@@ -21,7 +21,7 @@ namespace PolyPaint.Vues
             chatButton.Visibility = Visibility.Hidden;
             chatButton.IsHitTestVisible = false;
 
-            var wind = new ChatPopup(this.ChatView, this);
+            var wind = new ChatPopup(this.ChatView, this, ((Button)sender).Tag);
 
             wind.Show();
         }

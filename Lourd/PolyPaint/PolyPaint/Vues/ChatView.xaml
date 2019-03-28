@@ -203,7 +203,7 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Name="AuthorName" Text="{Binding sender}" Grid.Row="0" Grid.Column="0"/>
-                <Border Name="MessageBorder" MinHeight="40" MinWidth="230" BorderThickness="1" Background="#EFEBE9" 
+                <Border Name="MessageBorder" MinHeight="40" MinWidth="200" BorderThickness="1" Background="#EFEBE9" 
                     Margin="10,0,60,10" BorderBrush="#BCAAA4" CornerRadius="4" SnapsToDevicePixels="True"
                     HorizontalAlignment="Left" Grid.Row="1" Grid.Column="0">
                     <Grid>

@@ -30,7 +30,7 @@ namespace PolyPaint.Vues.Popups
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            grid.Children.Remove(this.chatUserControl);
+            grid.Children.Remove(chatUserControl);
 
             drawingChatView.IntegrateChat(chatUserControl);
             //this.Close();
@@ -38,9 +38,10 @@ namespace PolyPaint.Vues.Popups
             //Do whatever you want here..
         }
 
-        public ChatPopup(UserControl control, DrawingChatView drawingChatView)
+        public ChatPopup(UserControl control, DrawingChatView drawingChatView, object datacontext)
             : this()
         {
+            DataContext = datacontext;
             this.chatUserControl = control;
             this.drawingChatView = drawingChatView;
 

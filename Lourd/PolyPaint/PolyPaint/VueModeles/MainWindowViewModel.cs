@@ -370,22 +370,6 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
-        #region GoToChatCommand
-        private ICommand _goToChatCommand;
-        public ICommand GoToChatCommand
-        {
-            get
-            {
-                return _goToChatCommand ?? (_goToChatCommand = new RelayCommand<Object>(GoToChat));
-            }
-        }
-
-        private void GoToChat(object o)
-        {
-            UserMode = UserModes.Chat;
-        }
-        #endregion
-
         #region JoinChatroomCommand
         private ICommand _joinChatroomCommand;
         public ICommand JoinChatroomCommand
