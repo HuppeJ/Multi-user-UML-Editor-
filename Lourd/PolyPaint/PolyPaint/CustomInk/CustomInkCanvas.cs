@@ -340,10 +340,20 @@ namespace PolyPaint.CustomInk
             double heightRatio = e.NewRectangle.Height / e.OldRectangle.Height;
             double widthRatio = e.NewRectangle.Width / e.OldRectangle.Width;
 
+            double deltaX = e.NewRectangle.X - e.OldRectangle.X;
+            double deltaY = e.NewRectangle.Y - e.OldRectangle.Y;
+
             foreach(CustomStroke stroke in strokes)
             {
                 if (!stroke.isLinkStroke())
                 {
+                    ShapeStroke shape = stroke as ShapeStroke;
+                    shape.shapeStyle.width *= widthRatio;
+                    shape.shapeStyle.height *= heightRatio;
+                    shape.shapeStyle.coordinates.x += deltaX;
+                    shape.shapeStyle.coordinates.y += deltaY;
+
+                    /*
                     (stroke as ShapeStroke).shapeStyle.width *= widthRatio;
                     (stroke as ShapeStroke).shapeStyle.height *= heightRatio;
 
@@ -912,6 +922,8 @@ namespace PolyPaint.CustomInk
             }
             else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
             {
+                selectionPath.Segments = new PathSegmentCollection();
+                selectionPath.Segments.Add(new LineSegment(e.GetPosition(this), true));
                 beingSelected = new StrokeCollection();
                 foreach (CustomStroke stroke in Strokes)
                 {
@@ -942,20 +954,23 @@ namespace PolyPaint.CustomInk
             }
             else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
             {
-                beingSelected = new StrokeCollection();
-                foreach (CustomStroke stroke in Strokes)
+                if (selectionPath.Segments.Any())
                 {
-                    if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    beingSelected = new StrokeCollection();
+                    foreach (CustomStroke stroke in Strokes)
                     {
-                        beingSelected.Add(stroke);
+                        if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                        {
+                            beingSelected.Add(stroke);
+                        }
                     }
-                }
-                if (beingSelected.Any())
-                {
-                    Strokes.Remove(beingSelected);
-                    DrawingService.RemoveShapes(beingSelected);
-                    RefreshChildren();
-                    beingSelected.Clear();
+                    if (beingSelected.Any())
+                    {
+                        Strokes.Remove(beingSelected);
+                        DrawingService.RemoveShapes(beingSelected);
+                        RefreshChildren();
+                        beingSelected.Clear();
+                    }
                 }
             }
             else
@@ -975,7 +990,8 @@ namespace PolyPaint.CustomInk
                         SelectedStrokes.Clear();
                         Select(beingSelected);
                         selectionPath.Segments.Clear();
-                    } else
+                    }
+                    else
                     {
                         beingSelected.Clear();
                         SelectedStrokes.Clear();
@@ -993,6 +1009,10 @@ namespace PolyPaint.CustomInk
                         selectionPath.Segments.Clear();
                     }
                 }
+            }
+            else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
+            {
+                selectionPath.Segments.Clear();
             }
             else
             {
