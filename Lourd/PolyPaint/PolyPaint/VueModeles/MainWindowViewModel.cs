@@ -77,6 +77,17 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private Room _selectedJoinRoom;
+        public Room selectedJoinRoom
+        {
+            get { return _selectedJoinRoom; }
+            set
+            {
+                _selectedJoinRoom = value;
+                OnPropertyChanged();
+            }
+        }
+
         private UserModes _userMode;
         public UserModes UserMode
         {
@@ -667,6 +678,7 @@ namespace PolyPaint.VueModeles
                 {
                     ctxTaskFactory.StartNew(() => room.Chatter.Add(cm)).Wait();
                 }
+                OnPropertyChanged("selectedRoom");
             }
         }
 
