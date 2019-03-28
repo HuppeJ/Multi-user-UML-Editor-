@@ -477,5 +477,9 @@ namespace PolyPaint.Services
             return list;
         }
        
+        public static void AddClassFromCode(InkCanvasStrokeCollectedEventArgs eventArgs)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+        }
     }
 }

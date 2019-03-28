@@ -1,6 +1,7 @@
 ﻿using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace PolyPaint.Vues
 
         public event PropertyChangedEventHandler PropertyChanged;
         private WindowDrawing windowDrawing = null;
+        List<string> baseMethods = new List<string>();
 
         public ClassFromCodePopup()
         {
@@ -30,6 +32,9 @@ namespace PolyPaint.Vues
             }
 
             windowDrawing = (WindowDrawing)parent;
+
+            string[] methods = { "Equals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone", "ToString" };
+            baseMethods.AddRange(methods);
         }
 
         private void GenerateClass(object sender, EventArgs e)
@@ -59,10 +64,48 @@ namespace PolyPaint.Vues
             foreach (Type type in types)
             {
                 var name = type.Name;
-                var privateProperties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance);
-                var publicProperties = type.GetProperties();
-                var privateMethods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
-                var publicMethods = type.GetMethods();
+                PropertyInfo[] privateProperties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance);
+                PropertyInfo[] publicProperties = type.GetProperties();
+                List<string> properties = new List<string>();
+
+                foreach (PropertyInfo info in publicProperties)
+                {
+                    properties.Add("+" + info.Name + ": " + info.PropertyType);
+                }
+
+                foreach (PropertyInfo info in privateProperties)
+                {
+                    properties.Add("-" + info.Name + ": " + info.PropertyType);
+                }
+
+                MethodInfo[] privateMethods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo[] publicMethods = type.GetMethods();
+                List<string> methods = new List<string>();
+
+                foreach (MethodInfo info in publicMethods)
+                {
+                    if (!baseMethods.Contains(info.Name))
+                    {
+                        methods.Add("+" + info.Name + ": " + info.ReturnType.Name);
+                    }
+                }
+
+                foreach (MethodInfo info in privateMethods)
+                {
+                    if (!baseMethods.Contains(info.Name))
+                    {
+                        if (info.IsPrivate)
+                        {
+                            methods.Add("-" + info.Name + ": " + info.ReturnType.Name);
+                        }
+                        else
+                        {
+                            methods.Add("#" + info.Name + ": " + info.ReturnType.Name);
+                        }
+                    }
+                }
+
+                windowDrawing.DrawClass(name, properties, methods);
             }
         }
 
