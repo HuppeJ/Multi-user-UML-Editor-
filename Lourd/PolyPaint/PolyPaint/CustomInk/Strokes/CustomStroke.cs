@@ -4,6 +4,7 @@ using System.Windows;
 using System;
 using PolyPaint.Templates;
 using PolyPaint.CustomInk.Strokes;
+using PolyPaint.Services;
 
 namespace PolyPaint.CustomInk
 {
@@ -12,9 +13,12 @@ namespace PolyPaint.CustomInk
         public Guid guid;
         public string name;
         public int strokeType;
+        public string owner = null;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
+            if(ConnectionService.username != null)
+                owner = ConnectionService.username;
         }
 
         public virtual Point GetCenter()

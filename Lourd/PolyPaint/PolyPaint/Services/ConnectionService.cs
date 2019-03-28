@@ -15,7 +15,7 @@ namespace PolyPaint.Services
         public static event Action ConnectionReconnected;
         public static event Action ConnectionClosed;
         
-        public static string username;
+        public static string username = null;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         // private static string url = "https://projet-3-228722.appspot.com";

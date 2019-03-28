@@ -33,6 +33,8 @@ namespace PolyPaint.Services
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
         public static Templates.Canvas currentCanvas;
+        public static List<string> remoteSelectedStrokes = new List<string>();
+        public static List<string> localSelectedStrokes = new List<string>();
 
         public DrawingService()
         {
@@ -124,6 +126,7 @@ namespace PolyPaint.Services
                 if (!username.Equals((string)response.username))
                 {
                     CustomStroke customStroke = createShapeStroke(response.forms[0]);
+                    customStroke.owner = response.username;
                     InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
                     Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
                 }
@@ -164,7 +167,10 @@ namespace PolyPaint.Services
                     StrokeCollection strokes = new StrokeCollection();
                     foreach (dynamic shape in response.forms)
                     {
-                        strokes.Add(createShapeStroke(shape));
+                        ShapeStroke stroke = createShapeStroke(shape);
+                        strokes.Add(stroke);
+                        if(!remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                            remoteSelectedStrokes.Add(stroke.guid.ToString());
                         Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(strokes); }), DispatcherPriority.Render);
                     }
                 }
@@ -178,7 +184,10 @@ namespace PolyPaint.Services
                     StrokeCollection strokes = new StrokeCollection();
                     foreach (dynamic shape in response.forms)
                     {
-                        strokes.Add(createShapeStroke(shape));
+                        ShapeStroke stroke = createShapeStroke(shape);
+                        strokes.Add(stroke);
+                        if(remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                            remoteSelectedStrokes.Remove(stroke.guid.ToString());
                         Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(strokes); }), DispatcherPriority.Render);
                     }
                 }
@@ -277,11 +286,19 @@ namespace PolyPaint.Services
 
         public static void SelectShapes(StrokeCollection strokes)
         {
+            foreach (CustomStroke stroke in strokes)
+            {
+                localSelectedStrokes.Add(stroke.guid.ToString());
+            }
             socket.Emit("selectForms", serializer.Serialize(createUpdateFormsData(strokes)));
         }
 
         public static void DeselectShapes(StrokeCollection strokes)
         {
+            foreach (CustomStroke stroke in strokes)
+            {
+                localSelectedStrokes.Remove(stroke.guid.ToString());
+            }
             socket.Emit("deselectForms", serializer.Serialize(createUpdateFormsData(strokes)));
         }
 
