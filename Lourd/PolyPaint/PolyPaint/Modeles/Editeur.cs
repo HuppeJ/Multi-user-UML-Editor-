@@ -9,6 +9,7 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Threading;
 using PolyPaint.CustomInk;
+using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
 using PolyPaint.Services;
 
@@ -182,9 +183,15 @@ namespace PolyPaint.Modeles
             try
             {
                 isStackUpToDate = false;
-                Stroke trait = traitsRetires.Last();
+                CustomStroke trait = (CustomStroke)traitsRetires.Last();
                 traits.Add(trait);
-                DrawingService.CreateShape(trait as ShapeStroke);
+                if(trait.isLinkStroke())
+                {
+                    DrawingService.CreateLink(trait as LinkStroke);
+                } else
+                {
+                    DrawingService.CreateShape(trait as ShapeStroke);
+                }
                 traitsRetires.Remove(trait);
             }
             catch { }

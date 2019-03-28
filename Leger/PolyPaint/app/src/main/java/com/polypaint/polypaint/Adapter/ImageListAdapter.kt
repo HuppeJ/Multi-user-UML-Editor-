@@ -13,12 +13,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.polypaint.polypaint.Enum.AccessibilityTypes
 import android.graphics.drawable.BitmapDrawable
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.R
 
 
-class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, var user: String, var listener: OnItemClickListener) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(){
+class ImageListAdapter (var context: Context, var canevasList: List<Canevas>,  var listener: OnItemClickListener) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(){
 
     companion object {
         private const val VIEW_TYPE_PRIVATE = 1
@@ -97,7 +98,7 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>, va
 
         internal fun bind(canevas: Canevas, listener: OnItemClickListener) {
             itemView.setOnClickListener { listener.onItemClick(canevas) }
-            if(canevas.owner == user){
+            if(canevas.owner == UserHolder.getInstance().username){
                 nameText.text = canevas.name + " owned by you"
             } else {
                 nameText.text = canevas.name + " owned by " + canevas.owner

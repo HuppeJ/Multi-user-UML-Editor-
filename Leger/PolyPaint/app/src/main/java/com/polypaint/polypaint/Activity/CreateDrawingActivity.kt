@@ -1,11 +1,13 @@
 package com.polypaint.polypaint.Activity
 
+import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.content.Intent
 import android.text.TextUtils
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioButton
@@ -37,6 +39,7 @@ import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
 import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
+import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 
 class CreateDrawingActivity: AppCompatActivity(){
@@ -59,6 +62,12 @@ class CreateDrawingActivity: AppCompatActivity(){
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
+        toolbar_login_button.setOnClickListener {
+            val intent = Intent(this, ServerActivity::class.java)
+            startActivityForResult(intent, 0)
+//            startActivity(intent)
+        }
+
         drawer = drawer {
             primaryItem("Gallery") {
                 icon = R.drawable.ic_picture
@@ -104,6 +113,18 @@ class CreateDrawingActivity: AppCompatActivity(){
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        val app = application as PolyPaint
+        socket = app.socket
+
+        val localSocket = socket
+        toolbar_login_button.visibility = View.VISIBLE
+        if(localSocket != null && localSocket.connected()){
+            toolbar_login_button.visibility = View.INVISIBLE
+        }
+    }
+
     private fun createDrawing(){
 
         var name = nameView?.text.toString().trim()
@@ -133,8 +154,17 @@ class CreateDrawingActivity: AppCompatActivity(){
             val sendObj = gson.toJson(canvasEvent)
             Log.d("createObj", sendObj)
             socket?.emit(SocketConstants.CREATE_CANVAS, sendObj)
-            val intent = Intent(this, GalleryActivity::class.java)
+
+
+            val intent = Intent(this, DrawingActivity::class.java)
+            intent.putExtra("canevas", canevas)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
+
+//            val intent = Intent()
+//            intent.putExtra("canevas", canevas)
+//            setResult(RESULT_OK, intent)
+//            finish()
         }
 
     }

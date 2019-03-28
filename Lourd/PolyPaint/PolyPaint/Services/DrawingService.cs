@@ -18,7 +18,6 @@ namespace PolyPaint.Services
     class DrawingService: ConnectionService
     {
         public static event Action<JoinCanvasRoomResponse> JoinCanvasRoom;
-        public static event Action CanvasRoomJoined;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
@@ -29,6 +28,7 @@ namespace PolyPaint.Services
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
         public static event Action<Coordinates> OnResizeCanvas;
         public static event Action BackToGallery;
+        public static event Action SaveCanvas;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -78,7 +78,7 @@ namespace PolyPaint.Services
             
             socket.On("canvasPasswordUpdated", (data) =>
             {
-                LeaveCanvas();
+                LeaveCanvas(true);
                 Application.Current.Dispatcher.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
             });
 
@@ -235,13 +235,26 @@ namespace PolyPaint.Services
                 InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(shapeStroke);
                 Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             }
-            Application.Current.Dispatcher.Invoke(new Action(() => { CanvasRoomJoined(); }), DispatcherPriority.Render);
         }
 
-        public static void LeaveCanvas()
+        public static void LeaveCanvas(bool saveCanvas)
         {
+            if (saveCanvas)
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
             EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
             socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
+            RefreshCanvases();
+        }
+
+        public static void SendCanvas(string thumbnail)
+        {
+            Templates.Canvas canvas = new Templates.Canvas();
+            canvas.name = canvasName;
+            canvas.thumbnailLourd = thumbnail;
+            EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
+            socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
         }
 
         public static void RefreshCanvases()

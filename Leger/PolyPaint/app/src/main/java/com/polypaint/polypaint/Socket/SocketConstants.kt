@@ -107,6 +107,14 @@ class SocketConstants{
         const val DESELECT_CANVAS_RESPONSE: String = "deselectCanvasResponse"
         const val CANVAS_DESELECTED: String = "canvasDeselected"
 
+        // Messages
+
+        const val JOIN_CHATROOM: String = "joinChatroom"
+
+
+        const val SEND_MESSAGE: String = "sendMessage"
+        const val MESSAGE_SENT: String = "messageSent"
+
 
         const val JOIN_CANVAS_TEST: String = "joinCanvasTest"
         const val JOIN_CANVAS_TEST_RESPONSE: String = "joinCanvasTestResponse"
