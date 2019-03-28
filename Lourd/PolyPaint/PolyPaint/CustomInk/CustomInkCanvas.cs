@@ -305,16 +305,6 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke stroke in SelectedStrokes)
             {
                 Vector delta = new Vector(e.NewRectangle.X - e.OldRectangle.X, e.NewRectangle.Y - e.OldRectangle.Y);
-                double rotationInRad = (stroke as ShapeStroke).shapeStyle.rotation * Math.PI / 180;
-
-                double m11 = Math.Cos(-rotationInRad);
-                double m12 = -Math.Sin(-rotationInRad);
-                double m21 = Math.Sin(-rotationInRad);
-                double m22 = Math.Cos(-rotationInRad);
-
-                Matrix rotationMatrix = new Matrix(m11, m12, m21, m22, 0, 0);
-
-                delta = rotationMatrix.Transform(delta);
 
                 (stroke as ShapeStroke).shapeStyle.coordinates.x += delta.X;
                 (stroke as ShapeStroke).shapeStyle.coordinates.y += delta.Y;
@@ -809,13 +799,13 @@ namespace PolyPaint.CustomInk
 
             Children.Add(path);
             AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-            myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
 
             if (!selectedStroke.isLinkStroke())
             {
                 if (GetSelectedStrokes().Count == 1)
                 {
                     myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                    myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
                 }
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
                 /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)

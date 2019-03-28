@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="360" Margin="0" ForceCursor="True">
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="243" Margin="0" ForceCursor="True">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
                 <TextBlock>Shape name:</TextBlock>
@@ -28,7 +28,7 @@
                         MinLines="1"
                         MaxLines="1"
                         VerticalAlignment="Top"
-                        Text="{Binding ClassName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="3,0,0,0"/>
+                        Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="3,0,0,0"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
                 <TextBlock>Border style:</TextBlock>

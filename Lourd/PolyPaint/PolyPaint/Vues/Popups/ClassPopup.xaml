@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="360" Margin="0" ForceCursor="True">
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="378" Margin="0" ForceCursor="True">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
                 <TextBlock>Class name:</TextBlock>
@@ -36,7 +36,7 @@
                     MinLines="3"
                     MaxLines="3"
                     VerticalScrollBarVisibility="Visible" 
-                    Text="{Binding Attributes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    Text="{Binding Attributes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="41">
                 </TextBox>
             </StackPanel>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,0,15">
@@ -45,8 +45,13 @@
                     MinLines="3"
                     MaxLines="3"
                     VerticalScrollBarVisibility="Visible"
-                    Text="{Binding Methods, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    Text="{Binding Methods, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="41">
                 </TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                <TextBlock>Border style:</TextBlock>
+                <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LineStylesList}"
+                  SelectedValue="{Binding LineStyle}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
                 <TextBlock Margin="0,0,0,0.2" Width="72">Border color:</TextBlock>

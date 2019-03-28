@@ -38,6 +38,7 @@ namespace PolyPaint.Enums
     public enum LineStyles
     {
         FULL,
-        DASHED
+        DASHED,
+        DOTTED
     }
 }

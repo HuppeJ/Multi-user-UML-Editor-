@@ -74,15 +74,28 @@ namespace PolyPaint.CustomInk
 
             // TODO: add border weight
             pen = new Pen(borderColor, 1);
-
-            // TODO: add border style
+            
+            switch (shapeStyle.borderStyle)
+            {
+                case 0:
+                    pen.DashStyle = DashStyles.Solid;
+                    break;
+                case 1:
+                    pen.DashStyle = DashStyles.Dash;
+                    break;
+                case 2:
+                    pen.DashStyle = DashStyles.Dot;
+                    break;
+                default:
+                    pen.DashStyle = DashStyles.Solid;
+                    break;
+            }
             // pen.DashStyle = DashStyles.Dash;
 
             TransformGroup transform = new TransformGroup();
 
             transform.Children.Add(new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y));
-
-            // drawingContext.DrawRectangle(null, pen2, GetBounds());
+            
             drawingContext.PushTransform(transform);
         }
 

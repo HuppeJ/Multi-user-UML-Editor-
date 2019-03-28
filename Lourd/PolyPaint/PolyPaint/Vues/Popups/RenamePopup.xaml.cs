@@ -117,6 +117,9 @@ namespace PolyPaint.Vues
                     case "Dashed":
                         lineType = 1;
                         break;
+                    case "Dotted":
+                        lineType = 2;
+                        break;
                     default:
                         lineType = 0;
                         break;
@@ -138,11 +141,14 @@ namespace PolyPaint.Vues
                 case (int)LineStyles.DASHED:
                     _lineStyle = "Dashed";
                     break;
+                case (int)LineStyles.DOTTED:
+                    _lineStyle = "Dotted";
+                    break;
                 default:
                     _lineStyle = "Full";
                     break;
             }
-            _lineStylesList = new List<string> { "Full", "Dashed" };
+            _lineStylesList = new List<string> { "Full", "Dashed", "Dotted" };
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BorderColor"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FillColor"));

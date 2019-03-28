@@ -100,10 +100,25 @@ namespace PolyPaint.CustomInk
 
         internal override bool HitTestPointIncludingEdition(Point point)
         {
-            Rect editionBorder = new Rect(shapeStyle.coordinates.x - 15, shapeStyle.coordinates.y - 15,
-                WIDTH * shapeStyle.width + 30, HEIGHT * shapeStyle.height + 30);
+            Rect bounds = GetEditingBounds();
+            return bounds.Contains(point);
+        }
+
+        private Rect GetEditingBounds()
+        {
+            Rect bounds = GetCustomBound();
             RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
-            return editionBorder.Contains(rotationTransform.Inverse.Transform(point));
+            Point topLeft = rotationTransform.Transform(bounds.TopLeft);
+            Point topRight = rotationTransform.Transform(bounds.TopRight);
+            Point bottomLeft = rotationTransform.Transform(bounds.BottomLeft);
+            Point bottomRight = rotationTransform.Transform(bounds.BottomRight);
+            double minX = Math.Min(Math.Min(Math.Min(topLeft.X, topRight.X), bottomLeft.X), bottomRight.X);
+            double maxX = Math.Max(Math.Max(Math.Max(topLeft.X, topRight.X), bottomLeft.X), bottomRight.X);
+            double minY = Math.Min(Math.Min(Math.Min(topLeft.Y, topRight.Y), bottomLeft.Y), bottomRight.Y);
+            double maxY = Math.Max(Math.Max(Math.Max(topLeft.Y, topRight.Y), bottomLeft.Y), bottomRight.Y);
+
+            bounds = new Rect(new Point(minX - 15, minY - 15), new Point(maxX + 15, maxY + 15));
+            return bounds;
         }
 
 
