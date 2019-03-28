@@ -374,12 +374,12 @@ namespace PolyPaint.Services
                 case StrokeTypes.ROLE:
                     shapeStroke = new ActorStroke(shape.ToObject<BasicShape>(), points);
                     break;
-                //case StrokeTypes.COMMENT:
-                //    customStroke = new CommentStroke(points);
-                //    break;
-                //case StrokeTypes.PHASE:
-                //    customStroke = new PhaseStroke(points);
-                //    break;
+                case StrokeTypes.COMMENT:
+                    shapeStroke = new CommentStroke(points);
+                    break;
+                case StrokeTypes.PHASE:
+                    shapeStroke = new PhaseStroke(points);
+                    break;
                 default:
                     shapeStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
                     break;
