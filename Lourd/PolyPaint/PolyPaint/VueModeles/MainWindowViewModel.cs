@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Inspired from: Meshack Musundi
  * Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
  */
@@ -25,6 +25,7 @@ namespace PolyPaint.VueModeles
         private ChatService chatService;
         private IDialogService dialogService;
         private TaskFactory ctxTaskFactory;
+        public event Action CloseChatWindow;
 
         const string EMPTY_CANVAS = "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD//2Q==";
 
@@ -51,13 +52,38 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private AsyncObservableCollection<Room> _joinableRooms = new AsyncObservableCollection<Room>();
+        public AsyncObservableCollection<Room> joinableRooms
+        {
+            get { return _joinableRooms; }
+            set
+            {
+                _joinableRooms = value;
+                OnPropertyChanged();
+            }
+        }
+
         private Room _selectedRoom;
         public Room selectedRoom
         {
             get { return _selectedRoom; }
             set
             {
-                _selectedRoom = value;
+                if(value != null)
+                {
+                    _selectedRoom = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private Room _selectedJoinRoom;
+        public Room selectedJoinRoom
+        {
+            get { return _selectedJoinRoom; }
+            set
+            {
+                _selectedJoinRoom = value;
                 OnPropertyChanged();
             }
         }
@@ -254,6 +280,8 @@ namespace PolyPaint.VueModeles
             var password = passwordBox.Password;
             ChatService.LoginUser(username, password);
             chatService.RequestChatrooms();
+            // Joins this room by default
+            chatService.JoinChatroom("MainRoom");
         }
 
         private bool CanLogin(object o)
@@ -349,8 +377,64 @@ namespace PolyPaint.VueModeles
 
         private void BackToGallery(object o)
         {
+            CloseChatWindow?.Invoke();
             DrawingService.LeaveCanvas(true);
             UserMode = UserModes.Gallery;
+        }
+        #endregion
+
+        #region JoinChatroomCommand
+        private ICommand _joinChatroomCommand;
+        public ICommand JoinChatroomCommand
+        {
+            get
+            {
+                return _joinChatroomCommand ?? (_joinChatroomCommand = new RelayCommand<Object>(JoinChatroom));
+            }
+        }
+
+        private void JoinChatroom(object o)
+        {
+            Room room = o as Room;
+            chatService.JoinChatroom(room.name);
+        }
+        #endregion
+
+        #region CreateChatroomCommand
+        private ICommand _createChatroomCommand;
+        public ICommand CreateChatroomCommand
+        {
+            get
+            {
+                return _createChatroomCommand ?? (_createChatroomCommand = new RelayCommand<Object>(CreateChatroom));
+            }
+        }
+
+        private void CreateChatroom(object o)
+        {
+            string roomName = o as string;
+            chatService.CreateChatroom(roomName);
+        }
+        #endregion
+
+        #region LeaveChatroomCommand
+        private ICommand _leaveChatroomCommand;
+        public ICommand LeaveChatroomCommand
+        {
+            get
+            {
+                return _leaveChatroomCommand ?? (_leaveChatroomCommand = new RelayCommand<Object>(LeaveChatroom));
+            }
+        }
+
+        private void LeaveChatroom(object o)
+        {
+            if(o != null)
+            {
+                Room room = o as Room;
+                chatService.LeaveChatroom(room.name);
+                rooms.Remove(room);
+            }
         }
         #endregion
 
@@ -588,20 +672,26 @@ namespace PolyPaint.VueModeles
                 isOriginNative = (message.username == username)
             };
 
-            if (!_selectedRoom.Chatter.Contains(cm)){
-                ctxTaskFactory.StartNew(() => _selectedRoom.Chatter.Add(cm)).Wait();
+            foreach (Room room in rooms)
+            {
+                if (room.name == message.chatroomName && !room.Chatter.Contains(cm))
+                {
+                    ctxTaskFactory.StartNew(() => room.Chatter.Add(cm)).Wait();
+                }
+                OnPropertyChanged("selectedRoom");
             }
-
         }
 
         private void GetChatrooms(RoomList chatrooms)
         {
+            joinableRooms = new AsyncObservableCollection<Room>();
             foreach(string room in chatrooms.chatrooms)
             {
-                Room newRoom = new Room { name = room };
+                string roomName = room.Remove(0,10);
+                Room newRoom = new Room { name = roomName };
                 if(!rooms.Contains(newRoom))
                 {
-                    rooms.Add(newRoom);
+                    joinableRooms.Add(newRoom);
                 }
             }
         }
@@ -633,7 +723,7 @@ namespace PolyPaint.VueModeles
             if (isLoginSuccessful)
             {
                 UserMode = UserModes.Gallery;
-                // selectedRoom = rooms.First();
+                selectedRoom = rooms.First();
                 IsLoggedIn = true;
             }
             else
@@ -664,13 +754,41 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                dialogService.ShowNotification("Could not join chatroom");
+                dialogService.ShowNotification("Could not join canvasroom");
             }
         }
 
         private void BackToGallery()
         {
             UserMode = UserModes.Gallery;
+        }
+
+        private void CreateRoom(CreateChatroomResponse response)
+        {
+            if (response.isCreated)
+            {
+                chatService.JoinChatroom(response.chatroomName);
+            }
+            else
+            {
+                if(response.chatroomName != "MainRoom")
+                {
+                    dialogService.ShowNotification("This room already exists");
+                }
+            }
+        }
+
+        private void JoinRoom(JoinChatroomResponse response)
+        {
+            if (response.isChatroomJoined)
+            {
+                Room room = new Room { name = response.chatroomName };
+                if (!rooms.Contains(room))
+                {
+                    rooms.Add(room);
+                }
+                selectedRoom = rooms.ElementAt(rooms.IndexOf(room));
+            }
         }
         #endregion
 
@@ -692,8 +810,10 @@ namespace PolyPaint.VueModeles
 
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;
+            chatService.RoomCreation += CreateRoom;
+            chatService.RoomJoin += JoinRoom;
 
-            //rooms.Add(new Room { name = "Everyone" });
+            rooms.Add(new Room { name = "MainRoom" });
         }
     }
 }
