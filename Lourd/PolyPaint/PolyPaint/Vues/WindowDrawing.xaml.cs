@@ -234,5 +234,19 @@ namespace PolyPaint.Vues
         {
             (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
         }
+
+        private void OpenClassPopup(object sender, EventArgs e)
+        {
+            IsEnabled = false;
+            popUpClassFromCodeVue.Initialize();
+            popUpClassFromCodeVue.CodeTextBox.Text = "";
+            popUpClassFromCode.IsOpen = true;
+        }
+
+        public void ClosePopups()
+        {
+            IsEnabled = true;
+            popUpClassFromCode.IsOpen = false;
+        }
     }
 }
