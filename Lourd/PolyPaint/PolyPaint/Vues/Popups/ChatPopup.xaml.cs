@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.VueModeles;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -38,14 +39,21 @@ namespace PolyPaint.Vues.Popups
             //Do whatever you want here..
         }
 
+        private void CloseChatWindow()
+        {
+            Close();
+        }
+
         public ChatPopup(UserControl control, DrawingChatView drawingChatView, object datacontext)
             : this()
         {
             DataContext = datacontext;
-            this.chatUserControl = control;
+            chatUserControl = control;
             this.drawingChatView = drawingChatView;
 
-            grid.Children.Add(this.chatUserControl);
+            grid.Children.Add(chatUserControl);
+
+            ((MainWindowViewModel)datacontext).CloseChatWindow += CloseChatWindow;
         }
 
         
