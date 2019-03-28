@@ -123,6 +123,11 @@
                     </StackPanel>
                 </Button>
 
+                <Button x:Name="ClassFromCodeButton" Width="40" Height="40" Margin="5" Padding="0,0"
+                        Click="OpenClassPopup"
+                        Content="Code">
+                </Button>
+
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
@@ -157,6 +162,9 @@
         </Popup>
         <Popup x:Name="popUpLink" Placement="Center">
             <Vues:LinkPopup x:Name="popUpLinkVue"/>
+        </Popup>
+        <Popup x:Name="popUpClassFromCode" Placement="Center">
+            <Vues:ClassFromCodePopup x:Name="popUpClassFromCodeVue"/>
         </Popup>
         
         <Border DockPanel.Dock="Bottom" Height="25" BorderThickness="0,0.75,0,0.75" BorderBrush="#77000000">

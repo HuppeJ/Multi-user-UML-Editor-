@@ -279,6 +279,9 @@
     <Compile Include="Vues\CreateUserView.xaml.cs">
       <DependentUpon>CreateUserView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\ClassFromCodePopup.xaml.cs">
+      <DependentUpon>ClassFromCodePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Popups\RenamePopup.xaml.cs">
       <DependentUpon>RenamePopup.xaml</DependentUpon>
     </Compile>
@@ -391,6 +394,10 @@
     <Page Include="Vues\CreateUserView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\Popups\ClassFromCodePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\Popups\RenamePopup.xaml">
       <SubType>Designer</SubType>
