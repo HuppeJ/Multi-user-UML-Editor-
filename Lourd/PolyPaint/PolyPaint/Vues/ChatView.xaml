@@ -2,7 +2,7 @@
     Inspired from: Meshack Musundi
     Source: https://www.codeproject.com/Articles/1181555/SignalChat-WPF-SignalR-Chat-Application
 -->
-    <UserControl x:Class="PolyPaint.Vues.ChatView"
+<UserControl x:Class="PolyPaint.Vues.ChatView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,6 +10,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:utils1="clr-namespace:PolyPaint.Utilitaires"
+             xmlns:Vues="clr-namespace:PolyPaint.Vues"
              Background="{DynamicResource MaterialDesignPaper}"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="650"
@@ -202,7 +203,7 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Name="AuthorName" Text="{Binding sender}" Grid.Row="0" Grid.Column="0"/>
-                <Border Name="MessageBorder" MinHeight="40" MinWidth="280" BorderThickness="1" Background="#EFEBE9" 
+                <Border Name="MessageBorder" MinHeight="40" MinWidth="200" BorderThickness="1" Background="#EFEBE9" 
                     Margin="10,0,60,10" BorderBrush="#BCAAA4" CornerRadius="4" SnapsToDevicePixels="True"
                     HorizontalAlignment="Left" Grid.Row="1" Grid.Column="0">
                     <Grid>
@@ -282,14 +283,24 @@
                      ItemContainerStyle="{DynamicResource roomsListBoxItemStyle}"
                      SelectedItem="{Binding selectedRoom}"                     
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,40"/>
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,77"
+                     VerticalAlignment="Top"
+                     MaxHeight="300"/>
 
         </Border>
         <!--Back to gallery button-->
-        <Button x:Name="LogoutButton" Margin="10,10,10,5"
+        <Button x:Name="LogoutButton" Margin="5,30,5,5"
                 Content="Back to Gallery"
                 Command="{Binding BackToGalleryCommand}" Grid.Row="1"/>
-
+        <Button x:Name="CreateChatroomButton" Margin="60,5,60,50" Grid.Row="1" Padding="0"
+            Content="Create"
+            Click="CreateRoomPopup"/>
+        <Button x:Name="JoinChatroomButton" Margin="5,5,120,50" Grid.Row="1" Padding="0"
+            Content="Join"
+            Click="JoinRoomPopup" Tag="{Binding joinableRooms}"/>
+        <Button x:Name="LeaveChatroomButton" Margin="120,5,5,50" Grid.Row="1" Padding="0"
+            Content="Leave"
+            Command="{Binding LeaveChatroomCommand}" CommandParameter="{Binding selectedRoom}"/>
         <!--Messages-->
         <ItemsControl x:Name="MessagesItemsCtrl" Grid.Column="1" Margin="0,5,0,0" 
                       ItemsSource="{Binding selectedRoom.Chatter}" 
@@ -311,11 +322,11 @@
                 BorderBrush="{DynamicResource MaterialDesignDivider}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width = "*"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="50" MinWidth="50"/>
                 </Grid.ColumnDefinitions>
                 <!--Message-->
-                <Border Margin="10,10,0,10" MaxHeight="80"
+                <Border Margin="10,10,0,10" MaxHeight="40"
                         BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignDivider}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -323,7 +334,7 @@
                             <ColumnDefinition Width="30"/>
                         </Grid.ColumnDefinitions>
                         <!--Text-->
-                        <TextBox x:Name="MessageTxtBox" BorderBrush="Transparent"
+                        <TextBox x:Name="MessageTxtBox" BorderBrush="Transparent" MaxHeight="25"
                                  TextWrapping="Wrap" AcceptsReturn="True" CaretBrush="#7F000000"
                                  VerticalScrollBarVisibility="Auto"
                                  Text="{Binding textMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2">
@@ -340,5 +351,13 @@
                         FocusManager.FocusedElement="{Binding ElementName=MessageTxtBox}"/>
             </Grid>
         </Border>
+        
+        <Popup x:Name="popUpCreateRoom" Placement="Center">
+            <Vues:CreateRoomPopup x:Name="popUpCreateRoomVue"/>
+        </Popup>
+        <Popup x:Name="popUpJoinRoom" Placement="Center">
+            <Vues:JoinRoomPopup x:Name="popUpJoinRoomVue"/>
+        </Popup>
+        
     </Grid>
 </UserControl>
