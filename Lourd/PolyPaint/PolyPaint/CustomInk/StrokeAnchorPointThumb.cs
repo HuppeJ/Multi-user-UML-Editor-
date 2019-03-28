@@ -17,4 +17,20 @@ namespace PolyPaint.CustomInk
 
 
     }
+
+    public class StrokeResizePointThumb : Thumb
+    {
+        public ShapeStroke stroke;
+        public CustomInkCanvas canvas;
+        public int number;
+
+        public StrokeResizePointThumb(ShapeStroke stroke, CustomInkCanvas canvas, int number) : base()
+        {
+            this.stroke = stroke;
+            this.canvas = canvas;
+            this.number = number;
+        }
+
+
+    }
 }

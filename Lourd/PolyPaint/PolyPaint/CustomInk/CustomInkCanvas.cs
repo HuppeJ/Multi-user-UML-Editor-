@@ -39,8 +39,6 @@ namespace PolyPaint.CustomInk
         
         Point oldLeftTopPoint = new Point(0, 0);
         Point newLeftTopPoint = new Point(0, 0);
-        double heightRatio = 1;
-        double widthRatio = 1;
 
 
         public List<string> remoteSelectionIds = new List<string>();
@@ -330,16 +328,14 @@ namespace PolyPaint.CustomInk
             {
                 DrawingService.DeselectShapes(strokesToRemove);
             }
-            if (GetSelectedStrokes().Count > 1)
-            {
-                ResizeEnabled = false;
-            } else if (GetSelectedStrokes().Count == 1 && 
+            if (GetSelectedStrokes().Count == 1 && 
                        GetSelectedStrokes()[0] is LinkStroke && 
-                       (GetSelectedStrokes()[0] as LinkStroke).isAttached()){
-                ResizeEnabled = false;
-            }
-            {
+                       !(GetSelectedStrokes()[0] as LinkStroke).isAttached()){
                 ResizeEnabled = true;
+            }
+            else
+            {
+                ResizeEnabled = false;
             }
             RefreshChildren();
         }
@@ -373,6 +369,28 @@ namespace PolyPaint.CustomInk
             RefreshChildren();
         }
 
+        public void ResizeShape(ShapeStroke shape, RectangleGeometry NewRectangle, RectangleGeometry OldRectangle)
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+
+            double heightRatio = NewRectangle.Rect.Height / OldRectangle.Rect.Height;
+            double widthRatio = NewRectangle.Rect.Width / OldRectangle.Rect.Width;
+
+            double deltaX = NewRectangle.Bounds.X - OldRectangle.Bounds.X;
+            double deltaY = NewRectangle.Bounds.Y - OldRectangle.Bounds.Y;
+
+            shape.shapeStyle.width *= widthRatio;
+            shape.shapeStyle.height *= heightRatio;
+            shape.shapeStyle.coordinates.x += deltaX;
+            shape.shapeStyle.coordinates.y += deltaY;
+
+            Stroke newStroke = shape.Clone();
+            StrokeCollection newStrokes = new StrokeCollection { newStroke };
+            ReplaceStrokes(shape, newStrokes);
+
+            Select(new StrokeCollection { newStroke });
+        }
+
         protected override void OnSelectionResized(EventArgs e)
         {
             RefreshLinks(false);
@@ -385,73 +403,14 @@ namespace PolyPaint.CustomInk
             // Update selected strokes height and width
             StrokeCollection strokes = GetSelectedStrokes();
 
-            heightRatio = e.NewRectangle.Height / e.OldRectangle.Height;
-            widthRatio = e.NewRectangle.Width / e.OldRectangle.Width;
-
-            double deltaX = e.NewRectangle.X - e.OldRectangle.X;
-            double deltaY = e.NewRectangle.Y - e.OldRectangle.Y;
-
             foreach(CustomStroke stroke in strokes)
             {
-                if (!stroke.isLinkStroke())
-                {
-                    ShapeStroke shape = stroke as ShapeStroke;
-                    shape.shapeStyle.width *= widthRatio;
-                    shape.shapeStyle.height *= heightRatio;
-                    shape.shapeStyle.coordinates.x += deltaX;
-                    shape.shapeStyle.coordinates.y += deltaY;
-
-                    /*
-                    (stroke as ShapeStroke).shapeStyle.width *= widthRatio;
-                    (stroke as ShapeStroke).shapeStyle.height *= heightRatio;
-
-                    RotateTransform oldRotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation,
-                                                             (stroke as ShapeStroke).GetCenter().X,
-                                                             (stroke as ShapeStroke).GetCenter().Y);
-
-                    RotateTransform newRotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation,
-                                                             e.NewRectangle.Left + e.NewRectangle.Width / 2,
-                                                             e.NewRectangle.Top + e.NewRectangle.Height / 2);
-
-                    Point oldCorner = oldRotation.Inverse.Transform(e.OldRectangle.TopLeft);
-                    Point newCorner = newRotation.Inverse.Transform(e.NewRectangle.TopLeft);
-                    double deltaX = newCorner.X - oldCorner.X;
-                    double deltaY = newCorner.Y - oldCorner.Y;
-
-                    (stroke as ShapeStroke).shapeStyle.coordinates.x += deltaX;
-                    (stroke as ShapeStroke).shapeStyle.coordinates.y += deltaX;
-
-
-
-                    /*Point newRectCenter = new Point(e.NewRectangle.Left + e.NewRectangle.Width / 2,
-                                                    e.NewRectangle.Top + e.NewRectangle.Height / 2);
-
-                    Point oldRectCenter = new Point(e.OldRectangle.Left + e.OldRectangle.Width / 2,
-                                                    e.OldRectangle.Top + e.OldRectangle.Height / 2);
-
-                    Vector delta = new Vector(newRectCenter.X  - oldRectCenter.X, newRectCenter.Y - oldRectCenter.Y);
-                    double rotationInRad = (stroke as ShapeStroke).shapeStyle.rotation * Math.PI / 180;
-
-                    double m11 = Math.Cos(-rotationInRad);
-                    double m12 = -Math.Sin(-rotationInRad);
-                    double m21 = Math.Sin(-rotationInRad);
-                    double m22 = Math.Cos(-rotationInRad);
-
-                    Matrix rotationMatrix = new Matrix(m11, m12, m21, m22, 0, 0);
-
-                    delta = rotationMatrix.Transform(delta);
-
-                    (stroke as ShapeStroke).shapeStyle.coordinates.x += delta.X;
-                    (stroke as ShapeStroke).shapeStyle.coordinates.y += delta.Y;*/
-                } else
-                {
                     LinkStroke linkStroke = stroke as LinkStroke;
 
                     if (!linkStroke.isAttached())
                     {
                         linkStroke.updatePositionResizeNotAttached(e.NewRectangle);
                     }
-                }
             }
         }
 
@@ -855,8 +814,9 @@ namespace PolyPaint.CustomInk
             {
                 if (GetSelectedStrokes().Count == 1)
                 {
-                    myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                     myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                    myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                    myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
                 }
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
                 /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
