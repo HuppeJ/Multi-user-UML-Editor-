@@ -4,7 +4,6 @@ using PolyPaint.Services;
 using PolyPaint.Templates;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,8 +14,6 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 using Path = System.Windows.Shapes.Path;
 
 namespace PolyPaint.CustomInk
@@ -351,10 +348,20 @@ namespace PolyPaint.CustomInk
                     (stroke as ShapeStroke).shapeStyle.coordinates.y += delta.Y;
                 } else
                 {
-                    foreach (Coordinates point in (stroke as LinkStroke).path)
+                    LinkStroke linkStroke = stroke as LinkStroke;
+                    for (int i = 0; i < linkStroke.path.Count; i++)
                     {
-                        point.x += delta.X;
-                        point.y += delta.Y;
+                        if(i == 0 && linkStroke.isAttached() && linkStroke.from?.formId != null)
+                        {
+                            continue;
+                        }
+                        if (i == linkStroke.path.Count - 1 && linkStroke.isAttached() && linkStroke.to?.formId != null)
+                        {
+                            continue;
+                        }
+                        Coordinates coords = (stroke as LinkStroke).path[i];
+                        coords.x += delta.X;
+                        coords.y += delta.Y;
                     }
                 }
             }
@@ -830,8 +837,9 @@ namespace PolyPaint.CustomInk
                     myAdornerLayer.Add(new LinkRotateAdorner(path, selectedStroke as LinkStroke, this));
                 }
                 myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
+                myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
             }
-      
+
         }
 
         private void AddRemoteSelectionAdorner(CustomStroke stroke)

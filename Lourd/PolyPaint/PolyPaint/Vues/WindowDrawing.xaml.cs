@@ -268,5 +268,33 @@ namespace PolyPaint.Vues
         {
             (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
         }
+
+        private void OpenClassPopup(object sender, EventArgs e)
+        {
+            IsEnabled = false;
+            popUpClassFromCodeVue.Initialize();
+            popUpClassFromCodeVue.CodeTextBox.Text = "";
+            popUpClassFromCode.IsOpen = true;
+        }
+
+        public void ClosePopups()
+        {
+            IsEnabled = true;
+            popUpClassFromCode.IsOpen = false;
+        }
+
+        public void DrawClass(string name, List<string> properties, List<string> methods)
+        {
+            StylusPointCollection stylusPoints = new StylusPointCollection();
+            stylusPoints.Add(new StylusPoint(10, 10));
+            ClassStroke classStroke = new ClassStroke(stylusPoints);
+
+            classStroke.name = name;
+            classStroke.attributes = properties;
+            classStroke.methods = methods;
+
+            InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(classStroke);
+            DrawingService.AddClassFromCode(eventArgs);
+        }
     }
 }

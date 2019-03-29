@@ -209,6 +209,19 @@ namespace PolyPaint.VueModeles
                 OnPropertyChanged();
             }
         }
+
+        private string _classCode = "";
+        public string ClassCode
+        {
+            get { return _classCode; }
+            set
+            {
+                if (_classCode == value) return;
+
+                _classCode = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Connect Command
