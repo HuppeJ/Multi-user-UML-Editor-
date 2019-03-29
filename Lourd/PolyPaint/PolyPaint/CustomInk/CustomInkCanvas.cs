@@ -383,8 +383,32 @@ namespace PolyPaint.CustomInk
             double heightRatio = NewRectangle.Rect.Height / OldRectangle.Rect.Height;
             double widthRatio = NewRectangle.Rect.Width / OldRectangle.Rect.Width;
 
-            double deltaX = NewRectangle.Bounds.X - OldRectangle.Bounds.X;
-            double deltaY = NewRectangle.Bounds.Y - OldRectangle.Bounds.Y;
+            Point topLeft = NewRectangle.Transform.Transform(NewRectangle.Rect.TopLeft);
+            Point topRight = NewRectangle.Transform.Transform(NewRectangle.Rect.TopRight);
+            Point bottomLeft = NewRectangle.Transform.Transform(NewRectangle.Rect.BottomLeft);
+            Point bottomRight = NewRectangle.Transform.Transform(NewRectangle.Rect.BottomRight);
+            PointCollection pts = new PointCollection { topLeft, topRight, bottomLeft, bottomRight };
+            
+            double maxX = -999999999;
+            double maxY = -999999999;
+            double minX = 999999999;
+            double minY = 999999999;
+            foreach (Point point in pts)
+            {
+                if (point.X < minX)
+                    minX = point.X;
+                if (point.X > maxX)
+                    maxX = point.X;
+                if (point.Y < minY)
+                    minY = point.Y;
+                if (point.Y > maxY)
+                    maxY = point.Y;
+            }
+            Point newCenter = new Point((maxX - minX) / 2 + minX, (maxY - minY) / 2 + minY);
+            Point oldCenter = new Point(NewRectangle.Rect.X + NewRectangle.Rect.Width / 2, NewRectangle.Rect.Y + NewRectangle.Rect.Height / 2);
+
+            double deltaX = newCenter.X - oldCenter.X;
+            double deltaY = newCenter.Y - oldCenter.Y;
 
             shape.shapeStyle.width *= widthRatio;
             shape.shapeStyle.height *= heightRatio;
