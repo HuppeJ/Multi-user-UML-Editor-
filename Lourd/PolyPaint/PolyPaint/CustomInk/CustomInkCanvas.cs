@@ -869,8 +869,7 @@ namespace PolyPaint.CustomInk
 
             Children.Add(path);
             AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-            // myAdornerLayer.Add(new RemoteSelectionAddorner(path, stroke, this));
-            myAdornerLayer.Add(new RotateAdorner(path, stroke, this));
+            myAdornerLayer.Add(new RemoteSelectionAdorner(path, stroke, this));
         }
 
         public void addAnchorPoints()
