@@ -171,6 +171,15 @@ namespace PolyPaint.Vues
             }
         }
 
+        public void DeleteSelection()
+        {
+            StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
+            if (strokes.Count == 1)
+            {
+                surfaceDessin.DeleteStrokes(strokes);
+            }
+        }
+
         public void Rename(string text, Color borderColor, Color fillColor, int lineStyle )
         {
             popUpName.IsOpen = false;

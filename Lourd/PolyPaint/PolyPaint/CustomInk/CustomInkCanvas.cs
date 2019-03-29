@@ -776,8 +776,16 @@ namespace PolyPaint.CustomInk
 
         internal void DeleteStrokes(StrokeCollection selectedStrokes)
         {
+            foreach (CustomStroke stroke in selectedStrokes)
+            {
+                if(Strokes.Contains(stroke))
+                {
+                    Strokes.Remove(stroke);
+                }
+            }
             UpdateAnchorPointsAndLinks(selectedStrokes);
             SelectedStrokes.Clear();
+            OnSelectionChanged(new EventArgs());
             RefreshChildren();
             DrawingService.RemoveShapes(selectedStrokes);
         }
