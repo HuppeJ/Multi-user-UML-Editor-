@@ -37,9 +37,6 @@ namespace PolyPaint.CustomInk
         Point oldLeftTopPoint = new Point(0, 0);
         Point newLeftTopPoint = new Point(0, 0);
 
-
-        public List<string> remoteSelectionIds = new List<string>();
-
         #region Dictonary
         public void AddStroke(CustomStroke stroke)
         {
@@ -692,11 +689,12 @@ namespace PolyPaint.CustomInk
         public void PasteStrokes()
         {
             StrokeCollection strokes = GetSelectedStrokes();
-
+            bool isClipboard = false;
             if (strokes.Count == 0)
             {
                 // strokes from clipboard will be pasted
                 strokes = clipboard;
+                isClipboard = true;
             }
 
             StrokeCollection newStrokes = new StrokeCollection();
@@ -722,19 +720,23 @@ namespace PolyPaint.CustomInk
                     // call DrawingService
                 } else
                 {
-                    CustomStroke newStroke = stroke.Clone() as CustomStroke;
+                    ShapeStroke newStroke = stroke.Clone() as ShapeStroke;
                     newStroke.guid = Guid.NewGuid();
                     // change author???
 
-                    Matrix translateMatrix = new Matrix();
-                    translateMatrix.Translate(20.0, 20.0);
-                    newStroke.Transform(translateMatrix, false);
+                    if (!isClipboard)
+                    {
+                        Matrix translateMatrix = new Matrix();
+                        translateMatrix.Translate(20.0, 20.0);
+                        newStroke.Transform(translateMatrix, false);
+                    }
 
                     ShapeStroke newShapeStroke = newStroke as ShapeStroke;
                     newShapeStroke.linksTo = new List<string> { };
                     newShapeStroke.linksFrom = new List<string> { };
                     newShapeStroke.shapeStyle = (newStroke as ShapeStroke).shapeStyle.Clone();
-                    newShapeStroke.shapeStyle.coordinates = newShapeStroke.shapeStyle.coordinates + new Point(20, 20);
+                    if(!isClipboard)
+                        newShapeStroke.shapeStyle.coordinates = newShapeStroke.shapeStyle.coordinates + new Point(20, 20);
 
                     DrawingService.CreateShape(newShapeStroke);
                     AddStroke(newShapeStroke);
@@ -750,42 +752,30 @@ namespace PolyPaint.CustomInk
         public void CutStrokes()
         {
             StrokeCollection selectedStrokes = GetSelectedStrokes();
-            UpdateAnchorPointsAndLinks(selectedStrokes);
 
-            foreach(CustomStroke stroke in selectedStrokes)
-            {
-                RemoveStroke(stroke);
-            }
-
+            DeleteStrokes(selectedStrokes);
             // put selection in clipboard to be able to paste it
             clipboard = selectedStrokes;
 
             // cut selection from canvas
             CutSelection();
-
-            SelectedStrokes.Clear();
-
-            // To delete the adorners
-            RefreshChildren();
-
-            // Send message to server that the stroke is deleted
-            DrawingService.RemoveShapes(selectedStrokes);
         }
         #endregion
 
 
         internal void DeleteStrokes(StrokeCollection selectedStrokes)
         {
+            SelectedStrokes.Clear();
+            Select(new StrokeCollection { });
+            OnSelectionChanged(new EventArgs());
             foreach (CustomStroke stroke in selectedStrokes)
             {
                 if(Strokes.Contains(stroke))
                 {
-                    Strokes.Remove(stroke);
+                    RemoveStroke(stroke);
                 }
             }
             UpdateAnchorPointsAndLinks(selectedStrokes);
-            SelectedStrokes.Clear();
-            OnSelectionChanged(new EventArgs());
             RefreshChildren();
             DrawingService.RemoveShapes(selectedStrokes);
         }
@@ -980,7 +970,8 @@ namespace PolyPaint.CustomInk
                 selectionPath.Segments.Add(new LineSegment(e.GetPosition(this), true));
                 foreach (CustomStroke stroke in Strokes)
                 {
-                    if (stroke.HitTestPoint(e.GetPosition(this)))
+                    if (stroke.HitTestPoint(e.GetPosition(this)) && 
+                        !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                     {
                         if (beingSelected.Any())
                             beingSelected.Clear();
@@ -995,7 +986,8 @@ namespace PolyPaint.CustomInk
                 beingSelected = new StrokeCollection();
                 foreach (CustomStroke stroke in Strokes)
                 {
-                    if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                    if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)) &&
+                        !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                     {
                         beingSelected.Add(stroke);
                     }
@@ -1027,7 +1019,8 @@ namespace PolyPaint.CustomInk
                     beingSelected = new StrokeCollection();
                     foreach (CustomStroke stroke in Strokes)
                     {
-                        if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)))
+                        if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)) && 
+                            !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                         {
                             beingSelected.Add(stroke);
                         }
@@ -1067,28 +1060,30 @@ namespace PolyPaint.CustomInk
                         PathGeometry geometry = new PathGeometry(figures);
                         foreach (CustomStroke stroke in Strokes)
                         {
-                            if (stroke.isLinkStroke())
-                            {
-                                bool isInside = true;
-                                foreach (Coordinates point in (stroke as LinkStroke).path)
+                            if (!DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString())) {
+                                if (stroke.isLinkStroke())
                                 {
-                                    isInside = geometry.FillContains(point.ToPoint());
-                                    if (!isInside)
+                                    bool isInside = true;
+                                    foreach (Coordinates point in (stroke as LinkStroke).path)
                                     {
-                                        break;
+                                        isInside = geometry.FillContains(point.ToPoint());
+                                        if (!isInside)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    if (isInside)
+                                    {
+                                        beingSelected.Add(stroke);
                                     }
                                 }
-                                if (isInside)
+                                else
                                 {
-                                    beingSelected.Add(stroke);
-                                }
-                            }
-                            else
-                            {
-                                RectangleGeometry strokeBound = new RectangleGeometry(stroke.GetCustomBound());
-                                if (geometry.FillContains(strokeBound))
-                                {
-                                    beingSelected.Add(stroke);
+                                    RectangleGeometry strokeBound = new RectangleGeometry(stroke.GetCustomBound());
+                                    if (geometry.FillContains(strokeBound))
+                                    {
+                                        beingSelected.Add(stroke);
+                                    }
                                 }
                             }
                         }
