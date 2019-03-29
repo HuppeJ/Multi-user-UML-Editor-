@@ -405,15 +405,11 @@ namespace PolyPaint.CustomInk
                     maxY = point.Y;
             }
             Point newCenter = new Point((maxX - minX) / 2 + minX, (maxY - minY) / 2 + minY);
-            Point oldCenter = new Point(NewRectangle.Rect.X + NewRectangle.Rect.Width / 2, NewRectangle.Rect.Y + NewRectangle.Rect.Height / 2);
-
-            double deltaX = newCenter.X - oldCenter.X;
-            double deltaY = newCenter.Y - oldCenter.Y;
 
             shape.shapeStyle.width *= widthRatio;
             shape.shapeStyle.height *= heightRatio;
-            shape.shapeStyle.coordinates.x += deltaX;
-            shape.shapeStyle.coordinates.y += deltaY;
+            shape.shapeStyle.coordinates.x = newCenter.X - NewRectangle.Rect.Width / 2;
+            shape.shapeStyle.coordinates.y = newCenter.Y - NewRectangle.Rect.Height / 2;
 
             Stroke newStroke = shape.Clone();
             StrokeCollection newStrokes = new StrokeCollection { newStroke };
