@@ -138,7 +138,7 @@ namespace PolyPaint.Modeles
                 bool isFound = false;
                 foreach (CustomStroke stroke in traits)
                 {
-                    if (stroke.owner.Equals(ConnectionService.username))
+                    if (DrawingService.localAddedStrokes.Contains(stroke.guid.ToString()))
                     {
                         strokeEmpilable = stroke;
                         isFound = true;
