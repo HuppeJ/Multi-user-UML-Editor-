@@ -12,6 +12,12 @@ export interface IEditCanevasData {
     canevas: ICanevas,  
 }
 
+export interface IResizeCanevasData {
+    username: string,
+    canevasName: string,
+    dimensions: ICoordinates,  
+}
+
 export interface IUpdateFormsData {
     username: string,
     canevasName: string,  
@@ -66,8 +72,9 @@ export interface ICanevas {
     password?: string,  
     shapes: IBasicShape[],  
     links: ILink[],
-    dimensions: number[],
+    dimensions: ICoordinates,
     thumbnailLeger: string,
+    thumbnailLourd: string
 } 
 
 export interface IClassShape extends IBasicShape {

@@ -27,6 +27,7 @@ import com.polypaint.polypaint.Fragment.RoomsListFragment
 import com.polypaint.polypaint.Model.Room
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Model.User
+import kotlinx.android.synthetic.main.toolbar.*
 
 class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListener{
     private var mMessageRecycler: androidx.recyclerview.widget.RecyclerView? = null
@@ -42,6 +43,11 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
+        toolbar_login_button.setOnClickListener {
+            val intent = Intent(this, ServerActivity::class.java)
+            startActivityForResult(intent, 0)
+//            startActivity(intent)
+        }
 
 
         drawer = drawer {

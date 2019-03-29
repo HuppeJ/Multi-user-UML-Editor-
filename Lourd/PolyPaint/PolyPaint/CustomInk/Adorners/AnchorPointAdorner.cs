@@ -18,11 +18,7 @@ namespace PolyPaint.CustomInk
         List<StrokeAnchorPointThumb> cheatAnchors;
 
         VisualCollection visualChildren;
-
-        // The center of the strokes.
-        Point center;
         
-        RotateTransform rotation;
         const int HANDLEMARGIN = 15;
 
         // The bounds of the Strokes;
@@ -30,6 +26,8 @@ namespace PolyPaint.CustomInk
         public ShapeStroke shapeStroke;
 
         public CustomInkCanvas canvas;
+
+        RotateTransform rotation;
 
         private Path linkPreview;
         LineGeometry linkPreviewGeom = new LineGeometry();
@@ -48,16 +46,15 @@ namespace PolyPaint.CustomInk
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = customStroke.GetBounds();
-            center = shapeStroke.GetCenter();
-            rotation = new RotateTransform(shapeStroke.shapeStyle.rotation, center.X, center.Y);
+            strokeBounds = customStroke.GetCustomBound();
+            Point center = customStroke.GetCenter();
+            rotation = new RotateTransform((customStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             anchors = new List<Thumb>();
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
-           
 
             foreach (Thumb anchor in anchors)
             {
@@ -87,7 +84,7 @@ namespace PolyPaint.CustomInk
                 canvas.Children.Add(cheatAnchor);
             }
 
-            strokeBounds = customStroke.GetBounds();
+            strokeBounds = customStroke.GetCustomBound();
 
         }
 
@@ -97,8 +94,6 @@ namespace PolyPaint.CustomInk
             {
                 return finalSize;
             }
-
-            center = shapeStroke.GetCenter();
 
             ArrangeAnchor(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
             ArrangeAnchor(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
@@ -117,11 +112,7 @@ namespace PolyPaint.CustomInk
                                   strokeBounds.Y + yOffset,
                                   strokeBounds.Width,
                                   strokeBounds.Height);
-
-            if (rotation != null)
-            {
-                handleRect.Transform(rotation.Value);
-            }
+            handleRect.Transform(rotation.Value);
 
             // Draws the thumb and the rectangle around the strokes.
             anchors[anchorNumber].Arrange(handleRect);

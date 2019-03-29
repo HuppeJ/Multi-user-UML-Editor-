@@ -24,5 +24,10 @@ namespace PolyPaint.Templates
         {
             return new Point(x, y);
         }
+
+        public static Coordinates operator +(Coordinates coords, Point point)
+        {
+            return new Coordinates(coords.x + point.X, coords.y + point.Y);
+        }
     }
 }

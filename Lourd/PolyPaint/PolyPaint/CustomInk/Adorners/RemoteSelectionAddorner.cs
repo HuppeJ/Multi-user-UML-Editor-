@@ -6,40 +6,39 @@ using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk
 {
-    class RemoteSelectionAddorner : Adorner
+    class RemoteSelectionAdorner : Adorner
     {
-        Rect strokeBounds = Rect.Empty;
         private CustomStroke stroke;
         private CustomInkCanvas canvas;
 
         private RectangleGeometry fill;
         private Path border;
 
-        RotateTransform rotation;
-
         VisualCollection visualChildren;
 
         // Be sure to call the base class constructor.
-        public RemoteSelectionAddorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
+        public RemoteSelectionAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
             this.stroke = stroke;
             this.canvas = canvas;
             visualChildren = new VisualCollection(this);
-            strokeBounds = stroke.GetBounds();
 
-            fill = new RectangleGeometry(strokeBounds);
+            if (stroke is ShapeStroke)
+            {
+                Point center = stroke.GetCenter();
+                RotateTransform rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+
+                fill = new RectangleGeometry(stroke.GetCustomBound(), 0, 0, rotation);
+            }
+            else
+            {
+                fill = new RectangleGeometry(stroke.GetCustomBound());
+            }
             border = new Path();
             border.Data = fill;
             border.Stroke = Brushes.Red;
-            border.StrokeThickness = 5;
-
-
-            Point center = stroke.GetCenter();
-            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
-
-            // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            border.RenderTransform = rotation;
+            border.StrokeThickness = 2;
 
             visualChildren.Add(border);
         }
@@ -54,12 +53,12 @@ namespace PolyPaint.CustomInk
         /// <returns>The actual size used. </returns>
         protected override Size ArrangeOverride(Size finalSize)
         {
-            if (strokeBounds.IsEmpty)
+            if (stroke.GetCustomBound().IsEmpty)
             {
                 return finalSize;
             }
             
-            border.Arrange(new Rect(finalSize));
+            border.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
             return finalSize;
         }
 

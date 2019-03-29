@@ -4,6 +4,7 @@ using System.Windows;
 using System;
 using PolyPaint.Templates;
 using PolyPaint.CustomInk.Strokes;
+using PolyPaint.Services;
 
 namespace PolyPaint.CustomInk
 {
@@ -12,9 +13,12 @@ namespace PolyPaint.CustomInk
         public Guid guid;
         public string name;
         public int strokeType;
+        public string owner = null;
 
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
+            if(ConnectionService.username != null)
+                owner = ConnectionService.username;
         }
 
         public virtual Point GetCenter()
@@ -27,6 +31,11 @@ namespace PolyPaint.CustomInk
                 //new Point((leftTopPoint.X + rightBottomPoint.X) /2, (leftTopPoint.Y + rightBottomPoint.Y) / 2);
 
             return center;
+        }
+
+        public virtual Rect GetCustomBound()
+        {
+            return base.GetBounds();
         }
 
         public virtual CustomStroke CloneRotated(double rotation) {
@@ -83,5 +92,11 @@ namespace PolyPaint.CustomInk
         {
             return false;
         }
+        internal virtual bool HitTestPointIncludingEdition(Point point)
+        {
+            return false;
+        }
+
+        public abstract Rect GetEditingBounds();
     }
 }

@@ -16,11 +16,11 @@
             android:theme="@style/AppTheme">
         <activity android:name=".Activity.ServerActivity"
                   android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
 
         </activity>
 
@@ -33,7 +33,13 @@
         <activity android:name=".Activity.CreateUserActivity"
                   android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".Activity.DrawingActivity"/>
-        <activity android:name=".Activity.GalleryActivity"/>
+        <activity android:name=".Activity.GalleryActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".Activity.CreateDrawingActivity"/>
 
     </application>

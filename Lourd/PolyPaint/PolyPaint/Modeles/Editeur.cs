@@ -9,6 +9,7 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Threading;
 using PolyPaint.CustomInk;
+using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
 using PolyPaint.Services;
 
@@ -25,10 +26,10 @@ namespace PolyPaint.Modeles
         public StrokeCollection traits = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
         public StrokeCollection selectedStrokes = new StrokeCollection();
-        public StrokeCollection remoteSelectedStrokes = new StrokeCollection();
 
         // TODO Remove fix
         private bool isStackUpToDate = true;
+        private CustomStroke strokeEmpilable;
 
         public event EventHandler<CustomStroke> AddStrokeFromModel;
 
@@ -127,14 +128,26 @@ namespace PolyPaint.Modeles
         // S'il y a au moins 1 trait sur la surface, il est possible d'exécuter Empiler.
         public bool PeutEmpiler(object o)
         {
-            if(!isStackUpToDate)
+            if (!isStackUpToDate)
             {
                 isStackUpToDate = true;
                 return false;
-            } else
-            {
-                return (traits.Count > 0);
             }
+            else if (traits.Count > 0)
+            {
+                bool isFound = false;
+                foreach (CustomStroke stroke in traits)
+                {
+                    if (stroke.owner.Equals(ConnectionService.username))
+                    {
+                        strokeEmpilable = stroke;
+                        isFound = true;
+                    }
+                }
+                return isFound && !DrawingService.remoteSelectedStrokes.Contains(strokeEmpilable.guid.ToString());
+            }
+            else
+                return false;
         }
         // On retire le trait le plus récent de la surface de dessin et on le place sur une pile.
         public void Empiler(object o)
@@ -142,14 +155,10 @@ namespace PolyPaint.Modeles
             try
             {
                 isStackUpToDate = false;
-                Stroke trait = traits.Last();
-                if (!remoteSelectedStrokes.Contains(trait))
-                {
-                    traitsRetires.Add(trait);
-                    traits.Remove(trait);
-                    StrokeCollection strokes = new StrokeCollection { trait };
-                    DrawingService.RemoveShapes(strokes);
-                }
+                traitsRetires.Add(strokeEmpilable);
+                traits.Remove(strokeEmpilable);
+                StrokeCollection strokes = new StrokeCollection { strokeEmpilable };
+                DrawingService.RemoveShapes(strokes);
             }
             catch { }
 
@@ -174,9 +183,15 @@ namespace PolyPaint.Modeles
             try
             {
                 isStackUpToDate = false;
-                Stroke trait = traitsRetires.Last();
+                CustomStroke trait = (CustomStroke)traitsRetires.Last();
                 traits.Add(trait);
-                DrawingService.CreateShape(trait as ShapeStroke);
+                if(trait.isLinkStroke())
+                {
+                    DrawingService.CreateLink(trait as LinkStroke);
+                } else
+                {
+                    DrawingService.CreateShape(trait as ShapeStroke);
+                }
                 traitsRetires.Remove(trait);
             }
             catch { }

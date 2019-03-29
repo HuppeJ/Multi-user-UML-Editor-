@@ -1,6 +1,7 @@
 package com.polypaint.polypaint.Activity
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -59,6 +60,7 @@ import com.github.salomonbrys.kotson.toJsonArray
 import com.polypaint.polypaint.Holder.*
 import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
 import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
+import kotlinx.android.synthetic.main.toolbar.*
 import org.w3c.dom.Comment
 
 
@@ -70,6 +72,8 @@ class DrawingActivity : AppCompatActivity(){
     var mMinimumHeight : Float = 100F
     var mMaximumWidth : Float = 1520F
     var mMaximumHeight : Float = 1200F
+
+    var lassoView: LassoView? = null
 
     var isCanvasSelectedByYou : Boolean = false
 
@@ -92,6 +96,7 @@ class DrawingActivity : AppCompatActivity(){
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
+
         drawer = drawer {
             primaryItem("Gallery") {
                 icon = R.drawable.ic_picture
@@ -174,6 +179,11 @@ class DrawingActivity : AppCompatActivity(){
             saveCanevas()
         }
 
+//        selection_button.setOnClickListener {
+//            parent_relative_layout?.addView(LassoView(this))
+//        }
+        selection_button.setOnCheckedChangeListener(onSelectLasso)
+
 
         select_canevas_button.setOnCheckedChangeListener(onSelectCanvevas)
 
@@ -232,6 +242,9 @@ class DrawingActivity : AppCompatActivity(){
         super.onResume()
         val app = application as PolyPaint
         socket = app.socket
+
+        toolbar_login_button.visibility = View.INVISIBLE
+
        // socket?.on(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
 //        socket?.on(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
         socket?.on(SocketConstants.FORMS_UPDATED, onFormsUpdated)
@@ -915,16 +928,26 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     override fun onBackPressed() {
-        // TODO : Jé's Fix
-        ViewShapeHolder.getInstance().map.clear()
+        if(drawer!!.isDrawerOpen){
+            drawer?.closeDrawer()
+        } else {
+            // TODO : Jé's Fix
+            ViewShapeHolder.getInstance().map.clear()
 
-        val gson = Gson()
-        val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, ViewShapeHolder.getInstance().canevas.password)
-        val sendObj = gson.toJson(galleryEditEvent)
-        Log.d("leaveObj", sendObj)
-        socket?.emit(SocketConstants.LEAVE_CANVAS_ROOM, sendObj)
-        finish()
-        super.onBackPressed()
+            val gson = Gson()
+            val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(
+                UserHolder.getInstance().username,
+                ViewShapeHolder.getInstance().canevas.name,
+                ViewShapeHolder.getInstance().canevas.password
+            )
+            val sendObj = gson.toJson(galleryEditEvent)
+            Log.d("leaveObj", sendObj)
+            socket?.emit(SocketConstants.LEAVE_CANVAS_ROOM, sendObj)
+            val intent = Intent(this, GalleryActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+//        finish()
+        }
     }
 
     private fun saveCanevas() {
@@ -1031,6 +1054,17 @@ class DrawingActivity : AppCompatActivity(){
         } else {
             socket?.emit(SocketConstants.DESELECT_CANVAS, dataStr)
 
+        }
+    }
+
+    open protected var onSelectLasso = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+
+        if(isChecked) {
+            lassoView = LassoView(this)
+            parent_relative_layout?.addView(lassoView)
+            parent_relative_layout?.dispatchSetSelected(false)
+        } else {
+            parent_relative_layout?.removeView(lassoView)
         }
     }
 

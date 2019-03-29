@@ -1,10 +1,12 @@
 package com.polypaint.polypaint.Activity
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.drawable.shapes.Shape
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -35,6 +37,8 @@ import com.polypaint.polypaint.ResponseModel.GetPublicCanvasResponse
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
 import kotlinx.android.synthetic.main.activity_gallery.*
+import kotlinx.android.synthetic.main.toolbar.*
+import java.lang.Error
 
 class GalleryActivity:AppCompatActivity(){
     private var drawer: Drawer? = null
@@ -51,19 +55,15 @@ class GalleryActivity:AppCompatActivity(){
 
         setContentView(R.layout.activity_gallery)
 
-        val app = application as PolyPaint
-        socket = app.socket
 
-        socket?.off(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
-        socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
-        socket?.on(SocketConstants.GET_PRIVATE_CANVAS_RESPONSE, onGetPrivateCanvasResponse)
-        socket?.on(SocketConstants.GET_PUBLIC_CANVAS_RESPONSE, onGetPublicCanvasResponse)
-
-
-        socket?.on(SocketConstants.CANVAS_CREATED, onCanvasCreated)
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
+        toolbar_login_button.setOnClickListener {
+            val intent = Intent(this, ServerActivity::class.java)
+            startActivityForResult(intent, 0)
+//            startActivity(intent)
+        }
 
 
         drawer = drawer {
@@ -94,10 +94,30 @@ class GalleryActivity:AppCompatActivity(){
         var newDrawing: Button = findViewById(R.id.create_drawing_button)
         newDrawing.setOnClickListener {
             val intent = Intent(this@GalleryActivity, CreateDrawingActivity::class.java)
+            //startActivityForResult(intent, 1)
             startActivity(intent)
         }
 
-        adapterPrivate = ImageListAdapter(this, canevasPrivate, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{
+
+    }
+
+
+
+    private fun initializeSocket(){
+        val app = application as PolyPaint
+        socket = app.socket
+
+//        socket?.off(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+        socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+        socket?.on(SocketConstants.GET_PRIVATE_CANVAS_RESPONSE, onGetPrivateCanvasResponse)
+        socket?.on(SocketConstants.GET_PUBLIC_CANVAS_RESPONSE, onGetPublicCanvasResponse)
+
+
+        socket?.on(SocketConstants.CANVAS_CREATED, onCanvasCreated)
+    }
+
+    private fun initializeAdapters(){
+        adapterPrivate = ImageListAdapter(this, canevasPrivate, object: ImageListAdapter.OnItemClickListener{
             override fun onItemClick(canevas: Canevas) {
                 selectedCanevas = canevas
 
@@ -121,7 +141,7 @@ class GalleryActivity:AppCompatActivity(){
                 }
             }
         })
-        adapterPublic = ImageListAdapter(this, canevasPublic, UserHolder.getInstance().username, object: ImageListAdapter.OnItemClickListener{
+        adapterPublic = ImageListAdapter(this, canevasPublic, object: ImageListAdapter.OnItemClickListener{
             override fun onItemClick(canevas: Canevas) {
                 selectedCanevas = canevas
 
@@ -153,6 +173,8 @@ class GalleryActivity:AppCompatActivity(){
     }
 
     private fun requestCanevas(){
+        socket?.on(SocketConstants.GET_PRIVATE_CANVAS_RESPONSE, onGetPrivateCanvasResponse)
+        socket?.on(SocketConstants.GET_PUBLIC_CANVAS_RESPONSE, onGetPublicCanvasResponse)
         socket?.emit(SocketConstants.GET_PRIVATE_CANVAS, UserHolder.getInstance().username)
         socket?.emit(SocketConstants.GET_PUBLIC_CANVAS)
     }
@@ -222,15 +244,47 @@ class GalleryActivity:AppCompatActivity(){
         } else {
             socket?.off()
             socket?.disconnect()
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
+//            val intent = Intent(this, LoginActivity::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//            startActivity(intent)
             finish()
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+//        if(requestCode == 1 && resultCode == RESULT_OK){
+//            try {
+//                val canevas: Canevas = data?.getSerializableExtra("canevas") as Canevas
+//                if(canevas.password != ""){
+//                    canevasPrivate.add(canevas)
+//                    adapterPrivate?.notifyDataSetChanged()
+//                } else {
+//                    canevasPublic.add(canevas)
+//                    adapterPublic?.notifyDataSetChanged()
+//                }
+//            } catch (e: Error){
+//                Log.e("Error", "e.stackTrace")
+//            }
+//        }
+        refresh()
+    }
+
+    private fun refresh(){
+        val app = application as PolyPaint
+        socket = app.socket
+        val localSocket = socket
+
+        toolbar_login_button.visibility = View.VISIBLE
+        if(localSocket != null && localSocket.connected()){
+            toolbar_login_button.visibility = View.INVISIBLE
+        }
+        requestCanevas()
+    }
     override fun onResume() {
         super.onResume()
-        requestCanevas()
+        initializeSocket()
+        initializeAdapters()
+        refresh()
     }
 }

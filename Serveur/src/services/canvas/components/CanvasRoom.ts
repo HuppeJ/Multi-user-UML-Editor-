@@ -1,4 +1,4 @@
-import { ICanevas, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from "../interfaces/interfaces";
+import { ICanevas, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData, IResizeCanevasData } from "../interfaces/interfaces";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
@@ -59,7 +59,13 @@ export default class CanvasRoom {
 
     
     public isCanvasSaved(data: IEditCanevasData) {
-        this.canvas.thumbnailLeger = data.canevas.thumbnailLeger;
+        if (data.canevas.thumbnailLeger != "") {
+            this.canvas.thumbnailLeger = data.canevas.thumbnailLeger;
+        }
+
+        if (data.canevas.thumbnailLourd != "") {
+            this.canvas.thumbnailLourd = data.canevas.thumbnailLourd;
+        }
         return true;
     }
 
@@ -299,9 +305,9 @@ export default class CanvasRoom {
     /***********************************************
     * Functions related to the Canvas
     ************************************************/
-    public resize(data: IEditCanevasData): boolean {
+    public resize(data: IResizeCanevasData): boolean {
         try {
-            this.canvas.dimensions = data.canevas.dimensions;
+            this.canvas.dimensions = data.dimensions;
             return true;
         } catch (e) {
             console.log("[Error] in resize", e);

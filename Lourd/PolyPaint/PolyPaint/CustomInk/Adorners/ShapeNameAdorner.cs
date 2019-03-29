@@ -5,45 +5,46 @@ using System.Windows.Media;
 
 namespace PolyPaint.CustomInk
 {
-    class ClassAdorner : Adorner
+    class ShapeNameAdorner : Adorner
     {
         private CustomStroke stroke;
-        private ClassTextBox classTextBox;
+        private CustomTextBox customTextBox;
         private CustomInkCanvas canvas;
         private Rect rectangle;
 
         VisualCollection visualChildren;
 
-        // The center of the strokes.
-        Point center;
         RotateTransform rotation;
 
         // Be sure to call the base class constructor.
-        public ClassAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
+        public ShapeNameAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
             this.stroke = stroke;
             this.canvas = canvas;
-            Rect bounds = stroke.GetBounds();
-            center = stroke.GetCenter();
-            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
-            rectangle = new Rect(bounds.TopLeft.X, bounds.TopLeft.Y, bounds.Width, bounds.Height);
+            AddName(stroke, canvas);
 
-            AddClass(stroke, canvas);
+            rectangle = new Rect(stroke.GetBounds().BottomLeft.X - 15, 
+                                 stroke.GetBounds().BottomLeft.Y, 
+                                 stroke.GetBounds().Width + 30, 
+                                 customTextBox.MaxHeight);
         }
 
-        private void AddClass(CustomStroke stroke, CustomInkCanvas canvas)
+        private void AddName(CustomStroke stroke, CustomInkCanvas canvas)
         {
             visualChildren = new VisualCollection(this);
-            classTextBox = new ClassTextBox(stroke as ClassStroke, canvas);
-            classTextBox.Background = Brushes.White;
-            classTextBox.RenderTransform = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation,
-                rectangle.Width / 2, rectangle.Height / 2);
-                // ClassStroke.WIDTH * (stroke as ShapeStroke).shapeStyle.width / 2, 0);
-                // ClassStroke.HEIGHT * (stroke as ShapeStroke).shapeStyle.height / 2);
+            customTextBox = new CustomTextBox();
+            customTextBox.FontSize = 12;
+            customTextBox.Background = null;
+            customTextBox.BorderBrush = null;
+            customTextBox.Text = stroke.name;
+            customTextBox.Width = stroke.GetBounds().Width + 30;
+            customTextBox.BorderBrush = null;
+            customTextBox.TextAlignment = TextAlignment.Center;
+            customTextBox.MaxHeight = 100;
 
-            visualChildren.Add(classTextBox);
+            visualChildren.Add(customTextBox);
         }
 
         protected override Size MeasureOverride(Size constraint)
@@ -70,8 +71,7 @@ namespace PolyPaint.CustomInk
             }
 
             // Draws the rectangle
-            rectangle.Transform(rotation.Value);
-            classTextBox.Arrange(rectangle);
+            customTextBox.Arrange(rectangle);
 
             return finalSize;
         }

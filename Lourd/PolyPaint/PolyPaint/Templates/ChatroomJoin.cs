@@ -1,15 +1,15 @@
 ﻿namespace PolyPaint.Templates
 {
-    class ChatroomJoin
+    class EditChatroomData
     {
         public string chatroomName { get; set; }
         public string username { get; set; }
 
-        public ChatroomJoin()
+        public EditChatroomData()
         {
         }
 
-        public ChatroomJoin(string chatroomName, string username)
+        public EditChatroomData(string chatroomName, string username)
         {
             this.chatroomName = chatroomName;
             this.username = username;
