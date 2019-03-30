@@ -156,15 +156,9 @@ class CreateDrawingActivity: AppCompatActivity(){
             socket?.emit(SocketConstants.CREATE_CANVAS, sendObj)
 
 
-            val intent = Intent(this, DrawingActivity::class.java)
-            intent.putExtra("canevas", canevas)
-//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            val intent = Intent(this, GalleryActivity::class.java)
             startActivity(intent)
 
-//            val intent = Intent()
-//            intent.putExtra("canevas", canevas)
-//            setResult(RESULT_OK, intent)
-//            finish()
         }
 
     }
