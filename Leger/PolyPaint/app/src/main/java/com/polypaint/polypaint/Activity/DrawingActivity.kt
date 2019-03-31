@@ -375,27 +375,39 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun newShapeOnCanevas(shapeType: ShapeTypes) : BasicShape{
-        var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 300.0, 100.0, 0.0, "black", 0, "white")
+        var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 10.0, 10.0, 0.0, "black", 0, "white")
         var shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
 
         when (shapeType) {
             ShapeTypes.DEFAULT -> {}
             ShapeTypes.CLASS_SHAPE -> {
+                shapeStyle.width = 300.0
+                shapeStyle.height = 340.0
                 shape = ClassShape(UUID.randomUUID().toString(), shapeType.value(), "classShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>(),ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.ARTIFACT -> {
+                shapeStyle.width = 140.0
+                shapeStyle.height = 200.0
                 shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "artefactShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.ACTIVITY -> {
+                shapeStyle.width = 140.0
+                shapeStyle.height = 200.0
                 shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "activityShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.ROLE -> {
+                shapeStyle.width = 140.0
+                shapeStyle.height = 200.0
                 shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "roleShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.COMMENT -> {
+                shapeStyle.width = 400.0
+                shapeStyle.height = 120.0
                 shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "commentShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.PHASE -> {
+                shapeStyle.width = 400.0
+                shapeStyle.height = 120.0
                 shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "phaseShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
         }
@@ -476,6 +488,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun cutView(){
+        clipboard = ArrayList()
         val list = ViewShapeHolder.getInstance().map.keys.toMutableList()
         for (view in list){
             if(view.isSelected && !view.isSelectedByOther){

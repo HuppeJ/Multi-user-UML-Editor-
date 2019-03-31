@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.view_class.view.*
 
 class ClassView(context: Context): BasicElementView(context) {
     override var mMinimumWidth : Float = 300F
-    override var mMinimumHeight : Float = 350F
+    override var mMinimumHeight : Float = 340F
     var child : View? = null
 
     override fun onAttachedToWindow() {
@@ -37,23 +37,31 @@ class ClassView(context: Context): BasicElementView(context) {
 
 
         borderResizableLayout.addView(child)
-
+        /*
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
         linearLayoutCompat.layoutParams.height = (mMinimumHeight/7).toInt()
         linearLayoutCompat2.layoutParams.height = (3*mMinimumHeight/7).toInt()
         linearLayoutCompat3.layoutParams.height = (3*mMinimumHeight/7).toInt()
+        */
     }
 
     override fun resize(newWidth:Int, newHeight:Int){
         if(newWidth >= mMinimumWidth){
             borderResizableLayout.layoutParams.width = newWidth
+        }else{
+            borderResizableLayout.layoutParams.width = mMinimumWidth.toInt()
         }
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
-            linearLayoutCompat.layoutParams.height = (newHeight / 7)
-            linearLayoutCompat2.layoutParams.height = (3 * newHeight / 7)
-            linearLayoutCompat3.layoutParams.height = (3 * newHeight / 7)
+            linearLayoutCompat.layoutParams.height = 60
+            linearLayoutCompat2.layoutParams.height = (3 * (newHeight-60) / 7)
+            linearLayoutCompat3.layoutParams.height = (4 * (newHeight-60) / 7)
+        }else{
+            borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
+            linearLayoutCompat.layoutParams.height = 60
+            linearLayoutCompat2.layoutParams.height = (3*(mMinimumHeight-60)/7).toInt()
+            linearLayoutCompat3.layoutParams.height = (4*(mMinimumHeight-60)/7).toInt()
         }
 
         borderResizableLayout.requestLayout()

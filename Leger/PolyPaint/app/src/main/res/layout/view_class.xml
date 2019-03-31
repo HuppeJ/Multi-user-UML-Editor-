@@ -19,7 +19,6 @@
                                                   app:layout_constraintTop_toTopOf="parent"
                                                   android:id="@+id/linearLayoutCompat"
                                                   app:layout_constraintBottom_toBottomOf="parent"
-                                                  app:layout_constraintVertical_bias="0.04"
     >
         <TextView
                 android:id="@+id/class_name"
@@ -39,7 +38,6 @@
                                                   android:background="@drawable/borders_view_class_2"
                                                   app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat"
                                                   android:id="@+id/linearLayoutCompat2"
-                                                  android:layout_marginTop="0dp"
                                                   android:layout_below="@+id/linearLayoutCompat">
         <TextView
                 android:id="@+id/class_attributes"

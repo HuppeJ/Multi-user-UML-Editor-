@@ -52,10 +52,14 @@ class CommentView(context: Context): BasicElementView(context) {
     override fun resize(newWidth:Int, newHeight:Int){
         if(newWidth >= mMinimumWidth){
             borderResizableLayout.layoutParams.width = newWidth
+        }else{
+            borderResizableLayout.layoutParams.width = mMinimumWidth.toInt()
         }
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
+        }else{
+            borderResizableLayout.layoutParams.height = mMinimumHeight.toInt()
         }
 
         borderResizableLayout.requestLayout()

@@ -54,8 +54,8 @@ class PhaseView(context: Context): BasicElementView(context) {
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-        linearLayoutCompat.layoutParams.height = (2*mMinimumHeight/10).toInt()
-        linearLayoutCompat2.layoutParams.height = (8*mMinimumHeight/10).toInt()
+        linearLayoutCompat.layoutParams.height = (1*mMinimumHeight/20).toInt()
+        linearLayoutCompat2.layoutParams.height = (19*mMinimumHeight/20).toInt()
 
 
     }
@@ -63,13 +63,19 @@ class PhaseView(context: Context): BasicElementView(context) {
     override fun resize(newWidth:Int, newHeight:Int){
         if(newWidth >= mMinimumWidth){
             borderResizableLayout.layoutParams.width = newWidth
+        }else{
+            borderResizableLayout.layoutParams.width = mMinimumWidth.toInt()
         }
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
             // TODO :  is null : linearLayoutCompat & linearLayoutCompat2
-            linearLayoutCompat.layoutParams.height = (2*newHeight / 10)
-            linearLayoutCompat2.layoutParams.height = (8 * newHeight / 10)
+            linearLayoutCompat.layoutParams.height = 60
+            linearLayoutCompat2.layoutParams.height = newHeight - 60
+        }else{
+            borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
+            linearLayoutCompat.layoutParams.height = 60
+            linearLayoutCompat2.layoutParams.height = mMinimumHeight.toInt() - 60
         }
 
         borderResizableLayout.requestLayout()
