@@ -15,6 +15,11 @@
                 android:id="@+id/toolbar_login_button"
                 android:text="Login"
         />
+        <Button android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:id="@+id/help_button"
+                android:text="?"/>
 
     </androidx.appcompat.widget.Toolbar>
 

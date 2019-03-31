@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.view_class.view.*
 
 class ClassView(context: Context): BasicElementView(context) {
     override var mMinimumWidth : Float = 300F
-    override var mMinimumHeight : Float = 370F
+    override var mMinimumHeight : Float = 350F
     var child : View? = null
 
     override fun onAttachedToWindow() {

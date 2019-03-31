@@ -26,6 +26,7 @@ import com.polypaint.polypaint.Adapter.RoomsListAdapter
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Fragment.EnterDrawingPasswordDialogFragment
+import com.polypaint.polypaint.Fragment.TutorialDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
@@ -64,7 +65,16 @@ class GalleryActivity:AppCompatActivity(){
             startActivityForResult(intent, 0)
 //            startActivity(intent)
         }
+        help_button.setOnClickListener {
+            var activity: AppCompatActivity = this@GalleryActivity as AppCompatActivity
+            var dialog: DialogFragment = TutorialDialogFragment()
+            //var bundle: Bundle = Bundle()
+            //bundle.putSerializable("canevas", selectedCanevas)
+            //dialog.arguments = bundle
 
+            //Log.d("****", dialog.arguments.toString())
+            dialog.show(activity.supportFragmentManager, "TutorialDialog")
+        }
 
         drawer = drawer {
             primaryItem("Gallery") {

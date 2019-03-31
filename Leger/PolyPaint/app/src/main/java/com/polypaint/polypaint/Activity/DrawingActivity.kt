@@ -56,7 +56,9 @@ import android.util.Base64
 import android.view.MotionEvent
 import android.widget.CompoundButton
 import android.widget.TextView
+import androidx.fragment.app.DialogFragment
 import com.github.salomonbrys.kotson.toJsonArray
+import com.polypaint.polypaint.Fragment.TutorialDialogFragment
 import com.polypaint.polypaint.Holder.*
 import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
 import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
@@ -96,6 +98,17 @@ class DrawingActivity : AppCompatActivity(){
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
+
+        help_button.setOnClickListener {
+            var activity: AppCompatActivity = this@DrawingActivity as AppCompatActivity
+            var dialog: DialogFragment = TutorialDialogFragment()
+            //var bundle: Bundle = Bundle()
+            //bundle.putSerializable("canevas", selectedCanevas)
+            //dialog.arguments = bundle
+
+            //Log.d("****", dialog.arguments.toString())
+            dialog.show(activity.supportFragmentManager, "TutorialDialog")
+        }
 
         drawer = drawer {
             primaryItem("Gallery") {
@@ -523,17 +536,26 @@ class DrawingActivity : AppCompatActivity(){
                         if(basicShape is ClassShape){
                             view as ClassView
                             view.class_name.text = basicShape.name
-                            view.class_attributes.text = basicShape.attributes.toString()
-                            view.class_methods.text = basicShape.methods.toString()
-                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                            var tmp : String = ""
+                            for(e in basicShape.attributes){
+                                tmp += e +"\n"
+                            }
+                            view.class_attributes.text = tmp
+                            tmp = ""
+                            for(e in basicShape.methods){
+                                tmp += e +"\n"
+                            }
+                            view.class_methods.text = tmp
+
                             view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                             view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                         }
                     }
                     ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
                             view as ImageElementView
                             // TODO :  is null : view_image_element_name
-                            // view.view_image_element_name.text = basicShape.name
+                            view.view_image_element_name.text = basicShape.name
                             view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                             view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
@@ -543,8 +565,8 @@ class DrawingActivity : AppCompatActivity(){
                     ShapeTypes.COMMENT.value()-> {
                         view as CommentView
                         // TODO : is null : comment_text 
-                        //var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
-                        //commentText.text = basicShape.name
+                        var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
+                        commentText.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                         view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                         view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
@@ -553,7 +575,7 @@ class DrawingActivity : AppCompatActivity(){
                     ShapeTypes.PHASE.value()-> {
                         view as PhaseView
                         // TODO : is null :view_phase_name  
-                        // view.view_phase_name.text = basicShape.name
+                        view.view_phase_name.text = basicShape.name
                         view.outlineColor(basicShape.shapeStyle.borderColor,basicShape.shapeStyle.borderStyle)
                         view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                         view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
