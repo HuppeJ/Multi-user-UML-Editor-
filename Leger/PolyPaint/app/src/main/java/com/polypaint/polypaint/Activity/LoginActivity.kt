@@ -43,8 +43,15 @@ class LoginActivity:Activity(){
         try {
             app.socket = IO.socket(app.uri, opts)
             Log.d("******", "**************************************")
-        } catch (e: URISyntaxException){
-            throw RuntimeException(e)
+        } catch (e: Exception){
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage("Invalid address")
+
+            builder.setPositiveButton("OK"){dialog, which ->
+                this.onBackPressed()
+            }
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         }
         socket = app.socket
         socket?.connect() // TODO : Vérifier si on peut l'enlever parce que IO.socket le fait déjà
@@ -148,9 +155,9 @@ class LoginActivity:Activity(){
         val obj: Response = gson.fromJson(it[0].toString())
         if(obj.isLoginSuccessful){
             UserHolder.getInstance().username = username
-            finish()
-//            val intent = Intent(this, GalleryActivity::class.java)
-//            startActivity(intent)
+//            finish()
+            val intent = Intent(this, GalleryActivity::class.java)
+            startActivityForResult(intent, 0 )
         } else {
             runOnUiThread{
                 progressBar?.visibility = View.GONE

@@ -104,6 +104,13 @@ open class BasicElementView: ConstraintLayout {
         return super.setSelected(selected)
     }
 
+    fun hideButtonsAndAnchors(){
+        editButton.visibility = View.INVISIBLE
+        deleteButton.visibility = View.INVISIBLE
+        resizeButton.visibility = View.INVISIBLE
+        setAnchorsVisible(false)
+    }
+
     fun setIsSelectedByOther(isSelectedByOther: Boolean){
         this.isSelectedByOther = isSelectedByOther
         if(isSelectedByOther){
@@ -718,7 +725,7 @@ open class BasicElementView: ConstraintLayout {
         true
     }
 
-    private fun setAllLinksPosition(basicShapeId: String, isFrom:Boolean){
+    fun setAllLinksPosition(basicShapeId: String, isFrom:Boolean){
         val links = if(isFrom){
             ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
         } else {

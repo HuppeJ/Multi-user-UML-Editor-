@@ -62,11 +62,11 @@ class CreateDrawingActivity: AppCompatActivity(){
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
-        toolbar_login_button.setOnClickListener {
-            val intent = Intent(this, ServerActivity::class.java)
-            startActivityForResult(intent, 0)
-//            startActivity(intent)
-        }
+//        toolbar_login_button.setOnClickListener {
+//            val intent = Intent(this, ServerActivity::class.java)
+//            startActivityForResult(intent, 0)
+////            startActivity(intent)
+//        }
 
         drawer = drawer {
             primaryItem("Gallery") {
@@ -119,10 +119,10 @@ class CreateDrawingActivity: AppCompatActivity(){
         socket = app.socket
 
         val localSocket = socket
-        toolbar_login_button.visibility = View.VISIBLE
-        if(localSocket != null && localSocket.connected()){
-            toolbar_login_button.visibility = View.INVISIBLE
-        }
+//        toolbar_login_button.visibility = View.VISIBLE
+//        if(localSocket != null && localSocket.connected()){
+//            toolbar_login_button.visibility = View.INVISIBLE
+//        }
     }
 
     private fun createDrawing(){
@@ -156,20 +156,19 @@ class CreateDrawingActivity: AppCompatActivity(){
             socket?.emit(SocketConstants.CREATE_CANVAS, sendObj)
 
 
-            val intent = Intent(this, DrawingActivity::class.java)
-            intent.putExtra("canevas", canevas)
-//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
+            val intent = Intent(this, GalleryActivity::class.java)
+            startActivityForResult(intent, 0)
 
-//            val intent = Intent()
-//            intent.putExtra("canevas", canevas)
-//            setResult(RESULT_OK, intent)
-//            finish()
         }
 
     }
 
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        setResult(Activity.RESULT_CANCELED)
+        finish()
+    }
 
     /*
     private var onJoinCanvasResponse: Emitter.Listener = Emitter.Listener {

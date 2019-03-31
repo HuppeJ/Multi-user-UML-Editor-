@@ -35,6 +35,7 @@ namespace PolyPaint.Services
         public static Templates.Canvas currentCanvas;
         public static List<string> remoteSelectedStrokes = new List<string>();
         public static List<string> localSelectedStrokes = new List<string>();
+        public static List<string> localAddedStrokes = new List<string>();
 
         public DrawingService()
         {
@@ -273,6 +274,7 @@ namespace PolyPaint.Services
             StrokeCollection strokes = new StrokeCollection();
             strokes.Add(shapeStroke);
             socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(strokes)));
+            localAddedStrokes.Add(shapeStroke.guid.ToString());
         }
 
         public static void CreateLink(LinkStroke linkStroke)
@@ -280,10 +282,16 @@ namespace PolyPaint.Services
             StrokeCollection strokes = new StrokeCollection();
             strokes.Add(linkStroke);
             socket.Emit("createLink", serializer.Serialize(createUpdateLinksData(strokes)));
+            localAddedStrokes.Add(linkStroke.guid.ToString());
         }
 
         public static void RemoveShapes(StrokeCollection strokes)
         {
+            foreach (CustomStroke stroke in strokes)
+            {
+                if (localSelectedStrokes.Contains(stroke.guid.ToString()))
+                    localSelectedStrokes.Remove(stroke.guid.ToString());
+            }
             socket.Emit("deleteForms", serializer.Serialize(createUpdateFormsData(strokes)));
         }
 
@@ -310,7 +318,8 @@ namespace PolyPaint.Services
         {
             foreach (CustomStroke stroke in strokes)
             {
-                localSelectedStrokes.Remove(stroke.guid.ToString());
+                if (localSelectedStrokes.Contains(stroke.guid.ToString()))
+                    localSelectedStrokes.Remove(stroke.guid.ToString());
             }
             socket.Emit("deselectForms", serializer.Serialize(createUpdateFormsData(strokes)));
         }

@@ -269,9 +269,7 @@ export default class CanvasManager {
 
     public getCanvasSERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        return JSON.stringify({
-            canvas: canvasRoom.canvas
-        });
+        return JSON.stringify(canvasRoom.canvas);
     }
 
     public getCanvasRoomsSERI(): string {
