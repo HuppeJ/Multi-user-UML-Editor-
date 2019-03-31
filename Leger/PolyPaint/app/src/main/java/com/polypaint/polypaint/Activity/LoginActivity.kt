@@ -43,8 +43,15 @@ class LoginActivity:Activity(){
         try {
             app.socket = IO.socket(app.uri, opts)
             Log.d("******", "**************************************")
-        } catch (e: URISyntaxException){
-            throw RuntimeException(e)
+        } catch (e: Exception){
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage("Invalid address")
+
+            builder.setPositiveButton("OK"){dialog, which ->
+                this.onBackPressed()
+            }
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         }
         socket = app.socket
         socket?.connect() // TODO : Vérifier si on peut l'enlever parce que IO.socket le fait déjà
