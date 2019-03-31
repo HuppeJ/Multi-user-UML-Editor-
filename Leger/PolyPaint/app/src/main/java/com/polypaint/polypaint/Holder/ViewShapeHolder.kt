@@ -54,7 +54,7 @@ class ViewShapeHolder(){
     }
 
 
-    fun findDrawindElement(id:String) : DrawingElement?{
+    fun findDrawingElement(id:String) : DrawingElement?{
         for(shape in canevas.shapes){
             if(shape.id == id){
                 return shape

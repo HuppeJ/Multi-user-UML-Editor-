@@ -1,6 +1,7 @@
 package com.polypaint.polypaint.Activity
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -123,6 +124,9 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
+        ViewShapeHolder.getInstance().canevas.shapes.clear()
+        ViewShapeHolder.getInstance().canevas.links.clear()
+
         canevas_title.text = ViewShapeHolder.getInstance().canevas.name
 
         inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -194,16 +198,6 @@ class DrawingActivity : AppCompatActivity(){
 
         SyncShapeHolder.getInstance().drawingActivity = this
 
-        // TODO : Jé's fix
-        if(ViewShapeHolder.getInstance().canevas.shapes !== null && !ViewShapeHolder.getInstance().canevas.shapes.isEmpty()) {
-            shapesToAdd.addAll(ViewShapeHolder.getInstance().canevas.shapes)
-            ViewShapeHolder.getInstance().canevas.shapes.clear()
-
-            // TODO : review Adding LINKS
-            linksToAdd.addAll(ViewShapeHolder.getInstance().canevas.links)
-            ViewShapeHolder.getInstance().canevas.links.clear()
-        }
-        initializeViewFromCanevas()
     }
 
     private fun initializeViewFromCanevas(){
@@ -216,6 +210,7 @@ class DrawingActivity : AppCompatActivity(){
                 ViewShapeHolder.getInstance().canevas.addShape(form)
                 addOnCanevas(form)
             }
+            shapesToAdd.clear()
 
             // TODO : review Adding LINKS
            for(link: Link in linksToAdd) {
@@ -225,6 +220,7 @@ class DrawingActivity : AppCompatActivity(){
                     ViewShapeHolder.getInstance().linkMap.forcePut(linkView, link.id)
                     parent_relative_layout?.addView(linkView)
             }
+            linksToAdd.clear()
 
             // Sizing the Canvas
             parent_relative_layout.layoutParams.width = (ViewShapeHolder.getInstance().canevas.dimensions.x).toInt()
@@ -238,15 +234,14 @@ class DrawingActivity : AppCompatActivity(){
         }
 
     }
+
     override fun onResume() {
         super.onResume()
         val app = application as PolyPaint
         socket = app.socket
 
-        toolbar_login_button.visibility = View.INVISIBLE
+//        toolbar_login_button.visibility = View.INVISIBLE
 
-       // socket?.on(SocketConstants.CANVAS_UPDATE_TEST_RESPONSE, onCanvasUpdate)
-//        socket?.on(SocketConstants.JOIN_CANVAS_TEST_RESPONSE, onJoinCanvas)
         socket?.on(SocketConstants.FORMS_UPDATED, onFormsUpdated)
         socket?.on(SocketConstants.FORMS_SELECTED, onFormsSelected)
         socket?.on(SocketConstants.FORMS_DESELECTED, onFormsDeselected)
@@ -263,8 +258,9 @@ class DrawingActivity : AppCompatActivity(){
         socket?.on(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
         socket?.on(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
         socket?.on(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
+        socket?.on(SocketConstants.GET_CANVAS_RESPONSE, onGetCanevas)
 
-        //socket?.emit(SocketConstants.JOIN_CANVAS_TEST)
+        getCanevas()
     }
 
     private fun addOnCanevas(shapeType: ShapeTypes){
@@ -302,7 +298,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun addOnCanevas(basicShape: BasicShape){
-                    Log.d("6666","****"+ViewShapeHolder.getInstance().map+"****")
+        Log.d("6666","****"+ViewShapeHolder.getInstance().map+"****")
 
         //TODO: Probablement une meilleure facon de mapper la value à l'enum ...
         when(basicShape.type){
@@ -537,7 +533,7 @@ class DrawingActivity : AppCompatActivity(){
         //Max : Comme c'est là, on peut stack qqc qui est sélectionné par les autres, plus facile comme ça, et pas spécifié dans le complément
         try {
             var idToStack = ViewShapeHolder.getInstance().stackDrawingElementCreatedId.pop()
-            var drawingToStack = ViewShapeHolder.getInstance().findDrawindElement(idToStack)
+            var drawingToStack = ViewShapeHolder.getInstance().findDrawingElement(idToStack)
 
             //Basic Shape
             if(drawingToStack is BasicShape){
@@ -587,6 +583,8 @@ class DrawingActivity : AppCompatActivity(){
         catch (e : NullPointerException){} //If stacking deleted shape
     }
     public fun syncLayoutFromCanevas(){
+        Log.d("syncLayoutFromCanevas","***wawaw****")
+
         for (view in ViewShapeHolder.getInstance().map.keys){
             val basicShapeId:  String = ViewShapeHolder.getInstance().map.getValue(view)
             val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
@@ -603,51 +601,56 @@ class DrawingActivity : AppCompatActivity(){
                     ShapeTypes.DEFAULT.value()-> { }
                     ShapeTypes.CLASS_SHAPE.value()-> {
                         if(basicShape is ClassShape){
-                            view as ClassView
-                            view.class_name.text = basicShape.name
-                            var tmp : String = ""
-                            for(e in basicShape.attributes){
-                                tmp += e +"\n"
+                            runOnUiThread{
+                                view as ClassView
+                                view.class_name.text = basicShape.name
+                                var tmp : String = ""
+                                for(e in basicShape.attributes){
+                                    tmp += e +"\n"
+                                }
+                                view.class_attributes.text = tmp
+                                tmp = ""
+                                for(e in basicShape.methods){
+                                    tmp += e +"\n"
+                                }
+                                view.class_methods.text = tmp
+                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                                view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                                view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                             }
-                            view.class_attributes.text = tmp
-                            tmp = ""
-                            for(e in basicShape.methods){
-                                tmp += e +"\n"
-                            }
-                            view.class_methods.text = tmp
-
-                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                         }
                     }
                     ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
+                        runOnUiThread {
                             view as ImageElementView
                             // TODO :  is null : view_image_element_name
                             view.view_image_element_name.text = basicShape.name
                             view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                             view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                        }
 
                     }
-
                     ShapeTypes.COMMENT.value()-> {
-                        view as CommentView
-                        // TODO : is null : comment_text 
-                        var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
-                        commentText.text = basicShape.name
-                        view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                        view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                        view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                        runOnUiThread{
+                            view as CommentView
+                            var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
+                            commentText.text = basicShape.name
+                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                        }
 
                     }
+
                     ShapeTypes.PHASE.value()-> {
-                        view as PhaseView
-                        // TODO : is null :view_phase_name  
-                        view.view_phase_name.text = basicShape.name
-                        view.outlineColor(basicShape.shapeStyle.borderColor,basicShape.shapeStyle.borderStyle)
-                        view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                        view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                        runOnUiThread {
+                            view as PhaseView
+                            view.view_phase_name.text = basicShape.name
+                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                        }
                     }
 
                 }
@@ -703,6 +706,20 @@ class DrawingActivity : AppCompatActivity(){
         obj = gson.toJson(formsUpdate)
         Log.d("emitingDelete", obj)
         socket?.emit(SocketConstants.DELETE_FORMS, obj)
+    }
+
+    private fun getCanevas() {
+        Log.d("getCanvas", "alllooo")
+
+        val gson = Gson()
+        val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(
+            UserHolder.getInstance().username,
+            ViewShapeHolder.getInstance().canevas.name,
+            ViewShapeHolder.getInstance().canevas.password
+        )
+        val sendObj = gson.toJson(galleryEditEvent)
+
+        socket?.emit(SocketConstants.GET_CANVAS, sendObj)
     }
 
     private var onFormsUpdated: Emitter.Listener = Emitter.Listener {
@@ -926,7 +943,7 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
-    private var onCanevasSelected: Emitter.Listener = Emitter.Listener {
+    private var onCanevasSelected: Emitter.Listener = Emitter.Listener {        
         Log.d("onCanevasSelected", "alllooo")
 
         val gson = Gson()
@@ -997,6 +1014,20 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
+    private var onGetCanevas: Emitter.Listener = Emitter.Listener {
+        Log.d("onGetCanvas", "alllooo")
+
+        val gson = Gson()
+        val canvas: Canevas =  gson.fromJson(it[0].toString())
+
+        shapesToAdd.addAll(canvas.shapes)
+
+        // TODO : review Adding LINKS
+        linksToAdd.addAll(canvas.links)
+
+        initializeViewFromCanevas()
+    }
+
     override fun onPause(){
         socket?.off(SocketConstants.FORMS_UPDATED, onFormsUpdated)
         socket?.off(SocketConstants.FORMS_DESELECTED, onFormsDeselected)
@@ -1014,6 +1045,7 @@ class DrawingActivity : AppCompatActivity(){
         socket?.off(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
         socket?.off(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
         socket?.off(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
+        socket?.off(SocketConstants.GET_CANVAS_RESPONSE, onGetCanevas)
 
         super.onPause()
     }
@@ -1034,10 +1066,11 @@ class DrawingActivity : AppCompatActivity(){
             val sendObj = gson.toJson(galleryEditEvent)
             Log.d("leaveObj", sendObj)
             socket?.emit(SocketConstants.LEAVE_CANVAS_ROOM, sendObj)
-            val intent = Intent(this, GalleryActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
-//        finish()
+//            val intent = Intent(this, GalleryActivity::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//            startActivity(intent)
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 
@@ -1142,9 +1175,29 @@ class DrawingActivity : AppCompatActivity(){
 
         if(isChecked) {
             socket?.emit(SocketConstants.SELECT_CANVAS, dataStr)
+            val localSocket = socket
+            if(localSocket == null || !localSocket.connected()) {
+                isCanvasSelectedByYou = true
+                runOnUiThread {
+                    select_canevas_button.setChecked(true)
+                    select_canevas_button.setEnabled(true)
+                    parent_relative_layout.setBackgroundResource(R.drawable.borders_blue_bg_white)
+                    resizeCanvevasButton.setBackgroundResource(R.drawable.ic_resize)
+                }
+            }
         } else {
             socket?.emit(SocketConstants.DESELECT_CANVAS, dataStr)
 
+            val localSocket = socket
+            if(localSocket == null || !localSocket.connected()) {
+                runOnUiThread {
+                    isCanvasSelectedByYou = false
+                    select_canevas_button.setChecked(false)
+                    select_canevas_button.setEnabled(true)
+                    parent_relative_layout.setBackgroundResource(R.drawable.borders_transparent_bg_white)
+                    resizeCanvevasButton.setBackgroundResource(0)
+                }
+            }
         }
     }
 

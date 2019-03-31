@@ -91,16 +91,22 @@ class CreateUserActivity:Activity(){
         if(obj.isUserCreated){
             UserHolder.getInstance().username = username
             setResult(RESULT_OK)
-            finish()
-//            val intent = Intent(this, ChatActivity::class.java)
-//            intent.putExtra("username", username)
-//            startActivity(intent)
+//            finish()
+            val intent = Intent(this, GalleryActivity::class.java)
+            intent.putExtra("username", username)
+            startActivityForResult(intent, 0)
         } else {
             runOnUiThread{
                 AlertDialog.Builder(this).setMessage("Pseudonyme déjà utilisé").show()
             }
 
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        setResult(RESULT_OK)
+        finish()
     }
 
     private inner class Response internal constructor(var isUserCreated: Boolean)
