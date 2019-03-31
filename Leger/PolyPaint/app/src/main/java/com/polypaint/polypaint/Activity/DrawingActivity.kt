@@ -239,7 +239,7 @@ class DrawingActivity : AppCompatActivity(){
         val app = application as PolyPaint
         socket = app.socket
 
-        toolbar_login_button.visibility = View.INVISIBLE
+//        toolbar_login_button.visibility = View.INVISIBLE
 
         socket?.on(SocketConstants.FORMS_UPDATED, onFormsUpdated)
         socket?.on(SocketConstants.FORMS_SELECTED, onFormsSelected)
@@ -966,10 +966,11 @@ class DrawingActivity : AppCompatActivity(){
             val sendObj = gson.toJson(galleryEditEvent)
             Log.d("leaveObj", sendObj)
             socket?.emit(SocketConstants.LEAVE_CANVAS_ROOM, sendObj)
-            val intent = Intent(this, GalleryActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
-//        finish()
+//            val intent = Intent(this, GalleryActivity::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//            startActivity(intent)
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 
@@ -1074,9 +1075,29 @@ class DrawingActivity : AppCompatActivity(){
 
         if(isChecked) {
             socket?.emit(SocketConstants.SELECT_CANVAS, dataStr)
+            val localSocket = socket
+            if(localSocket == null || !localSocket.connected()) {
+                isCanvasSelectedByYou = true
+                runOnUiThread {
+                    select_canevas_button.setChecked(true)
+                    select_canevas_button.setEnabled(true)
+                    parent_relative_layout.setBackgroundResource(R.drawable.borders_blue_bg_white)
+                    resizeCanvevasButton.setBackgroundResource(R.drawable.ic_resize)
+                }
+            }
         } else {
             socket?.emit(SocketConstants.DESELECT_CANVAS, dataStr)
 
+            val localSocket = socket
+            if(localSocket == null || !localSocket.connected()) {
+                runOnUiThread {
+                    isCanvasSelectedByYou = false
+                    select_canevas_button.setChecked(false)
+                    select_canevas_button.setEnabled(true)
+                    parent_relative_layout.setBackgroundResource(R.drawable.borders_transparent_bg_white)
+                    resizeCanvevasButton.setBackgroundResource(0)
+                }
+            }
         }
     }
 

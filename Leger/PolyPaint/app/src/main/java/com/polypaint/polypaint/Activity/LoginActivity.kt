@@ -148,9 +148,9 @@ class LoginActivity:Activity(){
         val obj: Response = gson.fromJson(it[0].toString())
         if(obj.isLoginSuccessful){
             UserHolder.getInstance().username = username
-            finish()
-//            val intent = Intent(this, GalleryActivity::class.java)
-//            startActivity(intent)
+//            finish()
+            val intent = Intent(this, GalleryActivity::class.java)
+            startActivityForResult(intent, 0 )
         } else {
             runOnUiThread{
                 progressBar?.visibility = View.GONE

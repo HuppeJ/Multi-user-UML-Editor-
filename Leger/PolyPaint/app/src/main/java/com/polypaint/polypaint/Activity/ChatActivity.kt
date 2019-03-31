@@ -43,11 +43,11 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
-        toolbar_login_button.setOnClickListener {
-            val intent = Intent(this, ServerActivity::class.java)
-            startActivityForResult(intent, 0)
-//            startActivity(intent)
-        }
+//        toolbar_login_button.setOnClickListener {
+//            val intent = Intent(this, ServerActivity::class.java)
+//            startActivityForResult(intent, 0)
+////            startActivity(intent)
+//        }
 
 
         drawer = drawer {
