@@ -36,7 +36,7 @@ class LinkView: View{
     var start: Coordinates = Coordinates(0.0,0.0)
     var end: Coordinates = Coordinates(0.0,0.0)
 
-    private var isSelectedByOther: Boolean = false
+    var isSelectedByOther: Boolean = false
 
     var region: Region = Region()
     var rect :RectF = RectF()

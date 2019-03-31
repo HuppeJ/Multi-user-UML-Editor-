@@ -673,7 +673,7 @@ open class BasicElementView: ConstraintLayout {
 //                    ViewShapeHolder.getInstance().remove(link!!)
                 }
 
-                ViewShapeHolder.getInstance().stackShapeCreatedId.remove(ViewShapeHolder.getInstance().map.getValue(this))
+                ViewShapeHolder.getInstance().stackDrawingElementCreatedId.remove(ViewShapeHolder.getInstance().map.getValue(this))
                 parentView.removeView(this)
                 ViewShapeHolder.getInstance().remove(this)
 
