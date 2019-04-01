@@ -104,6 +104,13 @@ open class BasicElementView: ConstraintLayout {
         return super.setSelected(selected)
     }
 
+    fun hideButtonsAndAnchors(){
+        editButton.visibility = View.INVISIBLE
+        deleteButton.visibility = View.INVISIBLE
+        resizeButton.visibility = View.INVISIBLE
+        setAnchorsVisible(false)
+    }
+
     fun setIsSelectedByOther(isSelectedByOther: Boolean){
         this.isSelectedByOther = isSelectedByOther
         if(isSelectedByOther){
@@ -673,7 +680,7 @@ open class BasicElementView: ConstraintLayout {
 //                    ViewShapeHolder.getInstance().remove(link!!)
                 }
 
-                ViewShapeHolder.getInstance().stackShapeCreatedId.remove(ViewShapeHolder.getInstance().map.getValue(this))
+                ViewShapeHolder.getInstance().stackDrawingElementCreatedId.remove(ViewShapeHolder.getInstance().map.getValue(this))
                 parentView.removeView(this)
                 ViewShapeHolder.getInstance().remove(this)
 
@@ -718,7 +725,7 @@ open class BasicElementView: ConstraintLayout {
         true
     }
 
-    private fun setAllLinksPosition(basicShapeId: String, isFrom:Boolean){
+    fun setAllLinksPosition(basicShapeId: String, isFrom:Boolean){
         val links = if(isFrom){
             ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)?.linksFrom
         } else {
@@ -789,9 +796,9 @@ open class BasicElementView: ConstraintLayout {
         requestLayout()
     }
 
-    open fun outlineColor(color: String){
+    open fun outlineColor(color: String, borderType: Int){}
+    open fun backgroundColor(color: String){}
 
-    }
     private fun emitUpdate(){
         val response: String = this.createFormsUpdateEvent()
 

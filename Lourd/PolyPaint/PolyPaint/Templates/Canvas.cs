@@ -12,7 +12,7 @@ namespace PolyPaint.Templates
         public string password { get; set; }
         public dynamic shapes { get; set; }
         public List<Link> links { get; set; }
-        public int[] dimensions { get; set; }
+        public Coordinates dimensions { get; set; }
         public string thumbnailLeger { get; set; }
         public string thumbnailLourd { get; set; }
 
@@ -20,7 +20,7 @@ namespace PolyPaint.Templates
         {
         }
 
-        public Canvas(string id, string name, string author, string owner, int accessibility, string password, List<BasicShape> shapes, List<Link> links, int[] dimensions, string thumbnailLourd)
+        public Canvas(string id, string name, string author, string owner, int accessibility, string password, List<BasicShape> shapes, List<Link> links, Coordinates dimensions, string thumbnailLourd)
         {
             this.id = id;
             this.name = name;

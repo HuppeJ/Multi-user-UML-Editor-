@@ -3,6 +3,7 @@ package com.polypaint.polypaint.View
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
@@ -51,25 +52,32 @@ class CommentView(context: Context): BasicElementView(context) {
     override fun resize(newWidth:Int, newHeight:Int){
         if(newWidth >= mMinimumWidth){
             borderResizableLayout.layoutParams.width = newWidth
+        }else{
+            borderResizableLayout.layoutParams.width = mMinimumWidth.toInt()
         }
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
+        }else{
+            borderResizableLayout.layoutParams.height = mMinimumHeight.toInt()
         }
 
         borderResizableLayout.requestLayout()
         requestLayout()
     }
 
-    override fun outlineColor(color: String) {
+    override fun outlineColor(color: String, borderType: Int) {
         // TODO :  is null : comment_text 
-        // var lDrawable = child!!.comment_text.background.mutate() as LayerDrawable
-        //var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
-       /* when(color){
-            "BLACK" -> gDrawable.setStroke(3, Color.BLACK)
-            "GREEN" -> gDrawable.setStroke(3, Color.GREEN)
-            "YELLOW" -> gDrawable.setStroke(3, Color.YELLOW)
-        }*/
+        var lDrawable = child!!.comment_text.background.mutate() as LayerDrawable
+        var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
 
+        when(borderType){
+            0 -> {  gDrawable.setStroke(2, Color.parseColor(color)) }
+            1 -> {  gDrawable.setStroke(2, Color.parseColor(color),10F,10F) }
+        }
+
+    }
+    override fun backgroundColor(color: String) {
+        child!!.comment_layout2.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
     }
 }

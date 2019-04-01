@@ -1,16 +1,20 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace PolyPaint.CustomInk
 {
     class EditionAdorner : Adorner
     {
         private CustomStroke stroke;
-        private EditionButton button;
+        private EditionButton editButton;
+        private DeleteButton deleteButton;
         private CustomInkCanvas canvas;
-        private Rect rectangle;
+        private Rect rectangleEdit;
+        private Rect rectangleDelete;
 
         VisualCollection visualChildren;
 
@@ -21,22 +25,51 @@ namespace PolyPaint.CustomInk
             this.stroke = stroke;
             this.canvas = canvas;
 
-            rectangle = new Rect(stroke.GetBounds().TopRight.X, stroke.GetBounds().TopRight.Y - 20, 40, 20);
+            rectangleEdit = new Rect(stroke.GetBounds().TopRight.X, stroke.GetBounds().TopRight.Y - 20, 20, 20);
+            rectangleDelete = new Rect(stroke.GetBounds().TopRight.X + 20, stroke.GetBounds().TopRight.Y - 20, 20, 20);
 
-            AddButton(stroke, canvas);
+            AddButtons(stroke, canvas);
+
         }
 
-        private void AddButton(CustomStroke stroke, CustomInkCanvas canvas)
+        private void AddButtons(CustomStroke stroke, CustomInkCanvas canvas)
         {
             visualChildren = new VisualCollection(this);
-            button = new EditionButton(stroke, canvas);
-            button.Cursor = Cursors.SizeNWSE;
-            button.Width = 40;
-            button.Height = 20;
-            button.Background = Brushes.White;
-            button.Content = "Edit";
 
-            visualChildren.Add(button);
+            editButton = new EditionButton(stroke, canvas);
+            editButton.Cursor = Cursors.Hand;
+            editButton.Width = 20;
+            editButton.Height = 20;
+            editButton.Background = Brushes.White;
+
+            BitmapImage img = new BitmapImage();
+            img.BeginInit();
+            img.UriSource = new Uri("../../Resources/pencil.png", UriKind.Relative);
+            img.EndInit();
+
+            System.Windows.Controls.Image image = new System.Windows.Controls.Image();
+            image.Source = img;
+
+            editButton.Content = image;
+
+            visualChildren.Add(editButton);
+
+            deleteButton = new DeleteButton(stroke, canvas);
+            deleteButton.Cursor = Cursors.Hand;
+            deleteButton.Width = 20;
+            deleteButton.Height = 20;
+            deleteButton.Background = Brushes.White;
+
+            BitmapImage img2 = new BitmapImage();
+            img2.BeginInit();
+            img2.UriSource = new Uri("../../Resources/trash.png", UriKind.Relative);
+            img2.EndInit();
+
+            System.Windows.Controls.Image image2 = new System.Windows.Controls.Image();
+            image2.Source = img2;
+            deleteButton.Content = image2;
+
+            visualChildren.Add(deleteButton);
         }
 
         protected override Size MeasureOverride(Size constraint)
@@ -57,14 +90,15 @@ namespace PolyPaint.CustomInk
         /// <returns>The actual size used. </returns>
         protected override Size ArrangeOverride(Size finalSize)
         {
-            if (rectangle.IsEmpty)
+            if (rectangleEdit.IsEmpty || rectangleDelete.IsEmpty)
             {
                 return finalSize;
             }
 
             // Draws the rectangle
-            button.Arrange(rectangle);
-    
+            editButton.Arrange(rectangleEdit);
+            deleteButton.Arrange(rectangleDelete);
+
             return finalSize;
         }
 

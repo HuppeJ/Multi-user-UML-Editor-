@@ -36,7 +36,7 @@ class LinkView: View{
     var start: Coordinates = Coordinates(0.0,0.0)
     var end: Coordinates = Coordinates(0.0,0.0)
 
-    private var isSelectedByOther: Boolean = false
+    var isSelectedByOther: Boolean = false
 
     var region: Region = Region()
     var rect :RectF = RectF()
@@ -66,6 +66,7 @@ class LinkView: View{
     var pointerFinger2 : Int = -1
 
     var fingersCoords : Array<Coordinates> = Array(4) { Coordinates(0.0,0.0) }
+    var isButtonVisible: Boolean = false
 
     fun setIsSelectedByOther(isSelectedByOther: Boolean){
         this.isSelectedByOther = isSelectedByOther
@@ -148,7 +149,7 @@ class LinkView: View{
         deleteButton?.setOnClickListener{
             deleteLink()
         }
-        deleteButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+        deleteButton?.visibility = if(isButtonVisible)View.VISIBLE else View.INVISIBLE
         parentView.addView(deleteButton)
 
         parentView.removeView(startAnchorButton)
@@ -158,7 +159,7 @@ class LinkView: View{
         startAnchorButton?.x = start.x.toFloat() - startAnchorButton?.layoutParams?.width!! / 2
         startAnchorButton?.y = start.y.toFloat() - startAnchorButton?.layoutParams?.height!! / 2
         startAnchorButton?.setOnTouchListener(onTouchListenerStartAnchorButton)
-        startAnchorButton?.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
+        startAnchorButton?.visibility = if (isButtonVisible) View.VISIBLE else View.INVISIBLE
         parentView.addView(startAnchorButton)
 
         parentView.removeView(endAnchorButton)
@@ -168,7 +169,7 @@ class LinkView: View{
         endAnchorButton?.x = end.x.toFloat() - endAnchorButton?.layoutParams?.width!! / 2
         endAnchorButton?.y = end.y.toFloat() - endAnchorButton?.layoutParams?.height!! / 2
         endAnchorButton?.setOnTouchListener(onTouchListenerEndAnchorButton)
-        endAnchorButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+        endAnchorButton?.visibility = if(isButtonVisible)View.VISIBLE else View.INVISIBLE
         parentView.addView(endAnchorButton)
 
         for(angleButton: ImageButton in angleButtons){
@@ -182,7 +183,7 @@ class LinkView: View{
             angleButton.x = middlePoint.x.toFloat() - angleButton.layoutParams?.width!! / 2
             angleButton.y = middlePoint.y.toFloat() - angleButton.layoutParams?.height!! / 2
             angleButton.setOnTouchListener(onTouchListenerAngleButton)
-            angleButton.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+            angleButton.visibility = if(isButtonVisible)View.VISIBLE else View.INVISIBLE
             angleButtons.add(angleButton)
             parentView.addView(angleButton)
         }
@@ -210,7 +211,7 @@ class LinkView: View{
         editButton?.setOnClickListener{
             showModal()
         }
-        editButton?.visibility = if(isSelected)View.VISIBLE else View.INVISIBLE
+        editButton?.visibility = if(isButtonVisible)View.VISIBLE else View.INVISIBLE
         parentView.addView(editButton)
     }
 
@@ -442,6 +443,10 @@ class LinkView: View{
 
     }
 
+    fun hideButtons(){
+        isButtonVisible = false
+    }
+
     private fun removeButtonsAndTexts(){
         val parent = this.parent as RelativeLayout
         if(multiplicityFrom != null){
@@ -488,11 +493,14 @@ class LinkView: View{
             emitDeselection()
         }
         if(selected){
+            isButtonVisible = true
             emitSelection()
             paint.color = Color.BLUE
         }else if(!this.isSelectedByOther){
             setPaintColorWithLinkStyle()
-
+            isButtonVisible = false
+        } else {
+            isButtonVisible = false
         }
         return super.setSelected(selected)
     }

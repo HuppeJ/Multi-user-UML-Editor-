@@ -93,6 +93,9 @@ class SocketConstants{
         const val GET_PRIVATE_CANVAS: String = "getPrivateCanvas"
         const val GET_PRIVATE_CANVAS_RESPONSE: String = "getPrivateCanvasResponse"
 
+        // Get a specific canvas
+        const val GET_CANVAS: String = "getCanvas"
+        const val GET_CANVAS_RESPONSE: String = "getCanvasResponse"
 
 
         const val SAVE_CANVAS: String = "saveCanvas"

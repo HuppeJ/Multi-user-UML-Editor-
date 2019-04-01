@@ -8,13 +8,20 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
-                                                  android:layout_height="wrap_content"
-                                                  app:layout_constraintTop_toTopOf="parent"
-                                                  android:id="@+id/linearLayoutCompatImg"
-                                                  app:layout_constraintBottom_toBottomOf="parent"
-                                                  app:layout_constraintVertical_bias="0.04"
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/linearLayoutCompatImg"
+
     >
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/image_element_background"/>
+
         <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -25,15 +32,16 @@
                 android:id="@+id/image_element"/>
 
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </RelativeLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
-                                                  android:layout_height="match_parent"
+                                                  android:layout_height="44dp"
                                                   android:gravity="center"
                                                   app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompatImg"
                                                   android:id="@+id/linearLayoutCompat2Img"
-                                                  android:layout_below="@+id/linearLayoutCompatImg"
-    >
+                                                  android:layout_below="@+id/linearLayoutCompatImg">
         <TextView
                 android:id="@+id/view_image_element_name"
                 android:layout_width="wrap_content"

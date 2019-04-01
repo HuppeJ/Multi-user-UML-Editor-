@@ -24,12 +24,15 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class WindowDrawing : UserControl
     {
+        double width = 32;
+        double height = 32;
 
         public WindowDrawing()
         {
             InitializeComponent();
             DataContext = new VueModele();
             this.Loaded += WindowDrawing_Loaded;
+            DrawingService.OnResizeCanvas += OnResizeCanvas;
         }
 
         void WindowDrawing_Loaded(object sender, RoutedEventArgs e)
@@ -45,12 +48,31 @@ namespace PolyPaint.Vues
 
         // Pour gérer les points de contrôles.
         private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
-        private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
+        private void GlisserTermine(object sender, DragCompletedEventArgs e)
+        {
+            (sender as Thumb).Background = Brushes.White;
+
+            DrawingService.ResizeCanvas(new Coordinates(width, height));
+        }
         private void GlisserMouvementRecu(object sender, DragDeltaEventArgs e)
         {
             String nom = (sender as Thumb).Name;
-            if (nom == "horizontal" || nom == "diagonal") colonne.Width = new GridLength(Math.Max(32, colonne.Width.Value + e.HorizontalChange));
-            if (nom == "vertical" || nom == "diagonal") ligne.Height = new GridLength(Math.Max(32, ligne.Height.Value + e.VerticalChange));
+            if (nom == "horizontal" || nom == "diagonal")
+            {
+                width = Math.Max(32, colonne.Width.Value + e.HorizontalChange);
+                colonne.Width = new GridLength(width);
+            }
+            if (nom == "vertical" || nom == "diagonal")
+            {
+                height = Math.Max(32, ligne.Height.Value + e.VerticalChange);
+                ligne.Height = new GridLength(height);
+            }
+        }
+
+        private void OnResizeCanvas(Coordinates dimensions)
+        {
+            colonne.Width = new GridLength(dimensions.x);
+            ligne.Height = new GridLength(dimensions.y);
         }
 
         // Pour la gestion de l'affichage de position du pointeur.
@@ -108,17 +130,21 @@ namespace PolyPaint.Vues
                     myAdornerLayer.Add(new EditionAdorner(path, newStroke, surfaceDessin));
                 }
             }
-            else if (surfaceDessin.GetSelectedStrokes().Count == 1 && surfaceDessin.GetSelectedStrokes()[0].GetType() == typeof(LinkStroke))
+            else
             {
-                surfaceDessin.modifyLinkStrokePath(surfaceDessin.GetSelectedStrokes()[0] as LinkStroke, e.GetPosition(surfaceDessin));
-
+                foreach (CustomStroke stroke in surfaceDessin.GetSelectedStrokes())
+                {
+                    if (stroke is LinkStroke)
+                    {
+                        surfaceDessin.modifyLinkStrokePath(stroke as LinkStroke, e.GetPosition(surfaceDessin));
+                    }
+                }
             }
 
 
             // Pour que les boutons soient de la bonne couleur
             (DataContext as VueModele)?.ChoisirOutil.Execute("lasso");
         }
-        
 
         // Bouton pour changer le texte de l'élément sélectionné
         public void RenameSelection()
@@ -145,23 +171,39 @@ namespace PolyPaint.Vues
             }
         }
 
-        public void Rename(string text)
+        public void DeleteSelection()
+        {
+            StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
+            if (strokes.Count == 1)
+            {
+                surfaceDessin.DeleteStrokes(strokes);
+            }
+        }
+
+        public void Rename(string text, Color borderColor, Color fillColor, int lineStyle )
         {
             popUpName.IsOpen = false;
-            CustomStroke stroke = (CustomStroke)surfaceDessin.GetSelectedStrokes()[0];
+            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
+            stroke.shapeStyle.borderColor = borderColor.ToString();
+            stroke.shapeStyle.backgroundColor = fillColor.ToString();
+            stroke.shapeStyle.borderStyle = lineStyle;
             StrokeCollection sc = new StrokeCollection();
             sc.Add(stroke);
             DrawingService.UpdateShapes(sc);
             surfaceDessin.RefreshChildren();
+            surfaceDessin.RefreshSelectedShape(stroke);
             IsEnabled = true;
         }
 
-        public void Rename(string className, string attributes, string methods)
+        public void Rename(string className, string attributes, string methods, Color borderColor, Color fillColor, int lineStyle)
         {
             popUpClass.IsOpen = false;
             ClassStroke stroke = (ClassStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = className;
+            stroke.shapeStyle.borderColor = borderColor.ToString();
+            stroke.shapeStyle.backgroundColor = fillColor.ToString();
+            stroke.shapeStyle.borderStyle = lineStyle;
 
             stroke.attributes = new List<string>();
             string[] lines = attributes.Split(
@@ -188,6 +230,7 @@ namespace PolyPaint.Vues
             DrawingService.UpdateShapes(sc);
 
             surfaceDessin.RefreshChildren();
+            surfaceDessin.RefreshSelectedShape(stroke);
             IsEnabled = true;
         }
 
@@ -233,6 +276,34 @@ namespace PolyPaint.Vues
         private void StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
             (DataContext as VueModele)?.OnStrokeCollectedEvent(sender, e);
+        }
+
+        private void OpenClassPopup(object sender, EventArgs e)
+        {
+            IsEnabled = false;
+            popUpClassFromCodeVue.Initialize();
+            popUpClassFromCodeVue.CodeTextBox.Text = "";
+            popUpClassFromCode.IsOpen = true;
+        }
+
+        public void ClosePopups()
+        {
+            IsEnabled = true;
+            popUpClassFromCode.IsOpen = false;
+        }
+
+        public void DrawClass(string name, List<string> properties, List<string> methods)
+        {
+            StylusPointCollection stylusPoints = new StylusPointCollection();
+            stylusPoints.Add(new StylusPoint(10, 10));
+            ClassStroke classStroke = new ClassStroke(stylusPoints);
+
+            classStroke.name = name;
+            classStroke.attributes = properties;
+            classStroke.methods = methods;
+
+            InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(classStroke);
+            DrawingService.AddClassFromCode(eventArgs);
         }
     }
 }

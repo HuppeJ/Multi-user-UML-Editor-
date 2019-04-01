@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
              Padding="0,0,0,0" Margin="0,0,0,0" Background="Transparent"
              >
@@ -19,22 +20,32 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="150" Margin="0">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-
-            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,0">
-                <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
-                    <TextBlock>Enter form name here:</TextBlock>
-                    <TextBox x:Name="TxtBox" Width="150" Margin="0,5"
-                                 materialDesign:HintAssist.Hint="Enter name here"   
-                                 Text="{Binding Label, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    </TextBox>
-                    <Button Content="Accept Changes" Margin="0,10,0,0" Click="Rename" Width="150"/>
-                </StackPanel>
-            </Border>
-        </Grid>
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="243" Margin="0" ForceCursor="True">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                <TextBlock>Shape name:</TextBlock>
+                <TextBox x:Name="ClassNameTextBox" Width="76" MaxWidth="150"
+                        MinLines="1"
+                        MaxLines="1"
+                        VerticalAlignment="Top"
+                        Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="3,0,0,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                <TextBlock>Border style:</TextBlock>
+                <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LineStylesList}"
+                  SelectedValue="{Binding LineStyle}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
+                <TextBlock Margin="0,0,0,0.2" Width="72">Border color:</TextBlock>
+                <wpfx:ColorPicker  x:Name="pickBorderColor" Width="78" MaxWidth="150" Margin="0,0,0,0.2"
+                                   SelectedColor="{Binding BorderColor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
+                <TextBlock Margin="0,0,0,0.2" Width="72">Fill color:</TextBlock>
+                <wpfx:ColorPicker  x:Name="pickFillColor" Width="78" MaxWidth="150" Margin="0,0,0,0.2"
+                                   SelectedColor="{Binding FillColor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            </StackPanel>
+            <Button Content="Accept Changes" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
+        </StackPanel>
     </materialDesign:Card>
 </UserControl>

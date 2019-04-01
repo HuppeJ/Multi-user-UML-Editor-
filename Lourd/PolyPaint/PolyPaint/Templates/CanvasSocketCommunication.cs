@@ -40,6 +40,22 @@ namespace PolyPaint.Templates
         }
     }
 
+    class ResizeCanevasData
+    {
+        public string username { get; set; }
+        public string canevasName { get; set; }
+        public Coordinates dimensions { get; set; }
+
+        public ResizeCanevasData(string username, string canevasName, Coordinates dimensions)
+        {
+            this.username = username;
+            this.canevasName = canevasName;
+            this.dimensions = dimensions;
+        }
+
+        public ResizeCanevasData() { }
+    }
+
     class UpdateFormsData
     {
         public string username { get; set; }
@@ -82,6 +98,18 @@ namespace PolyPaint.Templates
     {
         public bool isCanvasRoomJoined { get; set; }
         public string canvasName { get; set; }
+    }
+
+    class CreateChatroomResponse
+    {
+        public bool isCreated { get; set; }
+        public string chatroomName { get; set; }
+    }
+
+    class JoinChatroomResponse
+    {
+        public bool isChatroomJoined { get; set; }
+        public string chatroomName { get; set; }
     }
 
     class UpdateCanvasPasswordResponse

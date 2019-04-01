@@ -7,7 +7,7 @@ import java.io.Serializable
 import java.util.*
 
 
-open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var linksTo: ArrayList<String?>, var linksFrom: ArrayList<String?>) : Serializable {
+open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var linksTo: ArrayList<String?>, var linksFrom: ArrayList<String?>) : Serializable, DrawingElement(id) {
 //    private var inflater : LayoutInflater? = null
 
     init {

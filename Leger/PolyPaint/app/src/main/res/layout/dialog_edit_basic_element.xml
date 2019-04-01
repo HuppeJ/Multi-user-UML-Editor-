@@ -22,29 +22,81 @@
             android:background="@android:color/transparent"
             android:inputType="textPersonName"
             android:layout_gravity="center"
-            android:layout_width="401dp"
+            android:layout_width="302dp"
             android:layout_weight="1"
-            android:layout_height="21dp"
+            android:layout_height="22dp"
             android:maxLines="6" android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toEndOf="@+id/drawing_name"
             android:layout_marginStart="8dp" android:layout_marginLeft="8dp" android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="8dp"/>
 
     <TextView
-            android:id="@+id/link_style"
+            android:id="@+id/border_color_text"
             android:text="Border Color : "
             android:layout_width="wrap_content"
             android:layout_height="18dp"
             android:layout_marginTop="24dp"
             app:layout_constraintTop_toBottomOf="@+id/drawing_name" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="8dp" android:layout_marginStart="8dp"/>
-    <Spinner android:layout_width="0dp"
-             android:layout_height="wrap_content"
-             android:id="@+id/border_color_spinner"
-             android:layout_marginTop="20dp"
-             app:layout_constraintTop_toBottomOf="@+id/name_text" app:layout_constraintStart_toEndOf="@+id/link_style"
-             android:layout_marginLeft="24dp" android:layout_marginStart="24dp"
-             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-             android:layout_marginRight="8dp"></Spinner>
+    <Button android:layout_width="150dp"
+            android:layout_height="36dp"
+            android:id="@+id/border_color_picker_button"
+            android:text=""
+            android:background="#000000"
+            app:layout_constraintStart_toEndOf="@+id/border_color_text" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+            app:layout_constraintHorizontal_bias="0.909" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/name_text"/>
+
+    <TextView
+            android:id="@+id/background_color_text"
+            android:text="Background Color : "
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/border_color_text" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"/>
+    <Button android:layout_width="150dp"
+            android:layout_height="36dp"
+            android:id="@+id/background_color_picker_button"
+            android:text=""
+            android:background="#FFFFFF"
+            app:layout_constraintStart_toEndOf="@+id/background_color_text" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp" android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@+id/border_color_picker_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+            app:layout_constraintHorizontal_bias="0.883"/>
+
+    <TextView
+            android:id="@+id/border_style_text"
+            android:text="Border Style : "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            app:layout_constraintTop_toBottomOf="@+id/background_color_text"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"/>
+
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@+id/background_color_picker_button"
+                app:layout_constraintStart_toEndOf="@+id/border_style_text" android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+                app:layout_constraintHorizontal_bias="0.908">
+        <RadioButton android:id="@+id/radio_full"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:text="Full"/>
+        <RadioButton android:id="@+id/radio_dotted"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:text="Dotted"/>
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -446,9 +446,81 @@ namespace PolyPaint.CustomInk.Strokes
             }
         }
 
+        public void updatePositionResizeNotAttached(Rect newRect)
+        {
+            double[] limits = GetMaxAndMin();
+            Rect oldRect = GetBounds();
+            double widthRatio = newRect.Width / oldRect.Width;
+            double heightRatio = newRect.Height / oldRect.Height;
+            foreach (Coordinates point in path)
+            {
+                point.x = newRect.Left + (point.x - oldRect.Left) * widthRatio;
+                point.y = newRect.Top + (point.y - oldRect.Top) * heightRatio;
+            }
+        }
+
         public virtual Link GetLinkShape()
         {
             return new Link(guid.ToString(), name, from, to, strokeType, style, path);
+        }
+
+        public override Rect GetBounds()
+        {
+            double[] bounds = GetMaxAndMin();
+
+            return new Rect(new Point(bounds[(int)LIMITS.MINX], bounds[(int)LIMITS.MINY]), 
+                new Point(bounds[(int)LIMITS.MAXX], bounds[(int)LIMITS.MAXY]));
+        }
+
+        private double[] GetMaxAndMin()
+        {
+            double maxX = -999999999;
+            double maxY = -999999999;
+            double minX = 999999999;
+            double minY = 999999999;
+            foreach (Coordinates point in path)
+            {
+                if (point.x < minX)
+                    minX = point.x;
+                if (point.x > maxX)
+                    maxX = point.x;
+                if (point.y < minY)
+                    minY = point.y;
+                if (point.y > maxY)
+                    maxY = point.y;
+            }
+            return new double[] { minX, minY, maxX, maxY};
+        }
+
+        private enum LIMITS
+        {
+            MINX,
+            MINY,
+            MAXX,
+            MAXY
+        }
+
+        internal override bool HitTestPoint(Point point)
+        {
+            return HitTest(point);
+        }
+
+        internal override bool HitTestPointIncludingEdition(Point point)
+        {
+            Rect bounds = GetEditingBounds();
+            return bounds.Contains(point);
+        }
+
+        public override Rect GetEditingBounds()
+        {
+            Rect bounds = GetBounds();
+            double minX = Math.Min(Math.Min(Math.Min(bounds.TopLeft.X, bounds.TopRight.X), bounds.BottomLeft.X), bounds.BottomRight.X);
+            double maxX = Math.Max(Math.Max(Math.Max(bounds.TopLeft.X, bounds.TopRight.X), bounds.BottomLeft.X), bounds.BottomRight.X);
+            double minY = Math.Min(Math.Min(Math.Min(bounds.TopLeft.Y, bounds.TopRight.Y), bounds.BottomLeft.Y), bounds.BottomRight.Y);
+            double maxY = Math.Max(Math.Max(Math.Max(bounds.TopLeft.Y, bounds.TopRight.Y), bounds.BottomLeft.Y), bounds.BottomRight.Y);
+
+            bounds = new Rect(new Point(minX - 15, minY - 15), new Point(maxX + 15, maxY + 15));
+            return bounds;
         }
     }
 }

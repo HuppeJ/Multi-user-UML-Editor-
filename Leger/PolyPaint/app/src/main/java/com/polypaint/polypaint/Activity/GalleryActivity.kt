@@ -26,6 +26,7 @@ import com.polypaint.polypaint.Adapter.RoomsListAdapter
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Fragment.EnterDrawingPasswordDialogFragment
+import com.polypaint.polypaint.Fragment.TutorialDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
@@ -59,12 +60,7 @@ class GalleryActivity:AppCompatActivity(){
 
         val activityToolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(activityToolbar)
-        toolbar_login_button.setOnClickListener {
-            val intent = Intent(this, ServerActivity::class.java)
-            startActivityForResult(intent, 0)
-//            startActivity(intent)
-        }
-
+        help_button.visibility = View.GONE
 
         drawer = drawer {
             primaryItem("Gallery") {
@@ -223,7 +219,7 @@ class GalleryActivity:AppCompatActivity(){
 
                 intent.putExtra("canevas", selectedCanevas!!)
                 //ViewShapeHolder.getInstance().canevas = selectedCanevas!!
-                startActivity(intent)
+                startActivityForResult(intent, 0)
             } else {
                 Log.d("Erreur", "selectionCanevas")
             }
@@ -247,7 +243,12 @@ class GalleryActivity:AppCompatActivity(){
 //            val intent = Intent(this, LoginActivity::class.java)
 //            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
 //            startActivity(intent)
-            finish()
+
+//            setResult(Activity.RESULT_OK)
+//            finish()
+            val intent = Intent(this, ServerActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
         }
     }
 
@@ -267,7 +268,13 @@ class GalleryActivity:AppCompatActivity(){
 //                Log.e("Error", "e.stackTrace")
 //            }
 //        }
-        refresh()
+        if(resultCode == Activity.RESULT_OK) {
+            refresh()
+        } else {
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
+
     }
 
     private fun refresh(){
@@ -275,10 +282,10 @@ class GalleryActivity:AppCompatActivity(){
         socket = app.socket
         val localSocket = socket
 
-        toolbar_login_button.visibility = View.VISIBLE
-        if(localSocket != null && localSocket.connected()){
-            toolbar_login_button.visibility = View.INVISIBLE
-        }
+//        toolbar_login_button.visibility = View.VISIBLE
+//        if(localSocket != null && localSocket.connected()){
+//            toolbar_login_button.visibility = View.INVISIBLE
+//        }
         requestCanevas()
     }
     override fun onResume() {

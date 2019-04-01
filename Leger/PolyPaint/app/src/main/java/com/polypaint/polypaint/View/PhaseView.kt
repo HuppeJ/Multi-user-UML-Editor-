@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
@@ -53,8 +54,8 @@ class PhaseView(context: Context): BasicElementView(context) {
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-        linearLayoutCompat.layoutParams.height = (2*mMinimumHeight/10).toInt()
-        linearLayoutCompat2.layoutParams.height = (8*mMinimumHeight/10).toInt()
+        linearLayoutCompat.layoutParams.height = (1*mMinimumHeight/20).toInt()
+        linearLayoutCompat2.layoutParams.height = (19*mMinimumHeight/20).toInt()
 
 
     }
@@ -62,43 +63,46 @@ class PhaseView(context: Context): BasicElementView(context) {
     override fun resize(newWidth:Int, newHeight:Int){
         if(newWidth >= mMinimumWidth){
             borderResizableLayout.layoutParams.width = newWidth
+        }else{
+            borderResizableLayout.layoutParams.width = mMinimumWidth.toInt()
         }
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
             // TODO :  is null : linearLayoutCompat & linearLayoutCompat2
-            //linearLayoutCompat.layoutParams.height = (2*newHeight / 10)
-            //linearLayoutCompat2.layoutParams.height = (8 * newHeight / 10)
+            linearLayoutCompat.layoutParams.height = 60
+            linearLayoutCompat2.layoutParams.height = newHeight - 60
+        }else{
+            borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
+            linearLayoutCompat.layoutParams.height = 60
+            linearLayoutCompat2.layoutParams.height = mMinimumHeight.toInt() - 60
         }
 
         borderResizableLayout.requestLayout()
         requestLayout()
     }
 
-    override fun outlineColor(color: String) {
+    override fun outlineColor(color: String, borderType: Int) {
         // TODO :  is null : linearLayoutCompat
-/*
+
         var lDrawable = child!!.linearLayoutCompat.background.mutate() as LayerDrawable
         var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
 
         var lDrawable2 = child!!.linearLayoutCompat2.background.mutate() as LayerDrawable
         var gDrawable2 = lDrawable2.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
-
-        when(color){
-            "BLACK" -> {
-                gDrawable.setStroke(2, Color.BLACK)
-                gDrawable2.setStroke(2, Color.BLACK)
+        when(borderType){
+            0 -> {  gDrawable.setStroke(2, Color.parseColor(color))
+                    gDrawable2.setStroke(2, Color.parseColor(color))
             }
-            "GREEN" -> {
-                gDrawable.setStroke(2, Color.GREEN)
-                gDrawable2.setStroke(2, Color.GREEN)
+            1 -> {  gDrawable.setStroke(2, Color.parseColor(color),10F,10F)
+                    gDrawable2.setStroke(2, Color.parseColor(color), 10F,10F)
             }
-            "YELLOW" -> {
-                gDrawable.setStroke(2, Color.YELLOW)
-                gDrawable2.setStroke(2, Color.YELLOW)
-            }
-        }*/
+        }
 
 
+    }
+
+    override fun backgroundColor(color: String) {
+        child!!.phase_layout2.background.mutate().setColorFilter(Color.parseColor(color),PorterDuff.Mode.SRC_IN)
     }
 }

@@ -178,6 +178,7 @@
     <Compile Include="CustomInk\Adorners\PhaseAdorner.cs" />
     <Compile Include="CustomInk\Adorners\ResizeAdorner.cs" />
     <Compile Include="CustomInk\Adorners\ResizeAdorner2.cs" />
+    <Compile Include="CustomInk\Adorners\ShapeNameAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\Adorners\EditionAdorner.cs" />
@@ -198,7 +199,6 @@
     <Compile Include="CustomInk\CustomInkCanvas.cs" />
     <Compile Include="CustomInk\Strokes\CustomStroke.cs" />
     <Compile Include="CustomInk\Strokes\LinkStroke.cs" />
-    <Compile Include="CustomInk\Strokes\RoleStroke.cs" />
     <Compile Include="CustomInk\Strokes\ShapeStroke.cs" />
     <Compile Include="Enums\UserModes.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -252,6 +252,12 @@
     <Compile Include="Vues\Popups\ChangeCanvasProtectionPopup.xaml.cs">
       <DependentUpon>ChangeCanvasProtectionPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\JoinRoomPopup.xaml.cs">
+      <DependentUpon>JoinRoomPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\CreateRoomPopup.xaml.cs">
+      <DependentUpon>CreateRoomPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Popups\JoinProtectedCanvasPopup.xaml.cs">
       <DependentUpon>JoinProtectedCanvasPopup.xaml</DependentUpon>
     </Compile>
@@ -272,6 +278,9 @@
     </Compile>
     <Compile Include="Vues\CreateUserView.xaml.cs">
       <DependentUpon>CreateUserView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\ClassFromCodePopup.xaml.cs">
+      <DependentUpon>ClassFromCodePopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\Popups\RenamePopup.xaml.cs">
       <DependentUpon>RenamePopup.xaml</DependentUpon>
@@ -350,6 +359,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vues\Popups\JoinRoomPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\CreateRoomPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vues\Popups\JoinProtectedCanvasPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -378,6 +395,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Vues\Popups\ClassFromCodePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vues\Popups\RenamePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -396,6 +417,9 @@
     <Resource Include="Resources\rotate.png" />
     <Resource Include="Resources\actor.png" />
     <Resource Include="Resources\activity.png" />
+    <Resource Include="Resources\grabbing.cur" />
+    <Resource Include="Resources\pencil.png" />
+    <Resource Include="Resources\trash.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
