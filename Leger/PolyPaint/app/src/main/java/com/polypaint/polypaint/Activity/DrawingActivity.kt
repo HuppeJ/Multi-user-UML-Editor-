@@ -508,8 +508,17 @@ class DrawingActivity : AppCompatActivity(){
             if(view.isSelected && !view.isSelectedByOther){
                 val shapeToCut = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map.getValue(view))
                 //Couper les liens
-                shapeToCut!!.linksFrom = ArrayList()
-                shapeToCut!!.linksTo = ArrayList()
+                if(shapeToCut != null){
+                    for(linkToId in shapeToCut.linksTo){
+                        ViewShapeHolder.getInstance().canevas.findLink(linkToId!!)?.to = AnchorPoint()
+                    }
+                    shapeToCut.linksTo = ArrayList()
+
+                    for(linkFromId in shapeToCut.linksFrom){
+                        ViewShapeHolder.getInstance().canevas.findLink(linkFromId!!)?.from = AnchorPoint()
+                    }
+                    shapeToCut.linksFrom = ArrayList()
+                }
 
                 clipboard.add(shapeToCut!!)
                 emitDeleteForm(shapeToCut!!)
@@ -527,10 +536,7 @@ class DrawingActivity : AppCompatActivity(){
                 clipboard.add(linkToCut!!)
 
                 //TODO: Comment tu enlève un linkView de parent_relative_layout
-                //var viewToRemove = ViewShapeHolder.getInstance().linkMap.inverse().getValue(idToStack)
-                //parent_relative_layout.removeView(view)
-                //ViewShapeHolder.getInstance().remove(view)
-
+                view.deleteLink()
                 ViewShapeHolder.getInstance().stackDrawingElementCreatedId.remove(linkToCut.id)
             }
         }
@@ -541,12 +547,20 @@ class DrawingActivity : AppCompatActivity(){
         try {
             var idToStack = ViewShapeHolder.getInstance().stackDrawingElementCreatedId.pop()
             var drawingToStack = ViewShapeHolder.getInstance().findDrawingElement(idToStack)
-
+            Log.d("stackView", "id: "+idToStack)
             //Basic Shape
             if(drawingToStack is BasicShape){
+                Log.d("stackView", "S: "+drawingToStack.name+" "+idToStack)
                 //Couper les liens
-                drawingToStack.linksFrom = ArrayList()
+                for(linkToId in drawingToStack.linksTo){
+                    ViewShapeHolder.getInstance().canevas.findLink(linkToId!!)?.to = AnchorPoint()
+                }
                 drawingToStack.linksTo = ArrayList()
+
+                for(linkFromId in drawingToStack.linksFrom){
+                    ViewShapeHolder.getInstance().canevas.findLink(linkFromId!!)?.from = AnchorPoint()
+                }
+                drawingToStack.linksFrom = ArrayList()
 
                 stackDrawingElement.push(drawingToStack)
                 emitDeleteForm(drawingToStack!!)
@@ -556,18 +570,14 @@ class DrawingActivity : AppCompatActivity(){
                 ViewShapeHolder.getInstance().remove(viewToRemove)
 
             }
-            if(drawingToStack is Link){
-                stackDrawingElement.push(drawingToStack)
-                //emitDeleteLink(drawingToStack!!)
-
-                //TODO: Comment tu enlève un linkView de parent_relative_layout
-                //var viewToRemove = ViewShapeHolder.getInstance().linkMap.inverse().getValue(idToStack)
-                //parent_relative_layout.removeView(viewToRemove)
-                //ViewShapeHolder.getInstance().remove(viewToRemove)
-            }
             //Link
+            else if(drawingToStack is Link){
+                Log.d("stackView", "L: "+drawingToStack.name+" "+idToStack)
 
+                ViewShapeHolder.getInstance().linkMap.inverse()[idToStack]?.deleteLink()
+                stackDrawingElement.push(drawingToStack)
 
+            }
 
         }catch (e : EmptyStackException){}
 
@@ -581,8 +591,18 @@ class DrawingActivity : AppCompatActivity(){
 
                 emitAddForm(shapeUnstacked)
                 ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(shapeUnstacked.id)
-            }else{
+            }else if(shapeUnstacked is Link){
                 //TODO : LINKS
+                Log.d("unstackView", "Link "+shapeUnstacked.name)
+                ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(shapeUnstacked.id)
+
+                runOnUiThread {
+                    ViewShapeHolder.getInstance().canevas.addLink(shapeUnstacked)
+                    val linkView: LinkView = LinkView(this)
+                    linkView.setLinkAndAnchors(shapeUnstacked)
+                    ViewShapeHolder.getInstance().linkMap.forcePut(linkView, shapeUnstacked.id)
+                    parent_relative_layout?.addView(linkView)
+                }
             }
 
 

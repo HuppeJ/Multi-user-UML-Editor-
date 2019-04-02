@@ -352,6 +352,7 @@ open class BasicElementView: ConstraintLayout {
                                 canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
                             }
 
+                            ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(linkShape.id)
                             ViewShapeHolder.getInstance().linkMap.forcePut(link, linkShape.id)
                             canevas.links.add(linkShape)
                             canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)

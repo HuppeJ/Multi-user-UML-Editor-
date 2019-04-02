@@ -423,16 +423,21 @@ class LinkView: View{
 
     fun deleteLink(){
         emitDelete()
+        ViewShapeHolder.getInstance().stackDrawingElementCreatedId.remove(link?.id)
+
         val fromId = link?.from?.formId
         if(fromId != null && fromId != ""){
             val fromShape = ViewShapeHolder.getInstance().canevas.findShape(fromId)
             fromShape?.linksFrom?.remove(link?.id)
         }
+        link?.from = AnchorPoint()
         val toId = link?.to?.formId
         if(toId != null && toId != ""){
             val toShape = ViewShapeHolder.getInstance().canevas.findShape(toId)
             toShape?.linksTo?.remove(link?.id)
         }
+        link?.to = AnchorPoint()
+
         removeButtonsAndTexts()
         val localLink: Link? = link
         if(localLink != null){
@@ -1031,7 +1036,7 @@ class LinkView: View{
             socket?.emit(SocketConstants.UPDATE_LINKS, response)
         }
     }
-    private fun emitDelete(){
+    fun emitDelete(){
         val response: String = this.createLinksUpdateEvent()
 
         if(response !="") {
