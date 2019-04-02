@@ -122,8 +122,8 @@ namespace PolyPaint.CustomInk
 
         private void UpdateShapePoints()
         {
-            double width = shapeStyle.width / WIDTH;
-            double height = shapeStyle.height / HEIGHT;
+            double width = shapeStyle.width * WIDTH;
+            double height = shapeStyle.height * HEIGHT;
 
             topLeft = shapeStyle.coordinates.ToPoint();
 
