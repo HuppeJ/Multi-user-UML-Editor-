@@ -127,7 +127,8 @@ namespace PolyPaint.Services
                 if (!username.Equals((string)response.username))
                 {
                     CustomStroke customStroke = createShapeStroke(response.forms[0]);
-                    customStroke.owner = response.username;
+                    (customStroke as ShapeStroke).shapeStyle.coordinates.x /= CustomStroke.WIDTH;
+                    (customStroke as ShapeStroke).shapeStyle.coordinates.y /= CustomStroke.HEIGHT;
                     InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
                     Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
                 }
@@ -273,7 +274,8 @@ namespace PolyPaint.Services
         {
             StrokeCollection strokes = new StrokeCollection();
             strokes.Add(shapeStroke);
-            socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(strokes)));
+            UpdateFormsData formsData = createUpdateFormsData(strokes);
+            socket.Emit("createForm", serializer.Serialize(formsData));
             localAddedStrokes.Add(shapeStroke.guid.ToString());
         }
 

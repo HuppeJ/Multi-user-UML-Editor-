@@ -26,9 +26,21 @@
                         <GradientStop Color="#FFE0E0E0" Offset="1"/>
                     </LinearGradientBrush>
                 </StackPanel.Background>
-                <Button x:Name="reinitialiser" HorizontalAlignment="Center" Width="50" Height="50" Margin="5" Background="#00000000" Click="RefreshChildren" Command="{Binding Reinitialiser}" Content="♺" FontSize="15" Foreground="Black"/>
-                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Empiler}" Click="RefreshChildren" Content="≚" FontSize="32" Foreground="Black"/>
-                <Button x:Name="depiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Depiler}" Click="RefreshChildren" Content="≙" FontSize="32" Foreground="Black"/>
+                <Button x:Name="reinitialiser" Width="50" Height="50" Margin="5" Background="#00000000" Click="RefreshChildren" Command="{Binding Reinitialiser}" Foreground="Black">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/reset.png"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Empiler}" Click="RefreshChildren" FontSize="32" Foreground="Black">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/unpile.png"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="depiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Depiler}" Click="RefreshChildren" FontSize="32" Foreground="Black">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/pile.png"/>
+                    </StackPanel>
+                </Button>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
@@ -39,16 +51,19 @@
                         Background="Transparent"                                
                         Click="DupliquerSelection">
                         <StackPanel>
-                            <Image Source="/Resources/dupliquer.png"  />
+                            <Image Source="/Resources/NewLook/duplicate.png"  />
                         </StackPanel>
                     </Button>
                     <Button x:Name="Couper" Width="24" Height="24" Margin="0" Padding="0,0"
                         HorizontalContentAlignment="Left"                                
                         BorderBrush="Transparent"
-                        Content="✂"
                         Background="Transparent"
                         Foreground="Black"
-                        Click="SupprimerSelection" FontSize="14"/>
+                        Click="SupprimerSelection" FontSize="14">
+                        <StackPanel>
+                            <Image Source="/Resources/NewLook/scissors.png"  />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
                 <Button x:Name="lasso" Width="40" Height="40" Margin="5" Padding="0,0"
                             BorderBrush="{Binding OutilSelectionne, ConverterParameter=lasso, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
@@ -56,17 +71,20 @@
                             Command="{Binding ChoisirOutil}"
                             CommandParameter="lasso">
                     <StackPanel>
-                        <Image Source="/Resources/lasso.png"  />
+                        <Image Source="/Resources/NewLook/lasso.png"  />
                     </StackPanel>
                 </Button>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" Content="CLASS" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                <Button x:Name="Class" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="CLASS_SHAPE">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/class.png"  />
+                    </StackPanel>
                 </Button>
                 <Button AllowDrop="True" x:Name="Role" Width="40" Height="40" Margin="5" Padding="0,0" Content="ROLE" FontSize="12" FontFamily="Calibri"  Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
@@ -74,29 +92,41 @@
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ROLE">
                 </Button>
-                <Button x:Name="Artifact" Width="50" Height="40" Margin="5" Padding="0,0" Content="ARTIFACT" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                <Button x:Name="Artifact" Width="30" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ARTIFACT">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/artefact.png"  />
+                    </StackPanel>
                 </Button>
-                <Button x:Name="Activity" Width="50" Height="40" Margin="5" Padding="0,0" Content="ACTIVITY" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                <Button x:Name="Activity" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="ACTIVITY">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/activity.png"  />
+                    </StackPanel>
                 </Button>
-                <Button x:Name="Comment" Width="54" Height="40" Margin="5" Padding="0,0" Content="COMMENT" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                <Button x:Name="Comment" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="COMMENT">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/text-box-tool.png"  />
+                    </StackPanel>
                 </Button>
-                <Button x:Name="Phase" Width="40" Height="40" Margin="5" Padding="0,0" Content="PHASE" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                <Button x:Name="Phase" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
                         CommandParameter="PHASE">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/phase.png"  />
+                    </StackPanel>
                 </Button>
                 <Button x:Name="Link" Width="40" Height="40" Margin="5" Padding="0,0" Content="LINK" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 

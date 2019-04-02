@@ -32,8 +32,7 @@ export interface IUpdateLinksData {
 
 export interface IEditChatroomData {
     username: string,
-    chatroomName: string,  
-    // password: string, ?
+    chatroomName: string
 }
 
 // TODO: vérifier format

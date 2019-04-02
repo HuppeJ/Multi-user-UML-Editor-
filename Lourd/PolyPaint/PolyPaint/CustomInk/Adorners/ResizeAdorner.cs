@@ -53,6 +53,10 @@ namespace PolyPaint.CustomInk
             strokeBounds = customStroke.GetCustomBound();
             Point center = customStroke.GetCenter();
             rotation = new RotateTransform((customStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+            while (rotation.Angle < 0)
+            {
+                rotation.Angle += 360;
+            }
             unitX = rotation.Value.Transform(unitX);
             unitY = rotation.Value.Transform(unitY);
             // RenderTransform = rotation;
@@ -70,39 +74,326 @@ namespace PolyPaint.CustomInk
             int index = 0;
             foreach (Thumb anchor in anchors)
             {
-                anchor.Cursor = Cursors.SizeNWSE;
                 anchor.Width = 5;
                 anchor.Height = 5;
                 anchor.Background = Brushes.Gray;
-
-                switch (index)
+                if (rotation.Angle % 360 >= 360 - 45 / 2 || rotation.Angle % 360 <= 45 / 2)
                 {
-                    case 0:
-                        anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
-                        break;
-                    case 1:
-                        anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
-                        break;
-                    case 2:
-                        anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
-                        break;
-                    case 3:
-                        anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
-                        break;
-                    case 4:
-                        anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
-                        break;
-                    case 5:
-                        anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
-                        break;
-                    case 6:
-                        anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
-                        break;
-                    case 7:
-                        anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
-                        break;
-                    default:
-                        break;
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (rotation.Angle % 360 > 45 / 2 && rotation.Angle % 360 <= 90 - 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (rotation.Angle % 360 > 90 - 45 / 2 && rotation.Angle % 360 <= 90 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 90 + 45 / 2 && rotation.Angle % 360 <= 135 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 180 - 45 / 2 && rotation.Angle % 360 <= 180 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 225 - 45 / 2 && rotation.Angle % 360 <= 225 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 270 - 45 / 2 && rotation.Angle % 360 <= 270 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 anchor.DragStarted += new DragStartedEventHandler(All_DragStarted);
                 anchor.DragCompleted += new DragCompletedEventHandler(All_DragCompleted);
@@ -119,13 +410,143 @@ namespace PolyPaint.CustomInk
             cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 5));
             cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 6));
             cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 7));
+
+            index = 0;
             foreach (Thumb cheatAnchor in cheatAnchors)
             {
-                cheatAnchor.Cursor = Cursors.SizeNWSE;
                 cheatAnchor.Width = 1;
                 cheatAnchor.Height = 1;
+                if (rotation.Angle % 360 >= 315 || rotation.Angle % 360 <= 45)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 1:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 2:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 3:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 4:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 5:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 6:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 7:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 45 && rotation.Angle % 360 <= 135)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 1:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 2:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 3:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 4:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 5:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 6:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 7:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 135 && rotation.Angle % 360 <= 225)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 1:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 2:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 3:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 4:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 5:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 6:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 7:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 1:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 2:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 3:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 4:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 5:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 6:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 7:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
 
                 canvas.Children.Add(cheatAnchor);
+                index++;
             }
 
             strokeBounds = customStroke.GetCustomBound();
@@ -189,7 +610,7 @@ namespace PolyPaint.CustomInk
                                         DragCompletedEventArgs e)
         {
             Point actualPos = Mouse.GetPosition(this);
-            if (actualPos.X < 0 || actualPos.Y < 0)
+            if (e.HorizontalChange == 0 && e.VerticalChange == 0)
             {
                 visualChildren.Remove(resizePreview);
                 InvalidateArrange();
@@ -220,11 +641,11 @@ namespace PolyPaint.CustomInk
         private Vector calculateDelta(DragDeltaEventArgs e)
         {
             Point center = shapeStroke.GetCenter();
-            RotateTransform rotationInverse = new RotateTransform(360 - shapeStroke.shapeStyle.rotation, center.X, center.Y);
-            double deltaX = rotationInverse.Value.Transform(new Vector(e.HorizontalChange * unitX.X, e.VerticalChange * unitX.Y)).X;
-            double deltaY = rotationInverse.Value.Transform(new Vector(e.HorizontalChange * unitY.X, e.VerticalChange * unitY.Y)).Y;
+            RotateTransform rotationInverse = new RotateTransform(360 - rotation.Angle, center.X, center.Y);
+            Vector dragVect = new Vector(e.HorizontalChange, e.VerticalChange);
+            dragVect = rotationInverse.Value.Transform(dragVect);
             
-            return new Vector(deltaX, deltaY);
+            return dragVect;
         }
 
         void Top_DragDelta(object sender, DragDeltaEventArgs e)
