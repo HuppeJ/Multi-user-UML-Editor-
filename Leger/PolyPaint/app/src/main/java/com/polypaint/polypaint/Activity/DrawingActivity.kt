@@ -452,18 +452,18 @@ class DrawingActivity : AppCompatActivity(){
                 }
             }
             //LINK VIEW
-            /*
+
             val listLink = ViewShapeHolder.getInstance().linkMap.keys.toMutableList()
             for (view in listLink){
                 if(view.isSelected && !view.isSelectedByOther) {
-                    if(view.link?.to == null && view.link?.from == null){
+                    //if(view.link?.to?.formId == "" && view.link?.from == AnchorPoint()){
                         view.isSelected = false
-                        val drawingElementToDuplicate = ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().linkMap.getValue(view))
+                        val drawingElementToDuplicate = ViewShapeHolder.getInstance().canevas.findLink(ViewShapeHolder.getInstance().linkMap.getValue(view))
                         shapesToDuplicate.add(drawingElementToDuplicate!!)
-                    }
+                    //}
                 }
             }
-            */
+
             //Add All DrawingElementOnCanevas
             if (shapesToDuplicate != null) {
                 for (drawingElem in shapesToDuplicate){
@@ -485,6 +485,18 @@ class DrawingActivity : AppCompatActivity(){
                         ViewShapeHolder.getInstance().map.inverse().getValue(shapeDuplicated.id).isSelected = true
                     }else if(drawingElem is Link){
                         //TODO:
+                        var linkDuplicated = drawingElem.copy()
+                        //linkDuplicated.id = UUID.randomUUID().toString()
+
+                        ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(linkDuplicated.id)
+                        //emitAddLink ?
+                        runOnUiThread {
+                            ViewShapeHolder.getInstance().canevas.addLink(linkDuplicated)
+                            val linkView: LinkView = LinkView(this)
+                            linkView.setLinkAndAnchors(linkDuplicated)
+                            ViewShapeHolder.getInstance().linkMap.forcePut(linkView, linkDuplicated.id)
+                            parent_relative_layout?.addView(linkView)
+                        }
                     }
                 }
             }
@@ -497,8 +509,17 @@ class DrawingActivity : AppCompatActivity(){
                     emitAddForm(drawingElem)
 
                     ViewShapeHolder.getInstance().map.inverse().getValue(drawingElem.id).isSelected = true
-                }else{
+                }else if(drawingElem is Link){
                     //TODO : LINKS
+                    ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(drawingElem.id)
+                    //emitAddLink ?
+                    runOnUiThread {
+                        ViewShapeHolder.getInstance().canevas.addLink(drawingElem)
+                        val linkView: LinkView = LinkView(this)
+                        linkView.setLinkAndAnchors(drawingElem)
+                        ViewShapeHolder.getInstance().linkMap.forcePut(linkView, drawingElem.id)
+                        parent_relative_layout?.addView(linkView)
+                    }
                 }
             }
             clipboard = ArrayList()
