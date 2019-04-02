@@ -958,16 +958,16 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onCanevasResized: Emitter.Listener = Emitter.Listener {
-        Log.d("onCanevasResized", "alllooo")
+        Log.d("onCanevasResized", it[0].toString())
 
         val gson = Gson()
-        val obj: CanvasEvent =  gson.fromJson(it[0].toString())
+        val obj: CanvasResizeEvent =  gson.fromJson(it[0].toString())
 
         if(obj.username != UserHolder.getInstance().username) {
             runOnUiThread {
-                ViewShapeHolder.getInstance().canevas.dimensions = obj.canevas.dimensions
-                parent_relative_layout.layoutParams.width = (obj.canevas.dimensions.x).toInt()
-                parent_relative_layout.layoutParams.height = (obj.canevas.dimensions.y).toInt()
+                ViewShapeHolder.getInstance().canevas.dimensions = obj.dimensions
+                parent_relative_layout.layoutParams.width = (obj.dimensions.x).toInt()
+                parent_relative_layout.layoutParams.height = (obj.dimensions.y).toInt()
                 parent_relative_layout.requestLayout()
             }
         }

@@ -175,9 +175,11 @@ class LassoView(context: Context?) : View(context) {
                                 && region.contains(center.x.toInt() + bottomLeft.x.toInt(), center.y.toInt() + bottomLeft.y.toInt())
                                 && region.contains(center.x.toInt() + bottomRight.x.toInt(), center.y.toInt() + bottomRight.y.toInt())
                             ){
-                                viewsIn.add(view)
-                                view.isSelected = true
-                                view.hideButtonsAndAnchors()
+                                if(!view.isSelectedByOther) {
+                                    viewsIn.add(view)
+                                    view.isSelected = true
+                                    view.hideButtonsAndAnchors()
+                                }
                             }
                         }
                         for(link in ViewShapeHolder.getInstance().linkMap.keys){
@@ -194,9 +196,11 @@ class LassoView(context: Context?) : View(context) {
                                 if(viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.from?.formId])
                                     && viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.to?.formId])
                                 ) {
-                                    linksIn.add(link)
-                                    link.isSelected = true
-                                    link.hideButtons()
+                                    if(!link.isSelectedByOther) {
+                                        linksIn.add(link)
+                                        link.isSelected = true
+                                        link.hideButtons()
+                                    }
                                 }
                             }
                         }

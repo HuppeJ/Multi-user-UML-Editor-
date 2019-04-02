@@ -84,7 +84,11 @@ open class BasicElementView: ConstraintLayout {
         if(this.isSelected && !selected){
             emitDeselection()
         }
-        if(selected){
+        var realSelected = selected
+        if(isSelectedByOther){
+            realSelected = false
+        }
+        if(realSelected){
             //first_line.text = "Focus"
             borderResizableLayout.setBackgroundResource(R.drawable.borders_blue)
             editButton.visibility = View.VISIBLE
@@ -102,7 +106,7 @@ open class BasicElementView: ConstraintLayout {
             resizeButton.visibility = View.INVISIBLE
             setAnchorsVisible(false)
         }
-        return super.setSelected(selected)
+        return super.setSelected(realSelected)
     }
 
     fun hideButtonsAndAnchors(){
