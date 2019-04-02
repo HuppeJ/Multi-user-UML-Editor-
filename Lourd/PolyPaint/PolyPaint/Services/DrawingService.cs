@@ -234,7 +234,13 @@ namespace PolyPaint.Services
 
         public static void DrawCanvas(Templates.Canvas canvas)
         {
-            foreach(Link link in canvas.links)
+            canvasName = canvas.name;
+            currentCanvas = canvas;
+            Application.Current.Dispatcher.Invoke(new Action(() => { OnResizeCanvas(canvas.dimensions); }), DispatcherPriority.ContextIdle);
+            localSelectedStrokes = new List<string>();
+            localAddedStrokes = new List<string>();
+            socket.Emit("getSelectedForms", canvasName);
+            foreach (Link link in canvas.links)
             {
                 LinkStroke linkStroke = LinkStrokeFromLink(link);
                 InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(linkStroke);
