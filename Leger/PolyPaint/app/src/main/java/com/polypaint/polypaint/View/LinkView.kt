@@ -511,7 +511,9 @@ class LinkView: View{
     }
 
     fun setPaintColorWithLinkStyle(){
-        paint.color = Color.parseColor(link?.style?.color)
+        if(link?.style?.color != null) {
+            paint.color = Color.parseColor(link?.style?.color)
+        }
 //        when(link?.style?.color){
 //            "BLACK"->paint.color = Color.BLACK
 //            "GREEN"->paint.color = Color.GREEN
@@ -631,7 +633,7 @@ class LinkView: View{
 
 
                 val localLink: Link? = link
-                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("BLACK",10,0), ArrayList())
+                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",10,0), ArrayList())
 
                 if(localLink != null){
                     previewLink.path.add(localLink.path[index])

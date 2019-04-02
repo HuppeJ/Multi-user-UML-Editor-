@@ -341,7 +341,7 @@ open class BasicElementView: ConstraintLayout {
                                 anchorPointStart,
                                 anchorPointEnd,
                                 3,
-                                LinkStyle("BLACK", 10, 0),
+                                LinkStyle("#FF000000", 10, 0),
                                 path
                             )
 
@@ -489,45 +489,46 @@ open class BasicElementView: ConstraintLayout {
                 }
                 MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
 
-                    val deltaX = event.rawX - oldFrameRawX
-                    val deltaY = event.rawY - oldFrameRawY
-                    this.x = this.x + deltaX
-                    this.y = this.y + deltaY
-                    leftX += deltaX
-                    topY += deltaY
-                    oldFrameRawX = event.rawX
-                    oldFrameRawY = event.rawY
+                    if(isSelected) {
+                        val deltaX = event.rawX - oldFrameRawX
+                        val deltaY = event.rawY - oldFrameRawY
+                        this.x = this.x + deltaX
+                        this.y = this.y + deltaY
+                        leftX += deltaX
+                        topY += deltaY
+                        oldFrameRawX = event.rawX
+                        oldFrameRawY = event.rawY
 
 
-                    if(pointerFinger1 != -1 && pointerFinger2 != -1) {
-                        fingersCoords[2].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
-                        fingersCoords[2].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
-                        fingersCoords[3].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
-                        fingersCoords[3].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
-                        //Calculate Angle
-                        val angle = calculateDeltaAngle()
+                        if (pointerFinger1 != -1 && pointerFinger2 != -1) {
+                            fingersCoords[2].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
+                            fingersCoords[2].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
+                            fingersCoords[3].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
+                            fingersCoords[3].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
+                            //Calculate Angle
+                            val angle = calculateDeltaAngle()
 
 
-                        //Rotate
-                        rotation += angle.toInt()
+                            //Rotate
+                            rotation += angle.toInt()
 
 
+                            //Log.d("Angle", ""+angle)
+                            //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
+                            //Log.d("ACTU COORD", ""+fingersCoords[2]+"::"+fingersCoords[3])
 
-                        //Log.d("Angle", ""+angle)
-                        //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
-                        //Log.d("ACTU COORD", ""+fingersCoords[2]+"::"+fingersCoords[3])
+                            //Save for next step
+                            fingersCoords[0].x = fingersCoords[2].x
+                            fingersCoords[0].y = fingersCoords[2].y
+                            fingersCoords[1].x = fingersCoords[3].x
+                            fingersCoords[1].y = fingersCoords[3].y
+                        }
 
-                        //Save for next step
-                        fingersCoords[0].x = fingersCoords[2].x
-                        fingersCoords[0].y = fingersCoords[2].y
-                        fingersCoords[1].x = fingersCoords[3].x
-                        fingersCoords[1].y = fingersCoords[3].y
-                    }
-
-                    val basicShapeId = ViewShapeHolder.getInstance().map[this]
-                    if(basicShapeId != null){
-                        setAllLinksPosition(basicShapeId, false)
-                        setAllLinksPosition(basicShapeId, true)
+                        val basicShapeId = ViewShapeHolder.getInstance().map[this]
+                        if (basicShapeId != null) {
+                            setAllLinksPosition(basicShapeId, false)
+                            setAllLinksPosition(basicShapeId, true)
+                        }
                     }
 
 

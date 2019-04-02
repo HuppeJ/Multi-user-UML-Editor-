@@ -58,11 +58,22 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
             val builder = AlertDialog.Builder(it)
             val view: View = it.layoutInflater.inflate(R.layout.dialog_edit_link,null)
 
+            val localLink = link
+            if(localLink != null) {
+                type = localLink.type
+                multiplicityFrom?.setText(localLink.from.multiplicity)
+                multiplicityTo?.setText(localLink.to.multiplicity)
+                color = localLink.style.color
+                thickness = localLink.style.thickness
+                style = localLink.style.type
+            }
+
             val typeSpinner: Spinner = view.findViewById(R.id.link_type_spinner)
             val thicknessSpinner: Spinner = view.findViewById(R.id.link_thickness_spinner)
             val styleSpinner: Spinner = view.findViewById(R.id.link_style_spinner)
 
             val colorPickerButton:Button = view.findViewById(R.id.link_color_picker)
+            colorPickerButton.setBackgroundColor(Color.parseColor(color))
             colorPickerButton.setOnClickListener {
                 ColorPickerDialog.Builder(context)
                     .setPositiveButton("Select", ColorEnvelopeListener{ envelope: ColorEnvelope, fromUser: Boolean ->

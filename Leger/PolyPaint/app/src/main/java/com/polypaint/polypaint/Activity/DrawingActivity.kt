@@ -61,6 +61,7 @@ class DrawingActivity : AppCompatActivity(){
     var mMinimumHeight : Float = 450F
     var mMaximumWidth : Float = 1680F
     var mMaximumHeight : Float = 1155F
+    val shapeOffset: Float = 65F
 
     var lassoView: LassoView? = null
 
@@ -205,28 +206,31 @@ class DrawingActivity : AppCompatActivity(){
         if(ViewShapeHolder.getInstance().canevas != null){
             Log.d("init","****"+ViewShapeHolder.getInstance().canevas.name+"****")
 
-            // Adding SHAPES
-            for(form: BasicShape in shapesToAdd){
-                Log.d("INFORLOOP","********")
-                ViewShapeHolder.getInstance().canevas.addShape(form)
-                addOnCanevas(form)
-            }
-            shapesToAdd.clear()
+            runOnUiThread {
+                // Adding SHAPES
+                for (form: BasicShape in shapesToAdd) {
+                    Log.d("INFORLOOP", "********")
+                    ViewShapeHolder.getInstance().canevas.addShape(form)
+                    addOnCanevas(form)
+                }
+                shapesToAdd.clear()
 
-            // TODO : review Adding LINKS
-           for(link: Link in linksToAdd) {
+                // TODO : review Adding LINKS
+                for (link: Link in linksToAdd) {
                     ViewShapeHolder.getInstance().canevas.addLink(link)
                     val linkView: LinkView = LinkView(this)
                     linkView.setLinkAndAnchors(link)
                     ViewShapeHolder.getInstance().linkMap.forcePut(linkView, link.id)
                     parent_relative_layout?.addView(linkView)
+                }
+                linksToAdd.clear()
+
+                // Sizing the Canvas
+                parent_relative_layout.layoutParams.width = (ViewShapeHolder.getInstance().canevas.dimensions.x).toInt()
+                parent_relative_layout.layoutParams.height =
+                    (ViewShapeHolder.getInstance().canevas.dimensions.y).toInt()
+
             }
-            linksToAdd.clear()
-
-            // Sizing the Canvas
-            parent_relative_layout.layoutParams.width = (ViewShapeHolder.getInstance().canevas.dimensions.x).toInt()
-            parent_relative_layout.layoutParams.height = (ViewShapeHolder.getInstance().canevas.dimensions.y).toInt()
-
             // Selecting selected Forms and Links
             val app = application as PolyPaint
             app.socket?.emit(SocketConstants.GET_SELECTED_FORMS, ViewShapeHolder.getInstance().canevas.name)
@@ -362,7 +366,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun newShapeOnCanevas(shapeType: ShapeTypes) : BasicShape{
-        var shapeStyle = ShapeStyle(Coordinates(0.0,0.0), 10.0, 10.0, 0.0, "black", 0, "white")
+        var shapeStyle = ShapeStyle(Coordinates(shapeOffset.toDouble(),shapeOffset.toDouble()), 10.0, 10.0, 0.0, "black", 0, "white")
         var shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
 
         when (shapeType) {
@@ -638,8 +642,8 @@ class DrawingActivity : AppCompatActivity(){
             val basicShapeId:  String = ViewShapeHolder.getInstance().map.getValue(view)
             val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
             if(basicShape != null) {
-                view.x = (basicShape.shapeStyle.coordinates.x).toFloat()
-                view.y = (basicShape.shapeStyle.coordinates.y).toFloat()
+                view.x = (basicShape.shapeStyle.coordinates.x).toFloat() - shapeOffset
+                view.y = (basicShape.shapeStyle.coordinates.y).toFloat() - shapeOffset
                 view.leftX = view.x
                 view.topY = view.y
                 view.rotation = basicShape.shapeStyle.rotation.toFloat()
@@ -721,8 +725,8 @@ class DrawingActivity : AppCompatActivity(){
             val basicElem = ViewShapeHolder.getInstance().map.inverse().getValue(shape.id)
 
             Log.d("syncCanevasFromLayout", shape.name+" w "+basicElem.borderResizableLayout.width+" h "+basicElem.borderResizableLayout.height)
-            shape.shapeStyle.coordinates.x = (basicElem.x).toDouble()
-            shape.shapeStyle.coordinates.y = (basicElem.y).toDouble()
+            shape.shapeStyle.coordinates.x = (basicElem.x).toDouble() + shapeOffset
+            shape.shapeStyle.coordinates.y = (basicElem.y).toDouble() + shapeOffset
             shape.shapeStyle.width = basicElem.borderResizableLayout.width.toDouble()
             shape.shapeStyle.height = basicElem.borderResizableLayout.height.toDouble()
             shape.shapeStyle.rotation = basicElem.rotation.toDouble()
