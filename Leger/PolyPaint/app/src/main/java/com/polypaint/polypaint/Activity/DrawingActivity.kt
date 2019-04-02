@@ -1092,7 +1092,7 @@ class DrawingActivity : AppCompatActivity(){
             jsonObject.get("password").asString,
             forms,
             gson.fromJson(jsonObject.get("links")),
-            jsonObject.get("thumbnailLeger").asString,
+            jsonObject.get("thumbnail").asString,
             gson.fromJson(jsonObject.get("dimensions"))
         )
     }
