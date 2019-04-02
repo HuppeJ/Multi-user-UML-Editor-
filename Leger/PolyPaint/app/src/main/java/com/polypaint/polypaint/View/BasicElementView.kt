@@ -18,6 +18,7 @@ import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.VFXHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
@@ -646,6 +647,8 @@ open class BasicElementView: ConstraintLayout {
         when(event.action){
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
                 emitDelete()
+
+                VFXHolder.getInstance().fireDeleteVFX(leftX+borderResizableLayout.layoutParams.width/2 ,topY+borderResizableLayout.layoutParams.height/2,context)
                 val parentView = v.parent.parent.parent as RelativeLayout
 
                 val shapeId: String? = ViewShapeHolder.getInstance().map[this]

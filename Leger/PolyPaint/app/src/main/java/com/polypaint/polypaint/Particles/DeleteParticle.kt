@@ -1,27 +1,19 @@
 package com.polypaint.polypaint.Particles
 
 import android.content.Context
-import android.graphics.*
-import kotlin.math.max
-import kotlin.math.sign
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 
-
-open class BasicParticle (open var xOrigin: Float, open var yOrigin:Float, open var maxSpeed :Float, open var context: Context) {
-    val ALIVE = 0
-    val DEAD = 1
+class DeleteParticle (override var xOrigin: Float, override var yOrigin:Float, override var maxSpeed :Float, override var context: Context): BasicParticle(xOrigin,yOrigin,maxSpeed,context) {
     private var mState: Int = ALIVE
     //private var mBitmap: Bitmap? = null
     private var mAge: Int = 0
     private var mLifetime: Int = 25
     private var mPaint: Paint = Paint()
     //private var mBase: Bitmap? = null
-    var x : Float = 0F
-    var y : Float = 0F
-    var vX : Float = 0F
-    var vY : Float = 0F
-    var aX : Float = 0F
-    var aY : Float = 0F
-    open fun initialize() {
+    private var size : Float = 5F
+    override fun initialize() {
         //Make Bitmap based on drawable
         //mBase = BitmapFactory.decodeResource(context.resources, R.drawable.ic_plus)
         //set random scale
@@ -29,51 +21,36 @@ open class BasicParticle (open var xOrigin: Float, open var yOrigin:Float, open 
         //mBitmap = Bitmap.createScaledBitmap(mBase,100,100,true)
         //mBitmap = mBase
         //Set Random direction
+        mPaint.color = Color.RED
+
         this.x = xOrigin
         this.y = yOrigin
 
+        size = size()
         //Square splat
-
         vX = maxSpeed * initDirection()
         vY = maxSpeed * initDirection()
 
         //Circle splat
+        /*
         if(vX*vX + vY*vY >= maxSpeed * maxSpeed){
             vX *= 0.7F
             vY *= 0.7F
         }
 
-
+        */
 
 
     }
     //Splatter Effect
-    open fun initDirection (): Float{
+    override fun initDirection (): Float{
         return ((Math.random()*2)-1).toFloat()
     }
 
-    open fun update(){
-        if(mState != DEAD){
-            //Mouvement Euler Simple
-            this.x += this.vX
-            this.y += this.vY
-            if(vX*vX + vY*vY <= maxSpeed * maxSpeed){
-                this.vX += this.aX
-                this.vY += this.aY
-            }
-            mAge ++
-            if(mAge >= mLifetime){
-               mState = DEAD
-            }
-
-        }
+    private fun size() : Float {
+        return (5+10*Math.random()).toFloat()
     }
-
-    open fun isAlive():Boolean{
-        return mState == ALIVE
-    }
-
-    open fun draw(canvas: Canvas){
-        canvas.drawCircle(this.x,this.y,5.0f, mPaint)
+    override fun draw(canvas: Canvas){
+        canvas.drawRect(this.x,this.y,this.x+size,this.y+size, mPaint)
     }
 }

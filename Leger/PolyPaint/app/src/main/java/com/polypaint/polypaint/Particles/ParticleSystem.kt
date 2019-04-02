@@ -7,21 +7,28 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.polypaint.polypaint.Application.PolyPaint
 
-class ParticleSystem(nParicles : Int,xOrigin: Float, yOrigin:Float,context: Context) {
+open class ParticleSystem(nParicles : Int,xOrigin: Float, yOrigin:Float,context: Context) {
     val ALIVE : Int = 0
     val DEAD : Int = 1
 
     var mState = ALIVE
-    private val particles : ArrayList<BasicParticle> = ArrayList()
-
+    var particles : ArrayList<BasicParticle> = ArrayList()
+    val nParicles = nParicles
+    val xOrigin = xOrigin
+    val yOrigin = yOrigin
+    val context = context
     init {
+
+    }
+    open fun initialize() {
         mState = ALIVE
         for (i in 0..nParicles){
             particles.add(BasicParticle(xOrigin, yOrigin,10F,context))
+            particles[i].initialize()
         }
     }
 
-    fun update(canvas: Canvas){
+    open fun update(canvas: Canvas){
         if (mState != DEAD) {
             var isDead = true
             for (particle in particles) {
@@ -37,7 +44,7 @@ class ParticleSystem(nParicles : Int,xOrigin: Float, yOrigin:Float,context: Cont
         }
         draw(canvas)
     }
-    fun draw(canvas: Canvas){
+    open fun draw(canvas: Canvas){
         for (particle in particles) {
             if (particle.isAlive()) {
                 particle.draw(canvas)
@@ -45,7 +52,7 @@ class ParticleSystem(nParicles : Int,xOrigin: Float, yOrigin:Float,context: Cont
         }
     }
 
-    fun isDead():Boolean{
+    open fun isDead():Boolean{
         return mState == DEAD
     }
 }

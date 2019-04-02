@@ -290,8 +290,8 @@ class DrawingActivity : AppCompatActivity(){
 
         //LAUNCH VFX
         VFXHolder.getInstance().fireVFX(
-            (shape.shapeStyle.coordinates.x + shape.shapeStyle.width/2).toFloat(),
-            (shape.shapeStyle.coordinates.y + shape.shapeStyle.height/2).toFloat(),this)
+            (shape.shapeStyle.coordinates.x + 100F).toFloat(),
+            (shape.shapeStyle.coordinates.y + 100F).toFloat(),this)
         //Play Sound VFX
         PlaySoundHolder.getInstance().playNotification1(this)
 
