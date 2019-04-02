@@ -161,8 +161,9 @@ class DrawingActivity : AppCompatActivity(){
 
         clear_canvas_button.setOnClickListener {
             emitClearCanvas()
-            parent_relative_layout?.removeAllViews()
+            ViewShapeHolder.getInstance().removeAll()
             ViewShapeHolder.getInstance().stackDrawingElementCreatedId = Stack<String>()
+            parent_relative_layout?.addView(VFXHolder.getInstance().vfxView)
         }
 
         duplicate_button.setOnClickListener{
