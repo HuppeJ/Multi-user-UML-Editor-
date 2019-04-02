@@ -193,14 +193,15 @@ class LassoView(context: Context?) : View(context) {
                                 }
                             }
                             if(isAllPathIn){
-                                if(viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.from?.formId])
-                                    && viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.to?.formId])
+                                if((viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.from?.formId])
+                                    && viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.to?.formId])) ||
+                                    (link.link?.from?.formId == "" && link.link?.to?.formId == "")
                                 ) {
-                                    if(!link.isSelectedByOther) {
+                                    //if(!link.isSelectedByOther) {
                                         linksIn.add(link)
                                         link.isSelected = true
                                         link.hideButtons()
-                                    }
+                                    //}
                                 }
                             }
                         }
