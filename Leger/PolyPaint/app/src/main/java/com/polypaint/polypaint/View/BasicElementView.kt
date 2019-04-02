@@ -802,7 +802,7 @@ open class BasicElementView: ConstraintLayout {
     open fun outlineColor(color: String, borderType: Int){}
     open fun backgroundColor(color: String){}
 
-    private fun emitUpdate(){
+    fun emitUpdate(){
         val response: String = this.createFormsUpdateEvent()
 
         if(response !="") {
