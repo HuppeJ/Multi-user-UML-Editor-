@@ -291,6 +291,7 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateDeselection += OnRemoteDeselection;
             DrawingService.OnResizeCanvas += OnResizeCanvas;
             DrawingService.SaveCanvas += ConvertInkCanvasToByteArray;
+            DrawingService.RefreshChildren += RefreshChildren;
         }
 
         private void OnResizeCanvas(Coordinates dimensions)

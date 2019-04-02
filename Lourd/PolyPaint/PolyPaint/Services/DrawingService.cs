@@ -29,6 +29,7 @@ namespace PolyPaint.Services
         public static event Action<Coordinates> OnResizeCanvas;
         public static event Action BackToGallery;
         public static event Action SaveCanvas;
+        public static event Action RefreshChildren;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -315,6 +316,9 @@ namespace PolyPaint.Services
                 InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(shapeStroke);
                 Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             }
+
+            Application.Current.Dispatcher.Invoke(new Action(() => { RefreshChildren(); }), DispatcherPriority.Render);
+
         }
 
         public static void LeaveCanvas(bool saveCanvas)
@@ -446,7 +450,7 @@ namespace PolyPaint.Services
             StylusPointCollection points = new StylusPointCollection();
             for (int i = 0; i < link.path.Count; i++)
             {
-                StylusPoint point = new StylusPoint((double)link.path[i].x, (double)link.path[i].y);
+                StylusPoint point = new StylusPoint((double)link.path[i].x / 2.1, (double)link.path[i].y / 2.1);
                 points.Add(point);
             }
 
@@ -539,14 +543,13 @@ namespace PolyPaint.Services
         private static LinkStroke LinkStrokeFromLink(Link link)
         {
             StrokeTypes type = (StrokeTypes)link.type;
-            StylusPointCollection points = new StylusPointCollection();
             for(int i=0; i<link.path.Count; i++)
             {
-                StylusPoint point = new StylusPoint(link.path[i].x, link.path[i].y);
-                points.Add(point);
+                link.path[i].x /= 2.1;
+                link.path[i].y /= 2.1;
             }
 
-            return new LinkStroke(link, points);
+            return new LinkStroke(link, new StylusPointCollection { new StylusPoint(0,0) });
         }
 
         private static void ExtractCanvasesShapes(List<Templates.Canvas> canvasesList)

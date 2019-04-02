@@ -39,8 +39,26 @@ namespace PolyPaint.CustomInk.Strokes
             {
                 DrawingAttributes.Color = (Color)ColorConverter.ConvertFromString(style.color);
             }
-            DrawingAttributes.Width = style.thickness;
-            DrawingAttributes.Height = style.thickness;
+
+            switch (style.thickness)
+            {
+                case 0:
+                    DrawingAttributes.Width = 2;
+                    DrawingAttributes.Height = 2;
+                    break;
+                case 1:
+                    DrawingAttributes.Width = 6;
+                    DrawingAttributes.Height = 6;
+                    break;
+                case 2:
+                    DrawingAttributes.Width = 10;
+                    DrawingAttributes.Height = 10;
+                    break;
+                default:
+                    DrawingAttributes.Width = 2;
+                    DrawingAttributes.Height = 2;
+                    break;
+            }
 
             addStylusPointsToLink();
         }
@@ -477,7 +495,12 @@ namespace PolyPaint.CustomInk.Strokes
         {
             AnchorPoint fromForComm = from.GetForCommunication();
             AnchorPoint toForComm = to.GetForCommunication();
-            return new Link(guid.ToString(), name, fromForComm, toForComm, linkType, style, path);
+            List<Coordinates> newPath = new List<Coordinates>();
+            foreach (Coordinates coords in path)
+            {
+                newPath.Add(new Coordinates(coords.x * 2.1, coords.y * 2.1));
+            }
+            return new Link(guid.ToString(), name, fromForComm, toForComm, linkType, style, newPath);
         }
 
         public override Rect GetBounds()
