@@ -391,7 +391,7 @@ namespace PolyPaint.VueModeles
         private void BackToGallery(object o)
         {
             CloseChatWindow?.Invoke();
-            DrawingService.LeaveCanvas(true);
+            DrawingService.LeaveCanvas();
             UserMode = UserModes.Gallery;
         }
         #endregion

@@ -43,7 +43,7 @@ namespace PolyPaint.Vues
 
         void window_Closing(object sender, global::System.ComponentModel.CancelEventArgs e)
         {
-            DrawingService.LeaveCanvas(false);
+            DrawingService.LeaveCanvas();
         }
 
         // Pour gérer les points de contrôles.
@@ -52,27 +52,27 @@ namespace PolyPaint.Vues
         {
             (sender as Thumb).Background = Brushes.White;
 
-            DrawingService.ResizeCanvas(new Coordinates(width, height));
+            DrawingService.ResizeCanvas(new Coordinates(width * 2.1, height * 2.1));
         }
         private void GlisserMouvementRecu(object sender, DragDeltaEventArgs e)
         {
             String nom = (sender as Thumb).Name;
             if (nom == "horizontal" || nom == "diagonal")
             {
-                width = Math.Max(32, colonne.Width.Value + e.HorizontalChange);
+                width = Math.Min(Math.Max(225, colonne.Width.Value + e.HorizontalChange), 800);
                 colonne.Width = new GridLength(width);
             }
             if (nom == "vertical" || nom == "diagonal")
             {
-                height = Math.Max(32, ligne.Height.Value + e.VerticalChange);
+                height = Math.Min(Math.Max(225, ligne.Height.Value + e.VerticalChange), 550);
                 ligne.Height = new GridLength(height);
             }
         }
 
         private void OnResizeCanvas(Coordinates dimensions)
         {
-            colonne.Width = new GridLength(dimensions.x);
-            ligne.Height = new GridLength(dimensions.y);
+            colonne.Width = new GridLength(dimensions.x / 2.1);
+            ligne.Height = new GridLength(dimensions.y / 2.1);
         }
 
         // Pour la gestion de l'affichage de position du pointeur.

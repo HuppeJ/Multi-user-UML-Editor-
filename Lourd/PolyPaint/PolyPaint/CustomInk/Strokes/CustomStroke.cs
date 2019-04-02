@@ -15,6 +15,9 @@ namespace PolyPaint.CustomInk
         public int strokeType;
         public string owner = null;
 
+        public const double WIDTH = 2.1;
+        public const double HEIGHT = 2.1;
+
         public CustomStroke(StylusPointCollection pts) : base(pts)
         {
             if(ConnectionService.username != null)
