@@ -109,58 +109,58 @@ class LassoView(context: Context?) : View(context) {
                             val center = Coordinates(view.leftX + view.measuredWidth / 2.0, (view.topY + view.measuredHeight / 2.0) )
 
                            val topLeft = Coordinates(
-                                (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.sin(
+                                (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) - (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.cos(
+                                ) - (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
                                 ),
 
-                                -(view.borderResizableLayout.layoutParams.height) / 2.0 * Math.cos(
+                                -(view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) - (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.sin(
+                                ) - (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
                                 )
                             )
 
                             val topRight = Coordinates(
-                                (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.sin(
+                                (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) + (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.cos(
+                                ) + (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
                                 ),
 
-                                -(view.borderResizableLayout.layoutParams.height) / 2.0 * Math.cos(
+                                -(view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) + (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.sin(
+                                ) + (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
                                 )
                             )
 
 
                             val bottomLeft = Coordinates(
-                                - (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.sin(
+                                - (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) - (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.cos(
+                                ) - (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
                                 ),
 
-                                (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.cos(
+                                (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) - (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.sin(
+                                ) - (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
                                 )
                             )
 
                             val bottomRight = Coordinates(
-                                - (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.sin(
+                                - (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) + (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.cos(
+                                ) + (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
                                 ),
 
-                                (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.cos(
+                                (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) + (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.sin(
+                                ) + (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
                                 )
                             )

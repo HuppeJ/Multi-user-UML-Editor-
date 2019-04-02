@@ -1148,6 +1148,7 @@ class DrawingActivity : AppCompatActivity(){
             drawer?.closeDrawer()
         } else {
             // TODO : Jé's Fix
+            parent_relative_layout?.dispatchSetSelected(false)
             ViewShapeHolder.getInstance().map.clear()
 
             val gson = Gson()
