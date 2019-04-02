@@ -19,17 +19,12 @@ import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
 import com.github.salomonbrys.kotson.fromJson
-import com.google.gson.Gson
 import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.ShapeTypes
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
-import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
-import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
-import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
-import com.polypaint.polypaint.SocketReceptionModel.LinksUpdateEvent
 import com.polypaint.polypaint.View.*
 import kotlinx.android.synthetic.main.activity_drawing.*
 import kotlinx.android.synthetic.main.basic_element.view.*
@@ -47,11 +42,15 @@ import android.view.MotionEvent
 import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.github.salomonbrys.kotson.get
+import com.google.gson.*
 import com.polypaint.polypaint.Fragment.TutorialDialogFragment
 import com.polypaint.polypaint.Holder.*
 import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
 import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
+import com.polypaint.polypaint.SocketReceptionModel.*
 import kotlinx.android.synthetic.main.toolbar.*
+import java.lang.reflect.Type
 
 
 class DrawingActivity : AppCompatActivity(){
@@ -605,13 +604,17 @@ class DrawingActivity : AppCompatActivity(){
                                 view as ClassView
                                 view.class_name.text = basicShape.name
                                 var tmp : String = ""
-                                for(e in basicShape.attributes){
-                                    tmp += e +"\n"
+                                if(basicShape.attributes != null) {
+                                    for (e in basicShape.attributes) {
+                                        tmp += e + "\n"
+                                    }
                                 }
                                 view.class_attributes.text = tmp
                                 tmp = ""
-                                for(e in basicShape.methods){
-                                    tmp += e +"\n"
+                                if(basicShape.methods != null) {
+                                    for (e in basicShape.methods) {
+                                        tmp += e + "\n"
+                                    }
                                 }
                                 view.class_methods.text = tmp
                                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
@@ -725,9 +728,11 @@ class DrawingActivity : AppCompatActivity(){
     private var onFormsUpdated: Emitter.Listener = Emitter.Listener {
         Log.d("onFormsUpdated", "alllooo")
 
-        val gson = Gson()
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
+        val customGson: Gson = gsonBuilder.create()
 
-        val obj: FormsUpdateEvent = gson.fromJson(it[0].toString())
+        val obj: FormsUpdateEvent = customGson.fromJson(it[0].toString())
         if(obj.username != UserHolder.getInstance().username) {
             for(form: BasicShape in obj.forms) {
                 Log.d("formsUpdate", obj.username + form.name)
@@ -742,9 +747,11 @@ class DrawingActivity : AppCompatActivity(){
     private var onFormsSelected: Emitter.Listener = Emitter.Listener {
         Log.d("onFormsSelected", "alllooo")
 
-        val gson = Gson()
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
+        val customGson: Gson = gsonBuilder.create()
 
-        val obj: FormsUpdateEvent = gson.fromJson(it[0].toString())
+        val obj: FormsUpdateEvent = customGson.fromJson(it[0].toString())
         if(obj.username != UserHolder.getInstance().username) {
             for(form: BasicShape in obj.forms) {
                 Log.d("formsSelect", obj.username + form.name)
@@ -763,9 +770,11 @@ class DrawingActivity : AppCompatActivity(){
     private var onFormsDeselected: Emitter.Listener = Emitter.Listener {
         Log.d("onFormsDeselected", "alllooo")
 
-        val gson = Gson()
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
+        val customGson: Gson = gsonBuilder.create()
 
-        val obj: FormsUpdateEvent = gson.fromJson(it[0].toString())
+        val obj: FormsUpdateEvent = customGson.fromJson(it[0].toString())
         if(obj.username != UserHolder.getInstance().username) {
             for(form: BasicShape in obj.forms) {
                 Log.d("formsDeselect", obj.username + form.name)
@@ -784,8 +793,11 @@ class DrawingActivity : AppCompatActivity(){
     private var onFormsDeleted: Emitter.Listener = Emitter.Listener {
         Log.d("onFormsDeleted", "alllooo")
 
-        val gson = Gson()
-        val obj: FormsUpdateEvent = gson.fromJson(it[0].toString())
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
+        val customGson: Gson = gsonBuilder.create()
+
+        val obj: FormsUpdateEvent = customGson.fromJson(it[0].toString())
         if(obj.username != UserHolder.getInstance().username) {
             for(form: BasicShape in obj.forms) {
                 Log.d("formsDeleted", obj.username + form.name)
@@ -895,10 +907,14 @@ class DrawingActivity : AppCompatActivity(){
     private var onFormsCreated: Emitter.Listener = Emitter.Listener {
         Log.d("onFormsCreated", "alllooo")
 
-        val gson = Gson()
-        val obj: FormsUpdateEvent = gson.fromJson(it[0].toString())
+
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
+        val customGson: Gson = gsonBuilder.create()
+
+        val obj: FormsUpdateEvent = customGson.fromJson(it[0].toString())
         if(obj.username != UserHolder.getInstance().username) {
-            for(form: BasicShape in obj.forms) {
+            for(form in obj.forms) {
                 Log.d("formsCreated", obj.username + form.name)
                 runOnUiThread {
                     ViewShapeHolder.getInstance().canevas.addShape(form)
@@ -1017,8 +1033,11 @@ class DrawingActivity : AppCompatActivity(){
     private var onGetCanevas: Emitter.Listener = Emitter.Listener {
         Log.d("onGetCanvas", "alllooo")
 
-        val gson = Gson()
-        val canvas: Canevas =  gson.fromJson(it[0].toString())
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(Canevas::class.java, canvasDeserializer)
+        val customGson: Gson = gsonBuilder.create()
+
+        val canvas: Canevas =  customGson.fromJson(it[0].toString())
 
         shapesToAdd.addAll(canvas.shapes)
 
@@ -1026,6 +1045,66 @@ class DrawingActivity : AppCompatActivity(){
         linksToAdd.addAll(canvas.links)
 
         initializeViewFromCanevas()
+    }
+
+    private var canvasDeserializer: JsonDeserializer<Canevas> = JsonDeserializer<Canevas> { json: JsonElement, typeOfT: Type, context: JsonDeserializationContext ->
+        val gson = Gson()
+        val jsonObject: JsonObject = json.getAsJsonObject();
+
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
+        val customGson: Gson = gsonBuilder.create()
+
+
+        val forms: ArrayList<BasicShape> = ArrayList()
+
+        val jsonForms = jsonObject.get("shapes").asJsonArray
+        for(form in jsonForms){
+            if(form.get("type").asInt == ShapeTypes.CLASS_SHAPE.value()){
+                val newForm: ClassShape = gson.fromJson(form)
+                forms.add(newForm)
+            } else {
+                val newForm: BasicShape = gson.fromJson(form)
+                forms.add(newForm)
+            }
+        }
+
+        Canevas(
+            jsonObject.get("id").asString,
+            jsonObject.get("name").asString,
+            jsonObject.get("author").asString,
+            jsonObject.get("owner").asString,
+            jsonObject.get("accessibility").asInt,
+            jsonObject.get("password").asString,
+            forms,
+            gson.fromJson(jsonObject.get("links")),
+            jsonObject.get("thumbnailLeger").asString,
+            gson.fromJson(jsonObject.get("dimensions"))
+        )
+    }
+
+    private var deserializer: JsonDeserializer<FormsUpdateEvent> = JsonDeserializer<FormsUpdateEvent> { json: JsonElement, typeOfT: Type, context: JsonDeserializationContext ->
+        val gson = Gson()
+        val jsonObject: JsonObject = json.getAsJsonObject();
+
+        val forms: ArrayList<BasicShape> = ArrayList()
+
+        val jsonForms = jsonObject.get("forms").asJsonArray
+        for(form in jsonForms){
+            if(form.get("type").asInt == ShapeTypes.CLASS_SHAPE.value()){
+                val newForm: ClassShape = gson.fromJson(form)
+                forms.add(newForm)
+            } else {
+                val newForm: BasicShape = gson.fromJson(form)
+                forms.add(newForm)
+            }
+        }
+
+        FormsUpdateEvent(
+            jsonObject.get("username").getAsString(),
+            jsonObject.get("canevasName").getAsString(),
+            forms
+        )
     }
 
     override fun onPause(){
@@ -1152,7 +1231,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private fun emitCanevasUpdate(){
-        val dataStr: String = this.createCanevasUpdateEvent()
+        val dataStr: String = this.createCanevasResizeEvent()
 
         if(dataStr !="") {
             Log.d("emitingUpdate", dataStr)
@@ -1163,6 +1242,13 @@ class DrawingActivity : AppCompatActivity(){
     private fun createCanevasUpdateEvent(): String {
         val gson = Gson()
         val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas)
+        val sendObj: String = gson.toJson(canvasEvent)
+        return sendObj
+    }
+
+    private fun createCanevasResizeEvent(): String {
+        val gson = Gson()
+        val canvasEvent: CanvasResizeEvent = CanvasResizeEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, ViewShapeHolder.getInstance().canevas.dimensions)
         val sendObj: String = gson.toJson(canvasEvent)
         return sendObj
     }
