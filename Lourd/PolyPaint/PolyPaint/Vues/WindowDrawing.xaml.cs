@@ -260,7 +260,7 @@ namespace PolyPaint.Vues
 
             StrokeCollection sc = new StrokeCollection();
             sc.Add(stroke);
-            DrawingService.UpdateShapes(sc);
+            DrawingService.UpdateLinks(sc);
 
             surfaceDessin.RefreshChildren();
             IsEnabled = true;

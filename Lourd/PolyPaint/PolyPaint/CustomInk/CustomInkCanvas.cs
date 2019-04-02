@@ -25,7 +25,6 @@ namespace PolyPaint.CustomInk
         public Dictionary<string, CustomStroke> StrokesDictionary = new Dictionary<string, CustomStroke>();
 
         private StrokeCollection clipboard;
-        private Templates.Canvas canvas;
 
         public StylusPoint firstPoint;
         public bool isUpdatingLink = false;
@@ -37,7 +36,7 @@ namespace PolyPaint.CustomInk
         Point oldLeftTopPoint = new Point(0, 0);
         Point newLeftTopPoint = new Point(0, 0);
 
-        #region Dictonary
+        #region Dictionary
         public void AddStroke(CustomStroke stroke)
         {
             Strokes.Add(stroke);
@@ -87,6 +86,9 @@ namespace PolyPaint.CustomInk
                 }
 
                 linkBeingUpdated.addStylusPointsToLink();
+
+                DrawingService.UpdateLinks(new StrokeCollection { linkBeingUpdated });
+
                 RefreshChildren();
             }
 
@@ -100,6 +102,7 @@ namespace PolyPaint.CustomInk
                 if (StrokesDictionary.TryGetValue(linkBeingUpdated.to?.formId, out shapeStrokeTo))
                 {
                     (shapeStrokeTo as ShapeStroke).linksTo.Remove(linkBeingUpdated.guid.ToString());
+                    DrawingService.UpdateShapes(new StrokeCollection { shapeStrokeTo });
                 }
             }
         }
@@ -112,6 +115,7 @@ namespace PolyPaint.CustomInk
                 if (StrokesDictionary.TryGetValue(linkBeingUpdated.from?.formId, out shapeStrokeFrom))
                 {
                     (shapeStrokeFrom as ShapeStroke).linksFrom.Remove(linkBeingUpdated.guid.ToString());
+                    DrawingService.UpdateShapes(new StrokeCollection { shapeStrokeFrom });
                 }
             }
         }
@@ -121,6 +125,8 @@ namespace PolyPaint.CustomInk
         public void RefreshLinks(bool isStrokesMoved)
         {
             StrokeCollection selectedStrokes = GetSelectedStrokes();
+            HashSet<LinkStroke> linkStrokesToUpdate = new HashSet<LinkStroke>();
+
             foreach (CustomStroke customStroke in Strokes)
             {
                 if (customStroke.isLinkStroke())
@@ -131,7 +137,7 @@ namespace PolyPaint.CustomInk
                     {
                         if (selectedStrokes.Count == 1 && selectedStrokes.Contains(linkStroke) && !isStrokesMoved)
                         {
-                            // keep the same stylus points if linkstroke is attached and is the only one moved
+                            // keep the same stylus points if linkstroke is attached and is the only one resized
                             linkStroke.addStylusPointsToLink();
                         }
                         else
@@ -171,12 +177,15 @@ namespace PolyPaint.CustomInk
                                     Point fromPoint = linkStroke.GetFromPoint(this.Strokes);
                                     // mettre a jour les positions des points initial et final
                                     linkStroke.path[0] = new Coordinates(fromPoint);
+
+                                    linkStrokesToUpdate.Add(linkStroke);
                                 }
                                 if (linkStroke.to?.formId == selectedStroke.guid.ToString())
                                 {
                                     Point toPoint = linkStroke.GetToPoint(this.Strokes);
                                     // mettre a jour les positions des points initial et final
                                     linkStroke.path[linkStroke.path.Count - 1] = new Coordinates(toPoint);
+                                    linkStrokesToUpdate.Add(linkStroke);
                                 }
 
                             }
@@ -216,6 +225,13 @@ namespace PolyPaint.CustomInk
                     }
                 }
             }
+
+            StrokeCollection linkStrokes = new StrokeCollection();
+            foreach(LinkStroke link in linkStrokesToUpdate)
+            {
+                linkStrokes.Add(link);
+            }
+            DrawingService.UpdateLinks(new StrokeCollection { linkStrokes });
         }
         
         internal void modifyLinkStrokePath(LinkStroke linkStroke, Point mousePosition)
@@ -478,6 +494,8 @@ namespace PolyPaint.CustomInk
                         {
                             (linkStroke as LinkStroke).from = new AnchorPoint();
                             (linkStroke as LinkStroke).from.SetDefaults();
+
+                            DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
                         }
                     }
                     foreach (string linkStrokeGuid in shapeStroke.linksTo)
@@ -487,6 +505,7 @@ namespace PolyPaint.CustomInk
                         {
                             (linkStroke as LinkStroke).to = new AnchorPoint();
                             (linkStroke as LinkStroke).to.SetDefaults();
+                            DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
                         }
                     }
                 }

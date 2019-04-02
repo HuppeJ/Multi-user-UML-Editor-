@@ -123,7 +123,10 @@ namespace PolyPaint.CustomInk
                 {
                     formId = linkStroke.to?.formId;
                 }
-                canvas.StrokesDictionary.TryGetValue(formId, out anchoredShapeStroke);
+                if(formId != null)
+                {
+                    canvas.StrokesDictionary.TryGetValue(formId, out anchoredShapeStroke);
+                }
             }
             canvas.isUpdatingLink = true;
         }
@@ -195,37 +198,7 @@ namespace PolyPaint.CustomInk
 
                 }
             }
-
-            if (shapeStroke.strokeType == (int)StrokeTypes.ROLE)
-            {
-                if (strokeTo?.GetType() == typeof(ActivityStroke))
-                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
-                else
-                    MessageBox.Show("A role can only be linked to an activity.");
-            }
-            else if (shapeStroke.strokeType == (int)StrokeTypes.ARTIFACT)
-            {
-                if (strokeTo?.GetType() == typeof(ActivityStroke))
-                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
-                else
-                    MessageBox.Show("An artifact can only be linked to an activity.");
-            }
-            else if (shapeStroke.strokeType == (int)StrokeTypes.ACTIVITY)
-            {
-                if (strokeTo?.GetType() == typeof(ArtifactStroke))
-                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
-                else
-                    MessageBox.Show("An activity can only be linked to an artifact.");
-            }
-            else if (strokeTo?.GetType() == typeof(ArtifactStroke) || strokeTo?.GetType() == typeof(ActorStroke) || strokeTo?.GetType() == typeof(ActivityStroke))
-            {
-                MessageBox.Show("Cannot create link.");
-            }
-            else
-            {
-                CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.LINE, pos);
-            }
-
+            // voir fonction du anchorPointAdorner
 
             canvas.updateLink(linkStrokeAnchor, linkStroke, strokeTo as ShapeStroke, number, actualPos);
 

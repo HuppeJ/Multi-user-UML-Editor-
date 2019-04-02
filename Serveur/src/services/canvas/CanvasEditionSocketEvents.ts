@@ -164,6 +164,7 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.isLinkCreated) {
                         console.log(socket.id + " created link " + data.links[0]);
+                        console.log(data.links[0].path);
                         io.to(canvasRoomId).emit("linkCreated", dataStr);
                     } else {
                         console.log(socket.id + " failed to create link " + data.links[0]);

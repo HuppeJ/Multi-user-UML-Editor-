@@ -19,18 +19,32 @@ namespace PolyPaint.CustomInk.Strokes
         public double rotation { get; set; }
 
         #region constructors
-        public LinkStroke(string id, string name, AnchorPoint from, AnchorPoint to, int strokeType, int linkType, LinkStyle style, List<Coordinates> path, StylusPointCollection pts) : base(pts)
+        public LinkStroke(Link link, StylusPointCollection pts) : base(pts)
         {
-            guid = new Guid(id);
-            this.name = name;
-            this.from = from;
-            this.to = to;
-            this.strokeType = strokeType;
-            this.linkType = linkType;
-            this.style = style;
-            this.path = path;
+            guid = new Guid(link.id);
+            this.name = link.name;
+            this.from = link.from;
+            this.to = link.to;
+            this.strokeType = (int)StrokeTypes.LINK;
+            this.linkType = link.type;
+            this.style = link.style;
+            this.path = link.path;
+
+            // dotted
+            if (style.type == 1)
+            {
+                DrawingAttributes.Color = Colors.White;
+            }
+            else // normal line
+            {
+                DrawingAttributes.Color = (Color)ColorConverter.ConvertFromString(style.color);
+            }
+            DrawingAttributes.Width = style.thickness;
+            DrawingAttributes.Height = style.thickness;
+
+            addStylusPointsToLink();
         }
-        
+
         public LinkStroke(LinkStroke linkStroke, StylusPointCollection pts) : base(pts)
         {
             guid = Guid.NewGuid();
@@ -461,7 +475,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         public virtual Link GetLinkShape()
         {
-            return new Link(guid.ToString(), name, from, to, strokeType, style, path);
+            return new Link(guid.ToString(), name, from, to, linkType, style, path);
         }
 
         public override Rect GetBounds()
