@@ -57,10 +57,10 @@ class DrawingActivity : AppCompatActivity(){
 
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
-    var mMinimumWidth : Float = 300F
-    var mMinimumHeight : Float = 100F
-    var mMaximumWidth : Float = 1520F
-    var mMaximumHeight : Float = 1200F
+    var mMinimumWidth : Float = 450F
+    var mMinimumHeight : Float = 450F
+    var mMaximumWidth : Float = 1680F
+    var mMaximumHeight : Float = 1155F
 
     var lassoView: LassoView? = null
 
@@ -1218,6 +1218,7 @@ class DrawingActivity : AppCompatActivity(){
                     val newWidth = parent_relative_layout.width + deltaX
                     val newHeight = parent_relative_layout.height + deltaY
 
+
                     resize(newWidth, newHeight)
 
                     oldFrameRawX = event.rawX
@@ -1236,7 +1237,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     open fun resize(newWidth:Int, newHeight:Int){
-        if(newWidth >= mMinimumWidth && newHeight <= mMaximumWidth){
+        if(newWidth >= mMinimumWidth && newWidth <= mMaximumWidth){
             parent_relative_layout.layoutParams.width = newWidth
         }
         if(newHeight >= mMinimumHeight && newHeight <= mMaximumHeight){
