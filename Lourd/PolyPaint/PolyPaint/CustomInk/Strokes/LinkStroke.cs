@@ -475,7 +475,9 @@ namespace PolyPaint.CustomInk.Strokes
 
         public virtual Link GetLinkShape()
         {
-            return new Link(guid.ToString(), name, from, to, linkType, style, path);
+            AnchorPoint fromForComm = from.GetForCommunication();
+            AnchorPoint toForComm = to.GetForCommunication();
+            return new Link(guid.ToString(), name, fromForComm, toForComm, linkType, style, path);
         }
 
         public override Rect GetBounds()

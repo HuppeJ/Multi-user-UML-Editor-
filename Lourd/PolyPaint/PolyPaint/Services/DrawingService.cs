@@ -134,6 +134,7 @@ namespace PolyPaint.Services
                     Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
                 }
             });
+
             socket.On("linksDeleted", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -167,12 +168,12 @@ namespace PolyPaint.Services
                 if (!username.Equals((string)response.username))
                 {
                     StrokeCollection strokes = new StrokeCollection();
-                    foreach (dynamic shape in response.forms)
+                    foreach (dynamic link in response.links)
                     {
-                        ShapeStroke stroke = createShapeStroke(shape);
-                        strokes.Add(stroke);
-                        if (!remoteSelectedStrokes.Contains(stroke.guid.ToString()))
-                            remoteSelectedStrokes.Add(stroke.guid.ToString());
+                        LinkStroke linkStroke = createLinkStroke(link);
+                        strokes.Add(linkStroke);
+                        if (!remoteSelectedStrokes.Contains(linkStroke.guid.ToString()))
+                            remoteSelectedStrokes.Add(linkStroke.guid.ToString());
                         Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(strokes); }), DispatcherPriority.Render);
                     }
                 }
@@ -184,12 +185,12 @@ namespace PolyPaint.Services
                 if (!username.Equals((string)response.username))
                 {
                     StrokeCollection strokes = new StrokeCollection();
-                    foreach (dynamic shape in response.forms)
+                    foreach (dynamic link in response.links)
                     {
-                        ShapeStroke stroke = createShapeStroke(shape);
-                        strokes.Add(stroke);
-                        if (remoteSelectedStrokes.Contains(stroke.guid.ToString()))
-                            remoteSelectedStrokes.Remove(stroke.guid.ToString());
+                        LinkStroke linkStroke = createLinkStroke(link);
+                        strokes.Add(linkStroke);
+                        if (remoteSelectedStrokes.Contains(linkStroke.guid.ToString()))
+                            remoteSelectedStrokes.Remove(linkStroke.guid.ToString());
                         Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(strokes); }), DispatcherPriority.Render);
                     }
                 }
@@ -389,6 +390,7 @@ namespace PolyPaint.Services
                 localSelectedStrokes.Add(stroke.guid.ToString());
             }
             socket.Emit("selectForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            socket.Emit("selectLinks", serializer.Serialize(createUpdateLinksData(strokes)));
         }
 
         public static void DeselectShapes(StrokeCollection strokes)
@@ -399,6 +401,8 @@ namespace PolyPaint.Services
                     localSelectedStrokes.Remove(stroke.guid.ToString());
             }
             socket.Emit("deselectForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            socket.Emit("deselectLinks", serializer.Serialize(createUpdateLinksData(strokes)));
+
         }
         #endregion
 
@@ -445,6 +449,9 @@ namespace PolyPaint.Services
                 StylusPoint point = new StylusPoint((double)link.path[i].x, (double)link.path[i].y);
                 points.Add(point);
             }
+
+            link.from.formId = link.from.formId.Equals("") ? null : link.from.formId;
+            link.to.formId = link.to.formId.Equals("") ? null : link.to.formId;
 
             LinkStroke linkStroke = new LinkStroke(link.ToObject<Link>(), points);
             linkStroke.guid = Guid.Parse((string)link.id);

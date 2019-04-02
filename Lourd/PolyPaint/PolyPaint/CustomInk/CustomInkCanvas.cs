@@ -825,11 +825,21 @@ namespace PolyPaint.CustomInk
             {
                 foreach (CustomStroke stroke in Strokes)
                 {
-                    if(stroke.guid.ToString().Equals(strokeId))
+                    if (stroke.guid.ToString().Equals(strokeId))
                     {
+                        //if (stroke.isLinkStroke())
+                        //{
+                        //    stroke.DrawingAttributes.Color = Colors.Red;
+                        //} else{
+                        //    AddRemoteSelectionAdorner(stroke);
+                        //}
                         AddRemoteSelectionAdorner(stroke);
                         break;
                     }
+                    //else if (stroke.isLinkStroke())
+                    //{
+                    //    stroke.DrawingAttributes.Color = Colors.Red;
+                    //}
                 }
             }
             // Add text boxes (names) to all strokes. And add dotted path if linkStroke is dotted
