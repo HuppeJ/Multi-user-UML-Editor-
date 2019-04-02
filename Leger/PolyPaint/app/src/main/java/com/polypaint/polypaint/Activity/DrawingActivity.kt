@@ -123,7 +123,7 @@ class DrawingActivity : AppCompatActivity(){
             toolbar = activityToolbar
         }
 
-        ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
+//        ViewShapeHolder.getInstance().canevas = intent.getSerializableExtra("canevas") as Canevas
         ViewShapeHolder.getInstance().canevas.shapes.clear()
         ViewShapeHolder.getInstance().canevas.links.clear()
 

@@ -209,6 +209,9 @@ class GalleryActivity:AppCompatActivity(){
 
         val gson = Gson()
         val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
+
+        Log.d("canevasReceived", it[0].toString())
+
         Log.d("onJoinCanvasResponse", obj.isCanvasRoomJoined.toString()+ " " + obj.canvasName)
 
         if(obj.isCanvasRoomJoined) {
@@ -217,7 +220,8 @@ class GalleryActivity:AppCompatActivity(){
                 val intent = Intent(this, DrawingActivity::class.java)
                 Log.d("selectedCanevas", "created" + selectedCanevas)
 
-                intent.putExtra("canevas", selectedCanevas!!)
+                ViewShapeHolder.getInstance().canevas = selectedCanevas!!
+//                intent.putExtra("canevas", selectedCanevas!!)
                 //ViewShapeHolder.getInstance().canevas = selectedCanevas!!
                 startActivityForResult(intent, 0)
             } else {

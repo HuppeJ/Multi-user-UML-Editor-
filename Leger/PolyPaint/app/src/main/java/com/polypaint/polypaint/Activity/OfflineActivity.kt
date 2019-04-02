@@ -14,6 +14,7 @@ import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import co.zsmb.materialdrawerkt.draweritems.divider
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.Canevas
 import com.polypaint.polypaint.Model.Coordinates
 import com.polypaint.polypaint.R
@@ -37,8 +38,8 @@ class OfflineActivity : AppCompatActivity() {
             val intent = Intent(this, DrawingActivity::class.java)
             val canevas = Canevas(UUID.randomUUID().toString(), "", UserHolder.getInstance().username, UserHolder.getInstance().username, 1, "",  ArrayList(), ArrayList(), "", Coordinates(1100.0,800.0))
 
-            intent.putExtra("canevas", canevas)
-            //ViewShapeHolder.getInstance().canevas = selectedCanevas!!
+            //intent.putExtra("canevas", canevas)
+            ViewShapeHolder.getInstance().canevas = canevas
             startActivityForResult(intent, 0)
         }
         online_button?.setOnClickListener {
