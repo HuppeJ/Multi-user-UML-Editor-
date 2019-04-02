@@ -34,7 +34,6 @@ namespace PolyPaint.Services
             socket.On(Socket.EVENT_RECONNECT, () =>
             {
                 Connection?.Invoke(true);
-                socket.Emit("joinChatroom");
             });
 
             socket.On("createUserResponse", (data) => {
@@ -46,9 +45,6 @@ namespace PolyPaint.Services
             socket.On("loginUserResponse", (data) =>
             {
                 bool isLoginSuccessful = serializer.Deserialize<dynamic>((string)data)["isLoginSuccessful"];
-
-                // TODO : ou le mettre? Le client ne devrait pas la joindre par defaut quand il login, sur le serveur?
-                socket.Emit("joinChatroom");
 
                 if(!isLoginSuccessful)
                 {
