@@ -301,60 +301,63 @@ class DrawingActivity : AppCompatActivity(){
         Log.d("6666","****"+ViewShapeHolder.getInstance().map+"****")
 
         //TODO: Probablement une meilleure facon de mapper la value à l'enum ...
-        when(basicShape.type){
-            ShapeTypes.DEFAULT.value()-> {
-                val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
-                parent_relative_layout?.addView(viewType)
+        runOnUiThread {
+            when (basicShape.type) {
+                ShapeTypes.DEFAULT.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
+                    parent_relative_layout?.addView(viewType)
 
-                //For Sync
+                    //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-            }
-            ShapeTypes.CLASS_SHAPE.value()-> {
-                val viewType = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
-                parent_relative_layout?.addView(viewType)
+                }
+                ShapeTypes.CLASS_SHAPE.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
+                    parent_relative_layout?.addView(viewType)
 
-                //For Sync
+                    //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-            }
-            ShapeTypes.ARTIFACT.value()-> {
-                val viewType = newViewOnCanevas(ShapeTypes.ARTIFACT)
-                parent_relative_layout?.addView(viewType)
+                }
+                ShapeTypes.ARTIFACT.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.ARTIFACT)
+                    parent_relative_layout?.addView(viewType)
 
-                //For Sync
+                    //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-            }
-            ShapeTypes.ACTIVITY.value()-> {
-                val viewType = newViewOnCanevas(ShapeTypes.ACTIVITY)
-                parent_relative_layout?.addView(viewType)
+                }
+                ShapeTypes.ACTIVITY.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.ACTIVITY)
+                    parent_relative_layout?.addView(viewType)
 
-                //For Sync
+                    //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-            }
-            ShapeTypes.ROLE.value()-> {
-                val viewType = newViewOnCanevas(ShapeTypes.ROLE)
-                parent_relative_layout?.addView(viewType)
+                }
+                ShapeTypes.ROLE.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.ROLE)
+                    parent_relative_layout?.addView(viewType)
 
-                //For Sync
+                    //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-            }
-            ShapeTypes.COMMENT.value()-> {
-                val viewType = newViewOnCanevas(ShapeTypes.COMMENT)
-                parent_relative_layout?.addView(viewType)
+                }
+                ShapeTypes.COMMENT.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.COMMENT)
+                    parent_relative_layout?.addView(viewType)
 
-                //For Sync
+                    //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-            }
-            ShapeTypes.PHASE.value()-> {
-                val viewType = newViewOnCanevas(ShapeTypes.PHASE)
-                parent_relative_layout?.addView(viewType)
+                }
+                ShapeTypes.PHASE.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.PHASE)
+                    parent_relative_layout?.addView(viewType)
 
-                //For Sync
+                    //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-            }
+                }
 
+            }
+            syncLayoutFromCanevas()
         }
 
-        syncLayoutFromCanevas()
+
     }
 
     private fun newShapeOnCanevas(shapeType: ShapeTypes) : BasicShape{
@@ -460,7 +463,11 @@ class DrawingActivity : AppCompatActivity(){
             if (shapesToDuplicate != null) {
                 for (drawingElem in shapesToDuplicate){
                     if(drawingElem is BasicShape){
-                        val shapeDuplicated = drawingElem.copy()
+                        var shapeDuplicated = drawingElem.copy()
+                        if(drawingElem is ClassShape) {
+                            shapeDuplicated = drawingElem.copyClass()
+                        }
+                        //val shapeDuplicated = drawingElem.copy()
                         shapeDuplicated.id = UUID.randomUUID().toString()
                         ViewShapeHolder.getInstance().canevas.addShape(shapeDuplicated)
 
@@ -601,8 +608,12 @@ class DrawingActivity : AppCompatActivity(){
                     ShapeTypes.DEFAULT.value()-> { }
                     ShapeTypes.CLASS_SHAPE.value()-> {
                         if(basicShape is ClassShape){
+
+
                             runOnUiThread{
                                 view as ClassView
+                                Log.d("syncLayoutFromCanevas", basicShape.name+" w "+basicShape.shapeStyle.width.toInt()+" h "+ basicShape.shapeStyle.height.toInt())
+
                                 view.class_name.text = basicShape.name
                                 var tmp : String = ""
                                 for(e in basicShape.attributes){
@@ -662,6 +673,8 @@ class DrawingActivity : AppCompatActivity(){
     public fun syncCanevasFromLayout(){
         for (shape in ViewShapeHolder.getInstance().canevas.shapes){
             val basicElem = ViewShapeHolder.getInstance().map.inverse().getValue(shape.id)
+
+            Log.d("syncCanevasFromLayout", shape.name+" w "+basicElem.borderResizableLayout.width+" h "+basicElem.borderResizableLayout.height)
             shape.shapeStyle.coordinates.x = (basicElem.x).toDouble()
             shape.shapeStyle.coordinates.y = (basicElem.y).toDouble()
             shape.shapeStyle.width = basicElem.borderResizableLayout.width.toDouble()
@@ -895,6 +908,8 @@ class DrawingActivity : AppCompatActivity(){
     private var onFormsCreated: Emitter.Listener = Emitter.Listener {
         Log.d("onFormsCreated", "alllooo")
 
+
+        Log.d("formsCreated", it[0].toString())
         val gson = Gson()
         val obj: FormsUpdateEvent = gson.fromJson(it[0].toString())
         if(obj.username != UserHolder.getInstance().username) {
