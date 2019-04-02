@@ -57,10 +57,10 @@ class DrawingActivity : AppCompatActivity(){
 
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
-    var mMinimumWidth : Float = 300F
-    var mMinimumHeight : Float = 100F
-    var mMaximumWidth : Float = 1520F
-    var mMaximumHeight : Float = 1200F
+    var mMinimumWidth : Float = 450F
+    var mMinimumHeight : Float = 450F
+    var mMaximumWidth : Float = 1680F
+    var mMaximumHeight : Float = 1155F
 
     var lassoView: LassoView? = null
 
@@ -978,16 +978,16 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onCanevasResized: Emitter.Listener = Emitter.Listener {
-        Log.d("onCanevasResized", "alllooo")
+        Log.d("onCanevasResized", it[0].toString())
 
         val gson = Gson()
-        val obj: CanvasEvent =  gson.fromJson(it[0].toString())
+        val obj: CanvasResizeEvent =  gson.fromJson(it[0].toString())
 
         if(obj.username != UserHolder.getInstance().username) {
             runOnUiThread {
-                ViewShapeHolder.getInstance().canevas.dimensions = obj.canevas.dimensions
-                parent_relative_layout.layoutParams.width = (obj.canevas.dimensions.x).toInt()
-                parent_relative_layout.layoutParams.height = (obj.canevas.dimensions.y).toInt()
+                ViewShapeHolder.getInstance().canevas.dimensions = obj.dimensions
+                parent_relative_layout.layoutParams.width = (obj.dimensions.x).toInt()
+                parent_relative_layout.layoutParams.height = (obj.dimensions.y).toInt()
                 parent_relative_layout.requestLayout()
             }
         }
@@ -1168,6 +1168,7 @@ class DrawingActivity : AppCompatActivity(){
             drawer?.closeDrawer()
         } else {
             // TODO : Jé's Fix
+            parent_relative_layout?.dispatchSetSelected(false)
             ViewShapeHolder.getInstance().map.clear()
 
             val gson = Gson()
@@ -1237,6 +1238,7 @@ class DrawingActivity : AppCompatActivity(){
                     val newWidth = parent_relative_layout.width + deltaX
                     val newHeight = parent_relative_layout.height + deltaY
 
+
                     resize(newWidth, newHeight)
 
                     oldFrameRawX = event.rawX
@@ -1255,7 +1257,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     open fun resize(newWidth:Int, newHeight:Int){
-        if(newWidth >= mMinimumWidth && newHeight <= mMaximumWidth){
+        if(newWidth >= mMinimumWidth && newWidth <= mMaximumWidth){
             parent_relative_layout.layoutParams.width = newWidth
         }
         if(newHeight >= mMinimumHeight && newHeight <= mMaximumHeight){
