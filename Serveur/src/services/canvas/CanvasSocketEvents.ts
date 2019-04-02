@@ -143,7 +143,7 @@ export default class CanvasSocketEvents {
 
                     if (response.isCanvasSaved) {
                         console.log(socket.id + " saved canvas " + data.canevas.name);
-                        // io.to(canvasRoomId).emit("canvasDeselected", dataStr);
+                        io.emit("canvasSaved", dataStr);
                     } else {
                         console.log(socket.id + " failed to save canvas " + data.canevas.name);
                     }

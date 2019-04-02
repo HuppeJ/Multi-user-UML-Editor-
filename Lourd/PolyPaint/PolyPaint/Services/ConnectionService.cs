@@ -18,7 +18,7 @@ namespace PolyPaint.Services
         public static string username = null;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
-        // private static string url = "https://projet-3-228722.appspot.com";
+        private static string url = "https://projet-3-228722.appspot.com";
         // private static string url = "http://localhost:8010";
         // private static string url = "http://10.200.3.1:5020";
         // Ordi à Jé

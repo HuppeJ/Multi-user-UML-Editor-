@@ -23,9 +23,7 @@ namespace PolyPaint.CustomInk
         private Point middleRight2;
         private Point bottomRight;
         private Point bottomLeft;
-
-        public static readonly int WIDTH = 150;
-        public static readonly int HEIGHT = 30;
+        
         public override Stroke Clone()
         {
             Stroke stroke = base.Clone();
@@ -39,6 +37,9 @@ namespace PolyPaint.CustomInk
 
         public ClassStroke(StylusPointCollection pts) : base(pts)
         {
+            shapeStyle.width = 150 * WIDTH;
+            shapeStyle.height = 30 * HEIGHT;
+
             strokeType = (int)StrokeTypes.CLASS_SHAPE;
             attributes = new List<string>();
             methods = new List<string>();
@@ -70,7 +71,7 @@ namespace PolyPaint.CustomInk
             FormattedText title = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface("Arial"), 12, Brushes.Black);
 
-            title.MaxTextWidth = shapeStyle.width * WIDTH;
+            title.MaxTextWidth = shapeStyle.width / WIDTH;
             title.MaxLineCount = 1;
             title.Trimming = TextTrimming.CharacterEllipsis;
 
@@ -86,8 +87,8 @@ namespace PolyPaint.CustomInk
             FormattedText attributesText = new FormattedText(attributesStr, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface("Arial"), 12, Brushes.Black);
 
-            attributesText.MaxTextWidth = shapeStyle.width * WIDTH;
-            attributesText.MaxTextHeight = (shapeStyle.height * HEIGHT - 20) / 2;
+            attributesText.MaxTextWidth = shapeStyle.width / WIDTH;
+            attributesText.MaxTextHeight = (shapeStyle.height / HEIGHT - 20) / 2;
             attributesText.Trimming = TextTrimming.CharacterEllipsis;
 
             drawingContext.DrawText(attributesText, middleLeft1);
@@ -102,8 +103,8 @@ namespace PolyPaint.CustomInk
             FormattedText methodsText = new FormattedText(methodsStr, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface("Arial"), 12, Brushes.Black);
 
-            methodsText.MaxTextWidth = shapeStyle.width * WIDTH;
-            methodsText.MaxTextHeight = (shapeStyle.height * HEIGHT - 20) / 2;
+            methodsText.MaxTextWidth = shapeStyle.width / WIDTH;
+            methodsText.MaxTextHeight = (shapeStyle.height / HEIGHT - 20) / 2;
             methodsText.Trimming = TextTrimming.CharacterEllipsis;
 
             drawingContext.DrawText(methodsText, middleLeft2);
@@ -117,13 +118,13 @@ namespace PolyPaint.CustomInk
         public override Point GetCenter()
         {
             Rect rect = GetCustomBound();
-            return new Point(rect.X + shapeStyle.width * WIDTH / 2, rect.Y + shapeStyle.height * HEIGHT / 2);
+            return new Point(rect.X + shapeStyle.width / WIDTH / 2, rect.Y + shapeStyle.height * HEIGHT / 2);
         }
 
         public override Rect GetBounds()
         {
-            double width = shapeStyle.width * WIDTH;
-            double height = shapeStyle.height * HEIGHT;
+            double width = shapeStyle.width / WIDTH;
+            double height = shapeStyle.height / HEIGHT;
 
             Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
                 width, height);
@@ -136,8 +137,8 @@ namespace PolyPaint.CustomInk
 
         public override Rect GetCustomBound()
         {
-            double width = shapeStyle.width * WIDTH;
-            double height = shapeStyle.height * HEIGHT;
+            double width = shapeStyle.width / WIDTH;
+            double height = shapeStyle.height / HEIGHT;
 
             Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
                 width, height);
@@ -179,8 +180,8 @@ namespace PolyPaint.CustomInk
             if (shapeStyle.height < 0.2)
                 shapeStyle.height = 0.2;
 
-            double width = shapeStyle.width * WIDTH;
-            double height = shapeStyle.height * HEIGHT;
+            double width = shapeStyle.width / WIDTH;
+            double height = shapeStyle.height / HEIGHT;
 
             topLeft = shapeStyle.coordinates.ToPoint();
 
