@@ -72,8 +72,7 @@ export interface ICanevas {
     shapes: IBasicShape[],  
     links: ILink[],
     dimensions: ICoordinates,
-    thumbnailLeger: string,
-    thumbnailLourd: string
+    thumbnail: string,
 } 
 
 export interface IClassShape extends IBasicShape {

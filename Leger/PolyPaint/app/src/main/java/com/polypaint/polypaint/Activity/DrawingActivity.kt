@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.view_class.view.*
 import kotlinx.android.synthetic.main.view_image_element.view.*
 import kotlinx.android.synthetic.main.view_phase.view.*
 import android.graphics.Bitmap
+import android.os.Handler
 import java.io.ByteArrayOutputStream
 import android.util.Base64
 import android.view.MotionEvent
@@ -139,25 +140,33 @@ class DrawingActivity : AppCompatActivity(){
 
         add_button.setOnClickListener {
             addOnCanevas(ShapeTypes.DEFAULT)
+            saveCanevas()
         }
 
         class_button.setOnClickListener {
             addOnCanevas(ShapeTypes.CLASS_SHAPE)
+            saveCanevas()
         }
         artefact_button.setOnClickListener {
             addOnCanevas(ShapeTypes.ARTIFACT)
+            Log.d("before delay", "saveCanevasCall")
+            saveCanevas()
         }
         activity_button.setOnClickListener {
             addOnCanevas(ShapeTypes.ACTIVITY)
+            saveCanevas()
         }
         role_button.setOnClickListener {
             addOnCanevas(ShapeTypes.ROLE)
+            saveCanevas()
         }
         comment_button.setOnClickListener {
             addOnCanevas(ShapeTypes.COMMENT)
+            saveCanevas()
         }
         phase_button.setOnClickListener {
             addOnCanevas(ShapeTypes.PHASE)
+            saveCanevas()
         }
 
         clear_canvas_button.setOnClickListener {
@@ -166,19 +175,24 @@ class DrawingActivity : AppCompatActivity(){
             ViewShapeHolder.getInstance().removeAll()
             ViewShapeHolder.getInstance().stackDrawingElementCreatedId = Stack<String>()
             parent_relative_layout?.addView(VFXHolder.getInstance().vfxView)
+            saveCanevas()
         }
 
         duplicate_button.setOnClickListener{
             duplicateView()
+            saveCanevas()
         }
         cut_button.setOnClickListener{
             cutView()
+            saveCanevas()
         }
         stack_button.setOnClickListener{
             stackView()
+            saveCanevas()
         }
         unstack_button.setOnClickListener{
             unstackView()
+            saveCanevas()
         }
 
         save_button.setOnClickListener{
@@ -1138,7 +1152,7 @@ class DrawingActivity : AppCompatActivity(){
             jsonObject.get("password").asString,
             forms,
             gson.fromJson(jsonObject.get("links")),
-            jsonObject.get("thumbnailLeger").asString,
+            jsonObject.get("thumbnail").asString,
             gson.fromJson(jsonObject.get("dimensions"))
         )
     }
@@ -1214,19 +1228,27 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
-    private fun saveCanevas() {
+    fun saveCanevas() {
         Log.d("saveCanevas", "saveCanevasCall")
 
-        val bitmap: Bitmap = loadBitmapFromView(findViewById(R.id.parent_relative_layout), 350, 450);
-        val thumbnailString: String = bitMapToString(bitmap)
-        ViewShapeHolder.getInstance().canevas.thumbnailLeger = thumbnailString
+        runOnUiThread {
+            Handler().postDelayed({
+                Log.d("after delay", "saveCanevasCall")
+                val bitmap: Bitmap = loadBitmapFromView(findViewById(R.id.parent_relative_layout), 50, 80)
+                val resized = Bitmap.createScaledBitmap(bitmap, (bitmap!!.width!!.times(1/2.1)).toInt(), (bitmap!!.height!!.times(1/2.1)).toInt(), true);
+                val thumbnailString: String = bitMapToString(resized)
+                Log.d("bitmapString", thumbnailString)
 
-        val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas!!)
-        val gson = Gson()
-        val sendObj = gson.toJson(canvasEvent)
-        Log.d("createObj", sendObj)
-        socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+                ViewShapeHolder.getInstance().canevas.thumbnail = thumbnailString
 
+                val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas!!)
+                val gson = Gson()
+                val sendObj = gson.toJson(canvasEvent)
+                Log.d("createObj", sendObj)
+                socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+
+            }, 1000)
+        }
     }
 
     private fun loadBitmapFromView(v: View, width: Int, height: Int): Bitmap {
@@ -1298,6 +1320,7 @@ class DrawingActivity : AppCompatActivity(){
         if(dataStr !="") {
             Log.d("emitingUpdate", dataStr)
             socket?.emit(SocketConstants.RESIZE_CANVAS, dataStr)
+            saveCanevas()
         }
     }
 
