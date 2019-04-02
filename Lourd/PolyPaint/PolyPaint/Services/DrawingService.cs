@@ -286,6 +286,7 @@ namespace PolyPaint.Services
             strokes.Add(shapeStroke);
             socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(strokes)));
             localAddedStrokes.Add(shapeStroke.guid.ToString());
+            Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void CreateLink(LinkStroke linkStroke)
@@ -294,6 +295,7 @@ namespace PolyPaint.Services
             strokes.Add(linkStroke);
             socket.Emit("createLink", serializer.Serialize(createUpdateLinksData(strokes)));
             localAddedStrokes.Add(linkStroke.guid.ToString());
+            Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void RemoveShapes(StrokeCollection strokes)
@@ -304,16 +306,19 @@ namespace PolyPaint.Services
                     localSelectedStrokes.Remove(stroke.guid.ToString());
             }
             socket.Emit("deleteForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void UpdateShapes(StrokeCollection strokes)
         {
             socket.Emit("updateForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void UpdateLinks(StrokeCollection strokes)
         {
             socket.Emit("updateLinks", serializer.Serialize(createUpdateLinksData(strokes)));
+            Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void SelectShapes(StrokeCollection strokes)
