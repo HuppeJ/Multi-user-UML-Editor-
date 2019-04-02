@@ -14,6 +14,7 @@ namespace PolyPaint.CustomInk
         private Point topLeft;
         private Point topRight;
         private Point right;
+        private Point left;
         private Point bottomRight;
         private Point bottomLeft;
 
@@ -43,8 +44,9 @@ namespace PolyPaint.CustomInk
             LineSegment topRightSeg = new LineSegment(topRight, true);
             LineSegment rightSeg = new LineSegment(right, true);
             LineSegment bottomRightSeg = new LineSegment(bottomRight, true);
+            LineSegment leftSeg = new LineSegment(left, true);
             LineSegment bottomLeftSeg = new LineSegment(bottomLeft, true);
-            PathSegmentCollection segments = new PathSegmentCollection { topRightSeg, rightSeg, bottomRightSeg, bottomLeftSeg };
+            PathSegmentCollection segments = new PathSegmentCollection { topRightSeg, rightSeg, bottomRightSeg, bottomLeftSeg, leftSeg };
             PathFigure figure = new PathFigure();
             figure.Segments = segments;
             figure.IsClosed = true;
@@ -126,13 +128,15 @@ namespace PolyPaint.CustomInk
 
             topLeft = shapeStyle.coordinates.ToPoint();
 
-            topRight = new Point(topLeft.X + width * 0.8, topLeft.Y);
+            topRight = new Point(topLeft.X + width * 0.68, topLeft.Y);
 
             right = new Point(topLeft.X + width, topLeft.Y + height * 0.5);
 
             bottomLeft = new Point(topLeft.X, topLeft.Y + height);
 
-            bottomRight = new Point(topLeft.X + width * 0.8, topLeft.Y + height);
+            left = new Point(topLeft.X + width * 0.32, topLeft.Y + height * 0.5);
+
+            bottomRight = new Point(topLeft.X + width * 0.68, topLeft.Y + height);
         }
 
         public override Point GetCenter()

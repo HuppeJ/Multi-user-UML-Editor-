@@ -189,7 +189,7 @@ namespace PolyPaint.CustomInk
                                         DragCompletedEventArgs e)
         {
             Point actualPos = Mouse.GetPosition(this);
-            if (actualPos.X < 0 || actualPos.Y < 0)
+            if (e.HorizontalChange == 0 && e.VerticalChange == 0)
             {
                 visualChildren.Remove(resizePreview);
                 InvalidateArrange();

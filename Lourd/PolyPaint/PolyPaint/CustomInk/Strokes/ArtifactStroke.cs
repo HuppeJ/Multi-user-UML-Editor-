@@ -23,6 +23,10 @@ namespace PolyPaint.CustomInk
         private Point line2Right;
         private Point line3Left;
         private Point line3Right;
+        private Point line4Left;
+        private Point line4Right;
+        private Point line5Left;
+        private Point line5Right;
 
         private const int WIDTH = 40;
         private const int HEIGHT = 50;
@@ -67,6 +71,8 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawLine(pen, line1Left, line1Right);
             drawingContext.DrawLine(pen, line2Left, line2Right);
             drawingContext.DrawLine(pen, line3Left, line3Right);
+            drawingContext.DrawLine(pen, line4Left, line4Right);
+            drawingContext.DrawLine(pen, line5Left, line5Right);
 
             FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface("Arial"), 12, Brushes.Black);
@@ -149,14 +155,20 @@ namespace PolyPaint.CustomInk
 
             bottomRight = new Point(topLeft.X + width, topLeft.Y + height);
 
-            line1Left = new Point(topLeft.X + width * 0.2, topLeft.Y + height * 0.4);
-            line1Right = new Point(topLeft.X + width * 0.8, topLeft.Y + height * 0.4);
+            line1Left = new Point(topLeft.X + width * 0.2, topLeft.Y + height * 0.2);
+            line1Right = new Point(topLeft.X + width * 0.55, topLeft.Y + height * 0.2);
 
-            line2Left = new Point(topLeft.X + width * 0.2, topLeft.Y + height * 0.6);
-            line2Right = new Point(topLeft.X + width * 0.8, topLeft.Y + height * 0.6);
+            line2Left = new Point(topLeft.X + width * 0.2, topLeft.Y + height * 0.35);
+            line2Right = new Point(topLeft.X + width * 0.8, topLeft.Y + height * 0.35);
 
-            line3Left = new Point(topLeft.X + width * 0.2, topLeft.Y + height * 0.8);
-            line3Right = new Point(topLeft.X + width * 0.8, topLeft.Y + height * 0.8);
+            line3Left = new Point(topLeft.X + width * 0.2, topLeft.Y + height * 0.50);
+            line3Right = new Point(topLeft.X + width * 0.8, topLeft.Y + height * 0.50);
+
+            line4Left = new Point(topLeft.X + width * 0.2, topLeft.Y + height * 0.65);
+            line4Right = new Point(topLeft.X + width * 0.8, topLeft.Y + height * 0.65);
+
+            line5Left = new Point(topLeft.X + width * 0.2, topLeft.Y + height * 0.8);
+            line5Right = new Point(topLeft.X + width * 0.8, topLeft.Y + height * 0.8);
         }
 
         public override Point GetCenter()
