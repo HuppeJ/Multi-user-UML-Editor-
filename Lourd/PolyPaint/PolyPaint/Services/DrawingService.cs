@@ -79,7 +79,7 @@ namespace PolyPaint.Services
             
             socket.On("canvasPasswordUpdated", (data) =>
             {
-                LeaveCanvas(true);
+                LeaveCanvas();
                 Application.Current.Dispatcher.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
             });
 
@@ -193,6 +193,16 @@ namespace PolyPaint.Services
                     }
                 }
             });
+
+            socket.On("canvasSaved", (data) =>
+            {
+                EditCanevasData response = serializer.Deserialize<EditCanevasData>((string)data);
+                if (!username.Equals(response.username))
+                {
+                    RefreshPublicCanvases();
+                }
+            });
+
             RefreshCanvases();
         }
 
@@ -238,12 +248,8 @@ namespace PolyPaint.Services
             }
         }
 
-        public static void LeaveCanvas(bool saveCanvas)
+        public static void LeaveCanvas()
         {
-            if (saveCanvas)
-            {
-                Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
-            }
             EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
             socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
             RefreshCanvases();
@@ -253,7 +259,7 @@ namespace PolyPaint.Services
         {
             Templates.Canvas canvas = new Templates.Canvas();
             canvas.name = canvasName;
-            canvas.thumbnailLourd = thumbnail;
+            canvas.thumbnail = thumbnail;
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
             socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
         }
@@ -262,6 +268,11 @@ namespace PolyPaint.Services
         {
             socket.Emit("getPublicCanvas");
             socket.Emit("getPrivateCanvas", username);
+        }
+
+        public static void RefreshPublicCanvases()
+        {
+            socket.Emit("getPublicCanvas");
         }
 
         public static void ResetServer()
