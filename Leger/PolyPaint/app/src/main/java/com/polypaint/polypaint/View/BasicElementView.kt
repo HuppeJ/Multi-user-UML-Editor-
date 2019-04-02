@@ -218,7 +218,7 @@ open class BasicElementView: ConstraintLayout {
                     val x = (start.x + (event.rawX-oldFrameRawX)).toInt()
                     val y = (start.y + (event.rawY-oldFrameRawY)).toInt()
                     for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
-                        if(basicView != this && !basicView.isSelectedByOther) {
+                        if(!basicView.isSelectedByOther) {
                             val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
                             if (basicView.isViewInBounds(basicView.anchorPoint0, x, y)) {
                                 otherAnchor = basicView.anchorPoint0
