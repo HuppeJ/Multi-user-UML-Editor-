@@ -17,6 +17,7 @@ import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
+import com.polypaint.polypaint.Holder.SyncShapeHolder
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
@@ -806,6 +807,7 @@ open class BasicElementView: ConstraintLayout {
             Log.d("emitingUpdate", response)
             socket?.emit(SocketConstants.UPDATE_FORMS, response)
         }
+        SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
     }
 
     private fun emitSelection(){
@@ -833,6 +835,8 @@ open class BasicElementView: ConstraintLayout {
             Log.d("emitingDelete", response)
             socket?.emit(SocketConstants.DELETE_FORMS, response)
         }
+
+        SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
     }
 
     private fun createFormsUpdateEvent(): String{
