@@ -853,6 +853,10 @@ open class BasicElementView: ConstraintLayout {
         val formsArray: ArrayList<BasicShape> = ArrayList()
         var obj: String =""
         if(basicShape !=null) {
+            basicShape.shapeStyle.coordinates.x = (basicShape.shapeStyle.coordinates.x.toFloat() - SyncShapeHolder.getInstance().drawingActivity!!.shapeOffset).toDouble()
+            basicShape.shapeStyle.coordinates.y = (basicShape.shapeStyle.coordinates.y.toFloat() - SyncShapeHolder.getInstance().drawingActivity!!.shapeOffset).toDouble()
+
+
             formsArray.add(basicShape)
             val gson = Gson()
             val response: FormsUpdateEvent = FormsUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, formsArray)
