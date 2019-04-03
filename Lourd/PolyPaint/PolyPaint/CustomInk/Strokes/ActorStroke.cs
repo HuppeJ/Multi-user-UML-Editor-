@@ -78,7 +78,7 @@ namespace PolyPaint.CustomInk
             RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
             rect.Transform(rotationTransform.Value);
 
-            return rect;
+            return Rect.Empty;
         }
 
         public override Rect GetCustomBound()

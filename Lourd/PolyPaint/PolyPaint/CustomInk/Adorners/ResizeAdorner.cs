@@ -17,6 +17,7 @@ namespace PolyPaint.CustomInk
     {
         List<Thumb> anchors;
         List<StrokeResizePointThumb> cheatAnchors;
+        Thumb moveThumb;
 
         VisualCollection visualChildren;
 
@@ -29,6 +30,7 @@ namespace PolyPaint.CustomInk
         RotateTransform rotation;
 
         private Path resizePreview;
+        private Path outerBoundPath;
 
         Vector unitX = new Vector(1, 0);
         Vector unitY = new Vector(0, 1);
@@ -40,6 +42,17 @@ namespace PolyPaint.CustomInk
             : base(adornedElement)
         {
             visualChildren = new VisualCollection(this);
+
+            strokeBounds = customStroke.GetCustomBound();
+            moveThumb = new Thumb();
+            moveThumb.Cursor = Cursors.SizeAll;
+            moveThumb.Height = strokeBounds.Height + 10;
+            moveThumb.Width = strokeBounds.Width + 10;
+            moveThumb.Background = Brushes.Transparent;
+            moveThumb.DragDelta += new DragDeltaEventHandler(Move_DragDelta);
+            moveThumb.DragCompleted += new DragCompletedEventHandler(Move_DragCompleted);
+
+            visualChildren.Add(moveThumb);
 
             resizePreview = new Path();
             resizePreview.Stroke = Brushes.Gray;
@@ -57,6 +70,19 @@ namespace PolyPaint.CustomInk
             {
                 rotation.Angle += 360;
             }
+
+            outerBoundPath = new Path();
+            outerBoundPath.Stroke = Brushes.Gray;
+            outerBoundPath.StrokeDashArray = new DoubleCollection { 5, 2 }; 
+            outerBoundPath.StrokeThickness = 1;
+            Rect rect = customStroke.GetCustomBound();
+            rect.X -= 5;
+            rect.Y -= 5;
+            rect.Width += 10;
+            rect.Height += 10;
+            outerBoundPath.Data = new RectangleGeometry(rect);
+            visualChildren.Add(outerBoundPath);
+
             unitX = rotation.Value.Transform(unitX);
             unitY = rotation.Value.Transform(unitY);
             // RenderTransform = rotation;
@@ -549,8 +575,7 @@ namespace PolyPaint.CustomInk
                 index++;
             }
 
-            strokeBounds = customStroke.GetCustomBound();
-
+            
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -559,7 +584,6 @@ namespace PolyPaint.CustomInk
             {
                 return finalSize;
             }
-
             // Top
             ArrangeAnchor(0, 0, -(strokeBounds.Height / 2));
             // Right
@@ -578,12 +602,35 @@ namespace PolyPaint.CustomInk
             ArrangeAnchor(7, strokeBounds.Width / 2, strokeBounds.Height / 2);
 
             resizePreview.Arrange(new Rect(finalSize));
+            outerBoundPath.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+
+            Rect handleRect = new Rect(strokeBounds.X - 5,
+                                  strokeBounds.Y - 5,
+                                  strokeBounds.Width + 10,
+                                  strokeBounds.Height + 10);
+            moveThumb.Arrange(handleRect);
 
             return finalSize;
         }
 
         private void ArrangeAnchor(int anchorNumber, double xOffset, double yOffset)
         {
+            if (xOffset > 0)
+            {
+                xOffset += 5;
+            }
+            if (xOffset < 0)
+            {
+                xOffset -= 5;
+            }
+            if (yOffset < 0)
+            {
+                yOffset -= 5;
+            }
+            if (yOffset > 0)
+            {
+                yOffset += 5;
+            }
             // The rectangle that determines the position of the Thumb.
             Rect handleRect = new Rect(strokeBounds.X + xOffset,
                                   strokeBounds.Y + yOffset,
@@ -630,6 +677,28 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateShapes(new StrokeCollection { shapeStroke });
         }
 
+        void Move_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            if (e.HorizontalChange == 0 && e.VerticalChange == 0)
+            {
+                visualChildren.Remove(resizePreview);
+                InvalidateArrange();
+                return;
+            }
+
+
+            visualChildren.Remove(resizePreview);
+
+            canvas.MoveShape(e.HorizontalChange, e.VerticalChange);
+
+            canvas.RefreshLinks(false);
+            canvas.RefreshChildren();
+
+            InvalidateArrange();
+
+            DrawingService.UpdateShapes(new StrokeCollection { shapeStroke });
+        }
+
         #region DragDelta
         private void generatePreview(Rect rectangle)
         {
@@ -646,6 +715,18 @@ namespace PolyPaint.CustomInk
             dragVect = rotationInverse.Value.Transform(dragVect);
             
             return dragVect;
+        }
+
+        void Move_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            if (e.HorizontalChange != 0 || e.VerticalChange != 0)
+            {
+                Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + e.HorizontalChange,
+                                          shapeStroke.GetCustomBound().Y + e.VerticalChange,
+                                          shapeStroke.GetCustomBound().Width,
+                                          shapeStroke.GetCustomBound().Height);
+                generatePreview(rectangle);
+            }
         }
 
         void Top_DragDelta(object sender, DragDeltaEventArgs e)

@@ -461,6 +461,24 @@ namespace PolyPaint.CustomInk
             Select(new StrokeCollection { newStroke });
         }
 
+        public void MoveShape(double xOffset, double yOffset)
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+            StrokeCollection newStrokes = new StrokeCollection();
+            foreach (CustomStroke stroke in strokes)
+            {
+                if(stroke is ShapeStroke)
+                {
+                    (stroke as ShapeStroke).shapeStyle.coordinates.x += xOffset / CustomStroke.WIDTH;
+                    (stroke as ShapeStroke).shapeStyle.coordinates.y += yOffset / CustomStroke.HEIGHT;
+                    Stroke newStroke = stroke.Clone();
+                    newStrokes.Add(newStroke);
+                    ReplaceStrokes(stroke, new StrokeCollection { newStroke });
+                }
+            }
+            Select(newStrokes);
+        }
+
         protected override void OnSelectionResized(EventArgs e)
         {
             RefreshLinks(false);
@@ -842,9 +860,9 @@ namespace PolyPaint.CustomInk
             {
                 if (GetSelectedStrokes().Count == 1)
                 {
+                    myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
                     myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
                     myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
-                    myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
                 }
                 myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
                 /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
