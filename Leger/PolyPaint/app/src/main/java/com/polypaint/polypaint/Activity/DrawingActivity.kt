@@ -240,9 +240,7 @@ class DrawingActivity : AppCompatActivity(){
                 linksToAdd.clear()
 
                 // Sizing the Canvas
-                parent_relative_layout.layoutParams.width = (ViewShapeHolder.getInstance().canevas.dimensions.x).toInt()
-                parent_relative_layout.layoutParams.height =
-                    (ViewShapeHolder.getInstance().canevas.dimensions.y).toInt()
+                resize((ViewShapeHolder.getInstance().canevas.dimensions.x).toInt(), (ViewShapeHolder.getInstance().canevas.dimensions.y).toInt())
 
             }
             // Selecting selected Forms and Links
@@ -1251,7 +1249,7 @@ class DrawingActivity : AppCompatActivity(){
                 val gson = Gson()
                 val sendObj = gson.toJson(canvasEvent)
                 Log.d("createObj", sendObj)
-                socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+                // socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
 
             }, 1000)
         }
