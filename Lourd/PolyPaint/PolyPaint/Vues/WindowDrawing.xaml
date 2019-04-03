@@ -31,7 +31,10 @@
                         <Image Source="/Resources/NewLook/reset.png"/>
                     </StackPanel>
                 </Button>
-                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Empiler}" Click="RefreshChildren" FontSize="32" Foreground="Black">
+                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" 
+                        Command="{Binding Empiler}" 
+                        CommandParameter="{Binding ElementName=surfaceDessin}"
+                        Click="Empiler" FontSize="32" Foreground="Black">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/unpile.png"/>
                     </StackPanel>
@@ -235,7 +238,6 @@
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"
                                            SelectionChanged="surfaceDessin_SelectionChanged"
                            MouseUp="surfaceDessin_OnMouseUp"
-                                           KeyUp="surfaceDessin_OnKeyUp"
                                            StrokeCollected="StrokeCollected"
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            SelectedStrokes="{Binding SelectedStrokes, Mode=OneTime}"

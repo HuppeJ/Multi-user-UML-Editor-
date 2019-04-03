@@ -36,7 +36,7 @@ namespace PolyPaint.CustomInk
 
             linkPath = new Path();
             linkPath.Stroke = (Brush) new BrushConverter().ConvertFromString(stroke.style.color);
-            linkPath.StrokeThickness = stroke.style.thickness;
+            linkPath.StrokeThickness = stroke.DrawingAttributes.Height;
             linkPath.StrokeDashArray = new DoubleCollection { 1, 1 };
             linkPath.IsHitTestVisible = false;
             linkPath.Fill = Brushes.Black;

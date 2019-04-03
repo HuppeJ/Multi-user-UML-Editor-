@@ -36,10 +36,23 @@ namespace PolyPaint.Enums
         COMPOSITION
     }
 
+    public enum LinkThicknesses
+    {
+        THIN,
+        NORMAL,
+        THICK
+    }
+
     public enum LineStyles
     {
         FULL,
         DASHED,
+        DOTTED
+    }
+
+    public enum LinkStyles
+    {
+        FULL,
         DOTTED
     }
 }
