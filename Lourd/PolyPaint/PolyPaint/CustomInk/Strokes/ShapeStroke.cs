@@ -130,7 +130,7 @@ namespace PolyPaint.CustomInk
         
         public virtual BasicShape GetBasicShape()
         {
-            BasicShape basicShape = new BasicShape(false, guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom);
+            BasicShape basicShape = new BasicShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom);
             return basicShape;
         }
 

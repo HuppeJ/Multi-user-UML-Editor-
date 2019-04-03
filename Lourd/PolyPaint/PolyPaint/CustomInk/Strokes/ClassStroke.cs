@@ -107,12 +107,12 @@ namespace PolyPaint.CustomInk
 
         public override BasicShape GetBasicShape()
         {
-            return new ClassShape(false, guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
+            return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
         }
 
         public virtual ClassShape GetClassShape()
         {
-            return new ClassShape(false, guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
+            return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
         }
 
     public override Point GetCenter()

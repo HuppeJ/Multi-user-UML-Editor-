@@ -456,11 +456,11 @@ namespace PolyPaint.Services
                 {
                     if(customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {
-                        forms.Add((customStroke as ClassStroke).GetClassShape());
+                        forms.Add((customStroke as ClassStroke).GetClassShape().forServer());
                     }
                     else
                     {
-                        forms.Add((customStroke as ShapeStroke).GetBasicShape());
+                        forms.Add((customStroke as ShapeStroke).GetBasicShape().forServer());
                     }
                 }
             }
@@ -501,13 +501,14 @@ namespace PolyPaint.Services
 
         private static ShapeStroke createShapeStroke(dynamic shape)
         {
-            StylusPointCollection points = new StylusPointCollection();
+            StylusPointCollection points = new StylusPointCollection {
+                new StylusPoint((double)shape.shapeStyle.coordinates.x / 2.1, (double)shape.shapeStyle.coordinates.y / 2.1)
+            };
 
-            StylusPoint point = new StylusPoint((double)shape.shapeStyle.coordinates.x / 2.1, (double)shape.shapeStyle.coordinates.y / 2.1);
-            points.Add(point);
-
-            shape.shapeStyle.heigth /= 2.1;
-            shape.shapeStyle.width /= 2.1;
+            shape.shapeStyle.height = (double)shape.shapeStyle.height / 2.1;
+            shape.shapeStyle.width = (double)shape.shapeStyle.width / 2.1;
+            shape.shapeStyle.coordinates.x = (double)shape.shapeStyle.coordinates.x / 2.1;
+            shape.shapeStyle.coordinates.y = (double)shape.shapeStyle.coordinates.y / 2.1;
 
             ShapeStroke shapeStroke;
             StrokeTypes type = (StrokeTypes) shape.type;
@@ -615,7 +616,7 @@ namespace PolyPaint.Services
                             List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
                             List<string> attributes = GetStringList(shapes[i]["attributes"]);
                             List<string> methods = GetStringList(shapes[i]["methods"]);
-                            basicShapeList.Add(new ClassShape(true, id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
+                            basicShapeList.Add(new ClassShape(id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
                         }
                         else
                         {
@@ -625,7 +626,7 @@ namespace PolyPaint.Services
                             var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
                             List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
                             List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
-                            basicShapeList.Add(new BasicShape(true, id, type, name, shapeStyle, linksTo, linksFrom));
+                            basicShapeList.Add(new BasicShape(id, type, name, shapeStyle, linksTo, linksFrom));
                         }
                     }
 
@@ -636,14 +637,14 @@ namespace PolyPaint.Services
 
         private static dynamic GetShapeStyle(dynamic shapeStyle)
         {
-            double width = (double)shapeStyle["width"];
-            double height = (double)shapeStyle["height"];
+            double width = (double)shapeStyle["width"] / 2.1;
+            double height = (double)shapeStyle["height"] / 2.1;
             double rotation = (double)shapeStyle["rotation"];
             string borderColor = shapeStyle["borderColor"];
             int borderStyle = shapeStyle["borderStyle"];
             string backgroundColor = shapeStyle["backgroundColor"];
-            double x = (double)shapeStyle["coordinates"]["x"];
-            double y = (double)shapeStyle["coordinates"]["y"];
+            double x = (double)shapeStyle["coordinates"]["x"] / 2.1;
+            double y = (double)shapeStyle["coordinates"]["y"] / 2.1;
             Coordinates coordinates = new Coordinates(x, y);
 
             return new ShapeStyle(coordinates, width, height, rotation, borderColor, borderStyle, backgroundColor);

@@ -16,30 +16,23 @@ namespace PolyPaint.Templates
         {
         }
 
-        public BasicShape(bool isFromServer, string id, int type, string name, ShapeStyle shapeStyle, List<string> linksTo, List<string> linksFrom)
+        public BasicShape(string id, int type, string name, ShapeStyle shapeStyle, List<string> linksTo, List<string> linksFrom)
         {
             this.id = id;
             this.type = type;
             this.name = name;
             this.shapeStyle = shapeStyle.Clone();
-
-            if (isFromServer)
-            {
-                this.shapeStyle.coordinates.x /= CustomStroke.WIDTH;
-                this.shapeStyle.coordinates.y /= CustomStroke.HEIGHT;
-                this.shapeStyle.width /= CustomStroke.WIDTH;
-                this.shapeStyle.height /= CustomStroke.HEIGHT;
-            }
-            else
-            {
-                this.shapeStyle.coordinates.x *= CustomStroke.WIDTH;
-                this.shapeStyle.coordinates.y *= CustomStroke.HEIGHT;
-                this.shapeStyle.width *= CustomStroke.WIDTH;
-                this.shapeStyle.height *= CustomStroke.HEIGHT;
-            }
-
             this.linksTo = linksTo;
             this.linksFrom = linksFrom;
+        }
+
+        public BasicShape forServer()
+        {
+            shapeStyle.width *= 2.1;
+            shapeStyle.height *= 2.1;
+            shapeStyle.coordinates.x *= 2.1;
+            shapeStyle.coordinates.y *= 2.1;
+            return this;
         }
 
     }
