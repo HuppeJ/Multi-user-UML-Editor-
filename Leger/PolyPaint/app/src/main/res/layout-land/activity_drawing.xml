@@ -47,7 +47,7 @@
             <ToggleButton
                     android:id="@+id/selection_button"
                     android:textSize="14dp"
-                    android:background="@drawable/ic_selection"
+                    android:background="@drawable/ic_lasso"
                     android:clickable="true"
                     android:layout_width="40dp"
                     android:layout_height="40dp"

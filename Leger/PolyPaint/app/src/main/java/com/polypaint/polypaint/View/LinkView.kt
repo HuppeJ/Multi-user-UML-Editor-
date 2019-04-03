@@ -423,16 +423,21 @@ class LinkView: View{
 
     fun deleteLink(){
         emitDelete()
+        ViewShapeHolder.getInstance().stackDrawingElementCreatedId.remove(link?.id)
+
         val fromId = link?.from?.formId
         if(fromId != null && fromId != ""){
             val fromShape = ViewShapeHolder.getInstance().canevas.findShape(fromId)
             fromShape?.linksFrom?.remove(link?.id)
         }
+        link?.from = AnchorPoint()
         val toId = link?.to?.formId
         if(toId != null && toId != ""){
             val toShape = ViewShapeHolder.getInstance().canevas.findShape(toId)
             toShape?.linksTo?.remove(link?.id)
         }
+        link?.to = AnchorPoint()
+
         removeButtonsAndTexts()
         val localLink: Link? = link
         if(localLink != null){
@@ -506,7 +511,9 @@ class LinkView: View{
     }
 
     fun setPaintColorWithLinkStyle(){
-        paint.color = Color.parseColor(link?.style?.color)
+        if(link?.style?.color != null) {
+            paint.color = Color.parseColor(link?.style?.color)
+        }
 //        when(link?.style?.color){
 //            "BLACK"->paint.color = Color.BLACK
 //            "GREEN"->paint.color = Color.GREEN
@@ -626,7 +633,7 @@ class LinkView: View{
 
 
                 val localLink: Link? = link
-                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("BLACK",10,0), ArrayList())
+                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",10,0), ArrayList())
 
                 if(localLink != null){
                     previewLink.path.add(localLink.path[index])
@@ -1031,7 +1038,7 @@ class LinkView: View{
             socket?.emit(SocketConstants.UPDATE_LINKS, response)
         }
     }
-    private fun emitDelete(){
+    fun emitDelete(){
         val response: String = this.createLinksUpdateEvent()
 
         if(response !="") {

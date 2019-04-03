@@ -3,6 +3,7 @@ package com.polypaint.polypaint.Holder
 import android.content.Context
 import android.os.Handler
 import android.view.View
+import com.polypaint.polypaint.Particles.DeleteParticleSystem
 import com.polypaint.polypaint.Particles.ParticleSystem
 
 class VFXHolder (){
@@ -20,6 +21,16 @@ class VFXHolder (){
     fun fireVFX(x :Float,y : Float, context: Context){
         if(particleSystem == null || particleSystem!!.isDead()){
             particleSystem = ParticleSystem(50,x,y,context)
+            particleSystem?.initialize()
+            animationHandler.removeCallbacks(animationRunner)
+            animationHandler.post(animationRunner)
+        }
+    }
+
+    fun fireDeleteVFX(x :Float, y : Float, context: Context){
+        if(particleSystem == null || particleSystem!!.isDead()){
+            particleSystem = DeleteParticleSystem(20,x,y,context)
+            particleSystem?.initialize()
             animationHandler.removeCallbacks(animationRunner)
             animationHandler.post(animationRunner)
         }

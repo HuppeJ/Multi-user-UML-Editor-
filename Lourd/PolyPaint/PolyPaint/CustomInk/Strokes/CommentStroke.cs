@@ -16,11 +16,10 @@ namespace PolyPaint.CustomInk
         private Point bottomRight;
         private Point bottomLeft;
 
-        private const int WIDTH = 50;
-        private const int HEIGHT = 50;
-
         public CommentStroke(StylusPointCollection pts) : base(pts)
         {
+            shapeStyle.width = 50;
+            shapeStyle.height = 50;
             shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());
 
             UpdateShapePoints();
@@ -44,8 +43,8 @@ namespace PolyPaint.CustomInk
             FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface("Arial"), 12, Brushes.Black);
 
-            formattedText.MaxTextWidth = shapeStyle.width * WIDTH;
-            formattedText.MaxTextHeight = shapeStyle.height * HEIGHT;
+            formattedText.MaxTextWidth = shapeStyle.width;
+            formattedText.MaxTextHeight = shapeStyle.height;
             formattedText.Trimming = TextTrimming.CharacterEllipsis;
 
             drawingContext.DrawText(formattedText, GetCustomBound().TopLeft);
@@ -53,8 +52,8 @@ namespace PolyPaint.CustomInk
 
         public override Rect GetBounds()
         {
-            double width = shapeStyle.width * WIDTH;
-            double height = shapeStyle.height * HEIGHT;
+            double width = shapeStyle.width;
+            double height = shapeStyle.height;
 
             Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
                 width, height);
@@ -67,8 +66,8 @@ namespace PolyPaint.CustomInk
 
         public override Rect GetCustomBound()
         {
-            double width = shapeStyle.width * WIDTH;
-            double height = shapeStyle.height * HEIGHT;
+            double width = shapeStyle.width;
+            double height = shapeStyle.height;
 
             Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
                 width, height);
@@ -110,8 +109,8 @@ namespace PolyPaint.CustomInk
             if (shapeStyle.height < 0.2)
                 shapeStyle.height = 0.2;
 
-            double width = shapeStyle.width * WIDTH;
-            double height = shapeStyle.height * HEIGHT;
+            double width = shapeStyle.width;
+            double height = shapeStyle.height;
 
             topLeft = shapeStyle.coordinates.ToPoint();
 
@@ -125,7 +124,7 @@ namespace PolyPaint.CustomInk
         public override Point GetCenter()
         {
             Rect rect = GetCustomBound();
-            return new Point(rect.X + shapeStyle.width * WIDTH / 2, rect.Y + shapeStyle.height * HEIGHT / 2);
+            return new Point(rect.X + shapeStyle.width / 2, rect.Y + shapeStyle.height / 2);
         }
     }
 }

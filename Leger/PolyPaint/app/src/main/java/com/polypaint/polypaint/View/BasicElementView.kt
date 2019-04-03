@@ -17,7 +17,9 @@ import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
+import com.polypaint.polypaint.Holder.SyncShapeHolder
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.VFXHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
@@ -83,7 +85,11 @@ open class BasicElementView: ConstraintLayout {
         if(this.isSelected && !selected){
             emitDeselection()
         }
-        if(selected){
+        var realSelected = selected
+        if(isSelectedByOther){
+            realSelected = false
+        }
+        if(realSelected){
             //first_line.text = "Focus"
             borderResizableLayout.setBackgroundResource(R.drawable.borders_blue)
             editButton.visibility = View.VISIBLE
@@ -101,7 +107,7 @@ open class BasicElementView: ConstraintLayout {
             resizeButton.visibility = View.INVISIBLE
             setAnchorsVisible(false)
         }
-        return super.setSelected(selected)
+        return super.setSelected(realSelected)
     }
 
     fun hideButtonsAndAnchors(){
@@ -217,7 +223,7 @@ open class BasicElementView: ConstraintLayout {
                     val x = (start.x + (event.rawX-oldFrameRawX)).toInt()
                     val y = (start.y + (event.rawY-oldFrameRawY)).toInt()
                     for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys){
-                        if(basicView != this && !basicView.isSelectedByOther) {
+                        if(!basicView.isSelectedByOther) {
                             val  basicShapeId: String? = ViewShapeHolder.getInstance().map[basicView]
                             if (basicView.isViewInBounds(basicView.anchorPoint0, x, y)) {
                                 otherAnchor = basicView.anchorPoint0
@@ -292,20 +298,20 @@ open class BasicElementView: ConstraintLayout {
                         when (anchorPointEnd.anchor){
                             3->{
                                 Log.d("Rotation", rotation.toString())
-                                newX = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
-                                newY = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newX = - (otherBasicView.borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = - (otherBasicView.borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
                             }
                             1->{
-                                newX = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
-                                newY = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newX = (otherBasicView.borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = (otherBasicView.borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
                             }
                             0->{
-                                newX = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
-                                newY = - (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newX = (otherBasicView.borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = - (otherBasicView.borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
                             }
                             2 ->{
-                                newX = -(borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
-                                newY = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newX = -(otherBasicView.borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = (otherBasicView.borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
                             }
                         }
                         point.y = centerY + newY
@@ -336,7 +342,7 @@ open class BasicElementView: ConstraintLayout {
                                 anchorPointStart,
                                 anchorPointEnd,
                                 3,
-                                LinkStyle("BLACK", 10, 0),
+                                LinkStyle("#FF000000", 10, 0),
                                 path
                             )
 
@@ -351,6 +357,7 @@ open class BasicElementView: ConstraintLayout {
                                 canevas.findShape(otherBasicViewId)?.linksTo?.add(linkShape.id)
                             }
 
+                            ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(linkShape.id)
                             ViewShapeHolder.getInstance().linkMap.forcePut(link, linkShape.id)
                             canevas.links.add(linkShape)
                             canevas.findShape(thisBasicViewId)?.linksFrom?.add(linkShape.id)
@@ -483,45 +490,46 @@ open class BasicElementView: ConstraintLayout {
                 }
                 MotionEvent.ACTION_MOVE -> {//first_line.text = "ActionMove"
 
-                    val deltaX = event.rawX - oldFrameRawX
-                    val deltaY = event.rawY - oldFrameRawY
-                    this.x = this.x + deltaX
-                    this.y = this.y + deltaY
-                    leftX += deltaX
-                    topY += deltaY
-                    oldFrameRawX = event.rawX
-                    oldFrameRawY = event.rawY
+                    if(isSelected) {
+                        val deltaX = event.rawX - oldFrameRawX
+                        val deltaY = event.rawY - oldFrameRawY
+                        this.x = this.x + deltaX
+                        this.y = this.y + deltaY
+                        leftX += deltaX
+                        topY += deltaY
+                        oldFrameRawX = event.rawX
+                        oldFrameRawY = event.rawY
 
 
-                    if(pointerFinger1 != -1 && pointerFinger2 != -1) {
-                        fingersCoords[2].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
-                        fingersCoords[2].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
-                        fingersCoords[3].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
-                        fingersCoords[3].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
-                        //Calculate Angle
-                        val angle = calculateDeltaAngle()
+                        if (pointerFinger1 != -1 && pointerFinger2 != -1) {
+                            fingersCoords[2].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
+                            fingersCoords[2].y = event.getY(event.findPointerIndex(pointerFinger1)).toDouble()
+                            fingersCoords[3].x = event.getX(event.findPointerIndex(pointerFinger2)).toDouble()
+                            fingersCoords[3].y = event.getY(event.findPointerIndex(pointerFinger2)).toDouble()
+                            //Calculate Angle
+                            val angle = calculateDeltaAngle()
 
 
-                        //Rotate
-                        rotation += angle.toInt()
+                            //Rotate
+                            rotation += angle.toInt()
 
 
+                            //Log.d("Angle", ""+angle)
+                            //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
+                            //Log.d("ACTU COORD", ""+fingersCoords[2]+"::"+fingersCoords[3])
 
-                        //Log.d("Angle", ""+angle)
-                        //Log.d("PREV COORD", ""+fingersCoords[0]+"::"+fingersCoords[1])
-                        //Log.d("ACTU COORD", ""+fingersCoords[2]+"::"+fingersCoords[3])
+                            //Save for next step
+                            fingersCoords[0].x = fingersCoords[2].x
+                            fingersCoords[0].y = fingersCoords[2].y
+                            fingersCoords[1].x = fingersCoords[3].x
+                            fingersCoords[1].y = fingersCoords[3].y
+                        }
 
-                        //Save for next step
-                        fingersCoords[0].x = fingersCoords[2].x
-                        fingersCoords[0].y = fingersCoords[2].y
-                        fingersCoords[1].x = fingersCoords[3].x
-                        fingersCoords[1].y = fingersCoords[3].y
-                    }
-
-                    val basicShapeId = ViewShapeHolder.getInstance().map[this]
-                    if(basicShapeId != null){
-                        setAllLinksPosition(basicShapeId, false)
-                        setAllLinksPosition(basicShapeId, true)
+                        val basicShapeId = ViewShapeHolder.getInstance().map[this]
+                        if (basicShapeId != null) {
+                            setAllLinksPosition(basicShapeId, false)
+                            setAllLinksPosition(basicShapeId, true)
+                        }
                     }
 
 
@@ -646,6 +654,8 @@ open class BasicElementView: ConstraintLayout {
         when(event.action){
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
                 emitDelete()
+
+                VFXHolder.getInstance().fireDeleteVFX(leftX+borderResizableLayout.layoutParams.width/2 ,topY+borderResizableLayout.layoutParams.height/2,context)
                 val parentView = v.parent.parent.parent as RelativeLayout
 
                 val shapeId: String? = ViewShapeHolder.getInstance().map[this]
@@ -799,13 +809,14 @@ open class BasicElementView: ConstraintLayout {
     open fun outlineColor(color: String, borderType: Int){}
     open fun backgroundColor(color: String){}
 
-    private fun emitUpdate(){
+    fun emitUpdate(){
         val response: String = this.createFormsUpdateEvent()
 
         if(response !="") {
             Log.d("emitingUpdate", response)
             socket?.emit(SocketConstants.UPDATE_FORMS, response)
         }
+        SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
     }
 
     private fun emitSelection(){
@@ -833,6 +844,8 @@ open class BasicElementView: ConstraintLayout {
             Log.d("emitingDelete", response)
             socket?.emit(SocketConstants.DELETE_FORMS, response)
         }
+
+        SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
     }
 
     private fun createFormsUpdateEvent(): String{
@@ -840,6 +853,10 @@ open class BasicElementView: ConstraintLayout {
         val formsArray: ArrayList<BasicShape> = ArrayList()
         var obj: String =""
         if(basicShape !=null) {
+            basicShape.shapeStyle.coordinates.x = (basicShape.shapeStyle.coordinates.x.toFloat() - SyncShapeHolder.getInstance().drawingActivity!!.shapeOffset).toDouble()
+            basicShape.shapeStyle.coordinates.y = (basicShape.shapeStyle.coordinates.y.toFloat() - SyncShapeHolder.getInstance().drawingActivity!!.shapeOffset).toDouble()
+
+
             formsArray.add(basicShape)
             val gson = Gson()
             val response: FormsUpdateEvent = FormsUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, formsArray)

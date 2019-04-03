@@ -15,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Path = System.Windows.Shapes.Path;
+using sd = System.Drawing;
+using s2d = System.Drawing.Drawing2D;
 
 namespace PolyPaint.CustomInk
 {
@@ -441,36 +443,15 @@ namespace PolyPaint.CustomInk
         public void ResizeShape(ShapeStroke shape, RectangleGeometry NewRectangle, RectangleGeometry OldRectangle)
         {
             StrokeCollection strokes = GetSelectedStrokes();
+            Point newCenter = new Point((NewRectangle.Bounds.Right - NewRectangle.Bounds.Left)/2 + NewRectangle.Bounds.Left,
+                                        (NewRectangle.Bounds.Bottom - NewRectangle.Bounds.Top)/2 + NewRectangle.Bounds.Top);
 
             double heightRatio = NewRectangle.Rect.Height / OldRectangle.Rect.Height;
             double widthRatio = NewRectangle.Rect.Width / OldRectangle.Rect.Width;
 
-            Point topLeft = NewRectangle.Transform.Transform(NewRectangle.Rect.TopLeft);
-            Point topRight = NewRectangle.Transform.Transform(NewRectangle.Rect.TopRight);
-            Point bottomLeft = NewRectangle.Transform.Transform(NewRectangle.Rect.BottomLeft);
-            Point bottomRight = NewRectangle.Transform.Transform(NewRectangle.Rect.BottomRight);
-            PointCollection pts = new PointCollection { topLeft, topRight, bottomLeft, bottomRight };
-            
-            double maxX = -999999999;
-            double maxY = -999999999;
-            double minX = 999999999;
-            double minY = 999999999;
-            foreach (Point point in pts)
-            {
-                if (point.X < minX)
-                    minX = point.X;
-                if (point.X > maxX)
-                    maxX = point.X;
-                if (point.Y < minY)
-                    minY = point.Y;
-                if (point.Y > maxY)
-                    maxY = point.Y;
-            }
-            Point newCenter = new Point((maxX - minX) / 2 + minX, (maxY - minY) / 2 + minY);
-
             shape.shapeStyle.width *= widthRatio;
             shape.shapeStyle.height *= heightRatio;
-            shape.shapeStyle.coordinates.x = newCenter.X - NewRectangle.Rect.Width / 2;
+            shape.shapeStyle.coordinates.x = newCenter.X - NewRectangle.Rect.Width  / 2;
             shape.shapeStyle.coordinates.y = newCenter.Y - NewRectangle.Rect.Height / 2;
 
             Stroke newStroke = shape.Clone();
@@ -1125,6 +1106,46 @@ namespace PolyPaint.CustomInk
                 string thumbnailString = Convert.ToBase64String(buffer);
                 DrawingService.SendCanvas(thumbnailString);
             }
+
+            sd.Image image = (sd.Bitmap)((new sd.ImageConverter()).ConvertFrom(buffer));
+
+            sd.Bitmap bitmap = ResizeImage(image, 80, 50);
+
+            using (var stream = new MemoryStream())
+            {
+                bitmap.Save(stream, sd.Imaging.ImageFormat.Png);
+                byte [] resizedImageBuffer = stream.ToArray();
+                string thumbnailString = Convert.ToBase64String(resizedImageBuffer);
+                //DrawingService.SendCanvas(thumbnailString);
+            }
         }
+
+        
+        private sd.Bitmap ResizeImage(sd.Image image, int width, int height)
+        {
+            var destRect = new sd.Rectangle(0, 0, width, height);
+            var destImage = new sd.Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = sd.Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = s2d.CompositingMode.SourceCopy;
+                graphics.CompositingQuality = s2d.CompositingQuality.HighQuality;
+                graphics.InterpolationMode = s2d.InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = s2d.SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = s2d.PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new sd.Imaging.ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(s2d.WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, sd.GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+
     }
 }

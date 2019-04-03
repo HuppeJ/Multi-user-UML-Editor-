@@ -12,12 +12,17 @@ import android.widget.RadioButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
+import com.google.gson.Gson
 import com.polypaint.polypaint.Activity.DrawingActivity
+import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Holder.SyncShapeHolder
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.Model.ClassShape
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
+import com.polypaint.polypaint.SocketReceptionModel.FormsUpdateEvent
 import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -110,28 +115,32 @@ class EditClassDialogFragment: DialogFragment() {
     }
 
     private fun close(){
-        val nameStr : EditText = viewSelf!!.findViewById(R.id.drawing_name_text)
-        val attributesStr : EditText = viewSelf!!.findViewById(R.id.attributes_text)
-        val methodsStr : EditText = viewSelf!!.findViewById(R.id.methods_text)
+        val nameStr : EditText? = viewSelf?.findViewById(R.id.drawing_name_text)
+        val attributesStr : EditText? = viewSelf?.findViewById(R.id.attributes_text)
+        val methodsStr : EditText? = viewSelf?.findViewById(R.id.methods_text)
 
-        shape?.name =  nameStr.text.toString()
+        shape?.name =  nameStr?.text.toString()
 
         var attributes : ArrayList<String?> = ArrayList()
-        for(attribute in attributesStr.text!!.toString().split("\n")){
+        for(attribute in attributesStr?.text!!.toString().split("\n")){
             attributes.add(attribute)
         }
 
         shape?.attributes =  attributes
 
         var methods : ArrayList<String?> = ArrayList()
-        for(method in methodsStr.text!!.toString().split("\n")){
+        for(method in methodsStr?.text!!.toString().split("\n")){
             methods.add(method)
         }
         shape?.methods =  methods
-        shape?.shapeStyle!!.borderColor = colorBorder
-        shape?.shapeStyle!!.backgroundColor = colorBackground
-        shape?.shapeStyle!!.borderStyle = styleType
+        shape?.shapeStyle?.borderColor = colorBorder
+        shape?.shapeStyle?.backgroundColor = colorBackground
+        shape?.shapeStyle?.borderStyle = styleType
 
-        SyncShapeHolder.getInstance().drawingActivity!!.syncLayoutFromCanevas()
+        SyncShapeHolder.getInstance().drawingActivity?.syncLayoutFromCanevas()
+
+        ViewShapeHolder.getInstance().map.inverse()[shape?.id]?.emitUpdate()
     }
+
+
 }

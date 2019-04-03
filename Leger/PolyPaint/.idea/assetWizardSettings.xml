@@ -15,9 +15,9 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="height" value="40" />
-                            <entry key="outputName" value="ic_activity_dashed" />
+                            <entry key="outputName" value="ic_lasso" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../../svg/activity_dashed.svg" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../../svg/svg/lasso.svg" />
                             <entry key="width" value="40" />
                           </map>
                         </option>

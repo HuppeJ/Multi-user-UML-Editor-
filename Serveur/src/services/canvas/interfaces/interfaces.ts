@@ -32,8 +32,7 @@ export interface IUpdateLinksData {
 
 export interface IEditChatroomData {
     username: string,
-    chatroomName: string,  
-    // password: string, ?
+    chatroomName: string
 }
 
 // TODO: vérifier format
@@ -47,6 +46,13 @@ export interface IMessageData {
 /***********************************************
 * Interfaces for objects
 ************************************************/
+export interface IHistoryData {
+    username: string,
+    message: string,  
+    timestamp: string,
+    canevas: ICanevas
+}
+
 
 export interface IAnchorPoint {
     formId: string, 
@@ -73,8 +79,7 @@ export interface ICanevas {
     shapes: IBasicShape[],  
     links: ILink[],
     dimensions: ICoordinates,
-    thumbnailLeger: string,
-    thumbnailLourd: string
+    thumbnail: string,
 } 
 
 export interface IClassShape extends IBasicShape {

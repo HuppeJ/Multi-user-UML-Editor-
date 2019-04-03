@@ -80,12 +80,12 @@ namespace PolyPaint.Services
 
         public void JoinChatroom(string chatroomName)
         {
-            socket.Emit("joinChatroom", serializer.Serialize(new EditChatroomData(chatroomName, username)));
+            socket.Emit("joinChatroom", serializer.Serialize(new EditChatroomData(username, chatroomName)));
         }
 
         public void LeaveChatroom(string chatroomName)
         {
-            socket.Emit("leaveChatroom", serializer.Serialize(new EditChatroomData(chatroomName, username)));
+            socket.Emit("leaveChatroom", serializer.Serialize(new EditChatroomData(username, chatroomName)));
         }
 
         public void CreateChatroom(string chatroomName)

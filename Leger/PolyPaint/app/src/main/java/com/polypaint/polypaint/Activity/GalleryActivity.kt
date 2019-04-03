@@ -24,6 +24,7 @@ import com.mikepenz.materialdrawer.Drawer
 import com.polypaint.polypaint.Adapter.ImageListAdapter
 import com.polypaint.polypaint.Adapter.RoomsListAdapter
 import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Enum.AccessibilityTypes
 import com.polypaint.polypaint.Fragment.EditClassDialogFragment
 import com.polypaint.polypaint.Fragment.EnterDrawingPasswordDialogFragment
 import com.polypaint.polypaint.Fragment.TutorialDialogFragment
@@ -36,6 +37,7 @@ import com.polypaint.polypaint.ResponseModel.CanvasJoinResponse
 import com.polypaint.polypaint.ResponseModel.GetPrivateCanvasResponse
 import com.polypaint.polypaint.ResponseModel.GetPublicCanvasResponse
 import com.polypaint.polypaint.Socket.SocketConstants
+import com.polypaint.polypaint.SocketReceptionModel.CanvasEvent
 import com.polypaint.polypaint.SocketReceptionModel.GalleryEditEvent
 import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -103,13 +105,20 @@ class GalleryActivity:AppCompatActivity(){
         val app = application as PolyPaint
         socket = app.socket
 
-//        socket?.off(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
         socket?.on(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
         socket?.on(SocketConstants.GET_PRIVATE_CANVAS_RESPONSE, onGetPrivateCanvasResponse)
         socket?.on(SocketConstants.GET_PUBLIC_CANVAS_RESPONSE, onGetPublicCanvasResponse)
-
-
+        socket?.on(SocketConstants.CANVAS_SAVED, onCanvasSaved)
         socket?.on(SocketConstants.CANVAS_CREATED, onCanvasCreated)
+    }
+
+    override fun onPause(){
+        socket?.off(SocketConstants.JOIN_CANVAS_ROOM_RESPONSE, onJoinCanvasResponse)
+        socket?.off(SocketConstants.GET_PRIVATE_CANVAS_RESPONSE, onGetPrivateCanvasResponse)
+        socket?.off(SocketConstants.GET_PUBLIC_CANVAS_RESPONSE, onGetPublicCanvasResponse)
+        socket?.off(SocketConstants.CANVAS_SAVED, onCanvasSaved)
+
+        super.onPause()
     }
 
     private fun initializeAdapters(){
@@ -209,6 +218,9 @@ class GalleryActivity:AppCompatActivity(){
 
         val gson = Gson()
         val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
+
+        Log.d("canevasReceived", it[0].toString())
+
         Log.d("onJoinCanvasResponse", obj.isCanvasRoomJoined.toString()+ " " + obj.canvasName)
 
         if(obj.isCanvasRoomJoined) {
@@ -217,7 +229,8 @@ class GalleryActivity:AppCompatActivity(){
                 val intent = Intent(this, DrawingActivity::class.java)
                 Log.d("selectedCanevas", "created" + selectedCanevas)
 
-                intent.putExtra("canevas", selectedCanevas!!)
+                ViewShapeHolder.getInstance().canevas = selectedCanevas!!
+//                intent.putExtra("canevas", selectedCanevas!!)
                 //ViewShapeHolder.getInstance().canevas = selectedCanevas!!
                 startActivityForResult(intent, 0)
             } else {
@@ -225,6 +238,23 @@ class GalleryActivity:AppCompatActivity(){
             }
         }
     }
+
+    private var onCanvasSaved: Emitter.Listener = Emitter.Listener {
+        val gson = Gson()
+        val obj: CanvasEvent = gson.fromJson(it[0].toString())
+
+
+        for(canevasIt: Canevas in canevasPublic) {
+            if(canevasIt.name == obj.canevas.name) {
+                canevasIt.thumbnail = obj.canevas.thumbnail
+            }
+        }
+
+        runOnUiThread {
+            adapterPublic?.notifyDataSetChanged()
+        }
+    }
+
 
     private var onCanvasCreated: Emitter.Listener = Emitter.Listener {
         Log.d("onCanvasCreated", "alllooo")

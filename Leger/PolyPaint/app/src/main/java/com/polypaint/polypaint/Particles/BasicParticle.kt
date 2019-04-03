@@ -6,7 +6,7 @@ import kotlin.math.max
 import kotlin.math.sign
 
 
-class BasicParticle (xOrigin: Float, yOrigin:Float, var maxSpeed :Float, var context: Context) {
+open class BasicParticle (open var xOrigin: Float, open var yOrigin:Float, open var maxSpeed :Float, open var context: Context) {
     val ALIVE = 0
     val DEAD = 1
     private var mState: Int = ALIVE
@@ -21,7 +21,7 @@ class BasicParticle (xOrigin: Float, yOrigin:Float, var maxSpeed :Float, var con
     var vY : Float = 0F
     var aX : Float = 0F
     var aY : Float = 0F
-    init {
+    open fun initialize() {
         //Make Bitmap based on drawable
         //mBase = BitmapFactory.decodeResource(context.resources, R.drawable.ic_plus)
         //set random scale
@@ -48,11 +48,11 @@ class BasicParticle (xOrigin: Float, yOrigin:Float, var maxSpeed :Float, var con
 
     }
     //Splatter Effect
-    fun initDirection (): Float{
+    open fun initDirection (): Float{
         return ((Math.random()*2)-1).toFloat()
     }
 
-    fun update(){
+    open fun update(){
         if(mState != DEAD){
             //Mouvement Euler Simple
             this.x += this.vX
@@ -69,11 +69,11 @@ class BasicParticle (xOrigin: Float, yOrigin:Float, var maxSpeed :Float, var con
         }
     }
 
-    fun isAlive():Boolean{
+    open fun isAlive():Boolean{
         return mState == ALIVE
     }
 
-    fun draw(canvas: Canvas){
+    open fun draw(canvas: Canvas){
         canvas.drawCircle(this.x,this.y,5.0f, mPaint)
     }
 }

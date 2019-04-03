@@ -109,58 +109,58 @@ class LassoView(context: Context?) : View(context) {
                             val center = Coordinates(view.leftX + view.measuredWidth / 2.0, (view.topY + view.measuredHeight / 2.0) )
 
                            val topLeft = Coordinates(
-                                (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.sin(
+                                (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) - (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.cos(
+                                ) - (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
                                 ),
 
-                                -(view.borderResizableLayout.layoutParams.height) / 2.0 * Math.cos(
+                                -(view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) - (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.sin(
+                                ) - (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
                                 )
                             )
 
                             val topRight = Coordinates(
-                                (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.sin(
+                                (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) + (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.cos(
+                                ) + (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
                                 ),
 
-                                -(view.borderResizableLayout.layoutParams.height) / 2.0 * Math.cos(
+                                -(view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) + (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.sin(
+                                ) + (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
                                 )
                             )
 
 
                             val bottomLeft = Coordinates(
-                                - (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.sin(
+                                - (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) - (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.cos(
+                                ) - (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
                                 ),
 
-                                (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.cos(
+                                (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) - (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.sin(
+                                ) - (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
                                 )
                             )
 
                             val bottomRight = Coordinates(
-                                - (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.sin(
+                                - (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) + (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.cos(
+                                ) + (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
                                 ),
 
-                                (view.borderResizableLayout.layoutParams.height) / 2.0 * Math.cos(
+                                (view.borderResizableLayout.layoutParams.height - 40) / 2.0 * Math.cos(
                                     Math.toRadians(view.rotation.toDouble())
-                                ) + (view.borderResizableLayout.layoutParams.width) / 2.0 * Math.sin(
+                                ) + (view.borderResizableLayout.layoutParams.width - 40) / 2.0 * Math.sin(
                                     Math.toRadians(view.rotation.toDouble())
                                 )
                             )
@@ -175,9 +175,11 @@ class LassoView(context: Context?) : View(context) {
                                 && region.contains(center.x.toInt() + bottomLeft.x.toInt(), center.y.toInt() + bottomLeft.y.toInt())
                                 && region.contains(center.x.toInt() + bottomRight.x.toInt(), center.y.toInt() + bottomRight.y.toInt())
                             ){
-                                viewsIn.add(view)
-                                view.isSelected = true
-                                view.hideButtonsAndAnchors()
+                                if(!view.isSelectedByOther) {
+                                    viewsIn.add(view)
+                                    view.isSelected = true
+                                    view.hideButtonsAndAnchors()
+                                }
                             }
                         }
                         for(link in ViewShapeHolder.getInstance().linkMap.keys){
@@ -191,12 +193,15 @@ class LassoView(context: Context?) : View(context) {
                                 }
                             }
                             if(isAllPathIn){
-                                if(viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.from?.formId])
-                                    && viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.to?.formId])
+                                if((viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.from?.formId])
+                                    && viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.to?.formId])) ||
+                                    (link.link?.from?.formId == "" && link.link?.to?.formId == "")
                                 ) {
-                                    linksIn.add(link)
-                                    link.isSelected = true
-                                    link.hideButtons()
+                                    //if(!link.isSelectedByOther) {
+                                        linksIn.add(link)
+                                        link.isSelected = true
+                                        link.hideButtons()
+                                    //}
                                 }
                             }
                         }
