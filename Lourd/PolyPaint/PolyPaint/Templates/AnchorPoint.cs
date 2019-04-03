@@ -32,5 +32,19 @@ namespace PolyPaint.Templates
             anchor = 0;
             multiplicity = "";
         }
+
+        public AnchorPoint GetForServer()
+        {
+            string newFormId = formId == null? "": formId;
+
+            return new AnchorPoint(newFormId, anchor, multiplicity);
+        }
+
+        internal AnchorPoint GetForLourd()
+        {
+            string newFormId = formId.Equals("") ? null : formId;
+
+            return new AnchorPoint(newFormId, anchor, multiplicity);
+        }
     }
 }

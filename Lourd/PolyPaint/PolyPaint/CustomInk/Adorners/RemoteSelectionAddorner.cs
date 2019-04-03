@@ -24,19 +24,20 @@ namespace PolyPaint.CustomInk
             this.canvas = canvas;
             visualChildren = new VisualCollection(this);
 
+            border = new Path();
             if (stroke is ShapeStroke)
             {
                 Point center = stroke.GetCenter();
                 RotateTransform rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
                 fill = new RectangleGeometry(stroke.GetCustomBound(), 0, 0, rotation);
+                border.Data = fill;
             }
             else
             {
-                fill = new RectangleGeometry(stroke.GetCustomBound());
+                border.Data = stroke.GetGeometry();
             }
-            border = new Path();
-            border.Data = fill;
+            
             border.Stroke = Brushes.Red;
             border.StrokeThickness = 2;
 
