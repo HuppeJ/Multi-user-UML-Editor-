@@ -27,7 +27,7 @@
         public void SetDefaults()
         {
             color = "#FF000000";
-            thickness = 2;
+            thickness = 0;
             type = 0; //(int)StrokeTypes.LINK;
         }
     }

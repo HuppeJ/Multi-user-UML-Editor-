@@ -1,21 +1,8 @@
-﻿using PolyPaint.CustomInk;
-using PolyPaint.CustomInk.Strokes;
+﻿using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace PolyPaint.Vues
 {
@@ -33,6 +20,7 @@ namespace PolyPaint.Vues
             DataContext = this;
         }
 
+        #region properties
         private string _label = "";
         public string Label
         {
@@ -59,6 +47,19 @@ namespace PolyPaint.Vues
             }
         }
 
+        private List<string> _linkStylesList;
+        public List<string> LinkStylesList
+        {
+            get { return _linkStylesList; }
+            set
+            {
+                if (_linkStylesList == value) return;
+
+                _linkStylesList = value;
+                NotifyPropertyChanged("LinkStylesList");
+            }
+        }
+
         private string _linkType = "";
         public string LinkType
         {
@@ -69,6 +70,19 @@ namespace PolyPaint.Vues
 
                 _linkType = value;
                 NotifyPropertyChanged("LinkType");
+            }
+        }
+
+        private List<string> _linkTypesList;
+        public List<string> LinkTypesList
+        {
+            get { return _linkTypesList; }
+            set
+            {
+                if (_linkTypesList == value) return;
+
+                _linkTypesList = value;
+                NotifyPropertyChanged("LinkTypesList");
             }
         }
 
@@ -85,8 +99,8 @@ namespace PolyPaint.Vues
             }
         }
 
-        private int _linkThickness = 1;
-        public int LinkThickness
+        private string _linkThickness = "";
+        public string LinkThickness
         {
             get { return _linkThickness; }
             set
@@ -95,6 +109,19 @@ namespace PolyPaint.Vues
 
                 _linkThickness = value;
                 NotifyPropertyChanged("LinkThickness");
+            }
+        }
+
+        private List<string> _linkThicknessesList;
+        public List<string> LinkThicknessesList
+        {
+            get { return _linkThicknessesList; }
+            set
+            {
+                if (_linkThicknessesList == value) return;
+
+                _linkThicknessesList = value;
+                NotifyPropertyChanged("LinkThicknessesList");
             }
         }
 
@@ -123,6 +150,7 @@ namespace PolyPaint.Vues
                 NotifyPropertyChanged("MultiplicityTo");
             }
         }
+        #endregion
 
         private void Rename(object sender, RoutedEventArgs e)
         {
@@ -135,7 +163,64 @@ namespace PolyPaint.Vues
             windowDrawing = (WindowDrawing) parent;
             if (windowDrawing != null)
             {
-                windowDrawing.EditLink(_label, ConvertTypeToInt(_linkType),ConvertStyleToInt(_linkStyle), _selectedColor, _linkThickness, _multiplicityFrom, _multiplicityTo);
+                int linkType;
+                switch (_linkType)
+                {
+                    case "Line":
+                        linkType = 0;
+                        break;
+                    case "One way association":
+                        linkType = 1;
+                        break;
+                    case "Two way association":
+                        linkType = 2;
+                        break;
+                    case "Heritage":
+                        linkType = 3;
+                        break;
+                    case "Aggregation":
+                        linkType = 4;
+                        break;
+                    case "Composition":
+                        linkType = 5;
+                        break;
+                    default:
+                        linkType = 0;
+                        break;
+                }
+
+                int linkStyle;
+                switch (_linkStyle)
+                {
+                    case "Full":
+                        linkStyle = 0;
+                        break;
+                    case "Dotted":
+                        linkStyle = 1;
+                        break;
+                    default:
+                        linkStyle = 0;
+                        break;
+                }
+
+                int linkThickness;
+                switch (_linkThickness)
+                {
+                    case "Thin":
+                        linkThickness = 0;
+                        break;
+                    case "Normal":
+                        linkThickness = 1;
+                        break;
+                    case "Thick":
+                        linkThickness = 2;
+                        break;
+                    default:
+                        linkThickness = 0;
+                        break;
+                }
+
+                windowDrawing.EditLink(_label, linkType, linkStyle, _selectedColor, linkThickness, _multiplicityFrom, _multiplicityTo);
             }
         }
 
@@ -152,14 +237,69 @@ namespace PolyPaint.Vues
             {
                 LinkStroke stroke = windowDrawing.surfaceDessin.GetSelectedStrokes()[0] as LinkStroke;
                 _label = stroke.name;
-                _linkStyle = ConvertStyleToString(stroke.style.type);
-                _linkType = ConvertTypeToString(stroke.linkType);
                 _selectedColor = stroke.style.color;
-                _linkThickness = stroke.style.thickness;
                 _multiplicityFrom = stroke.from.multiplicity;
                 _multiplicityTo = stroke.to.multiplicity;
+
+                switch (stroke.linkType)
+                {
+                    case (int)LinkTypes.LINE:
+                        _linkType = "Line";
+                        break;
+                    case (int)LinkTypes.HERITAGE:
+                        _linkType = "Heritage";
+                        break;
+                    case (int)LinkTypes.ONE_WAY_ASSOCIATION:
+                        _linkType = "One way association";
+                        break;
+                    case (int)LinkTypes.TWO_WAY_ASSOCIATION:
+                        _linkType = "Two way association";
+                        break;
+                    case (int)LinkTypes.COMPOSITION:
+                        _linkType = "Composition";
+                        break;
+                    case (int)LinkTypes.AGGREGATION:
+                        _linkType = "Aggregation";
+                        break;
+                    default:
+                        _linkType = "Line";
+                        break;
+                }
+
+                switch (stroke.style.type)
+                {
+                    case (int)LinkStyles.FULL:
+                        _linkStyle = "Full";
+                        break;
+                    case (int)LinkStyles.DOTTED:
+                        _linkStyle = "Dotted";
+                        break;
+                    default:
+                        _linkStyle = "Full";
+                        break;
+                }
+
+                switch (stroke.style.thickness)
+                {
+                    case (int)LinkThicknesses.THIN:
+                        _linkThickness = "Thin";
+                        break;
+                    case (int)LinkThicknesses.NORMAL:
+                        _linkThickness = "Normal";
+                        break;
+                    case (int)LinkThicknesses.THICK:
+                        _linkThickness = "Thick";
+                        break;
+                    default:
+                        _linkThickness = "Thin";
+                        break;
+                }
             }
-            
+
+            _linkTypesList = new List<string> { "Line", "One way association", "Two way association", "Heritage", "Aggregation", "Composition" };
+            _linkStylesList = new List<string> { "Full", "Dotted" };
+            _linkThicknessesList = new List<string> { "Thin", "Normal", "Thick" };
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkStyle"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkType"));
@@ -167,74 +307,9 @@ namespace PolyPaint.Vues
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkThickness"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MultiplicityFrom"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MultiplicityTo"));
-        }
-
-        private int ConvertStyleToInt(string style)
-        {
-            switch (style)
-            {
-                case "Full":
-                    return 0;
-                case "Dotted":
-                    return 1;
-                default:
-                    return 0;
-            }
-        }
-
-        private string ConvertStyleToString(int style)
-        {
-            switch (style)
-            {
-                case 0:
-                    return "Full";
-                case 1:
-                    return "Dotted";
-                default:
-                    return "Full";
-            }
-        }
-
-        private int ConvertTypeToInt(string style)
-        {
-            switch (style)
-            {
-                case "Line":
-                    return 0;
-                case "One way association":
-                    return 1;
-                case "Two way association":
-                    return 2;
-                case "Heritage":
-                    return 3;
-                case "Aggregation":
-                    return 4;
-                case "Composition":
-                    return 5;
-                default:
-                    return 0;
-            }
-        }
-
-        private string ConvertTypeToString(int style)
-        {
-            switch (style)
-            {
-                case 0:
-                    return "Line";
-                case 1:
-                    return "One way association";
-                case 2:
-                    return "Two way association";
-                case 3:
-                    return "Heritage";
-                case 4:
-                    return "Aggregation";
-                case 5:
-                    return "Composition";
-                default:
-                    return "Line";
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkStylesList"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkTypesList"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkThicknessesList"));
         }
 
         protected void NotifyPropertyChanged(string info)

@@ -9,6 +9,8 @@ using System;
 using System.Windows.Shapes;
 using PolyPaint.Templates;
 using PolyPaint.Enums;
+using PolyPaint.Services;
+using System.Windows.Ink;
 
 namespace PolyPaint.CustomInk
 {
@@ -190,6 +192,9 @@ namespace PolyPaint.CustomInk
 
             linkStroke.path.Insert(indexInPath, new Coordinates(actualPos));
             linkStroke.addStylusPointsToLink();
+
+            DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
+
             canvas.RefreshChildren();
             InvalidateArrange();
             visualChildren.Clear();
