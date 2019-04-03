@@ -493,8 +493,8 @@ namespace PolyPaint.CustomInk.Strokes
 
         public virtual Link GetLinkShape()
         {
-            AnchorPoint fromForComm = from.GetForCommunication();
-            AnchorPoint toForComm = to.GetForCommunication();
+            AnchorPoint fromForComm = from.GetForServer();
+            AnchorPoint toForComm = to.GetForServer();
             List<Coordinates> newPath = new List<Coordinates>();
             foreach (Coordinates coords in path)
             {

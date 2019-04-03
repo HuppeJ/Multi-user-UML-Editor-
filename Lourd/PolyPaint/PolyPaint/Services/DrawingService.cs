@@ -136,6 +136,7 @@ namespace PolyPaint.Services
                 }
             });
 
+            #region links .On 
             socket.On("linksDeleted", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -196,7 +197,9 @@ namespace PolyPaint.Services
                     }
                 }
             });
+            #endregion
 
+            #region .On("forms...")
             socket.On("formCreated", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -209,7 +212,6 @@ namespace PolyPaint.Services
                 }
             });
 
-            #region .On("forms...")
             socket.On("formsDeleted", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -354,9 +356,7 @@ namespace PolyPaint.Services
 
         public static void CreateShape(ShapeStroke shapeStroke)
         {
-            StrokeCollection strokes = new StrokeCollection();
-            strokes.Add(shapeStroke);
-            socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(strokes)));
+            socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(new StrokeCollection { shapeStroke })));
             localAddedStrokes.Add(shapeStroke.guid.ToString());
         }
 
@@ -373,18 +373,34 @@ namespace PolyPaint.Services
                 if (localSelectedStrokes.Contains(stroke.guid.ToString()))
                     localSelectedStrokes.Remove(stroke.guid.ToString());
             }
-            socket.Emit("deleteForms", serializer.Serialize(createUpdateFormsData(strokes)));
-            socket.Emit("deleteLinks", serializer.Serialize(createUpdateLinksData(strokes)));
+
+            EmitIfStrokes("deleteForms", createUpdateFormsData(strokes));
+            EmitIfStrokes("deleteLinks", createUpdateLinksData(strokes));
+        }
+
+        private static void EmitIfStrokes(string eventString, UpdateFormsData shapes)
+        {
+            if(shapes.forms.Count > 0)
+            {
+                socket.Emit(eventString, serializer.Serialize(shapes));
+            }
+        }
+        private static void EmitIfStrokes(string eventString, UpdateLinksData links)
+        {
+            if (links.links.Count > 0)
+            {
+                socket.Emit(eventString, serializer.Serialize(links));
+            }
         }
 
         public static void UpdateShapes(StrokeCollection strokes)
         {
-            socket.Emit("updateForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            EmitIfStrokes("updateForms", createUpdateFormsData(strokes));
         }
 
         public static void UpdateLinks(StrokeCollection strokes)
         {
-            socket.Emit("updateLinks", serializer.Serialize(createUpdateLinksData(strokes)));
+            EmitIfStrokes("updateLinks", createUpdateLinksData(strokes));
         }
 
         public static void SelectShapes(StrokeCollection strokes)
@@ -393,8 +409,8 @@ namespace PolyPaint.Services
             {
                 localSelectedStrokes.Add(stroke.guid.ToString());
             }
-            socket.Emit("selectForms", serializer.Serialize(createUpdateFormsData(strokes)));
-            socket.Emit("selectLinks", serializer.Serialize(createUpdateLinksData(strokes)));
+            EmitIfStrokes("selectForms", createUpdateFormsData(strokes));
+            EmitIfStrokes("selectLinks", createUpdateLinksData(strokes));
         }
 
         public static void DeselectShapes(StrokeCollection strokes)
@@ -404,9 +420,8 @@ namespace PolyPaint.Services
                 if (localSelectedStrokes.Contains(stroke.guid.ToString()))
                     localSelectedStrokes.Remove(stroke.guid.ToString());
             }
-            socket.Emit("deselectForms", serializer.Serialize(createUpdateFormsData(strokes)));
-            socket.Emit("deselectLinks", serializer.Serialize(createUpdateLinksData(strokes)));
-
+            EmitIfStrokes("deselectForms", createUpdateFormsData(strokes));
+            EmitIfStrokes("deselectLinks", createUpdateLinksData(strokes));
         }
         #endregion
 
@@ -447,18 +462,17 @@ namespace PolyPaint.Services
 
         private static LinkStroke createLinkStroke(dynamic link)
         {
-            StylusPointCollection points = new StylusPointCollection();
             for (int i = 0; i < link.path.Count; i++)
             {
-                StylusPoint point = new StylusPoint((double)link.path[i].x / 2.1, (double)link.path[i].y / 2.1);
-                points.Add(point);
+                link.path[i].x /= 2.1;
+                link.path[i].y /= 2.1;
             }
-
-            link.from.formId = link.from.formId.Equals("") ? null : link.from.formId;
-            link.to.formId = link.to.formId.Equals("") ? null : link.to.formId;
-
-            LinkStroke linkStroke = new LinkStroke(link.ToObject<Link>(), points);
+            
+            LinkStroke linkStroke = new LinkStroke(link.ToObject<Link>(), new StylusPointCollection { new StylusPoint(0,0) });
             linkStroke.guid = Guid.Parse((string)link.id);
+
+            linkStroke.to = linkStroke.to.GetForLourd();
+            linkStroke.from = linkStroke.from.GetForLourd();
 
             return linkStroke;
         }
@@ -548,6 +562,9 @@ namespace PolyPaint.Services
                 link.path[i].x /= 2.1;
                 link.path[i].y /= 2.1;
             }
+
+            link.from = link.from.GetForLourd();
+            link.to = link.to.GetForLourd();
 
             return new LinkStroke(link, new StylusPointCollection { new StylusPoint(0,0) });
         }

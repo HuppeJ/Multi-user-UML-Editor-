@@ -148,13 +148,6 @@ namespace PolyPaint.CustomInk
                                 List<Coordinates> pathCopy = new List<Coordinates>(linkStroke.path);
 
                                 StylusPoint point = linkStroke.StylusPoints[0];
-                                double xDiff = point.X - linkStroke.path[0].x;
-                                double yDiff = point.Y - linkStroke.path[0].y;
-
-                                for (int i = 1; i < linkStroke.path.Count - 1; i++)
-                                {
-                                    linkStroke.path[i] = new Coordinates(linkStroke.path[i].x + xDiff, linkStroke.path[i].y + yDiff);
-                                }
 
                                 // update the free points of linkStrokes (from view)
                                 if (linkStroke.from?.formId == null)
@@ -214,12 +207,6 @@ namespace PolyPaint.CustomInk
                             }
                         } else //isResized, cannot be rotate, does not happen if many SelectedStrokes
                         {
-                            /*for (int i = 0; i < linkStroke.path.Count; i++)
-                            {
-                                linkStroke.path[i] = new Coordinates((linkStroke.path[i].x - oldLeftTopPoint.X) * widthRatio + newLeftTopPoint.X, (linkStroke.path[i].y - oldLeftTopPoint.Y) * heightRatio + newLeftTopPoint.Y);
-                            }
-
-                            linkStroke.addStylusPointsToLink();*/
                         }
 
                     }
@@ -368,13 +355,19 @@ namespace PolyPaint.CustomInk
                     LinkStroke linkStroke = stroke as LinkStroke;
                     for (int i = 0; i < linkStroke.path.Count; i++)
                     {
-                        if(i == 0 && linkStroke.isAttached() && linkStroke.from?.formId != null)
+                        if (i == 0 && linkStroke.isAttached() && linkStroke.from?.formId != null)
                         {
-                            continue;
+                            if (!SelectedStrokes.Contains(StrokesDictionary[linkStroke.from.formId]))
+                            {
+                                continue;
+                            }
                         }
                         if (i == linkStroke.path.Count - 1 && linkStroke.isAttached() && linkStroke.to?.formId != null)
                         {
-                            continue;
+                            if (!SelectedStrokes.Contains(StrokesDictionary[linkStroke.to.formId]))
+                            {
+                                continue;
+                            };
                         }
                         Coordinates coords = (stroke as LinkStroke).path[i];
                         coords.x += delta.X;
@@ -440,6 +433,7 @@ namespace PolyPaint.CustomInk
             RefreshLinks(false);
             RefreshChildren();
             DrawingService.UpdateShapes(GetSelectedStrokes());
+            DrawingService.UpdateLinks(GetSelectedStrokes());
         }
 
         protected override void OnSelectionResizing(InkCanvasSelectionEditingEventArgs e)
@@ -592,8 +586,6 @@ namespace PolyPaint.CustomInk
             // firstPoint = customStroke.StylusPoints[0];
             SelectedStrokes = new StrokeCollection { Strokes[Strokes.Count - 1] };
             
-            //drawingService.UpdateShape("id", 0, "strokeName", shapeStyle, new List<string>(), new List<string>());
-
             // Pass the custom stroke to base class' OnStrokeCollected method.
             InkCanvasStrokeCollectedEventArgs args = new InkCanvasStrokeCollectedEventArgs(customStroke);
             base.OnStrokeCollected(args);
@@ -806,9 +798,6 @@ namespace PolyPaint.CustomInk
         #region RefreshChildren
         public void RefreshChildren()
         {
-            // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e
-            //removeAdorners();
-
             Children.Clear();
 
             isUpdatingLink = false;
@@ -828,19 +817,9 @@ namespace PolyPaint.CustomInk
                 {
                     if (stroke.guid.ToString().Equals(strokeId))
                     {
-                        //if (stroke.isLinkStroke())
-                        //{
-                        //    stroke.DrawingAttributes.Color = Colors.Red;
-                        //} else{
-                        //    AddRemoteSelectionAdorner(stroke);
-                        //}
                         AddRemoteSelectionAdorner(stroke);
                         break;
                     }
-                    //else if (stroke.isLinkStroke())
-                    //{
-                    //    stroke.DrawingAttributes.Color = Colors.Red;
-                    //}
                 }
             }
             // Add text boxes (names) to all strokes. And add dotted path if linkStroke is dotted
@@ -857,7 +836,6 @@ namespace PolyPaint.CustomInk
                     myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
                 }
             }
-            // Select(selectedStrokes);
         }
 
         private void addAdorners(CustomStroke selectedStroke)
@@ -917,37 +895,6 @@ namespace PolyPaint.CustomInk
                     myAdornerLayer.Add(new AnchorPointAdorner(path, stroke, this));
                 }
             }
-        }
-        
-        // ne fonctionne pas :( fait que des strokes ne sont plus ajoutees apres une 2e stroke ajoutee
-        private void removeAdorners()
-        {
-            for(int i = 0; i < Children.Count; i++)
-            {
-                if (Children[i].GetType() == typeof(Path))
-                {
-                    Children.RemoveAt(i);
-                }
-                else if (Children[i]?.GetType() == typeof(CustomTextBox))
-                {
-                    Children.RemoveAt(i);
-                }
-
-            }
-            //List<UIElement> children = new List<UIElement>();
-
-            //foreach (UIElement child in Children)
-            //{
-            //    if (child.GetType() == typeof(Path))
-            //    {
-            //        children.Add(child);
-            //    }
-            //}
-
-            //foreach (UIElement child in children)
-            //{
-            //    Children.Remove(child);
-            //}
         }
         #endregion
 

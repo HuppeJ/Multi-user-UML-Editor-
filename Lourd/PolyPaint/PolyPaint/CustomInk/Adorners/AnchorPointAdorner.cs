@@ -218,9 +218,8 @@ namespace PolyPaint.CustomInk
             strokeTo?.linksFrom.Add(linkBeingCreated.guid.ToString());
 
             canvas.AddStroke(linkBeingCreated);
-            canvas.Select(new StrokeCollection { linkBeingCreated });
-
             DrawingService.CreateLink(linkBeingCreated);
+            canvas.Select(new StrokeCollection { linkBeingCreated });
         }
 
         // Override the VisualChildrenCount and 
