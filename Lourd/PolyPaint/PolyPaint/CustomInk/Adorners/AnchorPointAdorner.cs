@@ -215,7 +215,7 @@ namespace PolyPaint.CustomInk
             shapeStroke?.linksFrom.Add(linkBeingCreated.guid.ToString());
 
             linkBeingCreated.addToPointToLink(actualPos, strokeTo?.guid.ToString(), number);
-            strokeTo?.linksFrom.Add(linkBeingCreated.guid.ToString());
+            strokeTo?.linksTo.Add(linkBeingCreated.guid.ToString());
 
             canvas.AddStroke(linkBeingCreated);
             DrawingService.CreateLink(linkBeingCreated);

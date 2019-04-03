@@ -204,7 +204,6 @@
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"
                                            SelectionChanged="surfaceDessin_SelectionChanged"
                            MouseUp="surfaceDessin_OnMouseUp"
-                                           KeyUp="surfaceDessin_OnKeyUp"
                                            StrokeCollected="StrokeCollected"
                            Strokes="{Binding Traits, Mode=OneTime}" EditingMode="{Binding OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            SelectedStrokes="{Binding SelectedStrokes, Mode=OneTime}"

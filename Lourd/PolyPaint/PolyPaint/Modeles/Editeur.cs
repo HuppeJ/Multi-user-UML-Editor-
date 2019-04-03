@@ -35,7 +35,7 @@ namespace PolyPaint.Modeles
 
 
         // StrokeType selected
-        private string selectedStrokeType = "CLASS_SHAPE";
+        private string selectedStrokeType = "";
         public string SelectedStrokeType
         {
             get { return selectedStrokeType; }
@@ -43,7 +43,7 @@ namespace PolyPaint.Modeles
         }
 
         // Outil actif dans l'éditeur
-        private string outilSelectionne = "crayon";
+        private string outilSelectionne = "lasso";
         public string OutilSelectionne
         {
             get { return outilSelectionne; }

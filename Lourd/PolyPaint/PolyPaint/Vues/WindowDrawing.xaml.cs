@@ -97,18 +97,6 @@ namespace PolyPaint.Vues
             surfaceDessin.RefreshChildren();
         }
 
-        private void surfaceDessin_OnKeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Delete)
-            {
-                if (surfaceDessin.SelectedStrokes.Count > 0)
-                {
-                    DrawingService.RemoveShapes(surfaceDessin.SelectedStrokes);
-                    surfaceDessin.DeleteStrokes(surfaceDessin.SelectedStrokes);
-                }
-            }
-        }
-
         // Quand une nouvelle nouvelle stroke a ete ajoute
         private void surfaceDessin_OnMouseUp(object sender, MouseButtonEventArgs e)
         {

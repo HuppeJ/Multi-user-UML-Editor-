@@ -119,6 +119,49 @@ namespace PolyPaint.CustomInk
                 }
             }
         }
+
+        // Remove deleted shapeStrokes' guids from anchor points (to and from) in LinkStrokes
+        // And remove deleted linkStokes from linksTo and linksFrom in ShapeStrokes
+        private void UpdateAnchorPointsAndLinks(StrokeCollection strokesToDelete)
+        {
+            foreach (CustomStroke strokeToDelete in strokesToDelete)
+            {
+                // Remove deleted linkStokes from linksTo and linksFrom in ShapeStrokes
+                if (strokeToDelete.isLinkStroke())
+                {
+                    LinkStroke linkStroke = strokeToDelete as LinkStroke;
+                    RemoveShapeStrokeLinkFrom(linkStroke);
+                    RemoveShapeStrokeLinkTo(linkStroke);
+                }
+                else
+                {
+                    // Remove deleted shapeStrokes' guids from anchor points (to and from) in LinkStrokes
+                    ShapeStroke shapeStroke = strokeToDelete as ShapeStroke;
+
+                    foreach (string linkStrokeGuid in shapeStroke.linksFrom)
+                    {
+                        CustomStroke linkStroke;
+                        if (StrokesDictionary.TryGetValue(linkStrokeGuid, out linkStroke))
+                        {
+                            (linkStroke as LinkStroke).from = new AnchorPoint();
+                            (linkStroke as LinkStroke).from.SetDefaults();
+
+                            DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
+                        }
+                    }
+                    foreach (string linkStrokeGuid in shapeStroke.linksTo)
+                    {
+                        CustomStroke linkStroke;
+                        if (StrokesDictionary.TryGetValue(linkStrokeGuid, out linkStroke))
+                        {
+                            (linkStroke as LinkStroke).to = new AnchorPoint();
+                            (linkStroke as LinkStroke).to.SetDefaults();
+                            DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
+                        }
+                    }
+                }
+            }
+        }
         #endregion
 
         #region RefreshLinks
@@ -296,6 +339,15 @@ namespace PolyPaint.CustomInk
                 //do nothing
                 e.Handled = true;
             }
+
+            if (e.Key == Key.Delete)
+            {
+                if (GetSelectedStrokes().Count > 0)
+                {
+                    DeleteStrokes(GetSelectedStrokes());
+                    e.Handled = true;
+                }
+            }
         }
 
         protected override void OnSelectionChanging(InkCanvasSelectionChangingEventArgs e) {
@@ -462,49 +514,6 @@ namespace PolyPaint.CustomInk
 
             DrawingService.RemoveShapes(strokesToDelete);
             base.OnStrokeErasing(e);
-        }
-
-        // Remove deleted shapeStrokes' guids from anchor points (to and from) in LinkStrokes
-        // And remove deleted linkStokes from linksTo and linksFrom in ShapeStrokes
-        private void UpdateAnchorPointsAndLinks(StrokeCollection strokesToDelete)
-        {
-            foreach (CustomStroke strokeToDelete in strokesToDelete)
-            {
-                // Remove deleted linkStokes from linksTo and linksFrom in ShapeStrokes
-                if (strokeToDelete.isLinkStroke())
-                {
-                    LinkStroke linkStroke = strokeToDelete as LinkStroke;
-                    RemoveShapeStrokeLinkFrom(linkStroke);
-                    RemoveShapeStrokeLinkTo(linkStroke);
-                }
-                else
-                {
-                    // Remove deleted shapeStrokes' guids from anchor points (to and from) in LinkStrokes
-                    ShapeStroke shapeStroke = strokeToDelete as ShapeStroke;
-
-                    foreach (string linkStrokeGuid in shapeStroke.linksFrom)
-                    {
-                        CustomStroke linkStroke;
-                        if (StrokesDictionary.TryGetValue(linkStrokeGuid, out linkStroke))
-                        {
-                            (linkStroke as LinkStroke).from = new AnchorPoint();
-                            (linkStroke as LinkStroke).from.SetDefaults();
-
-                            DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
-                        }
-                    }
-                    foreach (string linkStrokeGuid in shapeStroke.linksTo)
-                    {
-                        CustomStroke linkStroke;
-                        if (StrokesDictionary.TryGetValue(linkStrokeGuid, out linkStroke))
-                        {
-                            (linkStroke as LinkStroke).to = new AnchorPoint();
-                            (linkStroke as LinkStroke).to.SetDefaults();
-                            DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
-                        }
-                    }
-                }
-            }
         }
 
         protected override void OnStrokeErased(RoutedEventArgs e)
