@@ -124,11 +124,16 @@ namespace PolyPaint.Services
             socket.On("formCreated", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
+                //Console.WriteLine("FORM CREATED: \n" + "position: " + response.forms[0].shapeStyle.coordinates.x + ", " 
+                //    + response.forms[0].shapeStyle.coordinates.y + "/n" + "size: " + response.forms[0].shapeStyle.width + ", "
+                //    + response.forms[0].shapeStyle.height);
                 if (!username.Equals((string)response.username))
                 {
                     CustomStroke customStroke = createShapeStroke(response.forms[0]);
                     (customStroke as ShapeStroke).shapeStyle.coordinates.x /= CustomStroke.WIDTH;
                     (customStroke as ShapeStroke).shapeStyle.coordinates.y /= CustomStroke.HEIGHT;
+                    (customStroke as ShapeStroke).shapeStyle.width /= CustomStroke.WIDTH;
+                    (customStroke as ShapeStroke).shapeStyle.height /= CustomStroke.HEIGHT;
                     InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
                     Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
                 }

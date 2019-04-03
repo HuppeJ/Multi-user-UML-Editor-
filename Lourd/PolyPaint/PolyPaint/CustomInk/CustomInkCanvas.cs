@@ -378,36 +378,15 @@ namespace PolyPaint.CustomInk
         public void ResizeShape(ShapeStroke shape, RectangleGeometry NewRectangle, RectangleGeometry OldRectangle)
         {
             StrokeCollection strokes = GetSelectedStrokes();
+            Point newCenter = new Point((NewRectangle.Bounds.Right - NewRectangle.Bounds.Left)/2 + NewRectangle.Bounds.Left,
+                                        (NewRectangle.Bounds.Bottom - NewRectangle.Bounds.Top)/2 + NewRectangle.Bounds.Top);
 
             double heightRatio = NewRectangle.Rect.Height / OldRectangle.Rect.Height;
             double widthRatio = NewRectangle.Rect.Width / OldRectangle.Rect.Width;
 
-            Point topLeft = NewRectangle.Transform.Transform(NewRectangle.Rect.TopLeft);
-            Point topRight = NewRectangle.Transform.Transform(NewRectangle.Rect.TopRight);
-            Point bottomLeft = NewRectangle.Transform.Transform(NewRectangle.Rect.BottomLeft);
-            Point bottomRight = NewRectangle.Transform.Transform(NewRectangle.Rect.BottomRight);
-            PointCollection pts = new PointCollection { topLeft, topRight, bottomLeft, bottomRight };
-            
-            double maxX = -999999999;
-            double maxY = -999999999;
-            double minX = 999999999;
-            double minY = 999999999;
-            foreach (Point point in pts)
-            {
-                if (point.X < minX)
-                    minX = point.X;
-                if (point.X > maxX)
-                    maxX = point.X;
-                if (point.Y < minY)
-                    minY = point.Y;
-                if (point.Y > maxY)
-                    maxY = point.Y;
-            }
-            Point newCenter = new Point((maxX - minX) / 2 + minX, (maxY - minY) / 2 + minY);
-
             shape.shapeStyle.width *= widthRatio;
             shape.shapeStyle.height *= heightRatio;
-            shape.shapeStyle.coordinates.x = newCenter.X - NewRectangle.Rect.Width / 2;
+            shape.shapeStyle.coordinates.x = newCenter.X - NewRectangle.Rect.Width  / 2;
             shape.shapeStyle.coordinates.y = newCenter.Y - NewRectangle.Rect.Height / 2;
 
             Stroke newStroke = shape.Clone();
