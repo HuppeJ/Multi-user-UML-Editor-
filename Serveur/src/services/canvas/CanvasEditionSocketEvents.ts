@@ -22,6 +22,7 @@ export default class CanvasEditionSocketEvents {
                     if (response.isFormCreated) {
                         console.log(socket.id + " created form " + data.forms[0]);
                         io.to(canvasRoomId).emit("formCreated", JSON.stringify(data));
+                        canvasManager.logHistory(canvasRoomId, data.username, `created a form`);
                     } else {
                         console.log(socket.id + " failed to create form " + data.forms[0]);
                     }
@@ -47,6 +48,7 @@ export default class CanvasEditionSocketEvents {
                     if (response.areFormsUpdated) {
                         console.log(socket.id + " updated forms " + data.forms);
                         io.to(canvasRoomId).emit("formsUpdated", dataStr);
+                        canvasManager.logHistory(canvasRoomId, data.username, `updated forms`);
                     } else {
                         console.log(socket.id + " failed to update forms " + data.forms);
                     }
@@ -73,6 +75,7 @@ export default class CanvasEditionSocketEvents {
                     if (response.areFormsDeleted) {
                         console.log(socket.id + " deleted forms " + data.forms);
                         io.to(canvasRoomId).emit("formsDeleted", dataStr);
+                        canvasManager.logHistory(canvasRoomId, data.username, `deleted forms`);
                     } else {
                         console.log(socket.id + " failed to delete forms " + data.forms);
                     }
@@ -167,6 +170,7 @@ export default class CanvasEditionSocketEvents {
                     if (response.isLinkCreated) {
                         console.log(socket.id + " created link " + data.links[0]);
                         io.to(canvasRoomId).emit("linkCreated", dataStr);
+                        canvasManager.logHistory(canvasRoomId, data.username, `created a link`);
                     } else {
                         console.log(socket.id + " failed to create link " + data.links[0]);
                     }
@@ -192,6 +196,7 @@ export default class CanvasEditionSocketEvents {
                     if (response.areLinksUpdated) {
                         console.log(socket.id + " updated links " + data.links);
                         io.to(canvasRoomId).emit("linksUpdated", dataStr);
+                        canvasManager.logHistory(canvasRoomId, data.username, `updated links`);
                     } else {
                         console.log(socket.id + " failed to update links " + data.links);
                     }
@@ -217,6 +222,7 @@ export default class CanvasEditionSocketEvents {
                     if (response.areLinksDeleted) {
                         console.log(socket.id + " deleted links " + data.links);
                         io.to(canvasRoomId).emit("linksDeleted", dataStr);
+                        canvasManager.logHistory(canvasRoomId, data.username, `deleted links`);
                     } else {
                         console.log(socket.id + " failed to delete links " + data.links);
                     }
@@ -311,6 +317,7 @@ export default class CanvasEditionSocketEvents {
                         console.log(socket.id + " reinitialize canvas " + data.canevas.name);
                         // TODO Est-ce qu'on voudrait que le serveur renvoit un canevas de base (vide avec des dimessions prédéfinies)?
                         io.to(canvasRoomId).emit("canvasReinitialized");
+                        canvasManager.logHistory(canvasRoomId, data.username, `reinitialized the canvas`);
                     } else {
                         console.log(socket.id + " failed to reinitialized canvas " + data.canevas.name);
                     }
@@ -338,6 +345,7 @@ export default class CanvasEditionSocketEvents {
                         console.log(socket.id + " resized canvas " + data.dimensions);
                         // TODO Est-ce qu'on voudrait que le serveur renvoit un canevas de base (vide avec des dimessions prédéfinies)
                         io.to(canvasRoomId).emit("canvasResized", dataStr);
+                        canvasManager.logHistory(canvasRoomId, data.username, `resized the canvas`);
                     } else {
                         console.log(socket.id + " failed to resize canvas " + data.canevasName);
                     }

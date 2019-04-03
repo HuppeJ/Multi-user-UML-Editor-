@@ -46,6 +46,13 @@ export interface IMessageData {
 /***********************************************
 * Interfaces for objects
 ************************************************/
+export interface IHistoryData {
+    username: string,
+    message: string,  
+    timestamp: string,
+    canevas: ICanevas
+}
+
 
 export interface IAnchorPoint {
     formId: string, 

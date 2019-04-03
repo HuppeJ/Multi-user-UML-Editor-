@@ -1,4 +1,4 @@
-import { ICanevas, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData, IResizeCanevasData } from "../interfaces/interfaces";
+import { ICanevas, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData, IResizeCanevasData, IHistoryData } from "../interfaces/interfaces";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
@@ -6,12 +6,29 @@ export default class CanvasRoom {
     public selectedForms: any;  // selectedForms is a Map : [key: formId, value: username]
     public selectedLinks: any;  // selectedLinks is a Map : [key: linkId, value: username]
     public canvasSelected: boolean;  // selectedLinks is a Map : [key: formId, value: username]
+    public history: IHistoryData[]; 
+    public date: Date;
 
     constructor(public canvas: ICanevas) {
         this.connectedUsers = new Set();
         this.selectedForms = new Map<string, string>();
         this.selectedLinks = new Map<string, string>();
         this.canvasSelected = false;
+        this.history = [];
+        this.date = new Date();
+    }
+
+    public logHistory(username: string, message: string) {
+        const newLog: IHistoryData = {
+            username: username,
+            message: message,  
+            timestamp: this.date.getTime().toString(),
+            canevas: this.canvas
+        }
+
+        this.history.push(newLog);
+
+        return true;
     }
 
     public addUser(username: string) {
@@ -431,6 +448,10 @@ export default class CanvasRoom {
         return JSON.stringify({
             selectedLinks: filteredSelectedLinksArray
         });
+    }
+
+    public getCanvasLogHistorySERI(): string {
+        return JSON.stringify(this.history);
     }
 
     // // fromJSON is used to convert an serialized version

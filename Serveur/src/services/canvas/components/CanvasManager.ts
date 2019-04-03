@@ -29,6 +29,24 @@ export default class CanvasManager {
 
     }
 
+    public logHistory(canvasRoomId: string, username: string, message: string): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.logHistory(username, message);
+    }
+
+    public getCanvasLogHistory(canvasRoomId: string): string {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return "";
+        }
+
+        return canvasRoom.getCanvasLogHistorySERI();
+    }
+
     public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {

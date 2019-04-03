@@ -10,6 +10,16 @@ export default class CanvasSocketEvents {
         io.on("connection", function (socket: any) {
             console.log(socket.id + " connected to Canvas server");
 
+            socket.on("getCanvasLogHistory", function (dataStr: string) {
+                try {
+                    const data: IEditGalleryData = JSON.parse(dataStr);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+                    socket.emit("createCanvasResponse", canvasManager.getCanvasLogHistory(canvasRoomId));
+                } catch (e) {
+                    console.log("[Error]: ", e);
+                }
+            });
+
             socket.on("resetServerState", function () {
                 try {
                     const response = {
@@ -39,6 +49,7 @@ export default class CanvasSocketEvents {
                         // (broadcast)
                         io.sockets.emit("canvasCreated", canvasManager.getCanvasRoomsSERI());
                         console.log(socket.id + " created  canvasRoom " + data.canevas.name);
+                        canvasManager.logHistory(canvasRoomId, data.username, `created the canvas`);
                     } else {
                         console.log(socket.id + " failed to create canvasRoom " + data.canevas.name);
                     }
