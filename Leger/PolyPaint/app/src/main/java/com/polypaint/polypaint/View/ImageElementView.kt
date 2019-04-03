@@ -76,8 +76,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-        linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
-        linearLayoutCompat2Img.layoutParams.height = (3*mMinimumHeight/10).toInt()
+        //linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
 
     }
 
@@ -91,12 +90,10 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
             // TODO :  is null : linearLayoutCompatImg & linearLayoutCompat2Img
-            linearLayoutCompatImg.layoutParams.height = (7*newHeight / 10)
-            linearLayoutCompat2Img.layoutParams.height = (3 * newHeight / 10)
+            //linearLayoutCompatImg.layoutParams.height = (7*newHeight / 10)
         }else{
             borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-            linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
-            linearLayoutCompat2Img.layoutParams.height = (3*mMinimumHeight/10).toInt()
+            //linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
         }
 
         borderResizableLayout.requestLayout()
