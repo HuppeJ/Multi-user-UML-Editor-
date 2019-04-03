@@ -201,6 +201,7 @@
             <StackPanel Orientation="Horizontal" Background="#FFF0F0F0">
                 <Image Source="/Resources/position.png" Margin="5,5,5,5" VerticalAlignment="Center"/>
                 <TextBlock x:Name="textBlockPosition" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <Button Content="History" Margin="0" Command="{Binding DrawingHistoryViewCommand}" Width="150" VerticalAlignment="Top"/>
             </StackPanel>
         </Border>
 
