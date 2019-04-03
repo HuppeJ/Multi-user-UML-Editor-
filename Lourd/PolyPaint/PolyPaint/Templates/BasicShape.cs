@@ -22,12 +22,18 @@ namespace PolyPaint.Templates
             this.type = type;
             this.name = name;
             this.shapeStyle = shapeStyle.Clone();
-            this.shapeStyle.coordinates.x *= CustomStroke.WIDTH;
-            this.shapeStyle.coordinates.y *= CustomStroke.HEIGHT;
-            this.shapeStyle.width *= CustomStroke.WIDTH;
-            this.shapeStyle.height *= CustomStroke.HEIGHT;
             this.linksTo = linksTo;
             this.linksFrom = linksFrom;
         }
+
+        public BasicShape forServer()
+        {
+            shapeStyle.width *= 2.1;
+            shapeStyle.height *= 2.1;
+            shapeStyle.coordinates.x *= 2.1;
+            shapeStyle.coordinates.y *= 2.1;
+            return this;
+        }
+
     }
 }

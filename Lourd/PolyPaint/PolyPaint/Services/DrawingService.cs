@@ -45,7 +45,6 @@ namespace PolyPaint.Services
 
         public static void Initialize(object o)
         {
-            #region not me
             socket.On(Socket.EVENT_RECONNECT, () =>
             {
                 if(canvasName != null)
@@ -55,6 +54,7 @@ namespace PolyPaint.Services
                 }
             });
 
+            #region canvas .On
             socket.On("createCanvasResponse", (data) =>
             {
                 CreateCanvasResponse response = serializer.Deserialize<CreateCanvasResponse>((string)data);
@@ -124,6 +124,7 @@ namespace PolyPaint.Services
             });
             #endregion
 
+            #region links .On 
             socket.On("linkCreated", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -136,7 +137,6 @@ namespace PolyPaint.Services
                 }
             });
 
-            #region links .On 
             socket.On("linksDeleted", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -199,7 +199,7 @@ namespace PolyPaint.Services
             });
             #endregion
 
-            #region .On("forms...")
+            #region forms .On
             socket.On("formCreated", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -209,10 +209,6 @@ namespace PolyPaint.Services
                 if (!username.Equals((string)response.username))
                 {
                     CustomStroke customStroke = createShapeStroke(response.forms[0]);
-                    (customStroke as ShapeStroke).shapeStyle.coordinates.x /= CustomStroke.WIDTH;
-                    (customStroke as ShapeStroke).shapeStyle.coordinates.y /= CustomStroke.HEIGHT;
-                    (customStroke as ShapeStroke).shapeStyle.width /= CustomStroke.WIDTH;
-                    (customStroke as ShapeStroke).shapeStyle.height /= CustomStroke.HEIGHT;
                     InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
                     Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
                 }
@@ -460,11 +456,11 @@ namespace PolyPaint.Services
                 {
                     if(customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {
-                        forms.Add((customStroke as ClassStroke).GetClassShape());
+                        forms.Add((customStroke as ClassStroke).GetClassShape().forServer());
                     }
                     else
                     {
-                        forms.Add((customStroke as ShapeStroke).GetBasicShape());
+                        forms.Add((customStroke as ShapeStroke).GetBasicShape().forServer());
                     }
                 }
             }
@@ -505,10 +501,14 @@ namespace PolyPaint.Services
 
         private static ShapeStroke createShapeStroke(dynamic shape)
         {
-            StylusPointCollection points = new StylusPointCollection();
+            StylusPointCollection points = new StylusPointCollection {
+                new StylusPoint((double)shape.shapeStyle.coordinates.x / 2.1, (double)shape.shapeStyle.coordinates.y / 2.1)
+            };
 
-            StylusPoint point = new StylusPoint((double)shape.shapeStyle.coordinates.x, (double)shape.shapeStyle.coordinates.y);
-            points.Add(point);
+            shape.shapeStyle.height = (double)shape.shapeStyle.height / 2.1;
+            shape.shapeStyle.width = (double)shape.shapeStyle.width / 2.1;
+            shape.shapeStyle.coordinates.x = (double)shape.shapeStyle.coordinates.x / 2.1;
+            shape.shapeStyle.coordinates.y = (double)shape.shapeStyle.coordinates.y / 2.1;
 
             ShapeStroke shapeStroke;
             StrokeTypes type = (StrokeTypes) shape.type;
@@ -637,14 +637,14 @@ namespace PolyPaint.Services
 
         private static dynamic GetShapeStyle(dynamic shapeStyle)
         {
-            double width = (double)shapeStyle["width"];
-            double height = (double)shapeStyle["height"];
+            double width = (double)shapeStyle["width"] / 2.1;
+            double height = (double)shapeStyle["height"] / 2.1;
             double rotation = (double)shapeStyle["rotation"];
             string borderColor = shapeStyle["borderColor"];
             int borderStyle = shapeStyle["borderStyle"];
             string backgroundColor = shapeStyle["backgroundColor"];
-            double x = (double)shapeStyle["coordinates"]["x"];
-            double y = (double)shapeStyle["coordinates"]["y"];
+            double x = (double)shapeStyle["coordinates"]["x"] / 2.1;
+            double y = (double)shapeStyle["coordinates"]["y"] / 2.1;
             Coordinates coordinates = new Coordinates(x, y);
 
             return new ShapeStyle(coordinates, width, height, rotation, borderColor, borderStyle, backgroundColor);

@@ -362,6 +362,22 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region DrawingHistoryViewCommand
+        private ICommand _drawingHistoryViewCommand;
+        public ICommand DrawingHistoryViewCommand
+        {
+            get
+            {
+                return _drawingHistoryViewCommand ?? (_drawingHistoryViewCommand = new RelayCommand<Object>(GoToDrawingHistoryView));
+            }
+        }
+
+        private void GoToDrawingHistoryView(object o)
+        {
+            UserMode = UserModes.History;
+        }
+        #endregion
+
         #region BackToLoginCommand
         private ICommand _backToLoginCommand;
         public ICommand BackToLoginCommand
