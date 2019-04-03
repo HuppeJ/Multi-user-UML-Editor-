@@ -86,10 +86,10 @@ class PhaseView(context: Context): BasicElementView(context) {
         // TODO :  is null : linearLayoutCompat
 
         var lDrawable = child!!.linearLayoutCompat.background.mutate() as LayerDrawable
-        var gDrawable = lDrawable.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
+        var gDrawable = lDrawable.findDrawableByLayerId(R.id.view_class_borders) as GradientDrawable
 
         var lDrawable2 = child!!.linearLayoutCompat2.background.mutate() as LayerDrawable
-        var gDrawable2 = lDrawable2.findDrawableByLayerId(R.id.borders_comment) as GradientDrawable
+        var gDrawable2 = lDrawable2.findDrawableByLayerId(R.id.view_class_borders) as GradientDrawable
         when(borderType){
             0 -> {  gDrawable.setStroke(2, Color.parseColor(color))
                     gDrawable2.setStroke(2, Color.parseColor(color))
