@@ -247,9 +247,15 @@ class DrawingActivity : AppCompatActivity(){
             }
             // Selecting selected Forms and Links
             val app = application as PolyPaint
-            app.socket?.emit(SocketConstants.GET_SELECTED_FORMS, ViewShapeHolder.getInstance().canevas.name)
-            app.socket?.emit(SocketConstants.GET_SELECTED_LINKS, ViewShapeHolder.getInstance().canevas.name)
-
+            val gson = Gson()
+            val galleryEditEvent: GalleryEditEvent = GalleryEditEvent(
+                UserHolder.getInstance().username,
+                ViewShapeHolder.getInstance().canevas.name,
+                ViewShapeHolder.getInstance().canevas.password
+            )
+            val sendObj = gson.toJson(galleryEditEvent)
+            app.socket?.emit(SocketConstants.GET_SELECTED_FORMS, sendObj)
+            app.socket?.emit(SocketConstants.GET_SELECTED_LINKS, sendObj)
         }
 
     }

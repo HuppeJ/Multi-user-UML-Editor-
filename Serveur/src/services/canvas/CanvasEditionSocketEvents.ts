@@ -137,10 +137,12 @@ export default class CanvasEditionSocketEvents {
                 }
             });
 
-            socket.on("getSelectedForms", function (canvasName: string) {
+            socket.on("getSelectedForms", function (dataStr: string) {
                 try {
-                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
-                    const selectedForms: string = canvasManager.getSelectedFormsInCanvasRoomSERI(canvasRoomId);
+                    const data: IEditGalleryData = JSON.parse(dataStr);
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+                    
+                    const selectedForms: string = canvasManager.getSelectedFormsInCanvasRoomSERI(canvasRoomId, data);
                     console.log("getSelectedForms")
                     console.log(selectedForms.toString())
 
@@ -278,10 +280,12 @@ export default class CanvasEditionSocketEvents {
                 }
             });
 
-            socket.on("getSelectedLinks", function (canvasName: string) {
+            socket.on("getSelectedLinks", function (dataStr: string) {
                 try {
-                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(canvasName);
-                    const selectedLinks: string = canvasManager.getSelectedLinksInCanvasRoomSERI(canvasRoomId);
+                    const data: IEditGalleryData = JSON.parse(dataStr);
+
+                    const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
+                    const selectedLinks: string = canvasManager.getSelectedLinksInCanvasRoomSERI(canvasRoomId, data);
                     console.log("getSelectedLinks")
                     console.log(selectedLinks.toString())
 

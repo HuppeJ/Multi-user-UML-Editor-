@@ -401,15 +401,35 @@ export default class CanvasRoom {
         });
     }
 
-    public getSelectedFormsSERI(): string {
+    public getSelectedFormsSERI(data: IEditGalleryData): string {
+        let selectedFormsArray: string[] = Array.from(this.selectedForms.keys());
+
+        const filteredSelectedFormsArray = selectedFormsArray.filter((key) => {
+            if (this.selectedForms.get(key) == data.username) {
+                return false;
+            }
+
+            return true;
+        });
+
         return JSON.stringify({
-            selectedForms: Array.from(this.selectedForms.keys())
+            selectedForms: filteredSelectedFormsArray
         });
     }
 
-    public getSelectedLinksSERI(): string {
+    public getSelectedLinksSERI(data: IEditGalleryData): string {
+        let selectedLinksArray: string[] = Array.from(this.selectedLinks.keys());
+
+        const filteredSelectedLinksArray = selectedLinksArray.filter((key) => {
+            if (this.selectedLinks.get(key) == data.username) {
+                return false;
+            }
+
+            return true;
+        });
+
         return JSON.stringify({
-            selectedLinks: Array.from(this.selectedLinks.keys())
+            selectedLinks: filteredSelectedLinksArray
         });
     }
 

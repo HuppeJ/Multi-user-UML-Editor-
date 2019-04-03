@@ -249,22 +249,22 @@ export default class CanvasManager {
     /***********************************************
     * Serialize / Deserialize
     ************************************************/
-    public getSelectedFormsInCanvasRoomSERI(canvasRoomId: string): string {
+    public getSelectedFormsInCanvasRoomSERI(canvasRoomId: string, data: IEditGalleryData): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return null;
         }
 
-        return canvasRoom.getSelectedFormsSERI();
+        return canvasRoom.getSelectedFormsSERI(data);
     }
 
-    public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string): string {
+    public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string, data: IEditGalleryData): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return null;
         }
 
-        return canvasRoom.getSelectedLinksSERI();
+        return canvasRoom.getSelectedLinksSERI(data);
     }
 
     public getCanvasSERI(canvasRoomId: string): string {
