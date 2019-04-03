@@ -122,7 +122,7 @@ namespace PolyPaint.CustomInk
 
         // Remove deleted shapeStrokes' guids from anchor points (to and from) in LinkStrokes
         // And remove deleted linkStokes from linksTo and linksFrom in ShapeStrokes
-        private void UpdateAnchorPointsAndLinks(StrokeCollection strokesToDelete)
+        public void UpdateAnchorPointsAndLinks(StrokeCollection strokesToDelete)
         {
             foreach (CustomStroke strokeToDelete in strokesToDelete)
             {
@@ -729,6 +729,7 @@ namespace PolyPaint.CustomInk
                 if ((stroke as CustomStroke).isLinkStroke())
                 {
                     LinkStroke linkStroke = new LinkStroke(stroke as LinkStroke, new StylusPointCollection { new StylusPoint(0, 0) });
+                    linkStroke.guid = Guid.NewGuid();
 
                     linkStroke.from.SetDefaults();
                     linkStroke.to.SetDefaults();
@@ -741,8 +742,9 @@ namespace PolyPaint.CustomInk
 
                     AddStroke(linkStroke);
                     newStrokes.Add(linkStroke);
-                    // call DrawingService
-                } else
+                    DrawingService.CreateLink(linkStroke);
+                }
+                else
                 {
                     ShapeStroke newStroke = stroke.Clone() as ShapeStroke;
                     newStroke.guid = Guid.NewGuid();
@@ -762,9 +764,9 @@ namespace PolyPaint.CustomInk
                     if(!isClipboard)
                         newShapeStroke.shapeStyle.coordinates = newShapeStroke.shapeStyle.coordinates + new Point(20, 20);
 
-                    DrawingService.CreateShape(newShapeStroke);
                     AddStroke(newShapeStroke);
                     newStrokes.Add(newShapeStroke);
+                    DrawingService.CreateShape(newShapeStroke);
                 }
             }
             Select(newStrokes);

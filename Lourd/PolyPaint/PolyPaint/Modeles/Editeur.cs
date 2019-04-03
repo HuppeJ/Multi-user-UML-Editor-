@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -49,36 +50,6 @@ namespace PolyPaint.Modeles
             get { return outilSelectionne; }
             set { outilSelectionne = value; ProprieteModifiee(); }
         }
-
-        // Couleur des traits tracés par le crayon.
-        /* private string couleurSelectionnee = "Black";
-        public string CouleurSelectionnee
-        {
-            get { return couleurSelectionnee; }
-            // Lorsqu'on sélectionne une couleur c'est généralement pour ensuite dessiner un trait.
-            // C'est pourquoi lorsque la couleur est changée, l'outil est automatiquement changé pour le crayon.
-            set
-            {
-                couleurSelectionnee = value;
-                OutilSelectionne = "crayon";
-                ProprieteModifiee();
-            }
-        } */
-
-        // Grosseur des traits tracés par le crayon.
-        /*private int tailleTrait = 11;
-        public int TailleTrait
-        {
-            get { return tailleTrait; }
-            // Lorsqu'on sélectionne une taille de trait c'est généralement pour ensuite dessiner un trait.
-            // C'est pourquoi lorsque la taille est changée, l'outil est automatiquement changé pour le crayon.
-            set
-            {
-                tailleTrait = value;
-                OutilSelectionne = "crayon";
-                ProprieteModifiee();
-            }
-        }*/
 
         internal CustomStroke AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
         {
@@ -154,6 +125,7 @@ namespace PolyPaint.Modeles
         {
             try
             {
+                (o as CustomInkCanvas).UpdateAnchorPointsAndLinks(new StrokeCollection { strokeEmpilable });
                 isStackUpToDate = false;
                 traitsRetires.Add(strokeEmpilable);
                 traits.Remove(strokeEmpilable);
@@ -184,6 +156,21 @@ namespace PolyPaint.Modeles
             {
                 isStackUpToDate = false;
                 CustomStroke trait = (CustomStroke)traitsRetires.Last();
+
+                if (trait.isLinkStroke())
+                {
+                    LinkStroke linkStroke = trait as LinkStroke;
+
+                    linkStroke.from.SetDefaults();
+                    linkStroke.to.SetDefaults();
+                }
+                else
+                {
+                    ShapeStroke shapeStroke = trait as ShapeStroke;
+                    shapeStroke.linksTo = new List<string> { };
+                    shapeStroke.linksFrom = new List<string> { };
+                }
+
                 traits.Add(trait);
                 if(trait.isLinkStroke())
                 {

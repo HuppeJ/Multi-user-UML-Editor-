@@ -90,7 +90,16 @@ namespace PolyPaint.Vues
 
         private void RefreshChildren(object sender, RoutedEventArgs e)
         {
+
             // pcq click et command ne fonctionnent pas ensemble
+            var btn = sender as Button;
+            btn.Command.Execute(btn.CommandParameter);
+
+            surfaceDessin.RefreshChildren();
+        }
+
+        private void Empiler(object sender, RoutedEventArgs e)
+        {
             var btn = sender as Button;
             btn.Command.Execute(btn.CommandParameter);
 

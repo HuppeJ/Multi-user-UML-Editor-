@@ -27,7 +27,10 @@
                     </LinearGradientBrush>
                 </StackPanel.Background>
                 <Button x:Name="reinitialiser" HorizontalAlignment="Center" Width="50" Height="50" Margin="5" Background="#00000000" Click="RefreshChildren" Command="{Binding Reinitialiser}" Content="♺" FontSize="15" Foreground="Black"/>
-                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Empiler}" Click="RefreshChildren" Content="≚" FontSize="32" Foreground="Black"/>
+                <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" 
+                        Command="{Binding Empiler}" 
+                        CommandParameter="{Binding ElementName=surfaceDessin}"
+                        Click="Empiler" Content="≚" FontSize="32" Foreground="Black"/>
                 <Button x:Name="depiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Depiler}" Click="RefreshChildren" Content="≙" FontSize="32" Foreground="Black"/>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
