@@ -45,7 +45,6 @@ namespace PolyPaint.Services
 
         public static void Initialize(object o)
         {
-            #region not me
             socket.On(Socket.EVENT_RECONNECT, () =>
             {
                 if(canvasName != null)
@@ -55,6 +54,7 @@ namespace PolyPaint.Services
                 }
             });
 
+            #region canvas .On
             socket.On("createCanvasResponse", (data) =>
             {
                 CreateCanvasResponse response = serializer.Deserialize<CreateCanvasResponse>((string)data);
@@ -124,6 +124,7 @@ namespace PolyPaint.Services
             });
             #endregion
 
+            #region links .On 
             socket.On("linkCreated", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -136,7 +137,6 @@ namespace PolyPaint.Services
                 }
             });
 
-            #region links .On 
             socket.On("linksDeleted", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -199,7 +199,7 @@ namespace PolyPaint.Services
             });
             #endregion
 
-            #region .On("forms...")
+            #region forms .On
             socket.On("formCreated", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
@@ -209,10 +209,6 @@ namespace PolyPaint.Services
                 if (!username.Equals((string)response.username))
                 {
                     CustomStroke customStroke = createShapeStroke(response.forms[0]);
-                    (customStroke as ShapeStroke).shapeStyle.coordinates.x /= CustomStroke.WIDTH;
-                    (customStroke as ShapeStroke).shapeStyle.coordinates.y /= CustomStroke.HEIGHT;
-                    (customStroke as ShapeStroke).shapeStyle.width /= CustomStroke.WIDTH;
-                    (customStroke as ShapeStroke).shapeStyle.height /= CustomStroke.HEIGHT;
                     InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(customStroke);
                     Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
                 }
@@ -507,8 +503,11 @@ namespace PolyPaint.Services
         {
             StylusPointCollection points = new StylusPointCollection();
 
-            StylusPoint point = new StylusPoint((double)shape.shapeStyle.coordinates.x, (double)shape.shapeStyle.coordinates.y);
+            StylusPoint point = new StylusPoint((double)shape.shapeStyle.coordinates.x / 2.1, (double)shape.shapeStyle.coordinates.y / 2.1);
             points.Add(point);
+
+            shape.shapeStyle.heigth /= 2.1;
+            shape.shapeStyle.width /= 2.1;
 
             ShapeStroke shapeStroke;
             StrokeTypes type = (StrokeTypes) shape.type;
@@ -616,7 +615,7 @@ namespace PolyPaint.Services
                             List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
                             List<string> attributes = GetStringList(shapes[i]["attributes"]);
                             List<string> methods = GetStringList(shapes[i]["methods"]);
-                            basicShapeList.Add(new ClassShape(id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
+                            basicShapeList.Add(new ClassShape(true, id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
                         }
                         else
                         {
@@ -626,7 +625,7 @@ namespace PolyPaint.Services
                             var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
                             List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
                             List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
-                            basicShapeList.Add(new BasicShape(id, type, name, shapeStyle, linksTo, linksFrom));
+                            basicShapeList.Add(new BasicShape(true, id, type, name, shapeStyle, linksTo, linksFrom));
                         }
                     }
 
