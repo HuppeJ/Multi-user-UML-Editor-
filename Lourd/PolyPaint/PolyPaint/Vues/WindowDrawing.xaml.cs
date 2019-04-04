@@ -309,7 +309,7 @@ namespace PolyPaint.Vues
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    popUpClassFromCodeVue.CodeTextBox.Text += line;
+                    popUpClassFromCodeVue.CodeTextBox.Text += line + Environment.NewLine;
                 }
             }
 
