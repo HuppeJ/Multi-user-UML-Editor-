@@ -322,6 +322,13 @@ namespace PolyPaint.CustomInk
             DrawingService.OnResizeCanvas += OnResizeCanvas;
             DrawingService.SaveCanvas += ConvertInkCanvasToByteArray;
             DrawingService.RefreshChildren += RefreshChildren;
+            DrawingService.ReintializeCanvas += ReinitializeCanvas;
+        }
+
+        private void ReinitializeCanvas()
+        {
+            Strokes.Clear();
+            RefreshChildren();
         }
 
         private void OnResizeCanvas(Coordinates dimensions)

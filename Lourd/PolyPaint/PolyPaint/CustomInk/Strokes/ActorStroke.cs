@@ -24,8 +24,8 @@ namespace PolyPaint.CustomInk
 
         public ActorStroke(StylusPointCollection pts) : base(pts)
         {
-            shapeStyle.width = 30;
-            shapeStyle.height = 70;
+            shapeStyle.width = 80;
+            shapeStyle.height = 80;
             shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());
 
             UpdateShapePoints();

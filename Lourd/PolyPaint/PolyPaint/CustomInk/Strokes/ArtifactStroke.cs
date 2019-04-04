@@ -30,8 +30,8 @@ namespace PolyPaint.CustomInk
 
         public ArtifactStroke(StylusPointCollection pts) : base(pts)
         {
-            shapeStyle.width = 40;
-            shapeStyle.height = 50;
+            shapeStyle.width = 80;
+            shapeStyle.height = 80;
             shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());
 
             UpdateShapePoints();

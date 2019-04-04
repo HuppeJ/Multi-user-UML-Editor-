@@ -563,7 +563,7 @@ namespace PolyPaint.VueModeles
 
             int accessibility = CanvasPrivacy == "Public" ? 1 : 0;
             // Max: W:1520, H1200
-            Coordinates dimensions = new Coordinates(1520, 1200);
+            Coordinates dimensions = new Coordinates(500, 380);
 
             Templates.Canvas canvas = new Templates.Canvas(Guid.NewGuid().ToString(), CanvasName, username, username,
                                                             accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions, EMPTY_CANVAS);

@@ -45,6 +45,8 @@ namespace PolyPaint.CustomInk
         RectangleGeometry NewRectangle = new RectangleGeometry();
         RectangleGeometry OldRectangle = new RectangleGeometry();
 
+        double WIDTH_LEGER = 60;
+
         public ResizeAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
@@ -791,129 +793,128 @@ namespace PolyPaint.CustomInk
         void Top_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y > customStroke.GetCustomBound().Height - 21)
+            if (delta.Y > shapeStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
-                delta.Y = customStroke.GetCustomBound().Height - 21;
+                delta.Y = shapeStroke.GetCustomBound().Height - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X,
-                                      customStroke.GetCustomBound().Y + delta.Y,
-                                      Math.Max(21, customStroke.GetCustomBound().Width),
-                                      Math.Max(21, customStroke.GetCustomBound().Height - delta.Y));
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Width), 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Height - delta.Y));
             generatePreview(rectangle);
         }
 
         void Right_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.X < -customStroke.GetCustomBound().Width + 21)
+            if (delta.X < -shapeStroke.GetCustomBound().Width + WIDTH_LEGER)
             {
-                delta.X = -customStroke.GetCustomBound().Width + 21;
+                delta.X = -shapeStroke.GetCustomBound().Width + WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X,
-                                      customStroke.GetCustomBound().Y,
-                                      Math.Max(21, customStroke.GetCustomBound().Width + delta.X),
-                                      Math.Max(21, customStroke.GetCustomBound().Height));
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Height));
             generatePreview(rectangle);
         }
 
         void Bottom_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y < -customStroke.GetCustomBound().Height + 21)
+            if (delta.Y < -shapeStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
-                delta.Y = -customStroke.GetCustomBound().Height + 21;
+                delta.Y = -shapeStroke.GetCustomBound().Height + WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X,
-                                      customStroke.GetCustomBound().Y,
-                                      Math.Max(21, customStroke.GetCustomBound().Width),
-                                      Math.Max(21, customStroke.GetCustomBound().Height + delta.Y));
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Width), 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Height + delta.Y));
             generatePreview(rectangle);
         }
 
         void Left_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.X > customStroke.GetCustomBound().Width - 21)
+            if (delta.X > shapeStroke.GetCustomBound().Width - WIDTH_LEGER)
             {
-                delta.X = customStroke.GetCustomBound().Width - 21;
+                delta.X = shapeStroke.GetCustomBound().Width - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X + delta.X,
-                                      customStroke.GetCustomBound().Y,
-                                      Math.Max(21, customStroke.GetCustomBound().Width - delta.X),
-                                      Math.Max(21, customStroke.GetCustomBound().Height));
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Height));
             generatePreview(rectangle);
         }
 
         void TopLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            ShapeStroke shapeStroke = customStroke as ShapeStroke;
-            if (delta.Y > customStroke.GetCustomBound().Height - 21)
+            if (delta.Y > shapeStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
-                delta.Y = customStroke.GetCustomBound().Height - 21;
+                delta.Y = shapeStroke.GetCustomBound().Height - WIDTH_LEGER;
             }
-            if (delta.X > customStroke.GetCustomBound().Width - 21)
+            if (delta.X > shapeStroke.GetCustomBound().Width - WIDTH_LEGER)
             {
-                delta.X = customStroke.GetCustomBound().Width - 21;
+                delta.X = shapeStroke.GetCustomBound().Width - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X + delta.X,
-                                      customStroke.GetCustomBound().Y + delta.Y,
-                                      Math.Max(21, customStroke.GetCustomBound().Width - delta.X),
-                                      Math.Max(21, customStroke.GetCustomBound().Height - delta.Y));
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
+                                      shapeStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Height - delta.Y));
             generatePreview(rectangle);
         }
 
         void TopRight_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y > customStroke.GetCustomBound().Height - 21)
+            if (delta.Y > shapeStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
-                delta.Y = customStroke.GetCustomBound().Height - 21;
+                delta.Y = shapeStroke.GetCustomBound().Height - WIDTH_LEGER;
             }
-            if (delta.X < -customStroke.GetCustomBound().Width + 21)
+            if (delta.X < -shapeStroke.GetCustomBound().Width + WIDTH_LEGER)
             {
-                delta.X = -customStroke.GetCustomBound().Width + 21;
+                delta.X = -shapeStroke.GetCustomBound().Width + WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X,
-                                      customStroke.GetCustomBound().Y + delta.Y,
-                                      Math.Max(21, customStroke.GetCustomBound().Width + delta.X),
-                                      Math.Max(21, customStroke.GetCustomBound().Height - delta.Y));
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Height - delta.Y));
             generatePreview(rectangle);
         }
 
         void BottomLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y < -customStroke.GetCustomBound().Height + 21)
+            if (delta.Y < -shapeStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
-                delta.Y = -customStroke.GetCustomBound().Height + 21;
+                delta.Y = -shapeStroke.GetCustomBound().Height + WIDTH_LEGER;
             }
-            if (delta.X > customStroke.GetCustomBound().Width - 21)
+            if (delta.X > shapeStroke.GetCustomBound().Width - WIDTH_LEGER)
             {
-                delta.X = customStroke.GetCustomBound().Width - 21;
+                delta.X = shapeStroke.GetCustomBound().Width - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X + delta.X,
-                                      customStroke.GetCustomBound().Y,
-                                      Math.Max(21, customStroke.GetCustomBound().Width - delta.X),
-                                      Math.Max(21, customStroke.GetCustomBound().Height + delta.Y));
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Height + delta.Y));
             generatePreview(rectangle);
         }
 
         void BottomRight_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y < -customStroke.GetCustomBound().Height + 21)
+            if (delta.Y < -shapeStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
-                delta.Y = -customStroke.GetCustomBound().Height + 21;
+                delta.Y = -shapeStroke.GetCustomBound().Height + WIDTH_LEGER;
             }
-            if (delta.X < -customStroke.GetCustomBound().Width + 21)
+            if (delta.X < -shapeStroke.GetCustomBound().Width + WIDTH_LEGER)
             {
-                delta.X = -customStroke.GetCustomBound().Width + 21;
+                delta.X = -shapeStroke.GetCustomBound().Width + WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X,
-                                      customStroke.GetCustomBound().Y,
-                                      Math.Max(21, customStroke.GetCustomBound().Width + delta.X),
-                                      Math.Max(21, customStroke.GetCustomBound().Height + delta.Y));
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(WIDTH_LEGER, shapeStroke.GetCustomBound().Height + delta.Y));
             generatePreview(rectangle);
         }
         #endregion
