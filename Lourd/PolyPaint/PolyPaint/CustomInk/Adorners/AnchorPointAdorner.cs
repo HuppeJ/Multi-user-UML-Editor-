@@ -20,7 +20,7 @@ namespace PolyPaint.CustomInk
 
         VisualCollection visualChildren;
         
-        const int HANDLEMARGIN = 15;
+        const int HANDLEMARGIN = 3;
 
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
@@ -60,8 +60,8 @@ namespace PolyPaint.CustomInk
             foreach (Thumb anchor in anchors)
             {
                 anchor.Cursor = Cursors.Hand;
-                anchor.Width = 10;
-                anchor.Height = 10;
+                anchor.Width = 6;
+                anchor.Height = 6;
                 anchor.Background = Brushes.IndianRed;
 
                 anchor.DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);

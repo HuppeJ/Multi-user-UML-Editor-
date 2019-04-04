@@ -791,7 +791,7 @@ namespace PolyPaint.CustomInk
             Rect selectionBounds = GetSelectionBounds();
 
             double leftMostX = selectionBounds.X;
-            Align(leftMostX);
+            Align(leftMostX, false);
         }
 
         internal void AlignCenter()
@@ -799,10 +799,10 @@ namespace PolyPaint.CustomInk
             Rect selectionBounds = GetSelectionBounds();
 
             double centerX = selectionBounds.X + selectionBounds.Width/2;
-            Align(centerX);
+            Align(centerX, true);
         }
 
-        private void Align(double xToAlignTo)
+        private void Align(double xToAlignTo, bool isAlignCenter)
         {
             StrokeCollection selectedStrokes = GetSelectedStrokes();
 
@@ -810,6 +810,11 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke stroke in selectedStrokes)
             {
                 double xDiff = xToAlignTo - stroke.GetBounds().X;
+
+                if (isAlignCenter)
+                {
+                    xDiff -= stroke.GetBounds().Width / 2;
+                }
 
                 Matrix translateMatrix = new Matrix();
                 translateMatrix.Translate(xDiff, 0);
