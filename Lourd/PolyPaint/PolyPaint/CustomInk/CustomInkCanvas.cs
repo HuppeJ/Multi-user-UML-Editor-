@@ -616,15 +616,32 @@ namespace PolyPaint.CustomInk
             return customStroke;
         }
 
-        // GIII
         private void AddTextBox(CustomStroke stroke)
         {
             Path path = new Path();
             switch (stroke.strokeType)
             {
                 case (int)StrokeTypes.LINK:
-                    double x = stroke.StylusPoints[0].X;
-                    double y = stroke.StylusPoints[0].Y;
+                    LinkStroke linkStroke = stroke as LinkStroke;
+                    double x = 0;
+                    double y = 0;
+
+                    if (linkStroke.path.Count > 0 && linkStroke.path.Count % 2 == 1)
+                    {
+                        double ah = linkStroke.path.Count / 2;
+                        int middleIndex = (int)Math.Floor(ah);
+                        x = linkStroke.path[middleIndex].x - 15;
+                        y = linkStroke.path[middleIndex].y + 15;
+                    }
+                    else if(linkStroke.path.Count > 0)
+                    {
+                        int biggerMiddleIndex = linkStroke.path.Count / 2;
+                        int middleIndex = biggerMiddleIndex - 1;
+
+                        x = (linkStroke.path[middleIndex].x + linkStroke.path[biggerMiddleIndex].x) / 2;
+                        y = (linkStroke.path[middleIndex].y + linkStroke.path[biggerMiddleIndex].y) / 2;
+                    }
+                    
                     CreateNameTextBox(stroke, x, y);
                     CreateMultiplicityTextBox(stroke.StylusPoints, stroke as LinkStroke);
                     break;
