@@ -37,6 +37,11 @@ namespace PolyPaint.CustomInk
         Vector unitX = new Vector(1, 0);
         Vector unitY = new Vector(0, 1);
 
+        double horizontalChange = 0;
+        double verticalChange = 0;
+
+        const int MARGIN = 10;
+
         RectangleGeometry NewRectangle = new RectangleGeometry();
         RectangleGeometry OldRectangle = new RectangleGeometry();
 
@@ -74,17 +79,17 @@ namespace PolyPaint.CustomInk
             outerBoundPath.StrokeDashArray = new DoubleCollection { 5, 2 }; 
             outerBoundPath.StrokeThickness = 1;
             Rect rect = customStroke.GetCustomBound();
-            rect.X -= 5;
-            rect.Y -= 5;
-            rect.Width += 10;
-            rect.Height += 10;
+            rect.X -= MARGIN;
+            rect.Y -= MARGIN;
+            rect.Width += MARGIN * 2;
+            rect.Height += MARGIN * 2;
             outerBoundPath.Data = new RectangleGeometry(rect, 0, 0, rotation);
             visualChildren.Add(outerBoundPath);
 
             moveThumb = new Thumb();
             moveThumb.Cursor = Cursors.SizeAll;
-            moveThumb.Height = strokeBounds.Height + 10;
-            moveThumb.Width = strokeBounds.Width + 10;
+            moveThumb.Height = strokeBounds.Height + MARGIN * 2;
+            moveThumb.Width = strokeBounds.Width + MARGIN * 2;
             moveThumb.Background = Brushes.Transparent;
             moveThumb.DragDelta += new DragDeltaEventHandler(Move_DragDelta);
             moveThumb.DragCompleted += new DragCompletedEventHandler(Move_DragCompleted);
@@ -111,8 +116,8 @@ namespace PolyPaint.CustomInk
             int index = 0;
             foreach (Thumb anchor in anchors)
             {
-                anchor.Width = 10;
-                anchor.Height = 10;
+                anchor.Width = 8;
+                anchor.Height = 8;
                 anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFBBBBBB"), 
                     (Color)ColorConverter.ConvertFromString("#FF646464"), 45);
                 anchor.BorderBrush = Brushes.Black;
@@ -618,10 +623,10 @@ namespace PolyPaint.CustomInk
             resizePreview.Arrange(new Rect(finalSize));
             outerBoundPath.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
 
-            Rect handleRect = new Rect(strokeBounds.X - 5,
-                                  strokeBounds.Y - 5,
-                                  strokeBounds.Width + 10,
-                                  strokeBounds.Height + 10);
+            Rect handleRect = new Rect(strokeBounds.X - MARGIN,
+                                  strokeBounds.Y - MARGIN,
+                                  strokeBounds.Width + MARGIN * 2,
+                                  strokeBounds.Height + MARGIN * 2);
             moveThumb.Arrange(handleRect);
 
             return finalSize;
@@ -631,19 +636,19 @@ namespace PolyPaint.CustomInk
         {
             if (xOffset > 0)
             {
-                xOffset += 5;
+                xOffset += MARGIN;
             }
             if (xOffset < 0)
             {
-                xOffset -= 5;
+                xOffset -= MARGIN;
             }
             if (yOffset < 0)
             {
-                yOffset -= 5;
+                yOffset -= MARGIN;
             }
             if (yOffset > 0)
             {
-                yOffset += 5;
+                yOffset += MARGIN;
             }
             // The rectangle that determines the position of the Thumb.
             Rect handleRect = new Rect(strokeBounds.X + xOffset,
@@ -708,7 +713,10 @@ namespace PolyPaint.CustomInk
 
             visualChildren.Remove(resizePreview);
 
-            canvas.MoveShape(NewRectangle.Rect.X - OldRectangle.Rect.X, NewRectangle.Rect.Y - OldRectangle.Rect.Y);
+            if (customStroke is LinkStroke && (customStroke as LinkStroke).isAttached())
+                canvas.MoveShape(horizontalChange, verticalChange);
+            else
+                canvas.MoveShape(NewRectangle.Rect.X - OldRectangle.Rect.X, NewRectangle.Rect.Y - OldRectangle.Rect.Y);
 
             canvas.RefreshLinks(false);
             canvas.RefreshChildren();
@@ -751,6 +759,8 @@ namespace PolyPaint.CustomInk
                                           customStroke.GetCustomBound().Height);
                 if(customStroke is LinkStroke && (customStroke as LinkStroke).isAttached())
                 {
+                    horizontalChange = e.HorizontalChange;
+                    verticalChange = e.VerticalChange;
                     LinkStroke linkStroke = customStroke.Clone() as LinkStroke;
                     linkStroke.path = new List<Coordinates>();
                     foreach (Coordinates coord in (customStroke as LinkStroke).path)
