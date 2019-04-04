@@ -50,12 +50,7 @@ namespace PolyPaint.CustomInk
             attributes = classShape.attributes;
             methods = classShape.methods;
         }
-
-        public virtual ClassShape GetClassShape()
-        {
-            return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
-        }
-
+        
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
         {
             base.DrawCore(drawingContext, drawingAttributes);
@@ -115,7 +110,12 @@ namespace PolyPaint.CustomInk
             return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
         }
 
-        public override Point GetCenter()
+        public virtual ClassShape GetClassShape()
+        {
+            return new ClassShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom, attributes, methods);
+        }
+
+    public override Point GetCenter()
         {
             Rect rect = GetCustomBound();
             return new Point(rect.X + shapeStyle.width / 2, rect.Y + shapeStyle.height / 2);

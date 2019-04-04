@@ -61,6 +61,10 @@ export default class UserAccountManager {
     return false;
   }
 
+  public getUsernameBySocketId(socketId: any): string {
+    return this.connectedUsers.get(socketId);
+  }  
+
   public disconnectUser(socketId: any) {
     return this.connectedUsers.delete(socketId);
   }

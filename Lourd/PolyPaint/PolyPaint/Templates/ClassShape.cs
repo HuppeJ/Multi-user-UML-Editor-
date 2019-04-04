@@ -18,15 +18,12 @@ namespace PolyPaint.Templates
             this.type = type;
             this.name = name;
             this.shapeStyle = shapeStyle.Clone();
-            this.shapeStyle.coordinates.x *= CustomStroke.WIDTH;
-            this.shapeStyle.coordinates.y *= CustomStroke.HEIGHT;
-            this.shapeStyle.width *= CustomStroke.WIDTH;
-            this.shapeStyle.height *= CustomStroke.HEIGHT;
+            
             this.linksTo = linksTo;
             this.linksFrom = linksFrom;
             this.attributes = attributes;
             this.methods = methods;
         }
-
+        
     }
 }
