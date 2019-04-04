@@ -57,7 +57,7 @@ namespace PolyPaint.CustomInk
 
             foreach (Thumb anchor in anchors)
             {
-                anchor.Cursor = Cursors.SizeNWSE;
+                anchor.Cursor = Cursors.Hand;
                 anchor.Width = 10;
                 anchor.Height = 10;
                 anchor.Background = Brushes.IndianRed;

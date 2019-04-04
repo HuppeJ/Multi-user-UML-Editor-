@@ -32,14 +32,15 @@ namespace PolyPaint.CustomInk
 
                 fill = new RectangleGeometry(stroke.GetCustomBound(), 0, 0, rotation);
                 border.Data = fill;
+                border.StrokeThickness = 2;
             }
             else
             {
                 border.Data = stroke.GetGeometry();
+                border.StrokeThickness = 1;
             }
-            
+
             border.Stroke = Brushes.Red;
-            border.StrokeThickness = 2;
 
             visualChildren.Add(border);
         }

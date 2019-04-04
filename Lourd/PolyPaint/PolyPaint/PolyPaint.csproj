@@ -460,6 +460,8 @@
     <Resource Include="Resources\NewLook\unpile.png" />
     <Resource Include="Resources\NewLook\text-box-tool.png" />
     <Resource Include="Resources\NewLook\reset.png" />
+    <Resource Include="Resources\align_left.png" />
+    <Resource Include="Resources\align_center.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

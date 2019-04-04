@@ -51,7 +51,7 @@ namespace PolyPaint.CustomInk
 
             visualChildren = new VisualCollection(this);
             rotateHandle = new Thumb();
-            rotateHandle.Cursor = Cursors.SizeNWSE;
+            rotateHandle.Cursor = Cursors.Hand;
             rotateHandle.Width = 10;
             rotateHandle.Height = 10;
             rotateHandle.Background = Brushes.Blue;
