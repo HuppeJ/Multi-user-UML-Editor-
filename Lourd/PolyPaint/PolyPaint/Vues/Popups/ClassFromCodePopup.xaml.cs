@@ -51,9 +51,32 @@ namespace PolyPaint.Vues
             CSharpCodeVistor visitor = new CSharpCodeVistor();
             tree.AcceptVisitor(visitor);
 
-            methods = visitor.methods;
             properties = visitor.properties;
-            name = visitor.name;
+
+            CSharpParser parser = new CSharpParser();
+            SyntaxTree syntaxTree = parser.Parse(CodeTextBox.Text, "code.cs");
+            CSharpUnresolvedFile file = syntaxTree.ToTypeSystem();
+
+            foreach (IUnresolvedTypeDefinition type in file.TopLevelTypeDefinitions)
+            {
+                name = type.Name;
+
+                foreach (IUnresolvedMethod method in type.Methods)
+                {
+                    if (method.Accessibility == Accessibility.Public)
+                    {
+                        methods.Add("+" + method.Name + ": " + method.ReturnType);
+                    }
+                    else if (method.Accessibility == Accessibility.Private)
+                    {
+                        methods.Add("-" + method.Name + ": " + method.ReturnType);
+                    }
+                    else
+                    {
+                        methods.Add("#" + method.Name + ": " + method.ReturnType);
+                    }
+                }
+            }
 
             windowDrawing.DrawClass(name, properties, methods);
         }
@@ -71,40 +94,14 @@ namespace PolyPaint.Vues
 
     class CSharpCodeVistor : DepthFirstAstVisitor
     {
-        private bool globalParametersDone = false;
-        public List<string> methods = new List<string>();
         public List<string> properties = new List<string>();
-        public string name = "";
-
-        public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
-        {
-            name = constructorDeclaration.Name;
-            base.VisitConstructorDeclaration(constructorDeclaration);
-        }
-
-        public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
-        {
-            globalParametersDone = true;
-            string accessibility = methodDeclaration.FirstChild.ToString();
-            if(accessibility == "public")
-            {
-                methods.Add("+" + methodDeclaration.Name + ": " + methodDeclaration.ReturnType.ToString());
-            }
-            else if(accessibility == "private")
-            {
-                methods.Add("-" + methodDeclaration.Name + ": " + methodDeclaration.ReturnType.ToString());
-            }
-            else
-            {
-                methods.Add("#" + methodDeclaration.Name + ": " + methodDeclaration.ReturnType.ToString());
-            }
-            
-            base.VisitMethodDeclaration(methodDeclaration);
-        }
 
         public override void VisitVariableInitializer(VariableInitializer variableInitializer)
         {
-            if (!globalParametersDone)
+            var parentType = variableInitializer.Parent.Parent.GetType();
+
+            var isParentClass = variableInitializer.Parent.Parent.GetType().BaseType.Name == "EntityDeclaration";
+            if (variableInitializer.Parent.Parent.GetType().BaseType.Name == "EntityDeclaration")
             {
                 string accessibility = variableInitializer.Parent.FirstChild.ToString();
 
