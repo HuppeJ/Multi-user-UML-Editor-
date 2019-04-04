@@ -149,6 +149,7 @@
             <Popup x:Name="popUpChangeCanvasProtection" Placement="Center">
                 <Vues:ChangeCanvasProtectionPopup x:Name="popUpChangeCanvasProtectionVue"/>
             </Popup>
+            <Button Content="Tutorial" Margin="556,645,394,23" Command="{Binding AccessTutorialCommand}" Width="150"/>
         </Grid>
         
     </materialDesign:Card>
