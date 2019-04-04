@@ -69,13 +69,14 @@ namespace PolyPaint.CustomInk
 
             resizePreview = new Path();
             resizePreview.Stroke = Brushes.Gray;
-            resizePreview.StrokeThickness = 2;
+            resizePreview.StrokeDashArray = new DoubleCollection { 5, 2 };
+            resizePreview.StrokeThickness = 1;
             visualChildren.Add(resizePreview);
 
             canvas = actualCanvas;
 
             outerBoundPath = new Path();
-            outerBoundPath.Stroke = Brushes.Gray;
+            outerBoundPath.Stroke = Brushes.Black;
             outerBoundPath.StrokeDashArray = new DoubleCollection { 5, 2 }; 
             outerBoundPath.StrokeThickness = 1;
             outerBoundPath.Data = new RectangleGeometry(strokeBounds);

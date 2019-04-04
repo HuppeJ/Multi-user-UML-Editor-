@@ -25,8 +25,8 @@ namespace PolyPaint.CustomInk
             this.stroke = stroke;
             this.canvas = canvas;
 
-            rectangleEdit = new Rect(stroke.GetBounds().TopRight.X, stroke.GetBounds().TopRight.Y - 20, 20, 20);
-            rectangleDelete = new Rect(stroke.GetBounds().TopRight.X + 20, stroke.GetBounds().TopRight.Y - 20, 20, 20);
+            rectangleEdit = new Rect(stroke.GetStraightBounds().TopRight.X, stroke.GetBounds().TopRight.Y - 20, 20, 20);
+            rectangleDelete = new Rect(stroke.GetStraightBounds().TopRight.X + 20, stroke.GetBounds().TopRight.Y - 20, 20, 20);
 
             AddButtons(stroke, canvas);
 

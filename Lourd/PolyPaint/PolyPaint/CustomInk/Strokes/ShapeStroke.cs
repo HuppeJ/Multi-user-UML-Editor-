@@ -166,5 +166,10 @@ namespace PolyPaint.CustomInk
 
             return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
         }
+
+        public override Rect GetStraightBounds()
+        {
+            return GetEditingBounds();
+        }
     }
 }
