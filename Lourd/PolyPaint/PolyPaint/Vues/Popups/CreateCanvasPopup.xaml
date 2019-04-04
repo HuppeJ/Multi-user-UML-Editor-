@@ -39,17 +39,16 @@
 
             <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,0">
                 <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
-                    <TextBlock>Enter canvas name here:</TextBlock>
                     <TextBox x:Name="TxtBox" Width="150" Margin="0,5"
-                                 materialDesign:HintAssist.Hint="Enter name here"   
+                                 materialDesign:HintAssist.Hint="Drawing name"   
                                  Text="{Binding CanvasName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                     </TextBox>
-                    <TextBlock Margin="0, 10, 0, 0">Choose canvas privacy:</TextBlock>
+                    <TextBlock></TextBlock>
                     <ListBox Name="PrivacyList" SelectedValue="{Binding CanvasPrivacy, Mode=TwoWay}">
                         <sys:String>Public</sys:String>
                         <sys:String>Private</sys:String>
                     </ListBox>
-                    <TextBlock Margin="0, 10, 0, 0">Choose canvas protection:</TextBlock>
+                   <TextBlock></TextBlock>
                     <ListBox Name="ProtectionList" SelectedValue="{Binding CanvasProtection, Mode=TwoWay}">
                         <sys:String>Unprotected</sys:String>
                         <sys:String>Protected</sys:String>
@@ -65,7 +64,7 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        <TextBlock x:Name="PasswordTextBlock" Margin="0, 10, 0, 0">Enter canvas password:</TextBlock>
+                        <TextBlock></TextBlock>
                         <PasswordBox x:Name="PasswordTextBox" Width="150" Margin="0,5" PasswordChar="*"
                                      materialDesign:HintAssist.Hint="Password">
                         </PasswordBox>

@@ -81,7 +81,6 @@ namespace PolyPaint.Vues
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
-
         }
 
         private void AlignLeft(object sender, RoutedEventArgs e) => surfaceDessin.AlignLeft();
@@ -309,6 +308,31 @@ namespace PolyPaint.Vues
         {
             IsEnabled = true;
             popUpClassFromCode.IsOpen = false;
+        }
+
+        internal void SelectCSFile()
+        {
+            popUpClassFromCode.IsOpen = false;
+            string selectedFile = "";
+
+            var openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            openFileDialog.DefaultExt = "cs";
+            openFileDialog.Filter = "cs files (*.cs)|*.cs";
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                popUpClassFromCodeVue.CodeTextBox.Text = "";
+                selectedFile = openFileDialog.FileName;
+
+                System.IO.StreamReader reader = System.IO.File.OpenText(selectedFile);
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    popUpClassFromCodeVue.CodeTextBox.Text += line + Environment.NewLine;
+                }
+            }
+
+            popUpClassFromCode.IsOpen = true;
         }
 
         public void DrawClass(string name, List<string> properties, List<string> methods)

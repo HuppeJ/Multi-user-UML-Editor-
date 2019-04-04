@@ -58,7 +58,7 @@ namespace PolyPaint.Services
             });
 
             // Makes sure the chatroom "Everyone" is on the server
-            CreateChatroom("MainRoom");
+            //CreateChatroom("MainRoom");
         }
         
         public void SendMessage(string message, string username, long timestamp, string chatroomName)

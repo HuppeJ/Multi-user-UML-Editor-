@@ -149,9 +149,6 @@ export default class ChatSocketEvents {
                 }
             });
 
-            socket.on('disconnect', function () {
-                console.log('client disconnected...', socket.id);
-            });
 
             socket.on('error', function (err: any) {
                 console.log('received error from client:', socket.id);
