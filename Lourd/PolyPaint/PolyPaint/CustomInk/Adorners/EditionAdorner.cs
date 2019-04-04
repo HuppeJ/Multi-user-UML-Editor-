@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -16,6 +17,9 @@ namespace PolyPaint.CustomInk
         private Rect rectangleEdit;
         private Rect rectangleDelete;
 
+        RotateTransform rotationDelete;
+        RotateTransform rotationEdit;
+
         VisualCollection visualChildren;
 
         // Be sure to call the base class constructor.
@@ -25,8 +29,21 @@ namespace PolyPaint.CustomInk
             this.stroke = stroke;
             this.canvas = canvas;
 
-            rectangleEdit = new Rect(stroke.GetStraightBounds().TopRight.X, stroke.GetBounds().TopRight.Y - 20, 20, 20);
-            rectangleDelete = new Rect(stroke.GetStraightBounds().TopRight.X + 20, stroke.GetBounds().TopRight.Y - 20, 20, 20);
+            Point center = stroke.GetCenter();
+            if (stroke is ShapeStroke)
+                rotationDelete = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, 
+                    -20 - (stroke as ShapeStroke).shapeStyle.width / 2, 20 + (stroke as ShapeStroke).shapeStyle.height / 2);
+            else
+                rotationDelete = new RotateTransform(0,0,0);
+            
+            if (stroke is ShapeStroke)
+                rotationEdit = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation,
+                    - (stroke as ShapeStroke).shapeStyle.width / 2, 20 + (stroke as ShapeStroke).shapeStyle.height / 2);
+            else
+                rotationEdit = new RotateTransform(0, 0, 0);
+
+            rectangleEdit = new Rect(stroke.GetCustomBound().TopRight.X, stroke.GetCustomBound().TopRight.Y - 20, 20, 20);
+            rectangleDelete = new Rect(stroke.GetCustomBound().TopRight.X + 20, stroke.GetCustomBound().TopRight.Y - 20, 20, 20);
 
             AddButtons(stroke, canvas);
 
@@ -54,7 +71,7 @@ namespace PolyPaint.CustomInk
 
             visualChildren.Add(editButton);
 
-            deleteButton = new DeleteButton(stroke, canvas);
+            deleteButton = new DeleteButton(new StrokeCollection { stroke }, canvas);
             deleteButton.Cursor = Cursors.Hand;
             deleteButton.Width = 20;
             deleteButton.Height = 20;
@@ -97,7 +114,9 @@ namespace PolyPaint.CustomInk
 
             // Draws the rectangle
             editButton.Arrange(rectangleEdit);
+            editButton.RenderTransform = rotationEdit;
             deleteButton.Arrange(rectangleDelete);
+            deleteButton.RenderTransform = rotationDelete;
 
             return finalSize;
         }

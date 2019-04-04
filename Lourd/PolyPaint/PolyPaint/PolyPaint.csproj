@@ -462,6 +462,8 @@
     <Resource Include="Resources\NewLook\reset.png" />
     <Resource Include="Resources\align_left.png" />
     <Resource Include="Resources\align_center.png" />
+    <Resource Include="Resources\NewLook\horizontal-align-center.png" />
+    <Resource Include="Resources\NewLook\left-align.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

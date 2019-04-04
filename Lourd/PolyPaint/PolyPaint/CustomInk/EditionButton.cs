@@ -1,6 +1,7 @@
 ﻿using PolyPaint.Vues;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Ink;
 
 namespace PolyPaint.CustomInk
 {
@@ -36,13 +37,13 @@ namespace PolyPaint.CustomInk
 
     public class DeleteButton : Button
     {
-        public CustomStroke stroke;
+        public StrokeCollection strokes;
         public CustomInkCanvas canvas;
         public int number;
 
-        public DeleteButton(CustomStroke stroke, CustomInkCanvas canvas) : base()
+        public DeleteButton(StrokeCollection strokes, CustomInkCanvas canvas) : base()
         {
-            this.stroke = stroke;
+            this.strokes = strokes;
             this.canvas = canvas;
         }
 
