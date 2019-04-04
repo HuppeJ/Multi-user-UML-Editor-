@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using PolyPaint.CustomInk.Strokes;
+using System;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -7,17 +9,18 @@ namespace PolyPaint.CustomInk
 {
     class ShapeNameAdorner : Adorner
     {
-        private CustomStroke stroke;
+        private LinkStroke stroke;
         private CustomTextBox customTextBox;
         private CustomInkCanvas canvas;
         private Rect rectangle;
+        private Rect strokeBounds;
 
         VisualCollection visualChildren;
 
         RotateTransform rotation;
 
         // Be sure to call the base class constructor.
-        public ShapeNameAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
+        public ShapeNameAdorner(UIElement adornedElement, LinkStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
             this.stroke = stroke;
@@ -25,10 +28,35 @@ namespace PolyPaint.CustomInk
 
             AddName(stroke, canvas);
 
-            rectangle = new Rect(stroke.GetBounds().BottomLeft.X - 15, 
-                                 stroke.GetBounds().BottomLeft.Y, 
-                                 stroke.GetBounds().Width + 30, 
-                                 customTextBox.MaxHeight);
+            strokeBounds = stroke.GetBounds();
+            if (stroke.path.Count == 2)
+            {
+                rectangle = new Rect(strokeBounds.BottomLeft.X - strokeBounds.Width / 2 - 15,
+                strokeBounds.BottomLeft.Y - strokeBounds.Height / 2,
+                strokeBounds.Width + 30,
+                customTextBox.MaxHeight);
+            }
+            else if (stroke.path.Count > 0 && stroke.path.Count % 2 == 1)
+            {
+                double ah = stroke.path.Count / 2;
+                int middleIndex = (int) Math.Floor(ah); 
+                rectangle = new Rect(stroke.path[middleIndex].x - 15,
+                stroke.path[middleIndex].y,
+                strokeBounds.Width + 30,
+                customTextBox.MaxHeight);
+            }
+            else
+            {
+                int biggerMiddleIndex = stroke.path.Count / 2;
+                int middleIndex = biggerMiddleIndex - 1;
+
+                rectangle = new Rect(stroke.path[middleIndex].x - 15,
+                stroke.path[middleIndex].y,
+                strokeBounds.Width + 30,
+                customTextBox.MaxHeight);
+            }
+
+            
         }
 
         private void AddName(CustomStroke stroke, CustomInkCanvas canvas)
@@ -69,7 +97,7 @@ namespace PolyPaint.CustomInk
             {
                 return finalSize;
             }
-
+            
             // Draws the rectangle
             customTextBox.Arrange(rectangle);
 

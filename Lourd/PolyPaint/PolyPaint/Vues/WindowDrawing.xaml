@@ -155,6 +155,16 @@
                         <Image Source="/Resources/efface.png" />
                     </StackPanel>
                 </Button>
+                <Button x:Name="align_left" Width="40" Height="40" Margin="5" Padding="0,0" Click="AlignLeft">
+                    <StackPanel>
+                        <Image Source="/Resources/align_left.png" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="align_center" Width="40" Height="40" Margin="5" Padding="0,0" Click="AlignCenter">
+                    <StackPanel>
+                        <Image Source="/Resources/align_center.png" />
+                    </StackPanel>
+                </Button>
 
                 <Button x:Name="ClassFromCodeButton" Width="40" Height="40" Margin="5" Padding="0,0"
                         Click="OpenClassPopup"
