@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData } from "../interfaces/interfaces";
+import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData, IResizeCanevasData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
@@ -27,6 +27,24 @@ export default class CanvasManager {
 
         return canvasRoom.isCanvasSaved(data);
 
+    }
+
+    public logHistory(canvasRoomId: string, username: string, message: string): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.logHistory(username, message);
+    }
+
+    public getCanvasLogHistory(canvasRoomId: string): string {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return "";
+        }
+
+        return canvasRoom.getCanvasLogHistorySERI();
     }
 
     public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
@@ -201,7 +219,7 @@ export default class CanvasManager {
     /***********************************************
     * Functions related to the Canvas
     ************************************************/
-    public resizeCanvas(canvasRoomId: string, data: IEditCanevasData) {
+    public resizeCanvas(canvasRoomId: string, data: IResizeCanevasData) {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return false;
@@ -249,29 +267,27 @@ export default class CanvasManager {
     /***********************************************
     * Serialize / Deserialize
     ************************************************/
-    public getSelectedFormsInCanvasRoomSERI(canvasRoomId: string): string {
+    public getSelectedFormsInCanvasRoomSERI(canvasRoomId: string, data: IEditGalleryData): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return null;
         }
 
-        return canvasRoom.getSelectedFormsSERI();
+        return canvasRoom.getSelectedFormsSERI(data);
     }
 
-    public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string): string {
+    public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string, data: IEditGalleryData): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return null;
         }
 
-        return canvasRoom.getSelectedLinksSERI();
+        return canvasRoom.getSelectedLinksSERI(data);
     }
 
     public getCanvasSERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
-        return JSON.stringify({
-            canvas: canvasRoom.canvas
-        });
+        return JSON.stringify(canvasRoom.canvas);
     }
 
     public getCanvasRoomsSERI(): string {

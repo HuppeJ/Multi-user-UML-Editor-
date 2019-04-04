@@ -9,6 +9,7 @@ using System.Windows.Shapes;
 using System;
 using System.Windows.Ink;
 using PolyPaint.Services;
+using PolyPaint.Enums;
 
 namespace PolyPaint.CustomInk
 {
@@ -18,11 +19,7 @@ namespace PolyPaint.CustomInk
         List<StrokeAnchorPointThumb> cheatAnchors;
 
         VisualCollection visualChildren;
-
-        // The center of the strokes.
-        Point center;
         
-        RotateTransform rotation;
         const int HANDLEMARGIN = 15;
 
         // The bounds of the Strokes;
@@ -30,6 +27,8 @@ namespace PolyPaint.CustomInk
         public ShapeStroke shapeStroke;
 
         public CustomInkCanvas canvas;
+
+        RotateTransform rotation;
 
         private Path linkPreview;
         LineGeometry linkPreviewGeom = new LineGeometry();
@@ -48,16 +47,15 @@ namespace PolyPaint.CustomInk
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = customStroke.GetBounds();
-            center = shapeStroke.GetCenter();
-            rotation = new RotateTransform(shapeStroke.shapeStyle.rotation, center.X, center.Y);
+            strokeBounds = customStroke.GetCustomBound();
+            Point center = customStroke.GetCenter();
+            rotation = new RotateTransform((customStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             anchors = new List<Thumb>();
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
-           
 
             foreach (Thumb anchor in anchors)
             {
@@ -87,7 +85,7 @@ namespace PolyPaint.CustomInk
                 canvas.Children.Add(cheatAnchor);
             }
 
-            strokeBounds = customStroke.GetBounds();
+            strokeBounds = customStroke.GetCustomBound();
 
         }
 
@@ -97,8 +95,6 @@ namespace PolyPaint.CustomInk
             {
                 return finalSize;
             }
-
-            center = shapeStroke.GetCenter();
 
             ArrangeAnchor(0, 0, -(strokeBounds.Height / 2 + HANDLEMARGIN));
             ArrangeAnchor(1, strokeBounds.Width / 2 + HANDLEMARGIN, 0);
@@ -117,11 +113,7 @@ namespace PolyPaint.CustomInk
                                   strokeBounds.Y + yOffset,
                                   strokeBounds.Width,
                                   strokeBounds.Height);
-
-            if (rotation != null)
-            {
-                handleRect.Transform(rotation.Value);
-            }
+            handleRect.Transform(rotation.Value);
 
             // Draws the thumb and the rectangle around the strokes.
             anchors[anchorNumber].Arrange(handleRect);
@@ -145,9 +137,9 @@ namespace PolyPaint.CustomInk
 
         void dragHandle_DragCompleted(object sender,
                                         DragCompletedEventArgs e)
-        {                        
+        {
             Point actualPos = Mouse.GetPosition(this);
-            if(actualPos.X < 0 || actualPos.Y < 0)
+            if (actualPos.X < 0 || actualPos.Y < 0)
             {
                 visualChildren.Remove(linkPreview);
                 InvalidateArrange();
@@ -158,7 +150,8 @@ namespace PolyPaint.CustomInk
 
             foreach (UIElement thumb in canvas.Children)
             {
-                if (thumb.GetType() == typeof(StrokeAnchorPointThumb)) {
+                if (thumb.GetType() == typeof(StrokeAnchorPointThumb))
+                {
                     Point thumbPosition = thumb.TransformToAncestor(canvas).Transform(new Point(0, 0));
 
                     StrokeAnchorPointThumb cheatThumb = thumb as StrokeAnchorPointThumb;
@@ -166,7 +159,7 @@ namespace PolyPaint.CustomInk
                     double x = thumbPosition.X - actualPos.X;
 
                     double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
-                    if(distBetweenPoints <= 10)
+                    if (distBetweenPoints <= 10)
                     {
                         strokeTo = cheatThumb.stroke as ShapeStroke;
                         actualPos = thumbPosition;
@@ -185,20 +178,48 @@ namespace PolyPaint.CustomInk
             pos.X += 5;
             pos.Y += 5;
 
-            LinkStroke linkBeingCreated = new LinkStroke(pos, shapeStroke?.guid.ToString(), linkAnchorNumber, new StylusPointCollection { new StylusPoint(0, 0) });
+            if(shapeStroke.strokeType == (int)StrokeTypes.ROLE)
+            {
+                if (strokeTo?.GetType() == typeof(ActivityStroke))
+                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
+                else
+                    MessageBox.Show("A role can only be linked to an activity.");
+            } else if (shapeStroke.strokeType == (int)StrokeTypes.ARTIFACT)
+            {
+                if (strokeTo?.GetType() == typeof(ActivityStroke))
+                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
+                else
+                    MessageBox.Show("An artifact can only be linked to an activity.");
+            } else if (shapeStroke.strokeType == (int)StrokeTypes.ACTIVITY)
+            {
+                if (strokeTo?.GetType() == typeof(ArtifactStroke))
+                    CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
+                else
+                    MessageBox.Show("An activity can only be linked to an artifact.");
+            } else if (strokeTo?.GetType() == typeof(ArtifactStroke) || strokeTo?.GetType() == typeof(ActorStroke) || strokeTo?.GetType() == typeof(ActivityStroke))
+            {
+                MessageBox.Show("Cannot create link.");
+            }
+            else
+            {
+                CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.LINE, pos);
+            }
+            
+            visualChildren.Remove(linkPreview);
+            InvalidateArrange();
+        }
+        
+        private void CreateLink(Point actualPos, ShapeStroke strokeTo, int number, int linkAnchorNumber, LinkTypes linkType, Point pos)
+        {
+            LinkStroke linkBeingCreated = new LinkStroke(pos, shapeStroke?.guid.ToString(), linkAnchorNumber, linkType, new StylusPointCollection { new StylusPoint(0, 0) });
             shapeStroke?.linksFrom.Add(linkBeingCreated.guid.ToString());
 
             linkBeingCreated.addToPointToLink(actualPos, strokeTo?.guid.ToString(), number);
-            strokeTo?.linksFrom.Add(linkBeingCreated.guid.ToString());
-
-            visualChildren.Remove(linkPreview);
+            strokeTo?.linksTo.Add(linkBeingCreated.guid.ToString());
 
             canvas.AddStroke(linkBeingCreated);
-            canvas.Select(new StrokeCollection { linkBeingCreated });
-
-            InvalidateArrange();
-
             DrawingService.CreateLink(linkBeingCreated);
+            canvas.Select(new StrokeCollection { linkBeingCreated });
         }
 
         // Override the VisualChildrenCount and 

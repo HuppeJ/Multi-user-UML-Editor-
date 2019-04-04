@@ -12,6 +12,12 @@ export interface IEditCanevasData {
     canevas: ICanevas,  
 }
 
+export interface IResizeCanevasData {
+    username: string,
+    canevasName: string,
+    dimensions: ICoordinates,  
+}
+
 export interface IUpdateFormsData {
     username: string,
     canevasName: string,  
@@ -26,8 +32,7 @@ export interface IUpdateLinksData {
 
 export interface IEditChatroomData {
     username: string,
-    chatroomName: string,  
-    // password: string, ?
+    chatroomName: string
 }
 
 // TODO: vérifier format
@@ -41,6 +46,13 @@ export interface IMessageData {
 /***********************************************
 * Interfaces for objects
 ************************************************/
+export interface IHistoryData {
+    username: string,
+    message: string,  
+    timestamp: string,
+    canevas: ICanevas
+}
+
 
 export interface IAnchorPoint {
     formId: string, 
@@ -66,9 +78,8 @@ export interface ICanevas {
     password?: string,  
     shapes: IBasicShape[],  
     links: ILink[],
-    dimensions: number[],
-    thumbnailLeger: string,
-    thumbnailLourd: string
+    dimensions: ICoordinates,
+    thumbnail: string,
 } 
 
 export interface IClassShape extends IBasicShape {

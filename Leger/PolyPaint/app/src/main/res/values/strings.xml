@@ -26,4 +26,31 @@
         <item>Green</item>
         <item>Yellow</item>
     </string-array>
+
+    <string-array name="tutorial_title_array">
+        <item>Shapes</item>
+        <item>Links</item>
+        <item>Transfo</item>
+        <item>Tools</item>
+    </string-array>
+
+    <string-array name="tutorial_sub_title_array">
+        <item>Add</item>
+        <item>Move</item>
+        <item>Delete</item>
+        <item>Edit</item>
+        <item>Add</item>
+        <item>Move</item>
+        <item>Delete</item>
+        <item>Edit</item>
+        <item>Resize</item>
+        <item>Rotate</item>
+        <item>Cut</item>
+        <item>Duplicate</item>
+        <item>Stack Unstack</item>
+        <item>Lasso</item>
+        <item>Clear all</item>
+        <item>Canvas Resize</item>
+    </string-array>
+
 </resources>

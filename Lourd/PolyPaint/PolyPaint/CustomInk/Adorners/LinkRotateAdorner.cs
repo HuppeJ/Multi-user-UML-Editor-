@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Ink;
 using PolyPaint.CustomInk.Strokes;
+using PolyPaint.Services;
 
 namespace PolyPaint.CustomInk
 {
@@ -173,6 +174,9 @@ namespace PolyPaint.CustomInk
             }
 
             (linkStroke as LinkStroke).RotateStroke(rotation.Angle - lastAngle);
+
+            DrawingService.UpdateLinks(new StrokeCollection { linkStroke});
+
             strokeBounds = linkStroke.GetBounds();
             center = linkStroke.GetCenter();
 

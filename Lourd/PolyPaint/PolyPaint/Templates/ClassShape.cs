@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PolyPaint.CustomInk;
+using System.Collections.Generic;
 
 namespace PolyPaint.Templates
 {
@@ -16,12 +17,13 @@ namespace PolyPaint.Templates
             this.id = id;
             this.type = type;
             this.name = name;
-            this.shapeStyle = shapeStyle;
+            this.shapeStyle = shapeStyle.Clone();
+            
             this.linksTo = linksTo;
             this.linksFrom = linksFrom;
             this.attributes = attributes;
             this.methods = methods;
         }
-
+        
     }
 }

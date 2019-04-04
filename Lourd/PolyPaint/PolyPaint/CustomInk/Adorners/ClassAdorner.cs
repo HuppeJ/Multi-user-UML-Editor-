@@ -38,7 +38,10 @@ namespace PolyPaint.CustomInk
             visualChildren = new VisualCollection(this);
             classTextBox = new ClassTextBox(stroke as ClassStroke, canvas);
             classTextBox.Background = Brushes.White;
-            classTextBox.LayoutTransform = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+            classTextBox.RenderTransform = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation,
+                rectangle.Width / 2, rectangle.Height / 2);
+                // ClassStroke.WIDTH * (stroke as ShapeStroke).shapeStyle.width / 2, 0);
+                // ClassStroke.HEIGHT * (stroke as ShapeStroke).shapeStyle.height / 2);
 
             visualChildren.Add(classTextBox);
         }
@@ -67,6 +70,7 @@ namespace PolyPaint.CustomInk
             }
 
             // Draws the rectangle
+            rectangle.Transform(rotation.Value);
             classTextBox.Arrange(rectangle);
 
             return finalSize;

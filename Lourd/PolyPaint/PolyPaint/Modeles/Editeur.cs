@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Threading;
 using PolyPaint.CustomInk;
+using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
 using PolyPaint.Services;
 
@@ -25,16 +27,16 @@ namespace PolyPaint.Modeles
         public StrokeCollection traits = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
         public StrokeCollection selectedStrokes = new StrokeCollection();
-        public StrokeCollection remoteSelectedStrokes = new StrokeCollection();
 
         // TODO Remove fix
         private bool isStackUpToDate = true;
+        private CustomStroke strokeEmpilable;
 
         public event EventHandler<CustomStroke> AddStrokeFromModel;
 
 
         // StrokeType selected
-        private string selectedStrokeType = "CLASS_SHAPE";
+        private string selectedStrokeType = "";
         public string SelectedStrokeType
         {
             get { return selectedStrokeType; }
@@ -42,42 +44,12 @@ namespace PolyPaint.Modeles
         }
 
         // Outil actif dans l'éditeur
-        private string outilSelectionne = "crayon";
+        private string outilSelectionne = "lasso";
         public string OutilSelectionne
         {
             get { return outilSelectionne; }
             set { outilSelectionne = value; ProprieteModifiee(); }
         }
-
-        // Couleur des traits tracés par le crayon.
-        /* private string couleurSelectionnee = "Black";
-        public string CouleurSelectionnee
-        {
-            get { return couleurSelectionnee; }
-            // Lorsqu'on sélectionne une couleur c'est généralement pour ensuite dessiner un trait.
-            // C'est pourquoi lorsque la couleur est changée, l'outil est automatiquement changé pour le crayon.
-            set
-            {
-                couleurSelectionnee = value;
-                OutilSelectionne = "crayon";
-                ProprieteModifiee();
-            }
-        } */
-
-        // Grosseur des traits tracés par le crayon.
-        /*private int tailleTrait = 11;
-        public int TailleTrait
-        {
-            get { return tailleTrait; }
-            // Lorsqu'on sélectionne une taille de trait c'est généralement pour ensuite dessiner un trait.
-            // C'est pourquoi lorsque la taille est changée, l'outil est automatiquement changé pour le crayon.
-            set
-            {
-                tailleTrait = value;
-                OutilSelectionne = "crayon";
-                ProprieteModifiee();
-            }
-        }*/
 
         internal CustomStroke AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
         {
@@ -127,29 +99,38 @@ namespace PolyPaint.Modeles
         // S'il y a au moins 1 trait sur la surface, il est possible d'exécuter Empiler.
         public bool PeutEmpiler(object o)
         {
-            if(!isStackUpToDate)
+            if (!isStackUpToDate)
             {
                 isStackUpToDate = true;
                 return false;
-            } else
-            {
-                return (traits.Count > 0);
             }
+            else if (traits.Count > 0)
+            {
+                bool isFound = false;
+                foreach (CustomStroke stroke in traits)
+                {
+                    if (DrawingService.localAddedStrokes.Contains(stroke.guid.ToString()))
+                    {
+                        strokeEmpilable = stroke;
+                        isFound = true;
+                    }
+                }
+                return isFound && !DrawingService.remoteSelectedStrokes.Contains(strokeEmpilable.guid.ToString());
+            }
+            else
+                return false;
         }
         // On retire le trait le plus récent de la surface de dessin et on le place sur une pile.
         public void Empiler(object o)
         {
             try
             {
+                (o as CustomInkCanvas).UpdateAnchorPointsAndLinks(new StrokeCollection { strokeEmpilable });
                 isStackUpToDate = false;
-                Stroke trait = traits.Last();
-                if (!remoteSelectedStrokes.Contains(trait))
-                {
-                    traitsRetires.Add(trait);
-                    traits.Remove(trait);
-                    StrokeCollection strokes = new StrokeCollection { trait };
-                    DrawingService.RemoveShapes(strokes);
-                }
+                traitsRetires.Add(strokeEmpilable);
+                traits.Remove(strokeEmpilable);
+                StrokeCollection strokes = new StrokeCollection { strokeEmpilable };
+                DrawingService.RemoveShapes(strokes);
             }
             catch { }
 
@@ -174,9 +155,30 @@ namespace PolyPaint.Modeles
             try
             {
                 isStackUpToDate = false;
-                Stroke trait = traitsRetires.Last();
+                CustomStroke trait = (CustomStroke)traitsRetires.Last();
+
+                if (trait.isLinkStroke())
+                {
+                    LinkStroke linkStroke = trait as LinkStroke;
+
+                    linkStroke.from.SetDefaults();
+                    linkStroke.to.SetDefaults();
+                }
+                else
+                {
+                    ShapeStroke shapeStroke = trait as ShapeStroke;
+                    shapeStroke.linksTo = new List<string> { };
+                    shapeStroke.linksFrom = new List<string> { };
+                }
+
                 traits.Add(trait);
-                DrawingService.CreateShape(trait as ShapeStroke);
+                if(trait.isLinkStroke())
+                {
+                    DrawingService.CreateLink(trait as LinkStroke);
+                } else
+                {
+                    DrawingService.CreateShape(trait as ShapeStroke);
+                }
                 traitsRetires.Remove(trait);
             }
             catch { }

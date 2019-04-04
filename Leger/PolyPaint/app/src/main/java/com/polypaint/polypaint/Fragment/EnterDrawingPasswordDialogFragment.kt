@@ -76,23 +76,23 @@ class EnterDrawingPasswordDialogFragment : DialogFragment(){
         }
     }
 
-    private var onJoinCanvasResponse: Emitter.Listener = Emitter.Listener {
-        Log.d("onJoinCanvasResponse", "alllooo")
-
-        val gson = Gson()
-        val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
-        Log.d("onJoinCanvasResponse", obj.isCanvasRoomJoined.toString()+ " " + obj.canvasName)
-
-        if(obj.isCanvasRoomJoined) {
-            if(canevas!!.name == obj.canvasName) {
-                Log.d("canvasJoined", "created" + canevas?.name)
-                val intent = Intent(context, DrawingActivity::class.java)
-                intent.putExtra("canevas", canevas!!)
-                //ViewShapeHolder.getInstance().canevas = canevas!!
-                startActivity(intent)
-            } else {
-                Log.d("Erreur", "selectionCanevas")
-            }
-        }
-    }
+//    private var onJoinCanvasResponse: Emitter.Listener = Emitter.Listener {
+//        Log.d("onJoinCanvasResponse", "alllooo")
+//
+//        val gson = Gson()
+//        val obj: CanvasJoinResponse = gson.fromJson(it[0].toString())
+//        Log.d("onJoinCanvasResponse", obj.isCanvasRoomJoined.toString()+ " " + obj.canvasName)
+//
+//        if(obj.isCanvasRoomJoined) {
+//            if(canevas!!.name == obj.canvasName) {
+//                Log.d("canvasJoined", "created" + canevas?.name)
+//                val intent = Intent(context, DrawingActivity::class.java)
+//                intent.putExtra("canevas", canevas!!)
+//                //ViewShapeHolder.getInstance().canevas = canevas!!
+//                startActivity(intent)
+//            } else {
+//                Log.d("Erreur", "selectionCanevas")
+//            }
+//        }
+//    }
 }

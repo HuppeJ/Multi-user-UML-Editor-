@@ -1,275 +1,781 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+﻿using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Collections.Generic;
+using PolyPaint.CustomInk.Strokes;
+using System.Windows.Controls.Primitives;
 using System.Windows.Shapes;
+using System;
 using System.Windows.Ink;
+using PolyPaint.Services;
+using PolyPaint.Vues;
 
 namespace PolyPaint.CustomInk
 {
-    public class ResizeAdorner : Adorner
+    class ResizeAdorner : Adorner
     {
-        // The Thumb to drag to rotate the strokes.
-        Thumb upperThumb;
-        Thumb upperLeftThumb;
-        Thumb upperRightThumb;
-        Thumb middleLeftThumb;
-        Thumb middleRightThumb;
-        Thumb bottomLeftThumb;
-        Thumb bottonThumb;
-        Thumb bottomRightThumb;
-
-        // The surrounding border.
-        Path line;
-        Path projectedLine;
+        List<Thumb> anchors;
+        List<StrokeResizePointThumb> cheatAnchors;
 
         VisualCollection visualChildren;
 
-        // The center of the strokes.
-        Point center;
-        double deltaY;
-        double deltaX;
-
-        ScaleTransform scale;
-        RotateTransform rotation;
-
-        const int HANDLEMARGIN = 0;
-        const int MARGIN = 5;
-
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
-        public CustomStroke stroke;
+        public ShapeStroke shapeStroke;
 
         public CustomInkCanvas canvas;
 
-        public ResizeAdorner(UIElement adornedElement, CustomStroke strokeToResize, CustomInkCanvas actualCanvas)
+        RotateTransform rotation;
+
+        private Path resizePreview;
+
+        Vector unitX = new Vector(1, 0);
+        Vector unitY = new Vector(0, 1);
+
+        RectangleGeometry NewRectangle = new RectangleGeometry();
+        RectangleGeometry OldRectangle = new RectangleGeometry();
+
+        public ResizeAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
-            stroke = strokeToResize;
+            visualChildren = new VisualCollection(this);
+
+            resizePreview = new Path();
+            resizePreview.Stroke = Brushes.Gray;
+            resizePreview.StrokeThickness = 2;
+            visualChildren.Add(resizePreview);
+
+            shapeStroke = customStroke as ShapeStroke;
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = strokeToResize.GetBounds();
-            center = stroke.GetCenter();
-            deltaY = 0;
-            deltaX = 0;
-            rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+            strokeBounds = customStroke.GetCustomBound();
+            Point center = customStroke.GetCenter();
+            rotation = new RotateTransform((customStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+            while (rotation.Angle < 0)
+            {
+                rotation.Angle += 360;
+            }
+            unitX = rotation.Value.Transform(unitX);
+            unitY = rotation.Value.Transform(unitY);
+            // RenderTransform = rotation;
 
-            visualChildren = new VisualCollection(this);
+            anchors = new List<Thumb>();
+            anchors.Add(new Thumb());
+            anchors.Add(new Thumb());
+            anchors.Add(new Thumb());
+            anchors.Add(new Thumb());
+            anchors.Add(new Thumb());
+            anchors.Add(new Thumb());
+            anchors.Add(new Thumb());
+            anchors.Add(new Thumb());
 
-            upperThumb = new Thumb();
-            upperThumb.Cursor = Cursors.SizeNS;
-            upperThumb.Width = 5;
-            upperThumb.Height = 5;
-            upperThumb.Background = Brushes.Gray;
-            upperThumb.DragDelta += new DragDeltaEventHandler(upper_DragDelta);
-            upperThumb.DragCompleted += new DragCompletedEventHandler(upper_DragCompleted);
+            int index = 0;
+            foreach (Thumb anchor in anchors)
+            {
+                anchor.Width = 5;
+                anchor.Height = 5;
+                anchor.Background = Brushes.Gray;
+                if (rotation.Angle % 360 >= 360 - 45 / 2 || rotation.Angle % 360 <= 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (rotation.Angle % 360 > 45 / 2 && rotation.Angle % 360 <= 90 - 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (rotation.Angle % 360 > 90 - 45 / 2 && rotation.Angle % 360 <= 90 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 90 + 45 / 2 && rotation.Angle % 360 <= 135 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 180 - 45 / 2 && rotation.Angle % 360 <= 180 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 225 - 45 / 2 && rotation.Angle % 360 <= 225 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 270 - 45 / 2 && rotation.Angle % 360 <= 270 + 45 / 2)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            anchor.DragDelta += new DragDeltaEventHandler(Top_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 1:
+                            anchor.DragDelta += new DragDeltaEventHandler(Right_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 2:
+                            anchor.DragDelta += new DragDeltaEventHandler(Bottom_DragDelta);
+                            anchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 3:
+                            anchor.DragDelta += new DragDeltaEventHandler(Left_DragDelta);
+                            anchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 4:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 5:
+                            anchor.DragDelta += new DragDeltaEventHandler(TopRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 6:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomLeft_DragDelta);
+                            anchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 7:
+                            anchor.DragDelta += new DragDeltaEventHandler(BottomRight_DragDelta);
+                            anchor.Cursor = Cursors.SizeWE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                anchor.DragStarted += new DragStartedEventHandler(All_DragStarted);
+                anchor.DragCompleted += new DragCompletedEventHandler(All_DragCompleted);
+                visualChildren.Add(anchor);
+                index++;
+            }
 
-            upperLeftThumb = new Thumb();
-            upperLeftThumb.Cursor = Cursors.SizeNWSE;
-            upperLeftThumb.Width = 5;
-            upperLeftThumb.Height = 5;
-            upperLeftThumb.Background = Brushes.Gray;
-            upperLeftThumb.DragDelta += new DragDeltaEventHandler(upper_DragDelta);
-            upperLeftThumb.DragCompleted += new DragCompletedEventHandler(upper_DragCompleted);
+            cheatAnchors = new List<StrokeResizePointThumb>();
+            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 0));
+            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 1));
+            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 2));
+            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 3));
+            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 4));
+            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 5));
+            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 6));
+            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 7));
 
-            upperRightThumb = new Thumb();
-            upperRightThumb.Cursor = Cursors.SizeNESW;
-            upperRightThumb.Width = 5;
-            upperRightThumb.Height = 5;
-            upperRightThumb.Background = Brushes.Gray;
-            upperRightThumb.DragDelta += new DragDeltaEventHandler(upper_DragDelta);
-            upperRightThumb.DragCompleted += new DragCompletedEventHandler(upper_DragCompleted);
+            index = 0;
+            foreach (Thumb cheatAnchor in cheatAnchors)
+            {
+                cheatAnchor.Width = 1;
+                cheatAnchor.Height = 1;
+                if (rotation.Angle % 360 >= 315 || rotation.Angle % 360 <= 45)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 1:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 2:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 3:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 4:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 5:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 6:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 7:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 45 && rotation.Angle % 360 <= 135)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 1:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 2:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 3:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 4:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 5:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 6:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 7:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (rotation.Angle % 360 > 135 && rotation.Angle % 360 <= 225)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 1:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 2:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 3:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 4:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 5:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 6:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 7:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 1:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 2:
+                            cheatAnchor.Cursor = Cursors.SizeNWSE;
+                            break;
+                        case 3:
+                            cheatAnchor.Cursor = Cursors.SizeNESW;
+                            break;
+                        case 4:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 5:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        case 6:
+                            cheatAnchor.Cursor = Cursors.SizeNS;
+                            break;
+                        case 7:
+                            cheatAnchor.Cursor = Cursors.SizeWE;
+                            break;
+                        default:
+                            break;
+                    }
+                }
 
-            middleLeftThumb = new Thumb();
-            middleLeftThumb.Cursor = Cursors.SizeWE;
-            middleLeftThumb.Width = 5;
-            middleLeftThumb.Height = 5;
-            middleLeftThumb.Background = Brushes.Gray;
-            middleLeftThumb.DragDelta += new DragDeltaEventHandler(upper_DragDelta);
-            middleLeftThumb.DragCompleted += new DragCompletedEventHandler(upper_DragCompleted);
+                canvas.Children.Add(cheatAnchor);
+                index++;
+            }
 
-            middleRightThumb = new Thumb();
-            middleRightThumb.Cursor = Cursors.SizeWE;
-            middleRightThumb.Width = 5;
-            middleRightThumb.Height = 5;
-            middleRightThumb.Background = Brushes.Gray;
-            middleRightThumb.DragDelta += new DragDeltaEventHandler(upper_DragDelta);
-            middleRightThumb.DragCompleted += new DragCompletedEventHandler(upper_DragCompleted);
+            strokeBounds = customStroke.GetCustomBound();
 
-            bottomLeftThumb = new Thumb();
-            bottomLeftThumb.Cursor = Cursors.SizeNESW;
-            bottomLeftThumb.Width = 5;
-            bottomLeftThumb.Height = 5;
-            bottomLeftThumb.Background = Brushes.Gray;
-            bottomLeftThumb.DragDelta += new DragDeltaEventHandler(upper_DragDelta);
-            bottomLeftThumb.DragCompleted += new DragCompletedEventHandler(upper_DragCompleted);
-            
-            bottonThumb = new Thumb();
-            bottonThumb.Cursor = Cursors.SizeNS;
-            bottonThumb.Width = 5;
-            bottonThumb.Height = 5;
-            bottonThumb.Background = Brushes.Gray;
-            bottonThumb.DragDelta += new DragDeltaEventHandler(upper_DragDelta);
-            bottonThumb.DragCompleted += new DragCompletedEventHandler(upper_DragCompleted);
-
-            bottomRightThumb = new Thumb();
-            bottomRightThumb.Cursor = Cursors.SizeNWSE;
-            bottomRightThumb.Width = 5;
-            bottomRightThumb.Height = 5;
-            bottomRightThumb.Background = Brushes.Gray;
-            bottomRightThumb.DragDelta += new DragDeltaEventHandler(upper_DragDelta);
-            bottomRightThumb.DragCompleted += new DragCompletedEventHandler(upper_DragCompleted);
-
-            line = new Path();
-            line.Stroke = Brushes.Pink;
-            line.StrokeThickness = 2;
-
-            line.Data = new RectangleGeometry(strokeBounds);
-
-            // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            line.RenderTransform = rotation;
-            
-            visualChildren.Add(line);
-            visualChildren.Add(upperThumb);
-            visualChildren.Add(upperLeftThumb);
-            visualChildren.Add(upperRightThumb);
-            visualChildren.Add(bottonThumb);
-            visualChildren.Add(bottomLeftThumb);
-            visualChildren.Add(bottomRightThumb);
-            visualChildren.Add(middleLeftThumb);
-            visualChildren.Add(middleRightThumb);
         }
 
-        /// <summary>
-        /// Draw the rotation handle and the outline of
-        /// the element.
-        /// </summary>
-        /// <param name="finalSize">The final area within the 
-        /// parent that this element should use to arrange 
-        /// itself and its children.</param>
-        /// <returns>The actual size used. </returns>
         protected override Size ArrangeOverride(Size finalSize)
         {
             if (strokeBounds.IsEmpty)
             {
                 return finalSize;
             }
-            
-            // The rectangle that determines the position of the Thumb.
-            Rect upper = new Rect(strokeBounds.X,
-                                  strokeBounds.Y - strokeBounds.Height/2 - MARGIN,
-                                  strokeBounds.Width, strokeBounds.Height);
-            Rect bottom = new Rect(strokeBounds.X,
-                                  strokeBounds.Y + strokeBounds.Height / 2 + MARGIN,
-                                  strokeBounds.Width, strokeBounds.Height);
-            Rect right = new Rect(strokeBounds.X + strokeBounds.Width - MARGIN,
-                                  strokeBounds.Y,
-                                  strokeBounds.Width, strokeBounds.Height);
-            Rect left = new Rect(strokeBounds.X - strokeBounds.Width + MARGIN,
-                                  strokeBounds.Y,
-                                  strokeBounds.Width, strokeBounds.Height);
-            Rect upperLeft = new Rect(strokeBounds.X - strokeBounds.Width + MARGIN,
-                                  strokeBounds.Y - strokeBounds.Height / 2 - MARGIN,
-                                  strokeBounds.Width, strokeBounds.Height);
-            Rect upperRight = new Rect(strokeBounds.X + strokeBounds.Width - MARGIN,
-                                  strokeBounds.Y - strokeBounds.Height / 2 - MARGIN,
-                                  strokeBounds.Width, strokeBounds.Height);
-            Rect bottomRight = new Rect(strokeBounds.X + strokeBounds.Width - MARGIN,
-                                  strokeBounds.Y + strokeBounds.Height / 2 + MARGIN,
-                                  strokeBounds.Width, strokeBounds.Height);
-            Rect bottomLeft = new Rect(strokeBounds.X - strokeBounds.Width + MARGIN,
-                                  strokeBounds.Y + strokeBounds.Height / 2 + MARGIN,
-                                  strokeBounds.Width, strokeBounds.Height);
 
-            if (rotation != null)
-            {
-                upper.Transform(rotation.Value);
-                bottom.Transform(rotation.Value);
-                right.Transform(rotation.Value);
-                left.Transform(rotation.Value);
-                upperLeft.Transform(rotation.Value);
-                upperRight.Transform(rotation.Value);
-                bottomLeft.Transform(rotation.Value);
-                bottomRight.Transform(rotation.Value);
-            }
+            // Top
+            ArrangeAnchor(0, 0, -(strokeBounds.Height / 2));
+            // Right
+            ArrangeAnchor(1, strokeBounds.Width / 2, 0);
+            // Bottom
+            ArrangeAnchor(2, 0, strokeBounds.Height / 2);
+            // Left
+            ArrangeAnchor(3, -(strokeBounds.Width / 2), 0);
+            // TopLeft
+            ArrangeAnchor(4, -(strokeBounds.Width / 2), -(strokeBounds.Height / 2));
+            // TopRight
+            ArrangeAnchor(5, strokeBounds.Width / 2, -(strokeBounds.Height / 2));
+            // BottomLeft
+            ArrangeAnchor(6, -(strokeBounds.Width / 2), strokeBounds.Height / 2);
+            // BottomRight
+            ArrangeAnchor(7, strokeBounds.Width / 2, strokeBounds.Height / 2);
 
-            // Draws the thumb and the rectangle around the strokes.
-            upperThumb.Arrange(upper);
-            upperLeftThumb.Arrange(upperLeft);
-            upperRightThumb.Arrange(upperRight);
-            bottomLeftThumb.Arrange(bottomLeft);
-            bottomRightThumb.Arrange(bottomRight);
-            bottonThumb.Arrange(bottom);
-            middleLeftThumb.Arrange(left);
-            middleRightThumb.Arrange(right);
+            resizePreview.Arrange(new Rect(finalSize));
 
-            line.Arrange(upper);
             return finalSize;
         }
 
-        /// <summary>
-        /// Rotates the rectangle representing the
-        /// strokes' bounds as the user drags the
-        /// Thumb.
-        /// </summary>
-        void upper_DragDelta(object sender, DragDeltaEventArgs e)
+        private void ArrangeAnchor(int anchorNumber, double xOffset, double yOffset)
         {
-            // Find the angle of which to rotate the shape.  Use the right
-            // triangle that uses the center and the mouse's position 
-            // as vertices for the hypotenuse.
+            // The rectangle that determines the position of the Thumb.
+            Rect handleRect = new Rect(strokeBounds.X + xOffset,
+                                  strokeBounds.Y + yOffset,
+                                  strokeBounds.Width,
+                                  strokeBounds.Height);
 
-            Point pos = Mouse.GetPosition(this);
-            
-            deltaY = stroke.GetBounds().Y - pos.Y;
-
-            if (deltaY.Equals(0) || deltaY < -strokeBounds.Height + 10)
-            {
-                return;
-            }
-
-            double ratioY = (deltaY + strokeBounds.Height) / strokeBounds.Height;
-            
-            // Apply the resize to the strokes' outline.
-            scale = new ScaleTransform(1, ratioY);
-            
-            line.RenderTransform = scale;
+            handleRect.Transform(rotation.Value);
+            // Draws the thumb and the rectangle around the strokes.
+            anchors[anchorNumber].Arrange(handleRect);
+            cheatAnchors[anchorNumber].Arrange(handleRect);
         }
 
-        /// <summary>
-        /// Rotates the strokes to the same angle as outline.
-        /// </summary>
-        void upper_DragCompleted(object sender,
+        void All_DragStarted(object sender,
+                                        DragStartedEventArgs e)
+        {
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      shapeStroke.GetCustomBound().Width, 
+                                      shapeStroke.GetCustomBound().Height);
+            OldRectangle = new RectangleGeometry(rectangle, 0, 0, rotation);
+        }
+        
+        void All_DragCompleted(object sender,
                                         DragCompletedEventArgs e)
         {
-            if (scale == null)
+            Point actualPos = Mouse.GetPosition(this);
+            if (e.HorizontalChange == 0 && e.VerticalChange == 0)
             {
+                visualChildren.Remove(resizePreview);
+                InvalidateArrange();
                 return;
             }
-            Point corner = new Point(strokeBounds.X + deltaX, strokeBounds.Y + deltaY);
-            // canvas.ResizeStrokesWithScales(scale.ScaleX, scale.ScaleY, corner);
 
-            // Save the angle of the last rotation.
-            // lastAngle = rotation.Angle;
 
-            // Redraw rotateHandle.
+            visualChildren.Remove(resizePreview);
+
+            canvas.ResizeShape(shapeStroke, NewRectangle, OldRectangle);
+
+            canvas.RefreshLinks(false);
+            canvas.RefreshChildren();
+
             InvalidateArrange();
+
+            DrawingService.UpdateShapes(new StrokeCollection { shapeStroke });
         }
 
-        /// <summary>
-        /// Gets the strokes of the adorned element 
-        /// (in this case, an InkPresenter).
-        /// </summary>
-        private StrokeCollection AdornedStrokes
+        #region DragDelta
+        private void generatePreview(Rect rectangle)
         {
-            get
-            {
-                return ((InkPresenter)AdornedElement).Strokes;
-            }
+            NewRectangle = new RectangleGeometry(rectangle, 0, 0, rotation);
+            resizePreview.Data = NewRectangle;
+            resizePreview.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
         }
+
+        private Vector calculateDelta(DragDeltaEventArgs e)
+        {
+            Point center = shapeStroke.GetCenter();
+            RotateTransform rotationInverse = new RotateTransform(360 - rotation.Angle, center.X, center.Y);
+            Vector dragVect = new Vector(e.HorizontalChange, e.VerticalChange);
+            dragVect = rotationInverse.Value.Transform(dragVect);
+            
+            return dragVect;
+        }
+
+        void Top_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector delta = calculateDelta(e);
+            if (delta.Y > shapeStroke.GetCustomBound().Height - 21)
+            {
+                delta.Y = shapeStroke.GetCustomBound().Height - 21;
+            }
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Width), 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Height - delta.Y));
+            generatePreview(rectangle);
+        }
+
+        void Right_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector delta = calculateDelta(e);
+            if (delta.X < -shapeStroke.GetCustomBound().Width + 21)
+            {
+                delta.X = -shapeStroke.GetCustomBound().Width + 21;
+            }
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Height));
+            generatePreview(rectangle);
+        }
+
+        void Bottom_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector delta = calculateDelta(e);
+            if (delta.Y < -shapeStroke.GetCustomBound().Height + 21)
+            {
+                delta.Y = -shapeStroke.GetCustomBound().Height + 21;
+            }
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Width), 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Height + delta.Y));
+            generatePreview(rectangle);
+        }
+
+        void Left_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector delta = calculateDelta(e);
+            if (delta.X > shapeStroke.GetCustomBound().Width - 21)
+            {
+                delta.X = shapeStroke.GetCustomBound().Width - 21;
+            }
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Height));
+            generatePreview(rectangle);
+        }
+
+        void TopLeft_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector delta = calculateDelta(e);
+            if (delta.Y > shapeStroke.GetCustomBound().Height - 21)
+            {
+                delta.Y = shapeStroke.GetCustomBound().Height - 21;
+            }
+            if (delta.X > shapeStroke.GetCustomBound().Width - 21)
+            {
+                delta.X = shapeStroke.GetCustomBound().Width - 21;
+            }
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
+                                      shapeStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Height - delta.Y));
+            generatePreview(rectangle);
+        }
+
+        void TopRight_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector delta = calculateDelta(e);
+            if (delta.Y > shapeStroke.GetCustomBound().Height - 21)
+            {
+                delta.Y = shapeStroke.GetCustomBound().Height - 21;
+            }
+            if (delta.X < -shapeStroke.GetCustomBound().Width + 21)
+            {
+                delta.X = -shapeStroke.GetCustomBound().Width + 21;
+            }
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Height - delta.Y));
+            generatePreview(rectangle);
+        }
+
+        void BottomLeft_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector delta = calculateDelta(e);
+            if (delta.Y < -shapeStroke.GetCustomBound().Height + 21)
+            {
+                delta.Y = -shapeStroke.GetCustomBound().Height + 21;
+            }
+            if (delta.X > shapeStroke.GetCustomBound().Width - 21)
+            {
+                delta.X = shapeStroke.GetCustomBound().Width - 21;
+            }
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Height + delta.Y));
+            generatePreview(rectangle);
+        }
+
+        void BottomRight_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector delta = calculateDelta(e);
+            if (delta.Y < -shapeStroke.GetCustomBound().Height + 21)
+            {
+                delta.Y = -shapeStroke.GetCustomBound().Height + 21;
+            }
+            if (delta.X < -shapeStroke.GetCustomBound().Width + 21)
+            {
+                delta.X = -shapeStroke.GetCustomBound().Width + 21;
+            }
+            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
+                                      shapeStroke.GetCustomBound().Y, 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(21, shapeStroke.GetCustomBound().Height + delta.Y));
+            generatePreview(rectangle);
+        }
+        #endregion
 
         // Override the VisualChildrenCount and 
         // GetVisualChild properties to interface with 
@@ -283,5 +789,7 @@ namespace PolyPaint.CustomInk
         {
             return visualChildren[index];
         }
+
+
     }
 }

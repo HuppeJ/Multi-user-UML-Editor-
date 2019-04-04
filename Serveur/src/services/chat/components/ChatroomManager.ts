@@ -39,7 +39,7 @@ export default class ChatroomManager {
 
     public addUserToChatroom(chatroomId: string, data: IEditChatroomData) {
         const chatroom: Chatroom = this.chatrooms.get(chatroomId);
-        if (chatroom && !chatroom.hasUser(data.username)) {
+        if (chatroom) {
             chatroom.addUser(data.username);
             return true;
         }

@@ -18,7 +18,6 @@ namespace PolyPaint.Services
     class DrawingService: ConnectionService
     {
         public static event Action<JoinCanvasRoomResponse> JoinCanvasRoom;
-        public static event Action CanvasRoomJoined;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
@@ -27,11 +26,17 @@ namespace PolyPaint.Services
 
         public static event Action<PublicCanvases> UpdatePublicCanvases;
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
+        public static event Action<Coordinates> OnResizeCanvas;
         public static event Action BackToGallery;
         public static event Action SaveCanvas;
+        public static event Action RefreshChildren;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
+        public static Templates.Canvas currentCanvas;
+        public static List<string> remoteSelectedStrokes = new List<string>();
+        public static List<string> localSelectedStrokes = new List<string>();
+        public static List<string> localAddedStrokes = new List<string>();
 
         public DrawingService()
         {
@@ -49,6 +54,7 @@ namespace PolyPaint.Services
                 }
             });
 
+            #region canvas .On
             socket.On("createCanvasResponse", (data) =>
             {
                 CreateCanvasResponse response = serializer.Deserialize<CreateCanvasResponse>((string)data);
@@ -75,7 +81,7 @@ namespace PolyPaint.Services
             
             socket.On("canvasPasswordUpdated", (data) =>
             {
-                LeaveCanvas(true);
+                LeaveCanvas();
                 Application.Current.Dispatcher.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
             });
 
@@ -88,6 +94,15 @@ namespace PolyPaint.Services
                 }
 
                 Application.Current.Dispatcher.Invoke(new Action(() => { JoinCanvasRoom(response); }), DispatcherPriority.Render);
+            });
+
+            socket.On("canvasResized", (data) =>
+            {
+                ResizeCanevasData response = serializer.Deserialize<ResizeCanevasData>((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => { OnResizeCanvas(response.dimensions); }), DispatcherPriority.Render);
+                }
             });
 
             socket.On("getPublicCanvasResponse", (data) =>
@@ -107,10 +122,90 @@ namespace PolyPaint.Services
 
                 Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePrivateCanvases(canvases); }), DispatcherPriority.Render);
             });
+            #endregion
 
+            #region links .On 
+            socket.On("linkCreated", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    LinkStroke linkStroke = createLinkStroke(response.links[0]);
+                    linkStroke.owner = response.username;
+                    InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(linkStroke);
+                    Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+                }
+            });
+
+            socket.On("linksDeleted", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    StrokeCollection strokes = new StrokeCollection();
+                    foreach (dynamic link in response.links)
+                    {
+                        strokes.Add(createLinkStroke(link));
+                    }
+                    Application.Current.Dispatcher.Invoke(new Action(() => { RemoveStrokes(strokes); }), DispatcherPriority.ContextIdle);
+                }
+            });
+
+            socket.On("linksUpdated", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    foreach (dynamic link in response.links)
+                    {
+                        InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(createLinkStroke(link));
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateStroke(eventArgs); }), DispatcherPriority.Render);
+                    }
+                }
+            });
+
+            socket.On("linksSelected", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    StrokeCollection strokes = new StrokeCollection();
+                    foreach (dynamic link in response.links)
+                    {
+                        LinkStroke linkStroke = createLinkStroke(link);
+                        strokes.Add(linkStroke);
+                        if (!remoteSelectedStrokes.Contains(linkStroke.guid.ToString()))
+                            remoteSelectedStrokes.Add(linkStroke.guid.ToString());
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(strokes); }), DispatcherPriority.Render);
+                    }
+                }
+            });
+
+            socket.On("linksDeselected", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                if (!username.Equals((string)response.username))
+                {
+                    StrokeCollection strokes = new StrokeCollection();
+                    foreach (dynamic link in response.links)
+                    {
+                        LinkStroke linkStroke = createLinkStroke(link);
+                        strokes.Add(linkStroke);
+                        if (remoteSelectedStrokes.Contains(linkStroke.guid.ToString()))
+                            remoteSelectedStrokes.Remove(linkStroke.guid.ToString());
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(strokes); }), DispatcherPriority.Render);
+                    }
+                }
+            });
+            #endregion
+
+            #region forms .On
             socket.On("formCreated", (data) =>
             {
                 dynamic response = JObject.Parse((string)data);
+                //Console.WriteLine("FORM CREATED: \n" + "position: " + response.forms[0].shapeStyle.coordinates.x + ", " 
+                //    + response.forms[0].shapeStyle.coordinates.y + "/n" + "size: " + response.forms[0].shapeStyle.width + ", "
+                //    + response.forms[0].shapeStyle.height);
                 if (!username.Equals((string)response.username))
                 {
                     CustomStroke customStroke = createShapeStroke(response.forms[0]);
@@ -154,7 +249,10 @@ namespace PolyPaint.Services
                     StrokeCollection strokes = new StrokeCollection();
                     foreach (dynamic shape in response.forms)
                     {
-                        strokes.Add(createShapeStroke(shape));
+                        ShapeStroke stroke = createShapeStroke(shape);
+                        strokes.Add(stroke);
+                        if(!remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                            remoteSelectedStrokes.Add(stroke.guid.ToString());
                         Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(strokes); }), DispatcherPriority.Render);
                     }
                 }
@@ -168,17 +266,34 @@ namespace PolyPaint.Services
                     StrokeCollection strokes = new StrokeCollection();
                     foreach (dynamic shape in response.forms)
                     {
-                        strokes.Add(createShapeStroke(shape));
+                        ShapeStroke stroke = createShapeStroke(shape);
+                        strokes.Add(stroke);
+                        if(remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                            remoteSelectedStrokes.Remove(stroke.guid.ToString());
                         Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(strokes); }), DispatcherPriority.Render);
                     }
                 }
             });
+            #endregion
+
+
+            socket.On("canvasSaved", (data) =>
+            {
+                EditCanevasData response = serializer.Deserialize<EditCanevasData>((string)data);
+                if (!username.Equals(response.username))
+                {
+                    RefreshPublicCanvases();
+                }
+            });
+
             RefreshCanvases();
         }
 
+        #region Emit
         public static void CreateCanvas(Templates.Canvas canvas)
         {
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
+            currentCanvas = canvas;
             socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
         }
 
@@ -194,9 +309,21 @@ namespace PolyPaint.Services
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
         }
 
+        public static void ResizeCanvas(Coordinates coordinates)
+        {
+            ResizeCanevasData editCanevasData = new ResizeCanevasData(username, canvasName, coordinates);
+            socket.Emit("resizeCanvas", serializer.Serialize(editCanevasData));
+        }
+
         public static void DrawCanvas(Templates.Canvas canvas)
         {
-            foreach(Link link in canvas.links)
+            canvasName = canvas.name;
+            currentCanvas = canvas;
+            Application.Current.Dispatcher.Invoke(new Action(() => { OnResizeCanvas(canvas.dimensions); }), DispatcherPriority.ContextIdle);
+            localSelectedStrokes = new List<string>();
+            localAddedStrokes = new List<string>();
+            socket.Emit("getSelectedForms", canvasName);
+            foreach (Link link in canvas.links)
             {
                 LinkStroke linkStroke = LinkStrokeFromLink(link);
                 InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(linkStroke);
@@ -209,15 +336,13 @@ namespace PolyPaint.Services
                 InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(shapeStroke);
                 Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             }
-            //Application.Current.Dispatcher.Invoke(new Action(() => { CanvasRoomJoined(); }), DispatcherPriority.Render);
+
+            Application.Current.Dispatcher.Invoke(new Action(() => { RefreshChildren(); }), DispatcherPriority.Render);
+
         }
 
-        public static void LeaveCanvas(bool saveCanvas)
+        public static void LeaveCanvas()
         {
-            if (saveCanvas)
-            {
-                Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
-            }
             EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
             socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
             RefreshCanvases();
@@ -227,15 +352,21 @@ namespace PolyPaint.Services
         {
             Templates.Canvas canvas = new Templates.Canvas();
             canvas.name = canvasName;
-            canvas.thumbnailLourd = thumbnail;
+            canvas.thumbnail = thumbnail;
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
-            socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
+            // Commente pour pas buster le cloud (à uncomment avant la remise)
+            //socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
         }
 
         public static void RefreshCanvases()
         {
             socket.Emit("getPublicCanvas");
             socket.Emit("getPrivateCanvas", username);
+        }
+
+        public static void RefreshPublicCanvases()
+        {
+            socket.Emit("getPublicCanvas");
         }
 
         public static void ResetServer()
@@ -245,42 +376,76 @@ namespace PolyPaint.Services
 
         public static void CreateShape(ShapeStroke shapeStroke)
         {
-            StrokeCollection strokes = new StrokeCollection();
-            strokes.Add(shapeStroke);
-            socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(strokes)));
+            socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(new StrokeCollection { shapeStroke })));
+            localAddedStrokes.Add(shapeStroke.guid.ToString());
+            Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void CreateLink(LinkStroke linkStroke)
         {
-            StrokeCollection strokes = new StrokeCollection();
-            strokes.Add(linkStroke);
-            socket.Emit("createLink", serializer.Serialize(createUpdateLinksData(strokes)));
+            socket.Emit("createLink", serializer.Serialize(createUpdateLinksData(new StrokeCollection { linkStroke })));
+            localAddedStrokes.Add(linkStroke.guid.ToString());
+            Application.Current.Dispatcher.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void RemoveShapes(StrokeCollection strokes)
         {
-            socket.Emit("deleteForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            foreach (CustomStroke stroke in strokes)
+            {
+                if (localSelectedStrokes.Contains(stroke.guid.ToString()))
+                    localSelectedStrokes.Remove(stroke.guid.ToString());
+            }
+
+            EmitIfStrokes("deleteForms", createUpdateFormsData(strokes));
+            EmitIfStrokes("deleteLinks", createUpdateLinksData(strokes));
+        }
+
+        private static void EmitIfStrokes(string eventString, UpdateFormsData shapes)
+        {
+            if(shapes.forms.Count > 0)
+            {
+                socket.Emit(eventString, serializer.Serialize(shapes));
+            }
+        }
+        private static void EmitIfStrokes(string eventString, UpdateLinksData links)
+        {
+            if (links.links.Count > 0)
+            {
+                socket.Emit(eventString, serializer.Serialize(links));
+            }
         }
 
         public static void UpdateShapes(StrokeCollection strokes)
         {
-            socket.Emit("updateForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            EmitIfStrokes("updateForms", createUpdateFormsData(strokes));
         }
 
         public static void UpdateLinks(StrokeCollection strokes)
         {
-            socket.Emit("updateLinks", serializer.Serialize(createUpdateLinksData(strokes)));
+            EmitIfStrokes("updateLinks", createUpdateLinksData(strokes));
         }
 
         public static void SelectShapes(StrokeCollection strokes)
         {
-            socket.Emit("selectForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            foreach (CustomStroke stroke in strokes)
+            {
+                localSelectedStrokes.Add(stroke.guid.ToString());
+            }
+            EmitIfStrokes("selectForms", createUpdateFormsData(strokes));
+            EmitIfStrokes("selectLinks", createUpdateLinksData(strokes));
         }
 
         public static void DeselectShapes(StrokeCollection strokes)
         {
-            socket.Emit("deselectForms", serializer.Serialize(createUpdateFormsData(strokes)));
+            foreach (CustomStroke stroke in strokes)
+            {
+                if (localSelectedStrokes.Contains(stroke.guid.ToString()))
+                    localSelectedStrokes.Remove(stroke.guid.ToString());
+            }
+            EmitIfStrokes("deselectForms", createUpdateFormsData(strokes));
+            EmitIfStrokes("deselectLinks", createUpdateLinksData(strokes));
         }
+        #endregion
 
         private static UpdateFormsData createUpdateFormsData(StrokeCollection strokes)
         {
@@ -291,11 +456,11 @@ namespace PolyPaint.Services
                 {
                     if(customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {
-                        forms.Add((customStroke as ClassStroke).GetClassShape());
+                        forms.Add((customStroke as ClassStroke).GetClassShape().forServer());
                     }
                     else
                     {
-                        forms.Add((customStroke as ShapeStroke).GetBasicShape());
+                        forms.Add((customStroke as ShapeStroke).GetBasicShape().forServer());
                     }
                 }
             }
@@ -317,12 +482,33 @@ namespace PolyPaint.Services
             return new UpdateLinksData(username, canvasName, links);
         }
 
+        private static LinkStroke createLinkStroke(dynamic link)
+        {
+            for (int i = 0; i < link.path.Count; i++)
+            {
+                link.path[i].x /= 2.1;
+                link.path[i].y /= 2.1;
+            }
+            
+            LinkStroke linkStroke = new LinkStroke(link.ToObject<Link>(), new StylusPointCollection { new StylusPoint(0,0) });
+            linkStroke.guid = Guid.Parse((string)link.id);
+
+            linkStroke.to = linkStroke.to.GetForLourd();
+            linkStroke.from = linkStroke.from.GetForLourd();
+
+            return linkStroke;
+        }
+
         private static ShapeStroke createShapeStroke(dynamic shape)
         {
-            StylusPointCollection points = new StylusPointCollection();
+            StylusPointCollection points = new StylusPointCollection {
+                new StylusPoint((double)shape.shapeStyle.coordinates.x / 2.1, (double)shape.shapeStyle.coordinates.y / 2.1)
+            };
 
-            StylusPoint point = new StylusPoint((double)shape.shapeStyle.coordinates.x, (double)shape.shapeStyle.coordinates.y);
-            points.Add(point);
+            shape.shapeStyle.height = (double)shape.shapeStyle.height / 2.1;
+            shape.shapeStyle.width = (double)shape.shapeStyle.width / 2.1;
+            shape.shapeStyle.coordinates.x = (double)shape.shapeStyle.coordinates.x / 2.1;
+            shape.shapeStyle.coordinates.y = (double)shape.shapeStyle.coordinates.y / 2.1;
 
             ShapeStroke shapeStroke;
             StrokeTypes type = (StrokeTypes) shape.type;
@@ -341,12 +527,12 @@ namespace PolyPaint.Services
                 case StrokeTypes.ROLE:
                     shapeStroke = new ActorStroke(shape.ToObject<BasicShape>(), points);
                     break;
-                //case StrokeTypes.COMMENT:
-                //    customStroke = new CommentStroke(points);
-                //    break;
-                //case StrokeTypes.PHASE:
-                //    customStroke = new PhaseStroke(points);
-                //    break;
+                case StrokeTypes.COMMENT:
+                    shapeStroke = new CommentStroke(points);
+                    break;
+                case StrokeTypes.PHASE:
+                    shapeStroke = new PhaseStroke(points);
+                    break;
                 default:
                     shapeStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
                     break;
@@ -397,14 +583,16 @@ namespace PolyPaint.Services
         private static LinkStroke LinkStrokeFromLink(Link link)
         {
             StrokeTypes type = (StrokeTypes)link.type;
-            StylusPointCollection points = new StylusPointCollection();
             for(int i=0; i<link.path.Count; i++)
             {
-                StylusPoint point = new StylusPoint(link.path[i].x, link.path[i].y);
-                points.Add(point);
+                link.path[i].x /= 2.1;
+                link.path[i].y /= 2.1;
             }
 
-            return new LinkStroke(link.id, link.name, link.from, link.to, link.type, link.style.type, link.style, link.path, points);
+            link.from = link.from.GetForLourd();
+            link.to = link.to.GetForLourd();
+
+            return new LinkStroke(link, new StylusPointCollection { new StylusPoint(0,0) });
         }
 
         private static void ExtractCanvasesShapes(List<Templates.Canvas> canvasesList)
@@ -449,14 +637,14 @@ namespace PolyPaint.Services
 
         private static dynamic GetShapeStyle(dynamic shapeStyle)
         {
-            double width = (double)shapeStyle["width"];
-            double height = (double)shapeStyle["height"];
+            double width = (double)shapeStyle["width"] / 2.1;
+            double height = (double)shapeStyle["height"] / 2.1;
             double rotation = (double)shapeStyle["rotation"];
             string borderColor = shapeStyle["borderColor"];
             int borderStyle = shapeStyle["borderStyle"];
             string backgroundColor = shapeStyle["backgroundColor"];
-            double x = (double)shapeStyle["coordinates"]["x"];
-            double y = (double)shapeStyle["coordinates"]["y"];
+            double x = (double)shapeStyle["coordinates"]["x"] / 2.1;
+            double y = (double)shapeStyle["coordinates"]["y"] / 2.1;
             Coordinates coordinates = new Coordinates(x, y);
 
             return new ShapeStyle(coordinates, width, height, rotation, borderColor, borderStyle, backgroundColor);
@@ -477,5 +665,9 @@ namespace PolyPaint.Services
             return list;
         }
        
+        public static void AddClassFromCode(InkCanvasStrokeCollectedEventArgs eventArgs)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+        }
     }
 }

@@ -19,6 +19,7 @@ namespace PolyPaint.CustomInk
         {
             FontSize = 12;
             Text = name;
+            Background = null;
             BorderThickness = new Thickness(1);
             Width = width;
             Height = height;

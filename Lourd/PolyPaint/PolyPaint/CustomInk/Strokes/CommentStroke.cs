@@ -3,40 +3,128 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows;
 using System;
-using System.Windows.Media.Imaging;
-using System.Globalization;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
-using System.Collections.Generic;
+using System.Globalization;
 
 namespace PolyPaint.CustomInk
 {
     public class CommentStroke : ShapeStroke
     {
+        private Point topLeft;
+        private Point topRight;
+        private Point bottomRight;
+        private Point bottomLeft;
 
         public CommentStroke(StylusPointCollection pts) : base(pts)
         {
-            strokeType = (int)StrokeTypes.COMMENT;
+            shapeStyle.width = 50;
             shapeStyle.height = 50;
+            shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());
 
-            Point lastPoint = pts[pts.Count - 1].ToPoint();
-            for (double i = lastPoint.X; i < shapeStyle.width + lastPoint.X; i += 0.5)
-            {
-                for (double j = lastPoint.Y; j < shapeStyle.height + lastPoint.Y; j += 0.5)
-                {
-                    StylusPoints.Add(new StylusPoint(i, j));
-                }
-            }
+            UpdateShapePoints();
+
+            strokeType = (int)StrokeTypes.COMMENT;
         }
 
         public CommentStroke(BasicShape basicShape, StylusPointCollection pts) : base(pts, basicShape)
         {
-            
+
         }
 
-        public override BasicShape GetBasicShape()
+        protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
         {
-            return new BasicShape(guid.ToString(), strokeType, name, shapeStyle, linksTo, linksFrom);
+            base.DrawCore(drawingContext, drawingAttributes);
+
+            UpdateShapePoints();
+
+            drawingContext.DrawRectangle(fillColor, pen, new Rect(topLeft, bottomRight));
+
+            FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                new Typeface("Arial"), 12, Brushes.Black);
+
+            formattedText.MaxTextWidth = shapeStyle.width;
+            formattedText.MaxTextHeight = shapeStyle.height;
+            formattedText.Trimming = TextTrimming.CharacterEllipsis;
+
+            drawingContext.DrawText(formattedText, GetCustomBound().TopLeft);
+        }
+
+        public override Rect GetBounds()
+        {
+            double width = shapeStyle.width;
+            double height = shapeStyle.height;
+
+            Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
+                width, height);
+
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            rect.Transform(rotationTransform.Value);
+
+            return rect;
+        }
+
+        public override Rect GetCustomBound()
+        {
+            double width = shapeStyle.width;
+            double height = shapeStyle.height;
+
+            Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
+                width, height);
+
+            return rect;
+        }
+
+        internal override bool HitTestPoint(Point point)
+        {
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            return GetCustomBound().Contains(rotationTransform.Inverse.Transform(point));
+        }
+
+        internal override bool HitTestPointIncludingEdition(Point point)
+        {
+            Rect bounds = GetEditingBounds();
+            return bounds.Contains(point);
+        }
+
+        public override Rect GetEditingBounds()
+        {
+            Rect bounds = GetCustomBound();
+            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
+            Point topLeft = rotationTransform.Transform(bounds.TopLeft);
+            Point topRight = rotationTransform.Transform(bounds.TopRight);
+            Point bottomLeft = rotationTransform.Transform(bounds.BottomLeft);
+            Point bottomRight = rotationTransform.Transform(bounds.BottomRight);
+            double minX = Math.Min(Math.Min(Math.Min(topLeft.X, topRight.X), bottomLeft.X), bottomRight.X);
+            double maxX = Math.Max(Math.Max(Math.Max(topLeft.X, topRight.X), bottomLeft.X), bottomRight.X);
+            double minY = Math.Min(Math.Min(Math.Min(topLeft.Y, topRight.Y), bottomLeft.Y), bottomRight.Y);
+            double maxY = Math.Max(Math.Max(Math.Max(topLeft.Y, topRight.Y), bottomLeft.Y), bottomRight.Y);
+
+            bounds = new Rect(new Point(minX - 15, minY - 15), new Point(maxX + 15, maxY + 15));
+            return bounds;
+        }
+
+        private void UpdateShapePoints()
+        {
+            if (shapeStyle.height < 0.2)
+                shapeStyle.height = 0.2;
+
+            double width = shapeStyle.width;
+            double height = shapeStyle.height;
+
+            topLeft = shapeStyle.coordinates.ToPoint();
+
+            topRight = new Point(topLeft.X + width, topLeft.Y);
+
+            bottomLeft = new Point(topLeft.X, topLeft.Y + height);
+
+            bottomRight = new Point(topLeft.X + width, topLeft.Y + height);
+        }
+
+        public override Point GetCenter()
+        {
+            Rect rect = GetCustomBound();
+            return new Point(rect.X + shapeStyle.width / 2, rect.Y + shapeStyle.height / 2);
         }
     }
 }

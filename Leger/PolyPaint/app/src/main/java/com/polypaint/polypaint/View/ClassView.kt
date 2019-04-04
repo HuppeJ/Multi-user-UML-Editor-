@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.view_class.view.*
 
 class ClassView(context: Context): BasicElementView(context) {
     override var mMinimumWidth : Float = 300F
-    override var mMinimumHeight : Float = 370F
+    override var mMinimumHeight : Float = 340F
     var child : View? = null
 
     override fun onAttachedToWindow() {
@@ -37,23 +37,31 @@ class ClassView(context: Context): BasicElementView(context) {
 
 
         borderResizableLayout.addView(child)
-
+        /*
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
         linearLayoutCompat.layoutParams.height = (mMinimumHeight/7).toInt()
         linearLayoutCompat2.layoutParams.height = (3*mMinimumHeight/7).toInt()
         linearLayoutCompat3.layoutParams.height = (3*mMinimumHeight/7).toInt()
+        */
     }
 
     override fun resize(newWidth:Int, newHeight:Int){
         if(newWidth >= mMinimumWidth){
             borderResizableLayout.layoutParams.width = newWidth
+        }else{
+            borderResizableLayout.layoutParams.width = mMinimumWidth.toInt()
         }
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
-            linearLayoutCompat.layoutParams.height = (newHeight / 7)
-            linearLayoutCompat2.layoutParams.height = (3 * newHeight / 7)
-            linearLayoutCompat3.layoutParams.height = (3 * newHeight / 7)
+            linearLayoutCompat.layoutParams.height = 60
+            linearLayoutCompat2.layoutParams.height = (3 * (newHeight-60) / 7)
+            linearLayoutCompat3.layoutParams.height = (4 * (newHeight-60) / 7)
+        }else{
+            borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
+            linearLayoutCompat.layoutParams.height = 60
+            linearLayoutCompat2.layoutParams.height = (3*(mMinimumHeight-60)/7).toInt()
+            linearLayoutCompat3.layoutParams.height = (4*(mMinimumHeight-60)/7).toInt()
         }
 
         borderResizableLayout.requestLayout()
@@ -75,7 +83,7 @@ class ClassView(context: Context): BasicElementView(context) {
         dialog.show(activity.supportFragmentManager, "alllooooo")
     }
 
-    override fun outlineColor(color : String){
+    override fun outlineColor(color : String, borderType: Int){
 
         var lDrawable = child!!.linearLayoutCompat.background.mutate() as LayerDrawable
         var gDrawable = lDrawable.findDrawableByLayerId(R.id.view_class_borders) as GradientDrawable
@@ -88,11 +96,23 @@ class ClassView(context: Context): BasicElementView(context) {
         var lDrawable3 = child!!.linearLayoutCompat3.background.mutate() as LayerDrawable
         var gDrawable3 = lDrawable3.findDrawableByLayerId(R.id.view_class_borders) as GradientDrawable
 
-        when(color){
-            "BLACK"-> gDrawable.setStroke(1,Color.BLACK)
-            "GREEN"-> gDrawable2.setStroke(1,Color.GREEN)
-            "YELLOW"-> gDrawable3.setStroke(1,Color.YELLOW)
+        when(borderType){
+            0 -> {  gDrawable.setStroke(1, Color.parseColor(color))
+                gDrawable2.setStroke(1, Color.parseColor(color))
+                gDrawable3.setStroke(1, Color.parseColor(color))
+            }
+            1 -> {  gDrawable.setStroke(1, Color.parseColor(color), 10F,10F)
+                gDrawable2.setStroke(1, Color.parseColor(color),10F,10F)
+                gDrawable3.setStroke(1, Color.parseColor(color),10F,10F)
+            }
         }
+
+
+    }
+
+    override fun backgroundColor(color: String) {
+        child!!.class_layout2.background.mutate().setColorFilter(Color.parseColor(color),PorterDuff.Mode.SRC_IN)
+
     }
 
 }

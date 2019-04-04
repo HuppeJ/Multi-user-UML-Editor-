@@ -22,10 +22,11 @@ import kotlinx.android.synthetic.main.view_image_element.view.*
 
 
 class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementView(context) {
-    override var mMinimumWidth : Float = 220F
-    override var mMinimumHeight : Float = 320F
+    override var mMinimumWidth : Float = 140F
+    override var mMinimumHeight : Float = 200F
     private var shapeType : ShapeTypes? = shapeType
     private var imgBackground : ImageView? = null
+    private var imgBackgroundBack : ImageView? = null
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -34,9 +35,9 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         var child = activity.layoutInflater.inflate(R.layout.view_image_element, null)
 
-        var nameText: TextView = child.findViewById(R.id.view_image_element_name) as TextView
+        //var nameText: TextView = child.findViewById(R.id.view_image_element_name) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
-        nameText.text = "basictElement.name"
+        //nameText.text = "ImageElementViewElement"
 
         /*
         val shape = ViewShapeHolder.getInstance().canevas.findShape(
@@ -45,19 +46,24 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         Log.d("*******", shape.toString())
         */
 
-        var img: ImageView = child.findViewById(R.id.image_element) as ImageView
-        imgBackground = img
+        var imgFront: ImageView = child.findViewById(R.id.image_element) as ImageView
+        var imgBack: ImageView = child.findViewById(R.id.image_element_background) as ImageView
+        imgBackground = imgFront
+        imgBackgroundBack = imgBack
         when(this.shapeType){
             ShapeTypes.DEFAULT->{ }
 
             ShapeTypes.ARTIFACT -> {
-                img.setBackgroundResource(R.drawable.ic_artifact)
+                imgFront.setBackgroundResource(R.drawable.ic_artefact)
+                imgBack.setBackgroundResource(R.drawable.ic_artefact_bck)
             }
             ShapeTypes.ACTIVITY -> {
-                img.setBackgroundResource(R.drawable.ic_activity)
+                imgFront.setBackgroundResource(R.drawable.ic_activity)
+                imgBack.setBackgroundResource(R.drawable.ic_activity_bck)
             }
             ShapeTypes.ROLE -> {
-                img.setBackgroundResource(R.drawable.ic_actor)
+                imgFront.setBackgroundResource(R.drawable.ic_actor)
+                imgBack.setBackgroundResource(R.drawable.ic_actor_bck)
 
             }
         }
@@ -70,33 +76,39 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-        linearLayoutCompatImg.layoutParams.height = (9*mMinimumHeight/10).toInt()
-        linearLayoutCompat2Img.layoutParams.height = (1*mMinimumHeight/10).toInt()
+        //linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
 
     }
 
     override fun resize(newWidth:Int, newHeight:Int){
         if(newWidth >= mMinimumWidth){
             borderResizableLayout.layoutParams.width = newWidth
+        }else{
+            borderResizableLayout.layoutParams.width = mMinimumWidth.toInt()
         }
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
             // TODO :  is null : linearLayoutCompatImg & linearLayoutCompat2Img
-            // linearLayoutCompatImg.layoutParams.height = (9*newHeight / 10)
-            //linearLayoutCompat2Img.layoutParams.height = (1 * newHeight / 10)
+            //linearLayoutCompatImg.layoutParams.height = (7*newHeight / 10)
+        }else{
+            borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
+            //linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
         }
 
         borderResizableLayout.requestLayout()
         requestLayout()
     }
 
-    override fun outlineColor(color : String){
-        when(color){
-            "BLACK" -> {imgBackground!!.background.mutate().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN)}
-            "GREEN" -> {imgBackground!!.background.mutate().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN)}
-            "YELLOW" -> {imgBackground!!.background.mutate().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN)}
+    override fun outlineColor(color : String, borderType: Int){
+        when(borderType){
+            0->{imgBackground!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)}
+            //TODO: Faire d'autre svg avec les contours en dashed
+            1->{}
         }
+    }
 
+    override fun backgroundColor(color : String){
+        imgBackgroundBack!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
     }
 }

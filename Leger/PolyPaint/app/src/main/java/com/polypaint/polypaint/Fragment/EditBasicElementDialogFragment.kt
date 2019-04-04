@@ -6,10 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.polypaint.polypaint.Holder.SyncShapeHolder
@@ -17,25 +14,17 @@ import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.BasicShape
 import com.polypaint.polypaint.Model.ClassShape
 import com.polypaint.polypaint.R
+import com.skydoves.colorpickerview.ColorEnvelope
+import com.skydoves.colorpickerview.ColorPickerDialog
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
-class EditBasicElementDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListener {
+class EditBasicElementDialogFragment: DialogFragment(){
     var shape : BasicShape? = null
     var viewSelf : View? = null
-    var color: String = ""
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        when (parent?.id){
-            R.id.border_color_spinner ->{
-                when(position){
-                    0-> color = "BLACK"
-                    1-> color = "GREEN"
-                    2-> color = "YELLOW"
-                }
-            }
-        }
-    }
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    var colorBorder : String = ""
+    var colorBackground : String = ""
+    var styleType : Int = 0
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var shapeId = arguments?.getString("shapeId")
         shape = ViewShapeHolder.getInstance().canevas.findShape(shapeId!!)
@@ -47,14 +36,54 @@ class EditBasicElementDialogFragment: DialogFragment(), AdapterView.OnItemSelect
 
             val nameText : EditText = viewSelf!!.findViewById(R.id.name_text)
             nameText.setText(shape?.name)
+            colorBorder = shape?.shapeStyle!!.borderColor
+            colorBackground = shape?.shapeStyle!!.backgroundColor
 
-            val borderColorSpinner : Spinner = viewSelf!!.findViewById(R.id.border_color_spinner)
-            setAdapter(borderColorSpinner, R.array.link_colors_array)
-            borderColorSpinner.onItemSelectedListener = this
-            when(shape?.shapeStyle!!.borderColor){
-                "BLACK"-> borderColorSpinner.setSelection(0)
-                "GREEN"-> borderColorSpinner.setSelection(1)
-                "YELLOW"-> borderColorSpinner.setSelection(2)
+            val borderColorPickerButton: Button = viewSelf!!.findViewById(R.id.border_color_picker_button)
+
+            borderColorPickerButton.setBackgroundColor(Color.parseColor(colorBorder))
+
+            borderColorPickerButton.setOnClickListener {
+                ColorPickerDialog.Builder(context)
+                    .setPositiveButton("Select", ColorEnvelopeListener{ envelope: ColorEnvelope, fromUser: Boolean ->
+                        colorBorder = "#"+envelope.hexCode
+                        borderColorPickerButton.setBackgroundColor(Color.parseColor(colorBorder))
+                    })
+                    .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog: DialogInterface?, which: Int ->
+                        dialog?.dismiss()
+                    })
+                    .attachAlphaSlideBar(false)
+                    .show()
+            }
+
+            val backgroundColorPickerButton: Button = viewSelf!!.findViewById(R.id.background_color_picker_button)
+
+            backgroundColorPickerButton.setBackgroundColor(Color.parseColor(colorBackground))
+
+            backgroundColorPickerButton.setOnClickListener {
+                ColorPickerDialog.Builder(context)
+                    .setPositiveButton("Select", ColorEnvelopeListener{ envelope: ColorEnvelope, fromUser: Boolean ->
+                        colorBackground = "#"+envelope.hexCode
+                        backgroundColorPickerButton.setBackgroundColor(Color.parseColor(colorBackground))
+                    })
+                    .setNegativeButton("Cancel", DialogInterface.OnClickListener{ dialog: DialogInterface?, which: Int ->
+                        dialog?.dismiss()
+                    })
+                    .attachAlphaSlideBar(false)
+                    .show()
+            }
+
+            styleType = shape?.shapeStyle!!.borderStyle
+
+            val radioFull: RadioButton = viewSelf!!.findViewById(R.id.radio_full)
+            val radioDotted: RadioButton = viewSelf!!.findViewById(R.id.radio_dotted)
+            radioFull.isChecked = styleType == 0
+            radioDotted.isChecked = styleType != 0
+            radioFull.setOnClickListener { _->
+                styleType = 0
+            }
+            radioDotted.setOnClickListener { _->
+                styleType = 1
             }
 
 
@@ -76,22 +105,12 @@ class EditBasicElementDialogFragment: DialogFragment(), AdapterView.OnItemSelect
     private fun close(){
         val nameText : EditText = viewSelf!!.findViewById(R.id.name_text)
         shape?.name =  nameText.text.toString()
-        shape?.shapeStyle!!.borderColor = color
-        Log.d("BasicElemColor",color)
+        shape?.shapeStyle!!.borderColor = colorBorder
+        shape?.shapeStyle!!.backgroundColor = colorBackground
+        shape?.shapeStyle!!.borderStyle = styleType
 
         SyncShapeHolder.getInstance().drawingActivity!!.syncLayoutFromCanevas()
-    }
 
-    private fun setAdapter(spinner: Spinner, array: Int){
-        ArrayAdapter.createFromResource(
-            activity,
-            array,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
-            spinner.adapter = adapter
-        }
+        ViewShapeHolder.getInstance().map.inverse()[shape?.id]?.emitUpdate()
     }
 }

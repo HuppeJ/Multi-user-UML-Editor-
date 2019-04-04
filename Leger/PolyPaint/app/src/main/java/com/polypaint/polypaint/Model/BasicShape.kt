@@ -7,7 +7,7 @@ import java.io.Serializable
 import java.util.*
 
 
-open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var linksTo: ArrayList<String?>, var linksFrom: ArrayList<String?>) : Serializable {
+open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var linksTo: ArrayList<String?>, var linksFrom: ArrayList<String?>) : Serializable, DrawingElement(id) {
 //    private var inflater : LayoutInflater? = null
 
     init {
@@ -19,6 +19,6 @@ open class BasicShape (var id: String, var type: Int, var name: String, var shap
 //        val viewToAdd = inflater!!.inflate(R.layout.basic_element, null)
 //        mBasicElem.addView(viewToAdd,mBasicElem.childCount - 1)
     }
-    fun copy(id: String = this.id, type: Int = this.type, name: String = this.name, shapeStyle: ShapeStyle = this.shapeStyle.copy(), linksTo: ArrayList<String?> = ArrayList<String?>(), linksFrom: ArrayList<String?> = ArrayList<String?>()) = BasicShape(id,type,name, shapeStyle, linksTo,linksFrom)
+    fun copy(id: String = this.id, type: Int = this.type, name: String = this.name, shapeStyle: ShapeStyle = this.shapeStyle.copy(), linksTo: ArrayList<String?> = ArrayList(), linksFrom: ArrayList<String?> = ArrayList()) = BasicShape(id, type, name, shapeStyle, linksTo, linksFrom)
 
 }

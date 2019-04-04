@@ -32,7 +32,6 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
     var initialHeight: Double = 0.0
     var initialWidth: Double = 0.0
     var initialPath: ArrayList<Coordinates> = ArrayList()
-    var newPath: ArrayList<Coordinates> = ArrayList()
 
     init {
         paint.color = Color.DKGRAY
@@ -107,7 +106,6 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
                     initialWidth = rect.width().toDouble()
                     if (link != null) {
                         initialPath = link.path.clone() as ArrayList<Coordinates>
-                        newPath = link.path.clone() as ArrayList<Coordinates>
                     }
 
 

@@ -10,5 +10,5 @@ class ShapeStyle (var coordinates: Coordinates, var width: Double, var height: D
              rotation: Double = this.rotation,
              borderColor: String = this.borderColor,
              borderStyle: Int = this.borderStyle,
-             backgroundColor: String = this.backgroundColor) = ShapeStyle(coordinates,width, height, rotation,borderColor,borderStyle,backgroundColor)
+             backgroundColor: String = this.backgroundColor) = ShapeStyle(coordinates, width, height, rotation, borderColor, borderStyle, backgroundColor)
 }
