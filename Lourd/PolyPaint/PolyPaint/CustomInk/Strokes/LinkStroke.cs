@@ -6,6 +6,7 @@ using PolyPaint.Enums;
 using System.Windows;
 using System.Windows.Ink;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk.Strokes
 {
@@ -404,14 +405,22 @@ namespace PolyPaint.CustomInk.Strokes
         internal int GetIndexforNewPoint(Point point)
         {
             int index = 0;
-            Rect rect;
-            RectangleGeometry rectGeometry = new RectangleGeometry();
+            LineGeometry pathGeom;
 
             for (int i = 0; i < path.Count - 1 && index == 0; i++)
             {
-                rect = new Rect(path[i].ToPoint(), path[i + 1].ToPoint());
-                rectGeometry.Rect = rect;
-                if (rectGeometry.FillContains(point))
+                pathGeom = new LineGeometry(path[i].ToPoint(), path[i+1].ToPoint());
+
+                double tolerance = 4;
+                if (style.thickness == 0)
+                {
+                    tolerance = 2;
+                } else if (style.thickness == 1)
+                {
+                    tolerance = 3;
+                }
+
+                if (pathGeom.FillContains(point, tolerance, ToleranceType.Absolute))
                 {
                     index = i + 1;
                 }

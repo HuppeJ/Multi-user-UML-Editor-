@@ -30,6 +30,7 @@ namespace PolyPaint.Services
         public static event Action BackToGallery;
         public static event Action SaveCanvas;
         public static event Action RefreshChildren;
+        public static event Action ReintializeCanvas;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -82,7 +83,10 @@ namespace PolyPaint.Services
             socket.On("canvasPasswordUpdated", (data) =>
             {
                 LeaveCanvas();
-                Application.Current.Dispatcher.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
+                if (Application.Current != null)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
+                }
             });
 
             socket.On("joinCanvasRoomResponse", (data) =>
@@ -92,14 +96,16 @@ namespace PolyPaint.Services
                 {
                     canvasName = response.canvasName;
                 }
-
-                Application.Current.Dispatcher.Invoke(new Action(() => { JoinCanvasRoom(response); }), DispatcherPriority.Render);
+                if (Application.Current != null)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => { JoinCanvasRoom(response); }), DispatcherPriority.Render);
+                }
             });
 
             socket.On("canvasResized", (data) =>
             {
                 ResizeCanevasData response = serializer.Deserialize<ResizeCanevasData>((string)data);
-                if (!username.Equals((string)response.username))
+                if (!username.Equals((string)response.username) && Application.Current != null)
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() => { OnResizeCanvas(response.dimensions); }), DispatcherPriority.Render);
                 }
@@ -111,7 +117,10 @@ namespace PolyPaint.Services
 
                 ExtractCanvasesShapes(canvases.publicCanvas);
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePublicCanvases(canvases); }), DispatcherPriority.Render);
+                if(Application.Current != null)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePublicCanvases(canvases); }), DispatcherPriority.Render);
+                }
             });
 
             socket.On("getPrivateCanvasResponse", (data) =>
@@ -119,8 +128,18 @@ namespace PolyPaint.Services
                 PrivateCanvases canvases = serializer.Deserialize<PrivateCanvases>((string)data);
 
                 ExtractCanvasesShapes(canvases.privateCanvas);
+                if (Application.Current != null)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePrivateCanvases(canvases); }), DispatcherPriority.Render);
+                }
+            });
 
-                Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePrivateCanvases(canvases); }), DispatcherPriority.Render);
+            socket.On("canvasReinitialized", (data) =>
+            {
+                if (Application.Current != null)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => { ReintializeCanvas(); }), DispatcherPriority.Render);
+                }
             });
             #endregion
 
@@ -293,6 +312,8 @@ namespace PolyPaint.Services
         public static void CreateCanvas(Templates.Canvas canvas)
         {
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
+            editCanevasData.canevas.dimensions.x *= 2.1;
+            editCanevasData.canevas.dimensions.y *= 2.1;
             currentCanvas = canvas;
             socket.Emit("createCanvas", serializer.Serialize(editCanevasData));
         }

@@ -57,9 +57,9 @@ namespace PolyPaint.CustomInk
             visualChildren = new VisualCollection(this);
             foreach (Thumb anchor in anchors)
             {
-                anchor.Cursor = Cursors.Hand;
-                anchor.Width = 10;
-                anchor.Height = 10;
+                anchor.Cursor = Cursors.ScrollAll;
+                anchor.Width = 6;
+                anchor.Height = 6;
                 anchor.Background = Brushes.Black;
 
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);

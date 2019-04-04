@@ -57,7 +57,7 @@
                       ShowDropDownButton="False"
                       ShowRecentColors="True"
                       BorderBrush="#80000000"
-                      Margin="5,0,0,0" Width="39" Height="38"
+                      Margin="0,0,0,0" Width="20" Height="20"
                       SelectedColor="{Binding SelectedColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       AvailableColorsHeader="Palette"
                       StandardColorsHeader="Base colors"

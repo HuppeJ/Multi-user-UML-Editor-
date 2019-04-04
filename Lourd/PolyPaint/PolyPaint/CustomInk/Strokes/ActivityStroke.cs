@@ -20,8 +20,8 @@ namespace PolyPaint.CustomInk
 
         public ActivityStroke(StylusPointCollection pts) : base(pts)
         {
-            shapeStyle.width = 50;
-            shapeStyle.height = 30;
+            shapeStyle.width = 80;
+            shapeStyle.height = 80;
             shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());
 
             UpdateShapePoints();
