@@ -52,16 +52,7 @@ namespace PolyPaint.CustomInk
 
         public override Rect GetBounds()
         {
-            double width = shapeStyle.width;
-            double height = shapeStyle.height;
-
-            Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
-                width, height);
-
-            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
-            rect.Transform(rotationTransform.Value);
-
-            return rect;
+            return Rect.Empty;
         }
 
         public override Rect GetCustomBound()

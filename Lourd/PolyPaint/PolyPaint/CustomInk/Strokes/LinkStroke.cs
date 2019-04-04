@@ -30,6 +30,7 @@ namespace PolyPaint.CustomInk.Strokes
             this.linkType = link.type;
             this.style = link.style;
             this.path = link.path;
+            rotation = 0;
 
             // dotted
             if (style.type == 1)
@@ -477,8 +478,8 @@ namespace PolyPaint.CustomInk.Strokes
 
         public override void updatePosition(Rect newRect)
         {
-            double diffX = newRect.X - GetBounds().X;
-            double diffY = newRect.Y - GetBounds().Y;
+            double diffX = newRect.X - GetStraightBounds().X;
+            double diffY = newRect.Y - GetStraightBounds().Y;
 
             for(int i=0; i<path.Count; i++)
             {
@@ -490,7 +491,7 @@ namespace PolyPaint.CustomInk.Strokes
         public void updatePositionResizeNotAttached(Rect newRect)
         {
             double[] limits = GetMaxAndMin();
-            Rect oldRect = GetBounds();
+            Rect oldRect = GetStraightBounds();
             double widthRatio = newRect.Width / oldRect.Width;
             double heightRatio = newRect.Height / oldRect.Height;
             foreach (Coordinates point in path)
@@ -512,7 +513,7 @@ namespace PolyPaint.CustomInk.Strokes
             return new Link(guid.ToString(), name, fromForComm, toForComm, linkType, style, newPath);
         }
 
-        public override Rect GetBounds()
+        public override Rect GetStraightBounds()
         {
             double[] bounds = GetMaxAndMin();
 
@@ -520,7 +521,12 @@ namespace PolyPaint.CustomInk.Strokes
                 new Point(bounds[(int)LIMITS.MAXX], bounds[(int)LIMITS.MAXY]));
         }
 
-        private double[] GetMaxAndMin()
+        public override Rect GetBounds()
+        {
+            return Rect.Empty;
+        }
+
+        public double[] GetMaxAndMin()
         {
             double maxX = -999999999;
             double maxY = -999999999;
@@ -550,7 +556,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         internal override bool HitTestPoint(Point point)
         {
-            return HitTest(point);
+            return GetGeometry().FillContains(point);
         }
 
         internal override bool HitTestPointIncludingEdition(Point point)
@@ -561,7 +567,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         public override Rect GetEditingBounds()
         {
-            Rect bounds = GetBounds();
+            Rect bounds = GetStraightBounds();
             double minX = Math.Min(Math.Min(Math.Min(bounds.TopLeft.X, bounds.TopRight.X), bounds.BottomLeft.X), bounds.BottomRight.X);
             double maxX = Math.Max(Math.Max(Math.Max(bounds.TopLeft.X, bounds.TopRight.X), bounds.BottomLeft.X), bounds.BottomRight.X);
             double minY = Math.Min(Math.Min(Math.Min(bounds.TopLeft.Y, bounds.TopRight.Y), bounds.BottomLeft.Y), bounds.BottomRight.Y);
@@ -569,6 +575,23 @@ namespace PolyPaint.CustomInk.Strokes
 
             bounds = new Rect(new Point(minX - 15, minY - 15), new Point(maxX + 15, maxY + 15));
             return bounds;
+        }
+
+        public override Point GetCenter()
+        {
+            Rect strokeBounds = GetStraightBounds();
+
+            Point leftTopPoint = GetTheLeftTopPoint();
+            Point rightBottomPoint = GetTheRightBottomPoint();
+            Point center = new Point(strokeBounds.X + strokeBounds.Width / 2, strokeBounds.Y + strokeBounds.Height / 2);
+            //new Point((leftTopPoint.X + rightBottomPoint.X) /2, (leftTopPoint.Y + rightBottomPoint.Y) / 2);
+
+            return center;
+        }
+
+        public override Rect GetCustomBound()
+        {
+            return GetStraightBounds();
         }
     }
 }

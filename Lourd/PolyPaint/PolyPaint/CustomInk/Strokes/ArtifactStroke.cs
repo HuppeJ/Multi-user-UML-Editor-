@@ -76,7 +76,7 @@ namespace PolyPaint.CustomInk
             FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface("Arial"), 12, Brushes.Black);
 
-            formattedText.MaxTextWidth = shapeStyle.width / WIDTH;
+            formattedText.MaxTextWidth = shapeStyle.width;
             formattedText.TextAlignment = TextAlignment.Center;
             formattedText.MaxTextHeight = 100;
 
@@ -85,16 +85,7 @@ namespace PolyPaint.CustomInk
 
         public override Rect GetBounds()
         {
-            double width = shapeStyle.width;
-            double height = shapeStyle.height;
-
-            Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
-                width, height);
-
-            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
-            rect.Transform(rotationTransform.Value);
-
-            return rect;
+            return Rect.Empty;
         }
 
         public override Rect GetCustomBound()

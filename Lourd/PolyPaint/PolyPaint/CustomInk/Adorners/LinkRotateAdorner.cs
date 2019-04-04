@@ -43,7 +43,7 @@ namespace PolyPaint.CustomInk
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = strokeToRotate.GetBounds();
+            strokeBounds = strokeToRotate.GetCustomBound();
             center = linkStroke.GetCenter();
             lastAngle = linkStroke.rotation;
 

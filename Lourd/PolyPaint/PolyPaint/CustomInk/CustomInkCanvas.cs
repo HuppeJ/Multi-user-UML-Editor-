@@ -445,7 +445,7 @@ namespace PolyPaint.CustomInk
             RefreshChildren();
         }
 
-        public void ResizeShape(ShapeStroke shape, RectangleGeometry NewRectangle, RectangleGeometry OldRectangle)
+        public void ResizeShape(CustomStroke stroke, RectangleGeometry NewRectangle, RectangleGeometry OldRectangle)
         {
             StrokeCollection strokes = GetSelectedStrokes();
             Point newCenter = new Point((NewRectangle.Bounds.Right - NewRectangle.Bounds.Left)/2 + NewRectangle.Bounds.Left,
@@ -453,17 +453,73 @@ namespace PolyPaint.CustomInk
 
             double heightRatio = NewRectangle.Rect.Height / OldRectangle.Rect.Height;
             double widthRatio = NewRectangle.Rect.Width / OldRectangle.Rect.Width;
+            if (stroke is ShapeStroke)
+            {
+                (stroke as ShapeStroke).shapeStyle.width *= widthRatio;
+                (stroke as ShapeStroke).shapeStyle.height *= heightRatio;
+                (stroke as ShapeStroke).shapeStyle.coordinates.x = newCenter.X - NewRectangle.Rect.Width / 2;
+                (stroke as ShapeStroke).shapeStyle.coordinates.y = newCenter.Y - NewRectangle.Rect.Height / 2;
+            } else
+            {
+                LinkStroke linkStroke = stroke as LinkStroke;
 
-            shape.shapeStyle.width *= widthRatio;
-            shape.shapeStyle.height *= heightRatio;
-            shape.shapeStyle.coordinates.x = newCenter.X - NewRectangle.Rect.Width  / 2;
-            shape.shapeStyle.coordinates.y = newCenter.Y - NewRectangle.Rect.Height / 2;
+                if (!linkStroke.isAttached())
+                {
+                    linkStroke.updatePositionResizeNotAttached(NewRectangle.Rect);
+                    linkStroke.addStylusPointsToLink();
+                }
+            }
 
-            Stroke newStroke = shape.Clone();
+            Stroke newStroke = stroke.Clone();
             StrokeCollection newStrokes = new StrokeCollection { newStroke };
-            ReplaceStrokes(shape, newStrokes);
+            ReplaceStrokes(stroke, newStrokes);
 
             Select(new StrokeCollection { newStroke });
+        }
+
+        public void MoveShape(double xOffset, double yOffset)
+        {
+            StrokeCollection strokes = GetSelectedStrokes();
+            StrokeCollection newStrokes = new StrokeCollection();
+            foreach (CustomStroke stroke in strokes)
+            {
+                if (stroke is ShapeStroke)
+                {
+                    (stroke as ShapeStroke).shapeStyle.coordinates.x += xOffset;
+                    (stroke as ShapeStroke).shapeStyle.coordinates.y += yOffset;
+                    Stroke newStroke = stroke.Clone();
+                    newStrokes.Add(newStroke);
+                    ReplaceStrokes(stroke, new StrokeCollection { newStroke });
+                }
+                else
+                {
+                    LinkStroke linkStroke = stroke as LinkStroke;
+                    for (int i = 0; i < linkStroke.path.Count; i++)
+                    {
+                        if (i == 0 && linkStroke.isAttached() && linkStroke.from?.formId != null)
+                        {
+                            if (!SelectedStrokes.Contains(StrokesDictionary[linkStroke.from.formId]))
+                            {
+                                continue;
+                            }
+                        }
+                        if (i == linkStroke.path.Count - 1 && linkStroke.isAttached() && linkStroke.to?.formId != null)
+                        {
+                            if (!SelectedStrokes.Contains(StrokesDictionary[linkStroke.to.formId]))
+                            {
+                                continue;
+                            }
+                        }
+                        Coordinates coords = (stroke as LinkStroke).path[i];
+                        coords.x += xOffset;
+                        coords.y += yOffset;
+                    }
+                    linkStroke.addStylusPointsToLink();
+
+                    newStrokes.Add(linkStroke);
+                }
+            }
+            Select(newStrokes);
         }
 
         protected override void OnSelectionResized(EventArgs e)
@@ -922,8 +978,9 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke selectedStroke in GetSelectedStrokes())
             {
                 selectedStrokes.Add(selectedStroke);
-                addAdorners(selectedStroke);
             }
+
+            addAdorners(selectedStrokes);
 
             foreach (string strokeId in DrawingService.remoteSelectedStrokes)
             {
@@ -952,37 +1009,51 @@ namespace PolyPaint.CustomInk
             }
         }
 
-        private void addAdorners(CustomStroke selectedStroke)
+        private void addAdorners(StrokeCollection selectedStrokes)
         {
-            Path path = new Path();
-            path.Data = selectedStroke.GetGeometry();
-
-            Children.Add(path);
-            AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-
-            if (!selectedStroke.isLinkStroke())
+            if (selectedStrokes.Count > 1)
             {
-                if (GetSelectedStrokes().Count == 1)
-                {
-                    myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
-                    myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
-                    myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
-                }
-                myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
-                /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
-                {
-                    myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
-                }*/
-            } else
-            {
-                if(!(selectedStroke as LinkStroke).isAttached() && GetSelectedStrokes().Count == 1)
-                {
-                    myAdornerLayer.Add(new LinkRotateAdorner(path, selectedStroke as LinkStroke, this));
-                }
-                myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
-                myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                Path path = new Path();
+                path.Data = selectedStrokes[0].GetGeometry();
+
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                myAdornerLayer.Add(new SelectionMultipleAdorner(path, selectedStrokes, this));
             }
+            foreach (CustomStroke selectedStroke in selectedStrokes)
+            {
+                Path path = new Path();
+                path.Data = selectedStroke.GetGeometry();
 
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                if (!selectedStroke.isLinkStroke())
+                {
+                    if (GetSelectedStrokes().Count == 1)
+                    {
+                        myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
+                        myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                        myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                    }
+                    myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+                    /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
+                    {
+                        myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
+                    }*/
+                }
+                else
+                {
+                    if (GetSelectedStrokes().Count == 1)
+                    {
+                        if (!(selectedStroke as LinkStroke).isAttached()) {
+                            myAdornerLayer.Add(new LinkRotateAdorner(path, selectedStroke as LinkStroke, this));
+                        }
+                        myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
+                    }
+                    myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
+                    myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                }
+            }
         }
 
         private void AddRemoteSelectionAdorner(CustomStroke stroke)

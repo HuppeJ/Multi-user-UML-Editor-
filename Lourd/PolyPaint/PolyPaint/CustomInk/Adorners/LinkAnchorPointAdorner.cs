@@ -45,7 +45,7 @@ namespace PolyPaint.CustomInk
             canvas = actualCanvas;
             linkStrokeAnchor = this.linkStroke.path.Count;
 
-            strokeBounds = linkStroke.GetBounds();
+            strokeBounds = linkStroke.GetStraightBounds();
             center = this.linkStroke.GetCenter();
 
             anchors = new List<Thumb>();
@@ -68,8 +68,6 @@ namespace PolyPaint.CustomInk
 
                 visualChildren.Add(anchor);
             }
-
-            strokeBounds = linkStroke.GetBounds();
         }
 
         protected override Size ArrangeOverride(Size finalSize)
