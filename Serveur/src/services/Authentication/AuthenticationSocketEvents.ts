@@ -48,14 +48,6 @@ export default class AuthenticationSocketEvents {
                 }
             });
             
-            socket.on("disconnect", function () {
-                if (userAccountManager.disconnectUser(socket.id)) {
-                    console.log(socket.id + " disconnected its user");
-                } else {
-                    console.log(socket.id + " failed to disconnect its user");
-                }
-                console.log("Socket " + socket.id + " disconnected");
-            });
         })
     }   
 };

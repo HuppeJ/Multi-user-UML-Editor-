@@ -4,7 +4,7 @@ import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasManager {
-    private canvasRooms: Map<string, CanvasRoom>; // [key: canvasRoomId, value: canvasRoom]
+    public canvasRooms: Map<string, CanvasRoom>; // [key: canvasRoomId, value: canvasRoom]
 
     constructor() {
         this.canvasRooms = new Map<string, CanvasRoom>();
@@ -12,6 +12,10 @@ export default class CanvasManager {
 
     public getCanvasRoomIdFromName(canvasName: string): string {
         return `${CANVAS_ROOM_ID}_${canvasName}`;
+    }
+
+    public getNameFromCanvasRoomId(canvasRoomId: string): string {
+        return this.canvasRooms.get(canvasRoomId).canvas.name;
     }
 
     public resetServerState(): boolean {
@@ -106,7 +110,7 @@ export default class CanvasManager {
     }
 
     // TODO : Non utilisée et Fonction pas testée... 
-    public getCanvasRoomFromSocketId(unsername: any): string {
+    public getCanvasRoomFromUsername(unsername: any): string {
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
             if (canvasRoom.hasUser(unsername)) {
                 return canvasRoomId;
