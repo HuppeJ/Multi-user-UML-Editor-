@@ -362,6 +362,22 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region OfflineModeCommand
+        private ICommand _offlineModeCommand;
+        public ICommand OfflineModeCommand
+        {
+            get
+            {
+                return _offlineModeCommand ?? (_offlineModeCommand = new RelayCommand<Object>(OfflineMode));
+            }
+        }
+
+        private void OfflineMode(object o)
+        {
+            UserMode = UserModes.Offline;
+        }
+        #endregion
+
         #region DrawingHistoryViewCommand
         private ICommand _drawingHistoryViewCommand;
         public ICommand DrawingHistoryViewCommand

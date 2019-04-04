@@ -12,7 +12,8 @@ namespace PolyPaint.Enums
         CreateUser,
         Gallery,
         Drawing,
-        History
+        History,
+        Offline
     }
 
     public enum StrokeTypes

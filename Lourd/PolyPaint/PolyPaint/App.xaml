@@ -62,6 +62,9 @@
                     <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.History}">
                         <Setter Property="ContentTemplate" Value="{StaticResource DrawingHistoryTemplate}"/>
                     </DataTrigger>
+                    <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.Offline}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource DrawingTemplate}"/>
+                    </DataTrigger>
                 </Style.Triggers>
             </Style>
 
