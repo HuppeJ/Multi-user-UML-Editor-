@@ -3,7 +3,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-                android:background="#ddd">
+                android:background="#403196f3">
 
     <ImageView android:layout_width="wrap_content"
                android:layout_height="wrap_content"
@@ -25,6 +25,8 @@
               android:layout_marginLeft="10dp"
               android:layout_marginTop="10dp"
               android:layout_marginStart="10dp"
+              android:textColor="#000"
+              android:textSize="12dp"
     />
 
     <ImageView android:layout_width="match_parent"
