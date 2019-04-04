@@ -616,6 +616,7 @@ namespace PolyPaint.CustomInk
             return customStroke;
         }
 
+        // GIII
         private void AddTextBox(CustomStroke stroke)
         {
             Path path = new Path();
@@ -841,7 +842,21 @@ namespace PolyPaint.CustomInk
                         }
                     }
                 }
+
+                foreach (CustomStroke stroke2 in Strokes)
+                {
+                    if (stroke.guid.Equals(stroke2.guid))
+                    {
+                        int index = Strokes.IndexOf(stroke2);
+                        Strokes.RemoveAt(index);
+                        Strokes.Insert(index, stroke);
+                        break;
+                    }
+                }
             }
+
+            Select(selectedStrokes);
+
             RefreshLinks(true);
             RefreshChildren();
             DrawingService.UpdateShapes(selectedStrokes);
@@ -892,7 +907,7 @@ namespace PolyPaint.CustomInk
                     }
                 }
             }
-            // Add text boxes (names) to all strokes. And add dotted path if linkStroke is dotted
+            // Add text boxes (names) to link strokes. And add dotted path if linkStroke is dotted
             foreach (CustomStroke stroke in Strokes)
             {
                 AddTextBox(stroke);
