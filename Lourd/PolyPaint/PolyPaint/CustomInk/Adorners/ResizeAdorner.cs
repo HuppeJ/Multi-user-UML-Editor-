@@ -27,6 +27,7 @@ namespace PolyPaint.CustomInk
 
         public CustomInkCanvas canvas;
 
+        RotateTransform rotationPreview;
         RotateTransform rotation;
 
         private Path resizePreview;
@@ -44,15 +45,6 @@ namespace PolyPaint.CustomInk
             visualChildren = new VisualCollection(this);
 
             strokeBounds = customStroke.GetCustomBound();
-            moveThumb = new Thumb();
-            moveThumb.Cursor = Cursors.SizeAll;
-            moveThumb.Height = strokeBounds.Height + 10;
-            moveThumb.Width = strokeBounds.Width + 10;
-            moveThumb.Background = Brushes.Transparent;
-            moveThumb.DragDelta += new DragDeltaEventHandler(Move_DragDelta);
-            moveThumb.DragCompleted += new DragCompletedEventHandler(Move_DragCompleted);
-
-            visualChildren.Add(moveThumb);
 
             resizePreview = new Path();
             resizePreview.Stroke = Brushes.Gray;
@@ -80,8 +72,20 @@ namespace PolyPaint.CustomInk
             rect.Y -= 5;
             rect.Width += 10;
             rect.Height += 10;
-            outerBoundPath.Data = new RectangleGeometry(rect);
+            outerBoundPath.Data = new RectangleGeometry(rect, 0, 0, rotation);
             visualChildren.Add(outerBoundPath);
+
+            moveThumb = new Thumb();
+            moveThumb.Cursor = Cursors.SizeAll;
+            moveThumb.Height = strokeBounds.Height + 10;
+            moveThumb.Width = strokeBounds.Width + 10;
+            moveThumb.Background = Brushes.Transparent;
+            moveThumb.DragDelta += new DragDeltaEventHandler(Move_DragDelta);
+            moveThumb.DragCompleted += new DragCompletedEventHandler(Move_DragCompleted);
+            moveThumb.DragStarted += new DragStartedEventHandler(All_DragStarted);
+            moveThumb.RenderTransform = new RotateTransform(rotation.Angle, moveThumb.Width / 2, moveThumb.Height / 2); ;
+
+            visualChildren.Add(moveThumb);
 
             unitX = rotation.Value.Transform(unitX);
             unitY = rotation.Value.Transform(unitY);
@@ -575,7 +579,7 @@ namespace PolyPaint.CustomInk
                 index++;
             }
 
-            
+            rotationPreview = rotation.Clone();
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -643,8 +647,7 @@ namespace PolyPaint.CustomInk
             cheatAnchors[anchorNumber].Arrange(handleRect);
         }
 
-        void All_DragStarted(object sender,
-                                        DragStartedEventArgs e)
+        void All_DragStarted(object sender, DragStartedEventArgs e)
         {
             Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
                                       shapeStroke.GetCustomBound().Y, 
@@ -689,7 +692,7 @@ namespace PolyPaint.CustomInk
 
             visualChildren.Remove(resizePreview);
 
-            canvas.MoveShape(e.HorizontalChange, e.VerticalChange);
+            canvas.MoveShape(NewRectangle.Rect.X - OldRectangle.Rect.X, NewRectangle.Rect.Y - OldRectangle.Rect.Y);
 
             canvas.RefreshLinks(false);
             canvas.RefreshChildren();
@@ -702,7 +705,7 @@ namespace PolyPaint.CustomInk
         #region DragDelta
         private void generatePreview(Rect rectangle)
         {
-            NewRectangle = new RectangleGeometry(rectangle, 0, 0, rotation);
+            NewRectangle = new RectangleGeometry(rectangle, 0, 0, rotationPreview);
             resizePreview.Data = NewRectangle;
             resizePreview.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
         }
@@ -719,10 +722,15 @@ namespace PolyPaint.CustomInk
 
         void Move_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (e.HorizontalChange != 0 || e.VerticalChange != 0)
+            Vector dragVect = new Vector(e.HorizontalChange, e.VerticalChange);
+            dragVect = rotation.Value.Transform(dragVect);
+
+            if (dragVect.X != 0 || dragVect.Y != 0)
             {
-                Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + e.HorizontalChange,
-                                          shapeStroke.GetCustomBound().Y + e.VerticalChange,
+                rotationPreview.CenterX = shapeStroke.GetCenter().X + dragVect.X;
+                rotationPreview.CenterY = shapeStroke.GetCenter().Y + dragVect.Y;
+                Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + dragVect.X,
+                                          shapeStroke.GetCustomBound().Y + dragVect.Y,
                                           shapeStroke.GetCustomBound().Width,
                                           shapeStroke.GetCustomBound().Height);
                 generatePreview(rectangle);

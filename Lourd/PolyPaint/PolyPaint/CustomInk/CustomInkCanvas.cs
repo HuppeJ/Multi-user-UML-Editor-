@@ -469,8 +469,8 @@ namespace PolyPaint.CustomInk
             {
                 if(stroke is ShapeStroke)
                 {
-                    (stroke as ShapeStroke).shapeStyle.coordinates.x += xOffset / CustomStroke.WIDTH;
-                    (stroke as ShapeStroke).shapeStyle.coordinates.y += yOffset / CustomStroke.HEIGHT;
+                    (stroke as ShapeStroke).shapeStyle.coordinates.x += xOffset;
+                    (stroke as ShapeStroke).shapeStyle.coordinates.y += yOffset;
                     Stroke newStroke = stroke.Clone();
                     newStrokes.Add(newStroke);
                     ReplaceStrokes(stroke, new StrokeCollection { newStroke });
@@ -818,8 +818,9 @@ namespace PolyPaint.CustomInk
             foreach (CustomStroke selectedStroke in GetSelectedStrokes())
             {
                 selectedStrokes.Add(selectedStroke);
-                addAdorners(selectedStroke);
             }
+
+            addAdorners(selectedStrokes);
 
             foreach (string strokeId in DrawingService.remoteSelectedStrokes)
             {
@@ -848,37 +849,48 @@ namespace PolyPaint.CustomInk
             }
         }
 
-        private void addAdorners(CustomStroke selectedStroke)
+        private void addAdorners(StrokeCollection selectedStrokes)
         {
-            Path path = new Path();
-            path.Data = selectedStroke.GetGeometry();
-
-            Children.Add(path);
-            AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-
-            if (!selectedStroke.isLinkStroke())
+            if (selectedStrokes.Count > 1)
             {
-                if (GetSelectedStrokes().Count == 1)
-                {
-                    myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
-                    myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
-                    myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
-                }
-                myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
-                /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
-                {
-                    myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
-                }*/
-            } else
-            {
-                if(!(selectedStroke as LinkStroke).isAttached() && GetSelectedStrokes().Count == 1)
-                {
-                    myAdornerLayer.Add(new LinkRotateAdorner(path, selectedStroke as LinkStroke, this));
-                }
-                myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
-                myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                Path path = new Path();
+                path.Data = selectedStrokes[0].GetGeometry();
+
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                myAdornerLayer.Add(new SelectionMultipleAdorner(path, selectedStrokes, this));
             }
+            foreach (CustomStroke selectedStroke in selectedStrokes)
+            {
+                Path path = new Path();
+                path.Data = selectedStroke.GetGeometry();
 
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                if (!selectedStroke.isLinkStroke())
+                {
+                    if (GetSelectedStrokes().Count == 1)
+                    {
+                        myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
+                        myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                        myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                    }
+                    myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+                    /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
+                    {
+                        myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
+                    }*/
+                }
+                else
+                {
+                    if (!(selectedStroke as LinkStroke).isAttached() && GetSelectedStrokes().Count == 1)
+                    {
+                        myAdornerLayer.Add(new LinkRotateAdorner(path, selectedStroke as LinkStroke, this));
+                    }
+                    myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
+                    myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                }
+            }
         }
 
         private void AddRemoteSelectionAdorner(CustomStroke stroke)
