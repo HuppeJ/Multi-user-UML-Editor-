@@ -22,8 +22,8 @@ import kotlinx.android.synthetic.main.view_image_element.view.*
 
 
 class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementView(context) {
-    override var mMinimumWidth : Float = 140F
-    override var mMinimumHeight : Float = 200F
+    override var mMinimumWidth : Float = 84F
+    override var mMinimumHeight : Float = 84F
     private var shapeType : ShapeTypes? = shapeType
     private var imgBackground : ImageView? = null
     private var imgBackgroundBack : ImageView? = null

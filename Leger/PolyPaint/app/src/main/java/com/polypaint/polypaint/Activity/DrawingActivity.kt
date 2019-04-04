@@ -62,7 +62,7 @@ class DrawingActivity : AppCompatActivity(){
     var mMinimumHeight : Float = 450F
     var mMaximumWidth : Float = 1680F
     var mMaximumHeight : Float = 1155F
-    val shapeOffset: Float = 65F
+    val shapeOffset: Float = 61F
 
     var lassoView: LassoView? = null
 
@@ -390,34 +390,34 @@ class DrawingActivity : AppCompatActivity(){
         when (shapeType) {
             ShapeTypes.DEFAULT -> {}
             ShapeTypes.CLASS_SHAPE -> {
-                shapeStyle.width = 300.0
-                shapeStyle.height = 340.0
+                shapeStyle.width = 168.0
+                shapeStyle.height = 189.0
                 shape = ClassShape(UUID.randomUUID().toString(), shapeType.value(), "classShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>(),ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.ARTIFACT -> {
-                shapeStyle.width = 140.0
-                shapeStyle.height = 200.0
-                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "artefactShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+                shapeStyle.width = 168.0
+                shapeStyle.height = 168.0
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Artifact", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.ACTIVITY -> {
-                shapeStyle.width = 140.0
-                shapeStyle.height = 200.0
-                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "activityShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+                shapeStyle.width = 168.0
+                shapeStyle.height = 168.0
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Activity", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.ROLE -> {
-                shapeStyle.width = 140.0
-                shapeStyle.height = 200.0
-                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "roleShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+                shapeStyle.width = 168.0
+                shapeStyle.height = 168.0
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Actor", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.COMMENT -> {
-                shapeStyle.width = 400.0
-                shapeStyle.height = 120.0
-                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "commentShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+                shapeStyle.width = 189.0
+                shapeStyle.height = 189.0
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Comment", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.PHASE -> {
-                shapeStyle.width = 400.0
-                shapeStyle.height = 120.0
-                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "phaseShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+                shapeStyle.width = 189.0
+                shapeStyle.height = 189.0
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Phase", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
         }
 

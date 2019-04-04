@@ -3,9 +3,9 @@
 
     <string-array name="link_types_array">
         <item>Line</item>
-        <item>Heritage</item>
         <item>One way association</item>
         <item>Two way association</item>
+        <item>Heritage</item>
         <item>Aggregation</item>
         <item>Composition</item>
     </string-array>
