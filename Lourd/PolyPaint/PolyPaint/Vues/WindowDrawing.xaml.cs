@@ -83,9 +83,9 @@ namespace PolyPaint.Vues
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
         }
 
-        private void AlignLeft(object sender, RoutedEventArgs e) => surfaceDessin.AlignLeft();
+        public void AlignLeft() => surfaceDessin.AlignLeft();
 
-        private void AlignCenter(object sender, RoutedEventArgs e) => surfaceDessin.AlignCenter();
+        public void AlignCenter() => surfaceDessin.AlignCenter();
 
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 

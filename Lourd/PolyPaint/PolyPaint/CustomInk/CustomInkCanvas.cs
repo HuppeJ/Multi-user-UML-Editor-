@@ -851,17 +851,28 @@ namespace PolyPaint.CustomInk
         #region Align
         internal void AlignLeft()
         {
-            Rect selectionBounds = GetSelectionBounds();
-
-            double leftMostX = selectionBounds.X;
+            double leftMostX = 99999999;
+            foreach (CustomStroke stroke in GetSelectedStrokes())
+            {
+                if (stroke.GetEditingBounds().X < leftMostX)
+                    leftMostX = stroke.GetEditingBounds().X;
+            }
+            
             Align(leftMostX, false);
         }
 
         internal void AlignCenter()
         {
-            Rect selectionBounds = GetSelectionBounds();
-
-            double centerX = selectionBounds.X + selectionBounds.Width/2;
+            double minX = 99999999;
+            double maxX = -99999999;
+            foreach (CustomStroke stroke in GetSelectedStrokes())
+            {
+                if (stroke.GetEditingBounds().X < minX)
+                    minX = stroke.GetEditingBounds().X;
+                if (stroke.GetEditingBounds().Right > maxX)
+                    maxX = stroke.GetEditingBounds().Right;
+            }
+            double centerX = minX + (maxX - minX) / 2;
             Align(centerX, true);
         }
 
@@ -872,11 +883,11 @@ namespace PolyPaint.CustomInk
             // faire pour les liens egalement
             foreach (CustomStroke stroke in selectedStrokes)
             {
-                double xDiff = xToAlignTo - stroke.GetStraightBounds().X;
+                double xDiff = xToAlignTo - stroke.GetEditingBounds().X;
 
                 if (isAlignCenter)
                 {
-                    xDiff -= stroke.GetStraightBounds().Width / 2;
+                    xDiff -= stroke.GetEditingBounds().Width / 2;
                 }
 
                 Matrix translateMatrix = new Matrix();
@@ -905,7 +916,7 @@ namespace PolyPaint.CustomInk
                             CustomStroke linkStroke;
                             if (StrokesDictionary.TryGetValue(linkGuid, out linkStroke))
                             {
-                                if ((linkStroke as LinkStroke).GetStraightBounds().X != xToAlignTo)
+                                if ((linkStroke as LinkStroke).GetEditingBounds().X != xToAlignTo)
                                 {
                                     (linkStroke as LinkStroke).Transform(translateMatrix, false);
                                 }
@@ -919,7 +930,7 @@ namespace PolyPaint.CustomInk
                             CustomStroke linkStroke;
                             if (StrokesDictionary.TryGetValue(linkGuid, out linkStroke))
                             {
-                                if ((linkStroke as LinkStroke).GetStraightBounds().X != xToAlignTo)
+                                if ((linkStroke as LinkStroke).GetEditingBounds().X != xToAlignTo)
                                 {
                                     (linkStroke as LinkStroke).Transform(translateMatrix, false);
                                 }
@@ -1338,7 +1349,5 @@ namespace PolyPaint.CustomInk
 
             return destImage;
         }
-
-
     }
 }
