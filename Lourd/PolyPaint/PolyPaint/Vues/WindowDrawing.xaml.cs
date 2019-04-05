@@ -429,5 +429,28 @@ namespace PolyPaint.Vues
             surfaceDessin.Select(selectedsc);
             DrawingService.UpdateShapes(updatedsc);
         }
+
+        private void ExportCanvas(object sender, EventArgs e)
+        {
+            // Displays a SaveFileDialog so the user can save the Image  
+            // assigned to Button2.  
+            System.Windows.Forms.SaveFileDialog saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            saveFileDialog1.Filter = "PNG Image|*.png";
+            saveFileDialog1.Title = "Save your canvas";
+            saveFileDialog1.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.  
+            if (saveFileDialog1.FileName != "")
+            {
+                // Saves the Image via a FileStream created by the OpenFile method.  
+                System.IO.FileStream fs =
+                   (System.IO.FileStream)saveFileDialog1.OpenFile();
+
+                surfaceDessin.GetCanvas().Save(fs,
+                           System.Drawing.Imaging.ImageFormat.Png);
+
+                fs.Close();
+            }
+        }
     }
 }
