@@ -1009,6 +1009,42 @@ namespace PolyPaint.VueModeles
                     TutorialText = TutorialTexts.ROTATE_FORM;
                     TutorialTextTitle = TutorialTexts.ROTATE_FORMS_TITLE;
                     break;
+                case 15:
+                    TutorialText = TutorialTexts.TOOLS;
+                    TutorialTextTitle = TutorialTexts.TOOLS_TITLE;
+                    break;
+                case 16:
+                    TutorialText = TutorialTexts.CUT;
+                    TutorialTextTitle = TutorialTexts.CUT_TITLE;
+                    break;
+                case 17:
+                    TutorialText = TutorialTexts.DUPLICATE;
+                    TutorialTextTitle = TutorialTexts.DUPLICATE_TITLE;
+                    break;
+                case 18:
+                    TutorialText = TutorialTexts.STACK;
+                    TutorialTextTitle = TutorialTexts.STACK;
+                    break;
+                case 19:
+                    TutorialText = TutorialTexts.LASSO;
+                    TutorialTextTitle = TutorialTexts.LASSO_TITLE;
+                    break;
+                case 20:
+                    TutorialText = TutorialTexts.CLEAR;
+                    TutorialTextTitle = TutorialTexts.CLEAR_TITLE;
+                    break;
+                case 21:
+                    TutorialText = TutorialTexts.CANVAS_RESIZE;
+                    TutorialTextTitle = TutorialTexts.CANVAS_RESIZE_TITLE;
+                    break;
+                case 22:
+                    TutorialText = TutorialTexts.END;
+                    TutorialTextTitle = TutorialTexts.END_TITLE;
+                    break;
+                case 23:
+                    TutorialPage = 1;
+                    UserMode = UserModes.Gallery;
+                    break;
                 default:
                     break;
             }

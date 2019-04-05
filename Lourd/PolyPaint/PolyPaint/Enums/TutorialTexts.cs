@@ -13,7 +13,8 @@ namespace PolyPaint.Enums
                                                + Environment.NewLine + "-Classes"
                                                + Environment.NewLine + "-Roles"
                                                + Environment.NewLine + "-Activities"
-                                               + Environment.NewLine + "-Artefacts";
+                                               + Environment.NewLine + "-Artefacts"
+                                               + Environment.NewLine + "-Comments";
 
         public static string ADD_DRAWING_FORMS_TITLE = "Add Drawing Forms";
         public static string ADD_DRAWING_FORM = "You can add a drawing form by selecting the form you want to add in the menu bar and then click where you want to add it on the canvas.";
@@ -60,9 +61,46 @@ namespace PolyPaint.Enums
                                                 + Environment.NewLine + "-The connection multiplicity";
 
         public static string RESIZE_FORMS_TITLE = "Resize Forms";
-        public static string RESIZE_FORMS = "You can resize a form by selecting it and then";
+        public static string RESIZE_FORMS = "You can resize a form by selecting it and then dragging one of the gray adorners around the form. You can only resize if one form is selected.";
 
         public static string ROTATE_FORMS_TITLE = "Rotate Forms";
-        public static string ROTATE_FORM = "You can rotate a form by selecting it and then";
+        public static string ROTATE_FORM = "You can rotate a form by selecting it and then dragging the blue square adorner at the top. You can only rotate if one form is selected.";
+
+        public static string TOOLS_TITLE = "PolyPaint Tools";
+        public static string TOOLS = "We will now go through the different tools available in PolyPaint.";
+
+        public static string CUT_TITLE = "Cut Tool";
+        public static string CUT = "The Cut Tool allows you to remove a form from the canvas.";
+
+        public static string DUPLICATE_TITLE = "Paste / Duplicate Tool";
+        public static string DUPLICATE = "This tool allows you to do two things:"
+                 + Environment.NewLine + "First, if you have selected forms, this tool will duplicate all the selected forms."
+                 + Environment.NewLine + "Second, if you have no selected forms, this tool will paste the last stroke that you cut from the canvas.";
+
+        public static string STACK_TITLE = "Stack Tool";
+        public static string STACK = "This tool allows you to remove several forms from the canvas, and keep them is store to add them later on."
+             + Environment.NewLine + "You can only stack the forms that you added to the canvas during your current session.";
+
+        public static string LASSO_TITLE = "Lasso Tool";
+        public static string LASSO = "This tool allows you to select multiple forms at the same time. Once you select it, you can click and drag the mouse around the forms you want to select.";
+
+        public static string CLEAR_TITLE = "Clear Canvas Tool";
+        public static string CLEAR = "This tool allows you to delete every form on the canvas.";
+
+        public static string CLASS_CODE_TITLE = "Class Code Tool";
+        public static string CLASS_CODE = "This tool allows you to create a class form from a C# class file. You can either copy and paste your code in the toolbox or import the file from your computer.";
+
+        public static string CLASS_WIDTH_TITLE = "Class Width Tool";
+        public static string CLASS_WIDTH = "This tool allows you to adjust the width of all the classes to the width of the largest class on the canvas.";
+
+        public static string FORMS_ALIGNMENT_TITLE = "Alignment Tool";
+        public static string FORMS_ALIGNMENT = "This tool allows you to align the forms that you are currently selecting."
+                       + Environment.NewLine + "You can align your forms to the left or to the center.";
+
+        public static string CANVAS_RESIZE_TITLE = "Canvas Resize Tool";
+        public static string CANVAS_RESIZE = "You can change the canvas' size by dragging the adorners around it.";
+
+        public static string END_TITLE = "The End";
+        public static string END = "You have now completed the tutorial! Have fun using PolyPaint!";
     }
 }
