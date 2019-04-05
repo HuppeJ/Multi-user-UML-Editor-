@@ -235,7 +235,9 @@ class DrawingActivity : AppCompatActivity(){
                     val linkView: LinkView = LinkView(this)
                     linkView.setLinkAndAnchors(link)
                     ViewShapeHolder.getInstance().linkMap.forcePut(linkView, link.id)
+                    linkView.setPaintColorWithLinkStyle()
                     parent_relative_layout?.addView(linkView)
+
                 }
                 linksToAdd.clear()
 
