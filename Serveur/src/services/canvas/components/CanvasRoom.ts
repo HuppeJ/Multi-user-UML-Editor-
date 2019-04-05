@@ -419,49 +419,14 @@ export default class CanvasRoom {
     }
 
     public getSelectedFormsSERI(data: IEditGalleryData): string {
-        let selectedFormsArray: string[] = Array.from(this.selectedForms.keys());
-
-        const filteredSelectedFormsArray = selectedFormsArray.filter((key) => {
-            if (this.selectedForms.get(key) == data.username) {
-                return false;
-            }
-
-            return true;
-        });
-
-        const filteredSelectedFormsArrayIds: string [] = [];
-
-        filteredSelectedFormsArray.forEach((formStr) => {
-            const form = JSON.parse(formStr);
-            filteredSelectedFormsArrayIds.push(form.id)
-        });
-
         return JSON.stringify({
-            selectedForms: filteredSelectedFormsArrayIds
+            selectedForms: Array.from(this.selectedForms.keys())
         });
     }
 
     public getSelectedLinksSERI(data: IEditGalleryData): string {
-        let selectedLinksArray: string[] = Array.from(this.selectedLinks.keys());
-
-        const filteredSelectedLinksArray = selectedLinksArray.filter((key) => {
-            if (this.selectedLinks.get(key) == data.username) {
-                return false;
-            }
-
-            return true;
-        });
-
-        const filteredSelectedLinksArrayIds: string [] = [];
-
-        filteredSelectedLinksArray.forEach((linkStr) => {
-            const link = JSON.parse(linkStr);
-            filteredSelectedLinksArrayIds.push(link.id)
-        });
-
-
         return JSON.stringify({
-            selectedLinks: filteredSelectedLinksArrayIds
+            selectedLinks: Array.from(this.selectedLinks.keys())
         });
     }
 
