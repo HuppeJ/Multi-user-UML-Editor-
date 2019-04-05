@@ -28,7 +28,7 @@ export default class CanvasGallerySocketEvents {
                 try {
                     socket.emit("getPublicCanvasResponse", canvasManager.getPublicCanvasSERI());
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error13]: ", e);
                 }
             });
 
@@ -36,7 +36,7 @@ export default class CanvasGallerySocketEvents {
                 try {
                     socket.emit("getPrivateCanvasResponse", canvasManager.getPrivateCanvasSERI(username));
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error14]: ", e);
                 }
             });
 
@@ -47,7 +47,7 @@ export default class CanvasGallerySocketEvents {
 
                     socket.emit("getCanvasResponse", canvasManager.getCanvasSERI(canvasRoomId));
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error15]: ", e);
                 }
             });
 
@@ -55,7 +55,7 @@ export default class CanvasGallerySocketEvents {
                 try {
                     socket.emit("getAllCanvasResponse", canvasManager.getCanvasRoomsSERI());
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error16]: ", e);
                 }
             });
 

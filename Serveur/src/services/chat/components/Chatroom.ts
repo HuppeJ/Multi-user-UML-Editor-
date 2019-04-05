@@ -16,11 +16,15 @@ export default class Chatroom {
     }
 
     public addUser(username: string) {
-        this.connectedUsers.add(username);
+        if (!this.connectedUsers.has(username)) {
+            this.connectedUsers.add(username);
+        }
     }
 
     public removeUser(username: string) {
-        this.connectedUsers.delete(username);
+        if (this.connectedUsers.has(username)) {
+            this.connectedUsers.delete(username);
+        }
     }
 
     public hasUser(username: string) {
