@@ -797,7 +797,7 @@ namespace PolyPaint.CustomInk
             {
                 delta.Y = customStroke.GetCustomBound().Height - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(customStroke.GetCustomBound().X, 
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X,
                                       customStroke.GetCustomBound().Y + delta.Y, 
                                       Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width), 
                                       Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height - delta.Y));

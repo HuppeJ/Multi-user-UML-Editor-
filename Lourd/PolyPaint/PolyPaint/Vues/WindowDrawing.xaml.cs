@@ -83,9 +83,9 @@ namespace PolyPaint.Vues
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
         }
 
-        private void AlignLeft(object sender, RoutedEventArgs e) => surfaceDessin.AlignLeft();
+        public void AlignLeft() => surfaceDessin.AlignLeft();
 
-        private void AlignCenter(object sender, RoutedEventArgs e) => surfaceDessin.AlignCenter();
+        public void AlignCenter() => surfaceDessin.AlignCenter();
 
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
@@ -162,6 +162,11 @@ namespace PolyPaint.Vues
                     popUpLinkVue.setParameters();
                     popUpLink.IsOpen = true;
                 }
+                else if (strokes[0] is CommentStroke)
+                {
+                    popUpCommentVue.setParameters(strokes[0] as CustomStroke);
+                    popUpComment.IsOpen = true;
+                }
                 else
                 {
                     popUpNameVue.setParameters(strokes[0] as CustomStroke);
@@ -174,15 +179,28 @@ namespace PolyPaint.Vues
         public void DeleteSelection()
         {
             StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
-            if (strokes.Count == 1)
-            {
-                surfaceDessin.DeleteStrokes(strokes);
-            }
+            surfaceDessin.DeleteStrokes(strokes);
         }
 
         public void Rename(string text, Color borderColor, Color fillColor, int lineStyle )
         {
             popUpName.IsOpen = false;
+            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = text;
+            stroke.shapeStyle.borderColor = borderColor.ToString();
+            stroke.shapeStyle.backgroundColor = fillColor.ToString();
+            stroke.shapeStyle.borderStyle = lineStyle;
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
+            surfaceDessin.RefreshChildren();
+            surfaceDessin.RefreshSelectedShape(stroke);
+            IsEnabled = true;
+        }
+
+        public void CommentEdition(string text, Color borderColor, Color fillColor, int lineStyle)
+        {
+            popUpComment.IsOpen = false;
             ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
             stroke.shapeStyle.borderColor = borderColor.ToString();

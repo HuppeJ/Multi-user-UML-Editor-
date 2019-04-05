@@ -10,12 +10,16 @@ using System;
 using System.Windows.Ink;
 using PolyPaint.Services;
 using PolyPaint.Vues;
+using System.Windows.Media.Imaging;
 
 namespace PolyPaint.CustomInk
 {
     class SelectionMultipleAdorner : Adorner
     {
         Thumb moveThumb;
+        private DeleteButton deleteButton;
+        private CenterAlignButton centerAlignButton;
+        private LeftAlignButton leftAlignButton;
 
         VisualCollection visualChildren;
 
@@ -30,6 +34,10 @@ namespace PolyPaint.CustomInk
 
         RectangleGeometry NewRectangle = new RectangleGeometry();
         RectangleGeometry OldRectangle = new RectangleGeometry();
+
+        private Rect rectangleDelete;
+        private Rect rectangleCenter;
+        private Rect rectangleLeftAlign;
 
         public SelectionMultipleAdorner(UIElement adornedElement, StrokeCollection strokes, CustomInkCanvas actualCanvas)
             : base(adornedElement)
@@ -81,6 +89,61 @@ namespace PolyPaint.CustomInk
             outerBoundPath.StrokeThickness = 1;
             outerBoundPath.Data = new RectangleGeometry(strokeBounds);
             visualChildren.Add(outerBoundPath);
+            
+            deleteButton = new DeleteButton(strokes, canvas);
+            deleteButton.Cursor = Cursors.Hand;
+            deleteButton.Width = 20;
+            deleteButton.Height = 20;
+            deleteButton.Background = Brushes.White;
+
+            BitmapImage img2 = new BitmapImage();
+            img2.BeginInit();
+            img2.UriSource = new Uri("../../Resources/trash.png", UriKind.Relative);
+            img2.EndInit();
+
+            System.Windows.Controls.Image image2 = new System.Windows.Controls.Image();
+            image2.Source = img2;
+            deleteButton.Content = image2;
+
+            visualChildren.Add(deleteButton);
+
+            centerAlignButton = new CenterAlignButton(strokes, canvas);
+            centerAlignButton.Cursor = Cursors.Hand;
+            centerAlignButton.Width = 20;
+            centerAlignButton.Height = 20;
+            centerAlignButton.Background = Brushes.White;
+
+            BitmapImage img3 = new BitmapImage();
+            img3.BeginInit();
+            img3.UriSource = new Uri("../../Resources/NewLook/horizontal-align-center.png", UriKind.Relative);
+            img3.EndInit();
+
+            System.Windows.Controls.Image image3 = new System.Windows.Controls.Image();
+            image3.Source = img3;
+            centerAlignButton.Content = image3;
+
+            visualChildren.Add(centerAlignButton);
+
+            leftAlignButton = new LeftAlignButton(strokes, canvas);
+            leftAlignButton.Cursor = Cursors.Hand;
+            leftAlignButton.Width = 20;
+            leftAlignButton.Height = 20;
+            leftAlignButton.Background = Brushes.White;
+
+            BitmapImage img4 = new BitmapImage();
+            img4.BeginInit();
+            img4.UriSource = new Uri("../../Resources/NewLook/left-align.png", UriKind.Relative);
+            img4.EndInit();
+
+            System.Windows.Controls.Image image4 = new System.Windows.Controls.Image();
+            image4.Source = img4;
+            leftAlignButton.Content = image4;
+
+            visualChildren.Add(leftAlignButton);
+
+            rectangleCenter = new Rect(strokeBounds.X + strokeBounds.Width / 2 - 10, strokeBounds.Y - 20, 20, 20);
+            rectangleLeftAlign = new Rect(strokeBounds.X, strokeBounds.Y - 20, 20, 20);
+            rectangleDelete = new Rect(strokeBounds.TopRight.X - 20, strokeBounds.TopRight.Y - 20, 20, 20);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -94,6 +157,10 @@ namespace PolyPaint.CustomInk
             outerBoundPath.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
             
             moveThumb.Arrange(strokeBounds);
+
+            deleteButton.Arrange(rectangleDelete);
+            leftAlignButton.Arrange(rectangleLeftAlign);
+            centerAlignButton.Arrange(rectangleCenter);
 
             return finalSize;
         }

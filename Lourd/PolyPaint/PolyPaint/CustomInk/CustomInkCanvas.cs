@@ -671,6 +671,10 @@ namespace PolyPaint.CustomInk
                 case StrokeTypes.LINK:
                     customStroke = new LinkStroke(e.Stroke.StylusPoints);
                     break;
+                case StrokeTypes.FLOATINGTEXT:
+                    customStroke = new CommentStroke(pts);
+                    (customStroke as CommentStroke).shapeStyle.borderColor = "#00FFFFFF";
+                    break;
                 default:
                     customStroke = new ClassStroke(pts);
                     break;
@@ -851,17 +855,28 @@ namespace PolyPaint.CustomInk
         #region Align
         internal void AlignLeft()
         {
-            Rect selectionBounds = GetSelectionBounds();
-
-            double leftMostX = selectionBounds.X;
+            double leftMostX = 99999999;
+            foreach (CustomStroke stroke in GetSelectedStrokes())
+            {
+                if (stroke.GetEditingBounds().X < leftMostX)
+                    leftMostX = stroke.GetEditingBounds().X;
+            }
+            
             Align(leftMostX, false);
         }
 
         internal void AlignCenter()
         {
-            Rect selectionBounds = GetSelectionBounds();
-
-            double centerX = selectionBounds.X + selectionBounds.Width/2;
+            double minX = 99999999;
+            double maxX = -99999999;
+            foreach (CustomStroke stroke in GetSelectedStrokes())
+            {
+                if (stroke.GetEditingBounds().X < minX)
+                    minX = stroke.GetEditingBounds().X;
+                if (stroke.GetEditingBounds().Right > maxX)
+                    maxX = stroke.GetEditingBounds().Right;
+            }
+            double centerX = minX + (maxX - minX) / 2;
             Align(centerX, true);
         }
 
@@ -872,11 +887,11 @@ namespace PolyPaint.CustomInk
             // faire pour les liens egalement
             foreach (CustomStroke stroke in selectedStrokes)
             {
-                double xDiff = xToAlignTo - stroke.GetBounds().X;
+                double xDiff = xToAlignTo - stroke.GetEditingBounds().X;
 
                 if (isAlignCenter)
                 {
-                    xDiff -= stroke.GetBounds().Width / 2;
+                    xDiff -= stroke.GetEditingBounds().Width / 2;
                 }
 
                 Matrix translateMatrix = new Matrix();
@@ -905,7 +920,7 @@ namespace PolyPaint.CustomInk
                             CustomStroke linkStroke;
                             if (StrokesDictionary.TryGetValue(linkGuid, out linkStroke))
                             {
-                                if ((linkStroke as LinkStroke).GetBounds().X != xToAlignTo)
+                                if ((linkStroke as LinkStroke).GetEditingBounds().X != xToAlignTo)
                                 {
                                     (linkStroke as LinkStroke).Transform(translateMatrix, false);
                                 }
@@ -919,7 +934,7 @@ namespace PolyPaint.CustomInk
                             CustomStroke linkStroke;
                             if (StrokesDictionary.TryGetValue(linkGuid, out linkStroke))
                             {
-                                if ((linkStroke as LinkStroke).GetBounds().X != xToAlignTo)
+                                if ((linkStroke as LinkStroke).GetEditingBounds().X != xToAlignTo)
                                 {
                                     (linkStroke as LinkStroke).Transform(translateMatrix, false);
                                 }
@@ -1034,8 +1049,8 @@ namespace PolyPaint.CustomInk
                         myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
+                        myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
                     }
-                    myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
                     /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {
                         myAdornerLayer.Add(new ClassAdorner(path, selectedStroke, this));
@@ -1049,9 +1064,9 @@ namespace PolyPaint.CustomInk
                             myAdornerLayer.Add(new LinkRotateAdorner(path, selectedStroke as LinkStroke, this));
                         }
                         myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
+                        myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
+                        myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
                     }
-                    myAdornerLayer.Add(new LinkAnchorPointAdorner(path, selectedStroke as LinkStroke, this));
-                    myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
                 }
             }
         }
@@ -1338,7 +1353,5 @@ namespace PolyPaint.CustomInk
 
             return destImage;
         }
-
-
     }
 }

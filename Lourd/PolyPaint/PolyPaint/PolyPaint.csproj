@@ -305,6 +305,9 @@
     <Compile Include="Vues\Popups\ClassFromCodePopup.xaml.cs">
       <DependentUpon>ClassFromCodePopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\CommentPopup.xaml.cs">
+      <DependentUpon>CommentPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Popups\RenamePopup.xaml.cs">
       <DependentUpon>RenamePopup.xaml</DependentUpon>
     </Compile>
@@ -426,6 +429,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vues\Popups\CommentPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vues\Popups\RenamePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -462,6 +469,8 @@
     <Resource Include="Resources\NewLook\reset.png" />
     <Resource Include="Resources\align_left.png" />
     <Resource Include="Resources\align_center.png" />
+    <Resource Include="Resources\NewLook\horizontal-align-center.png" />
+    <Resource Include="Resources\NewLook\left-align.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

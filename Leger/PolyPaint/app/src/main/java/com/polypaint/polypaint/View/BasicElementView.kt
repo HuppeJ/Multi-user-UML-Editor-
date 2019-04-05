@@ -38,8 +38,8 @@ open class BasicElementView: ConstraintLayout {
     var start: Coordinates = Coordinates(0.0,0.0)
     var oldLink: LinkView? = null
     var isSelectedByOther: Boolean = false
-    open var mMinimumWidth : Float = 300F
-    open var mMinimumHeight : Float = 100F
+    open var mMinimumWidth : Float = 84F
+    open var mMinimumHeight : Float = 84F
     var socket: Socket? = null
 
     var pointerFinger1 : Int = -1

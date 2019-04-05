@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.polypaint.polypaint.Enum.ThicknessTypes
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.Link
 import com.polypaint.polypaint.R
@@ -42,9 +43,9 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
             }
             R.id.link_thickness_spinner->{
                 when(position){
-                    0-> thickness = 10
-                    1-> thickness = 15
-                    2-> thickness = 20
+                    0-> thickness = ThicknessTypes.THIN.ordinal
+                    1-> thickness = ThicknessTypes.NORMAL.ordinal
+                    2-> thickness = ThicknessTypes.THICK.ordinal
                 }
             }
         }
@@ -112,9 +113,9 @@ class EditLinkDialogFragment: DialogFragment(), AdapterView.OnItemSelectedListen
             typeSpinner.setSelection(link?.type!!)
 
             when(link?.style?.thickness){
-                10-> thicknessSpinner.setSelection(0)
-                15-> thicknessSpinner.setSelection(1)
-                20-> thicknessSpinner.setSelection(2)
+                ThicknessTypes.THIN.ordinal-> thicknessSpinner.setSelection(0)
+                ThicknessTypes.NORMAL.ordinal-> thicknessSpinner.setSelection(1)
+                ThicknessTypes.THICK.ordinal-> thicknessSpinner.setSelection(2)
             }
             styleSpinner.setSelection(link?.style?.type!!)
 
