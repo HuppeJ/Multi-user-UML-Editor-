@@ -187,6 +187,10 @@
                         Click="OpenClassPopup"
                         Content="Code" ToolTip="CLASS FROM CODE">
                 </Button>
+                <Button x:Name="LargestClassWidth" Width="40" Height="40" Margin="5" Padding="0,0"
+                        Click="AdjustToLargestClassWidth"
+                        Content="Width" ToolTip="Adjust to largest class width">
+                </Button>
 
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
@@ -225,6 +229,9 @@
         </Popup>
         <Popup x:Name="popUpComment" Placement="Center">
             <Vues:CommentPopup x:Name="popUpCommentVue"/>
+        </Popup>
+        <Popup x:Name="popUpFloatingText" Placement="Center">
+            <Vues:FloatingTextPopup x:Name="popUpFloatingTextVue"/>
         </Popup>
         <Popup x:Name="popUpClassFromCode" Placement="Center">
             <Vues:ClassFromCodePopup x:Name="popUpClassFromCodeVue"/>

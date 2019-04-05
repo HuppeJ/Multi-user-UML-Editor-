@@ -30,8 +30,8 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="336" Margin="200,60,200,41">
-        <Grid>
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Margin="200,60,200,41" Height="375">
+        <Grid Margin="0,0,0,-41">
             <Grid.RowDefinitions>
                 <RowDefinition Height="160"/>
                 <RowDefinition/>
@@ -42,7 +42,7 @@
 
             <Border Grid.Row="1" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0">
                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center"
-                                VerticalAlignment="Top" Height="154">
+                                VerticalAlignment="Top">
                     <TextBox x:Name="UsernameTxtBox" Width="150" Margin="0,5"
                                  materialDesign:HintAssist.Hint="Username"   
                                  Text="{Binding username, UpdateSourceTrigger=PropertyChanged}">
@@ -51,7 +51,8 @@
                                  materialDesign:HintAssist.Hint="Password">
                     </PasswordBox>
                     <Button Content="Login" Margin="0,10,0,0" Command="{Binding LoginUserCommand}" Width="150" CommandParameter="{Binding ElementName=PasswordTxtBox}" IsDefault="True"/>
-                    <Button Content="Sign up" Margin="0,10,0,0" Command="{Binding CreateUserViewCommand}" Width="150"/>
+                    <Button Content="Sign Up" Margin="0,10,0,0" Command="{Binding CreateUserViewCommand}" Width="150"/>
+                    <Button Content="Offline Mode" Margin="0,10,0,0" Command="{Binding OfflineModeCommand}" Width="150"/>
                 </StackPanel>
             </Border>
         </Grid>

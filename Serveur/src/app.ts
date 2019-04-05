@@ -30,6 +30,9 @@ const chatroomManager = new ChatroomManager();
 import CanvasManager from "./services/canvas/components/CanvasManager";
 const canvasManager = new CanvasManager();
 
+import CanvasDataStoreManager from "./services/canvas/components/CanvasDataStoreManager";
+const canvasDataStoreManager = new CanvasDataStoreManager(datastore);
+
 
 // Initialise Socket Events
 import ChatSocketEvents from "./services/chat/ChatSocketEvents";
@@ -39,7 +42,7 @@ import AuthenticationSocketEvents from "./services/Authentication/Authentication
 new AuthenticationSocketEvents(io, userAccountManager);
 
 import CanvasSocketEvents from "./services/canvas/CanvasSocketEvents";
-new CanvasSocketEvents(io, canvasManager);
+new CanvasSocketEvents(io, canvasManager, canvasDataStoreManager);
 
 import CanvasGallerySocketEvents from './services/canvas/CanvasGallerySocketEvents';
 new CanvasGallerySocketEvents(io, canvasManager);

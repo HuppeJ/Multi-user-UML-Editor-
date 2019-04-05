@@ -641,7 +641,7 @@ class DrawingActivity : AppCompatActivity(){
                 //TODO : LINKS
                 Log.d("unstackView", "Link "+shapeUnstacked.name)
                 ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(shapeUnstacked.id)
-
+                //EmitAddLink ?
                 runOnUiThread {
                     ViewShapeHolder.getInstance().canevas.addLink(shapeUnstacked)
                     val linkView: LinkView = LinkView(this)
