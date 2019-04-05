@@ -13,13 +13,19 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.Tutorial.Section
 import com.polypaint.polypaint.Tutorial.Section1
 import kotlinx.android.synthetic.main.dialog_tutorial.*
 import kotlinx.android.synthetic.main.dialog_tutorial.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+import android.util.Log
+import androidx.fragment.app.FragmentManager
+
 
 class TutorialDialogFragment: DialogFragment() {
 
@@ -80,7 +86,19 @@ class TutorialDialogFragment: DialogFragment() {
         super.onDestroy()
     }
     private fun closeModal(){
+        val app = activity!!.application as PolyPaint
+        val socket = app.socket
+        socket?.emit(SocketConstants.USER_HAS_DONE_TUTORIAL, UserHolder.getInstance().username)
+    }
 
+    fun showModal(manager: FragmentManager, tag: String) {
+        try {
+            val ft = manager.beginTransaction()
+            ft.add(this, tag)
+            ft.commitAllowingStateLoss()
+        } catch (e: IllegalStateException) {
+            Log.d("ABSDIALOGFRAG", "Exception", e)
+        }
     }
     private fun buildIndexes(){
         var titles = resources.getStringArray(R.array.tutorial_title_array).toList()

@@ -49,6 +49,7 @@ import com.polypaint.polypaint.Fragment.TutorialDialogFragment
 import com.polypaint.polypaint.Holder.*
 import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
 import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
+import com.polypaint.polypaint.ResponseModel.HasUserDoneTutorialResponse
 import com.polypaint.polypaint.SocketReceptionModel.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.lang.reflect.Type
@@ -89,14 +90,7 @@ class DrawingActivity : AppCompatActivity(){
         setSupportActionBar(activityToolbar)
 
         help_button.setOnClickListener {
-            var activity: AppCompatActivity = this@DrawingActivity as AppCompatActivity
-            var dialog: DialogFragment = TutorialDialogFragment()
-            //var bundle: Bundle = Bundle()
-            //bundle.putSerializable("canevas", selectedCanevas)
-            //dialog.arguments = bundle
-
-            //Log.d("****", dialog.arguments.toString())
-            dialog.show(activity.supportFragmentManager, "TutorialDialog")
+            showTutorial()
         }
 
         drawer = drawer {
@@ -281,8 +275,9 @@ class DrawingActivity : AppCompatActivity(){
         socket?.on(SocketConstants.CANVAS_RESIZED, onCanevasResized)
         socket?.on(SocketConstants.CANVAS_SELECTED, onCanevasSelected)
         socket?.on(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
-        //socket?.on(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
-        //socket?.on(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
+        socket?.on(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
+        socket?.on(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
+        socket?.on(SocketConstants.HAS_USER_DONE_TUTORIAL_RESPONSE, onHasUserDoneTutorial)
         socket?.on(SocketConstants.GET_CANVAS_RESPONSE, onGetCanevas)
 
         getCanevas()
@@ -752,6 +747,17 @@ class DrawingActivity : AppCompatActivity(){
         }
     }
 
+    fun showTutorial(){
+        var activity: AppCompatActivity = this@DrawingActivity as AppCompatActivity
+        var dialog: TutorialDialogFragment = TutorialDialogFragment()
+        //var bundle: Bundle = Bundle()
+        //bundle.putSerializable("canevas", selectedCanevas)
+        //dialog.arguments = bundle
+
+        //Log.d("****", dialog.arguments.toString())
+        dialog.showModal(activity.supportFragmentManager, "TutorialDialog")
+    }
+
     public fun syncCanevasFromLayout(){
         for (shape in ViewShapeHolder.getInstance().canevas.shapes){
             val basicElem = ViewShapeHolder.getInstance().map.inverse().getValue(shape.id)
@@ -815,6 +821,7 @@ class DrawingActivity : AppCompatActivity(){
         val sendObj = gson.toJson(galleryEditEvent)
 
         socket?.emit(SocketConstants.GET_CANVAS, sendObj)
+        socket?.emit(SocketConstants.HAS_USER_DONE_TUTORIAL, UserHolder.getInstance().username)
     }
 
     private var onFormsUpdated: Emitter.Listener = Emitter.Listener {
@@ -1124,6 +1131,18 @@ class DrawingActivity : AppCompatActivity(){
             }
         }
     }
+
+    private var onHasUserDoneTutorial: Emitter.Listener = Emitter.Listener {
+        Log.d("onHasUserDoneTutorial", it[0].toString())
+
+        val gson = Gson()
+        val obj: HasUserDoneTutorialResponse =  gson.fromJson(it[0].toString())
+
+        if(!obj.hasUserDoneTutorial){
+            showTutorial()
+        }
+    }
+
 
     private var onGetCanevas: Emitter.Listener = Emitter.Listener {
         Log.d("onGetCanvas", "alllooo")

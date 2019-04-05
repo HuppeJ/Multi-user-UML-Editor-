@@ -839,21 +839,21 @@ open class BasicElementView: ConstraintLayout {
         when (anchor){
             AnchorPoints.LEFT.ordinal->{
                 Log.d("Rotation", rotation.toString())
-                newX = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
-                newY = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newX = - (borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newY = - (borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
             }
             AnchorPoints.RIGHT.ordinal->{
-                newX = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
-                newY = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newX = (borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newY = (borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
             }
             AnchorPoints.TOP.ordinal->{
-                newX = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
-                newY = - (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newX = (borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newY = - (borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
             }
 
             AnchorPoints.BOTTOM.ordinal ->{
-                newX = -(borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
-                newY = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                newX = -(borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                newY = (borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
             }
         }
         point.y = centerY + newY

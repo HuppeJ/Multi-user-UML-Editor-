@@ -1,3 +1,3 @@
 package com.polypaint.polypaint.ResponseModel
 
-class HasUserDoneTutorialResponse(var areFormsUpdated: Boolean)
+class HasUserDoneTutorialResponse(var hasUserDoneTutorial: Boolean)
