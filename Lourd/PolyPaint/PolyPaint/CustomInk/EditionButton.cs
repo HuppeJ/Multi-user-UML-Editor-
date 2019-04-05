@@ -64,4 +64,64 @@ namespace PolyPaint.CustomInk
         }
 
     }
+
+    public class LeftAlignButton : Button
+    {
+        public StrokeCollection strokes;
+        public CustomInkCanvas canvas;
+        public int number;
+
+        public LeftAlignButton(StrokeCollection strokes, CustomInkCanvas canvas) : base()
+        {
+            this.strokes = strokes;
+            this.canvas = canvas;
+        }
+
+        protected override void OnClick()
+        {
+            var parent = canvas.Parent;
+            while (!(parent is WindowDrawing))
+            {
+                parent = LogicalTreeHelper.GetParent(parent);
+            }
+
+            WindowDrawing windowDrawing = (WindowDrawing)parent;
+            if (windowDrawing != null)
+            {
+                windowDrawing.AlignLeft();
+            }
+
+        }
+
+    }
+
+    public class CenterAlignButton : Button
+    {
+        public StrokeCollection strokes;
+        public CustomInkCanvas canvas;
+        public int number;
+
+        public CenterAlignButton(StrokeCollection strokes, CustomInkCanvas canvas) : base()
+        {
+            this.strokes = strokes;
+            this.canvas = canvas;
+        }
+
+        protected override void OnClick()
+        {
+            var parent = canvas.Parent;
+            while (!(parent is WindowDrawing))
+            {
+                parent = LogicalTreeHelper.GetParent(parent);
+            }
+
+            WindowDrawing windowDrawing = (WindowDrawing)parent;
+            if (windowDrawing != null)
+            {
+                windowDrawing.AlignCenter();
+            }
+
+        }
+
+    }
 }

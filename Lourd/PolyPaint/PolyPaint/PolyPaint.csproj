@@ -305,6 +305,9 @@
     <Compile Include="Vues\Popups\ClassFromCodePopup.xaml.cs">
       <DependentUpon>ClassFromCodePopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\CommentPopup.xaml.cs">
+      <DependentUpon>CommentPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Popups\RenamePopup.xaml.cs">
       <DependentUpon>RenamePopup.xaml</DependentUpon>
     </Compile>
@@ -423,6 +426,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vues\Popups\ClassFromCodePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\CommentPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
