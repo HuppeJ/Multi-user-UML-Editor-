@@ -36,7 +36,7 @@ class OfflineActivity : AppCompatActivity() {
         super.onAttachedToWindow()
         offline_button?.setOnClickListener {
             val intent = Intent(this, DrawingActivity::class.java)
-            val canevas = Canevas(UUID.randomUUID().toString(), "", UserHolder.getInstance().username, UserHolder.getInstance().username, 1, "",  ArrayList(), ArrayList(), "", Coordinates(1100.0,800.0))
+            val canevas = Canevas(UUID.randomUUID().toString(), "", UserHolder.getInstance().username, UserHolder.getInstance().username, 1, "",  ArrayList(), ArrayList(), "", Coordinates(1050.0,798.0))
 
             //intent.putExtra("canevas", canevas)
             ViewShapeHolder.getInstance().canevas = canevas

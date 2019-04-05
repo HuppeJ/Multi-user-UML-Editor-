@@ -24,8 +24,8 @@ import kotlinx.android.synthetic.main.view_comment.view.*
 
 
 class CommentView(context: Context): BasicElementView(context) {
-    override var mMinimumWidth : Float = 400F
-    override var mMinimumHeight : Float = 220F
+    override var mMinimumWidth : Float = 126F
+    override var mMinimumHeight : Float = 126F
     private var child : View? = null
 
     override fun onAttachedToWindow() {
