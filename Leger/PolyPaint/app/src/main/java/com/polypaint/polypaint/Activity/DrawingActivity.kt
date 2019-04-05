@@ -139,7 +139,7 @@ class DrawingActivity : AppCompatActivity(){
             it.dispatchSetSelected(false)
         }
 
-        add_button.setOnClickListener {
+        freetext_button.setOnClickListener {
             addOnCanevas(ShapeTypes.FREETEXT)
             saveCanevas()
         }
