@@ -29,12 +29,12 @@ import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
 class EditFreeTextDialogFrament: DialogFragment() {
 
-    var shape : ClassShape? = null
+    var shape : BasicShape? = null
     var viewSelf : View? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var shapeId = arguments?.getString("shapeId")
-        shape = ViewShapeHolder.getInstance().canevas.findShape(shapeId!!) as ClassShape
+        shape = ViewShapeHolder.getInstance().canevas.findShape(shapeId!!)
 
         return activity?.let {
             // Use the Builder class for convenient dialog construction

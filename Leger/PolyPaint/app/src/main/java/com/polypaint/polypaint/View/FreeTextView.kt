@@ -5,9 +5,14 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
+import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
+import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
+import com.polypaint.polypaint.Fragment.EditFreeTextDialogFrament
+import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.R
 import kotlinx.android.synthetic.main.basic_element.view.*
 import kotlinx.android.synthetic.main.view_comment.view.*
@@ -41,6 +46,19 @@ class FreeTextView(context: Context): BasicElementView(context) {
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
+    }
+
+    override fun editShape() {
+        val shapeId: String? = ViewShapeHolder.getInstance().map[this]
+
+        var activity: AppCompatActivity = context as AppCompatActivity
+        var dialog: DialogFragment = EditFreeTextDialogFrament()
+
+        var bundle: Bundle = Bundle()
+        bundle.putString("shapeId", shapeId)
+        dialog.arguments = bundle
+
+        dialog.show(activity.supportFragmentManager, "alllooooo")
     }
     override fun setAnchorsVisible(isVisible: Boolean){}
     override fun resize(newWidth:Int, newHeight:Int){
