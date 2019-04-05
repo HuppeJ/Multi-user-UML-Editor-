@@ -197,7 +197,7 @@ namespace PolyPaint.Modeles
         // On vide la surface de dessin de tous ses traits.
         public void Reinitialiser(object o)
         {
-            DrawingService.RemoveShapes(traits);
+            DrawingService.Reset();
             traits.Clear();
         }
 

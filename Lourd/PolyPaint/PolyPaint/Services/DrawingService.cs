@@ -27,6 +27,7 @@ namespace PolyPaint.Services
         public static event Action<PublicCanvases> UpdatePublicCanvases;
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
         public static event Action<Coordinates> OnResizeCanvas;
+        public static event Action RemoteReset;
         public static event Action BackToGallery;
         public static event Action SaveCanvas;
         public static event Action RefreshChildren;
@@ -131,14 +132,6 @@ namespace PolyPaint.Services
                 if (Application.Current != null)
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() => { UpdatePrivateCanvases(canvases); }), DispatcherPriority.Render);
-                }
-            });
-
-            socket.On("canvasReinitialized", (data) =>
-            {
-                if (Application.Current != null)
-                {
-                    Application.Current.Dispatcher.Invoke(new Action(() => { ReintializeCanvas(); }), DispatcherPriority.Render);
                 }
             });
             #endregion
@@ -305,6 +298,14 @@ namespace PolyPaint.Services
                 }
             });
 
+            socket.On("canvasReinitialized", (data) =>
+            {
+                localAddedStrokes = new List<string>();
+                localSelectedStrokes = new List<string>();
+                remoteSelectedStrokes = new List<string>();
+                Application.Current.Dispatcher.Invoke(new Action(() => { RemoteReset(); }), DispatcherPriority.Render);
+            });
+
             RefreshCanvases();
         }
 
@@ -422,6 +423,14 @@ namespace PolyPaint.Services
             EmitIfStrokes("deleteLinks", createUpdateLinksData(strokes));
         }
 
+        public static void Reset()
+        {
+            localSelectedStrokes = new List<string>();
+            localAddedStrokes = new List<string>();
+            remoteSelectedStrokes = new List<string>();
+            socket.Emit("reinitializeCanvas", serializer.Serialize(new EditCanevasData(username, currentCanvas)));
+        }
+
         private static void EmitIfStrokes(string eventString, UpdateFormsData shapes)
         {
             if(shapes.forms.Count > 0)
@@ -478,11 +487,29 @@ namespace PolyPaint.Services
                 {
                     if(customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {
-                        forms.Add((customStroke as ClassStroke).GetClassShape().forServer());
+                        BasicShape basicShape = (customStroke as ClassStroke).GetBasicShape().forServer();
+                        if (basicShape.linksTo == null)
+                        {
+                            basicShape.linksTo = new List<string>();
+                        }
+                        if (basicShape.linksFrom == null)
+                        {
+                            basicShape.linksFrom = new List<string>();
+                        }
+                        forms.Add(basicShape);
                     }
                     else
                     {
-                        forms.Add((customStroke as ShapeStroke).GetBasicShape().forServer());
+                        BasicShape basicShape = (customStroke as ShapeStroke).GetBasicShape().forServer();
+                        if (basicShape.linksTo == null)
+                        {
+                            basicShape.linksTo = new List<string>();
+                        }
+                        if (basicShape.linksFrom == null)
+                        {
+                            basicShape.linksFrom = new List<string>();
+                        }
+                        forms.Add(basicShape);
                     }
                 }
             }
@@ -601,7 +628,7 @@ namespace PolyPaint.Services
                     shapeStroke = new FloatingTextStroke(shape, points);
                     break;
                 default:
-                    shapeStroke = new ClassStroke(shape as ClassShape, points);
+                    shapeStroke = new ActorStroke(shape, points);
                     break;
             }
 
