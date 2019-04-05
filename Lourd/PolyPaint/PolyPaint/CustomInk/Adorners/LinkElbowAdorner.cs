@@ -22,10 +22,7 @@ namespace PolyPaint.CustomInk
 
         // The center of the strokes.
         Point center;
-
-        // The linkLine
-        Path line;
-
+        
         const int HANDLEMARGIN = 15;
 
         // The bounds of the Strokes;
@@ -71,10 +68,6 @@ namespace PolyPaint.CustomInk
 
                 visualChildren.Add(anchor);
             }
-
-            line = new Path();
-
-            visualChildren.Add(line);
 
         }
 
@@ -152,9 +145,7 @@ namespace PolyPaint.CustomInk
             {
                 ArrangeAnchor(i, -center.X + initialMousePosition.X, -center.Y + initialMousePosition.Y);
             }
-
-            line.Arrange(new Rect(finalSize));
-
+            
             return finalSize;
         }
 

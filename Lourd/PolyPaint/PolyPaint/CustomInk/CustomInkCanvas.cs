@@ -1218,10 +1218,16 @@ namespace PolyPaint.CustomInk
                 {
                     Path path = new Path();
                     path.Data = stroke.GetGeometry();
+                    //Rect rect = new Rect(0, 0, 2000, 2000);
+                    //RectangleGeometry rectGeom = new RectangleGeometry(rect);
+                    //path.Data = rectGeom;
 
                     Children.Add(path);
                     AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
                     myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
+
+                    //CustomPath customPath = new CustomPath(stroke as LinkStroke);
+                    //Children.Add(customPath.GetPath());
                 }
             }
         }

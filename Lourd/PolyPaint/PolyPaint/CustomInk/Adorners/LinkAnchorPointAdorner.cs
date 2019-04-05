@@ -147,6 +147,12 @@ namespace PolyPaint.CustomInk
                 linkPreviewGeom.EndPoint = linkStroke.path[1].ToPoint();
             }
 
+            if(linkStroke.path.Count > 2)
+            {
+                linkPreview.Stroke = Brushes.Transparent;
+                linkPreview.StrokeThickness = 0;
+            }
+
             linkPreview.Data = linkPreviewGeom;
             linkPreview.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
         }
