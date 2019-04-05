@@ -375,6 +375,22 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region ClosingCommand
+        private ICommand _closingCommand;
+        public ICommand ClosingCommand
+        {
+            get
+            {
+                return _closingCommand ?? (_closingCommand = new RelayCommand<Object>(Closing));
+            }
+        }
+
+        private void Closing(object o)
+        {
+            CloseChatWindow?.Invoke();
+        }
+        #endregion
+
         #region CreateUserViewCommand
         private ICommand _createUserViewCommand;
         public ICommand CreateUserViewCommand
@@ -506,6 +522,29 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region LeaveTutorialCommand
+        private ICommand _leaveTutorialCommand;
+        public ICommand LeaveTutorialCommand
+        {
+            get
+            {
+                return _leaveTutorialCommand ?? (_leaveTutorialCommand = new RelayCommand<Object>(LeaveTutorial));
+            }
+        }
+
+        private void LeaveTutorial(object o)
+        {
+            TutorialPage = 1;
+            if (!ConnectionService.hasUserDoneTutorial)
+            {
+                ConnectionService.hasUserDoneTutorial = true;
+                ConnectionService.socket.Emit("userHasDoneTutorial", ConnectionService.username);
+            }
+            UserMode = UserModes.Drawing;
+            DrawingService.DrawCanvas(SelectedCanvas);
+        }
+        #endregion
+
         #region NextTutorialPageCommand
         private ICommand _nextTutorialPageCommand;
         public ICommand NextTutorialPageCommand
@@ -555,7 +594,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _joinChatroomCommand ?? (_joinChatroomCommand = new RelayCommand<Object>(JoinChatroom));
+                return _joinChatroomCommand ?? (_joinChatroomCommand = new RelayCommand<Object>(JoinChatroom, CanJoinRoom));
             }
         }
 
@@ -563,6 +602,11 @@ namespace PolyPaint.VueModeles
         {
             Room room = o as Room;
             chatService.JoinChatroom(room.name);
+        }
+
+        private bool CanJoinRoom(object o)
+        {
+            return o as Room != null;
         }
         #endregion
 
@@ -572,7 +616,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _createChatroomCommand ?? (_createChatroomCommand = new RelayCommand<Object>(CreateChatroom));
+                return _createChatroomCommand ?? (_createChatroomCommand = new RelayCommand<Object>(CreateChatroom, CanCreateRoom));
             }
         }
 
@@ -580,6 +624,11 @@ namespace PolyPaint.VueModeles
         {
             string roomName = o as string;
             chatService.CreateChatroom(roomName);
+        }
+
+        private bool CanCreateRoom(object o)
+        {
+            return (o as string != null && o as string != "");
         }
         #endregion
 
@@ -600,6 +649,10 @@ namespace PolyPaint.VueModeles
                 Room room = o as Room;
                 chatService.LeaveChatroom(room.name);
                 rooms.Remove(room);
+                if(rooms.Count > 0)
+                {
+                    selectedRoom = rooms.First();
+                }
             }
         }
         #endregion
@@ -913,10 +966,17 @@ namespace PolyPaint.VueModeles
         {
             if (response.isCanvasRoomJoined)
             {
-                if(UserMode != UserModes.Drawing)
+                if (!ConnectionService.hasUserDoneTutorial)
                 {
-                    UserMode = UserModes.Drawing;
-                    DrawingService.DrawCanvas(SelectedCanvas);
+                    UserMode = UserModes.Tutorial;
+                }
+                else
+                {
+                    if (UserMode != UserModes.Drawing)
+                    {
+                        UserMode = UserModes.Drawing;
+                        DrawingService.DrawCanvas(SelectedCanvas);
+                    }
                 }
             }
             else
@@ -956,6 +1016,12 @@ namespace PolyPaint.VueModeles
                 }
                 selectedRoom = rooms.ElementAt(rooms.IndexOf(room));
             }
+        }
+
+        private void GoToTutorial()
+        {
+            CloseChatWindow?.Invoke();
+            UserMode = UserModes.Tutorial;
         }
         #endregion
 
@@ -1076,7 +1142,13 @@ namespace PolyPaint.VueModeles
                     break;
                 case 23:
                     TutorialPage = 1;
-                    UserMode = UserModes.Gallery;
+                    if (!ConnectionService.hasUserDoneTutorial)
+                    {
+                        ConnectionService.socket.Emit("userHasDoneTutorial", ConnectionService.username);
+                        ConnectionService.hasUserDoneTutorial = true;
+                    }
+                    UserMode = UserModes.Drawing;
+                    DrawingService.DrawCanvas(SelectedCanvas);
                     break;
                 default:
                     break;
@@ -1099,6 +1171,7 @@ namespace PolyPaint.VueModeles
             DrawingService.UpdatePrivateCanvases += UpdatePrivateCanvases;
             DrawingService.JoinCanvasRoom += JoinCanvasRoom;
             DrawingService.BackToGallery += BackToGallery;
+            DrawingService.GoToTutorial += GoToTutorial;
 
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;

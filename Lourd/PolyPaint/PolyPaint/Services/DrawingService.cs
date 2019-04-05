@@ -32,6 +32,7 @@ namespace PolyPaint.Services
         public static event Action SaveCanvas;
         public static event Action RefreshChildren;
         public static event Action ReintializeCanvas;
+        public static event Action GoToTutorial;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
@@ -723,6 +724,11 @@ namespace PolyPaint.Services
         public static void AddClassFromCode(InkCanvasStrokeCollectedEventArgs eventArgs)
         {
             Application.Current.Dispatcher.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+        }
+
+        internal static void OpenTutorial()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() => { GoToTutorial(); }), DispatcherPriority.Render);
         }
     }
 }
