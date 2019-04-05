@@ -15,7 +15,7 @@ export default class CanvasSocketEvents {
                 try {
                     const data: IEditGalleryData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
-                    socket.emit("getCanvasLogHistoryResponse", canvasManager.getCanvasLogHistory(canvasRoomId));
+                    socket.emit("getCanvasLogHistoryResponse", canvasManager.getCanvasLogHistorySERI(canvasRoomId));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -33,7 +33,6 @@ export default class CanvasSocketEvents {
                 }
             });
 
-            // ICI
             socket.on("createCanvas", function (dataStr: string) {
                 try {
                     console.log(dataStr);
@@ -50,9 +49,9 @@ export default class CanvasSocketEvents {
                     if (response.isCreated) {
                         // (broadcast)
                         io.sockets.emit("canvasCreated", canvasManager.getCanvasRoomsSERI());
-                        
                         console.log(socket.id + " created  canvasRoom " + data.canevas.name);
                         canvasManager.logHistory(canvasRoomId, data.username, `created the canvas`);
+                       // canvasDataStoreManager.addCanvas(data.canevas, canvasManager.getCanvasLogHistorySERI(canvasRoomId))
                     } else {
                         console.log(socket.id + " failed to create canvasRoom " + data.canevas.name);
                     }

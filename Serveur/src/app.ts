@@ -24,14 +24,14 @@ import datastore from "./services/datastore/datastore";
 import UserAccountManager from "./components/UserAccountManager";
 const userAccountManager = new UserAccountManager(datastore);
 
+import CanvasDataStoreManager from "./services/canvas/components/CanvasDataStoreManager";
+const canvasDataStoreManager = new CanvasDataStoreManager(datastore);
+
 import ChatroomManager from "./services/chat/components/ChatroomManager";
 const chatroomManager = new ChatroomManager();
 
 import CanvasManager from "./services/canvas/components/CanvasManager";
-const canvasManager = new CanvasManager();
-
-import CanvasDataStoreManager from "./services/canvas/components/CanvasDataStoreManager";
-const canvasDataStoreManager = new CanvasDataStoreManager(datastore);
+const canvasManager = new CanvasManager(canvasDataStoreManager);
 
 
 // Initialise Socket Events
