@@ -45,7 +45,7 @@
 
             <Rectangle VerticalAlignment="Stretch" Fill="Black" Margin="706,126,389,74"></Rectangle>
 
-            <Button Content="Leave Tutorial" Margin="923,31,27,637" Command="{Binding GoToGalleryCommand}" Width="150"/>
+            <Button Content="Leave Tutorial" Margin="923,31,27,637" Command="{Binding LeaveTutorialCommand}" Width="150"/>
 
             <TextBlock Margin="726,118,11,535" FontSize="28" Text="{Binding TutorialTextTitle}"></TextBlock>
 

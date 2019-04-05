@@ -490,6 +490,14 @@
     <Resource Include="Resources\NewLook\horizontal-align-center.png" />
     <Resource Include="Resources\NewLook\left-align.png" />
     <Resource Include="Resources\TutorialImages\Tutorial.png" />
+    <Resource Include="Resources\withplus\activity.png" />
+    <Resource Include="Resources\withplus\actor.png" />
+    <Resource Include="Resources\withplus\artifact.png" />
+    <Resource Include="Resources\withplus\class.png" />
+    <Resource Include="Resources\withplus\comment.png" />
+    <Resource Include="Resources\withplus\freetext.png" />
+    <Resource Include="Resources\withplus\link.png" />
+    <Resource Include="Resources\withplus\phase.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

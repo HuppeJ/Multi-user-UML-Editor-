@@ -102,9 +102,41 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
     override fun outlineColor(color : String, borderType: Int){
         when(borderType){
-            0->{imgBackground!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)}
-            //TODO: Faire d'autre svg avec les contours en dashed
-            1->{}
+            0->{
+                when(this.shapeType){
+                    ShapeTypes.DEFAULT->{ }
+
+                    ShapeTypes.ARTIFACT -> {
+                        imgBackground!!.setBackgroundResource(R.drawable.ic_artefact)
+                    }
+                    ShapeTypes.ACTIVITY -> {
+                        imgBackground!!.setBackgroundResource(R.drawable.ic_activity)
+                    }
+                    ShapeTypes.ROLE -> {
+                        imgBackground!!.setBackgroundResource(R.drawable.ic_actor)
+
+                    }
+                }
+                imgBackground!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
+            }
+            1->{
+                when(this.shapeType){
+                    ShapeTypes.DEFAULT->{ }
+
+                    ShapeTypes.ARTIFACT -> {
+                        imgBackground!!.setBackgroundResource(R.drawable.ic_artefact_dashed)
+                    }
+                    ShapeTypes.ACTIVITY -> {
+                        imgBackground!!.setBackgroundResource(R.drawable.ic_activity_dashed)
+                    }
+                    ShapeTypes.ROLE -> {
+                        imgBackground!!.setBackgroundResource(R.drawable.ic_actor_dashed)
+
+
+                    }
+                }
+                imgBackground!!.background.mutate().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_IN)
+            }
         }
     }
 
