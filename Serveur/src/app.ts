@@ -24,11 +24,14 @@ import datastore from "./services/datastore/datastore";
 import UserAccountManager from "./components/UserAccountManager";
 const userAccountManager = new UserAccountManager(datastore);
 
+import CanvasDataStoreManager from "./services/canvas/components/CanvasDataStoreManager";
+const canvasDataStoreManager = new CanvasDataStoreManager(datastore);
+
 import ChatroomManager from "./services/chat/components/ChatroomManager";
 const chatroomManager = new ChatroomManager();
 
 import CanvasManager from "./services/canvas/components/CanvasManager";
-const canvasManager = new CanvasManager();
+const canvasManager = new CanvasManager(canvasDataStoreManager);
 
 
 // Initialise Socket Events
@@ -39,7 +42,7 @@ import AuthenticationSocketEvents from "./services/Authentication/Authentication
 new AuthenticationSocketEvents(io, userAccountManager);
 
 import CanvasSocketEvents from "./services/canvas/CanvasSocketEvents";
-new CanvasSocketEvents(io, canvasManager);
+new CanvasSocketEvents(io, canvasManager, canvasDataStoreManager);
 
 import CanvasGallerySocketEvents from './services/canvas/CanvasGallerySocketEvents';
 new CanvasGallerySocketEvents(io, canvasManager);

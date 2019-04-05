@@ -22,8 +22,23 @@ namespace PolyPaint.Templates
             this.type = type;
             this.name = name;
             this.shapeStyle = shapeStyle.Clone();
-            this.linksTo = linksTo;
-            this.linksFrom = linksFrom;
+            if(linksTo == null)
+            {
+                linksTo = new List<string>();
+            }
+            else
+            {
+                this.linksTo = linksTo;
+            }
+
+            if (linksFrom == null)
+            {
+                linksFrom = new List<string>();
+            }
+            else
+            {
+                this.linksFrom = linksFrom;
+            }
         }
 
         public BasicShape forServer()

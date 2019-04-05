@@ -7,30 +7,30 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Holder.UserHolder
+import androidx.fragment.app.FragmentActivity
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.Tutorial.Section
 import com.polypaint.polypaint.Tutorial.Section1
 import kotlinx.android.synthetic.main.dialog_tutorial.*
 import kotlinx.android.synthetic.main.dialog_tutorial.view.*
+import kotlinx.android.synthetic.main.tutorial_default.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 import android.util.Log
 import androidx.fragment.app.FragmentManager
-
+import kotlin.collections.HashMap
 
 class TutorialDialogFragment: DialogFragment() {
 
     var currentSection : Section? = null
     var indexes : ArrayList<String> = ArrayList()
+    var mapTutorial : HashMap<String, View> = HashMap()
     var buttons : ArrayList<Button> = ArrayList()
     var viewSelf : View? = null
     val lptitle : ViewGroup.LayoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -43,8 +43,9 @@ class TutorialDialogFragment: DialogFragment() {
             val builder = AlertDialog.Builder(it)
             viewSelf = it.layoutInflater.inflate(R.layout.dialog_tutorial,null)
 
-            val txtContainer : TextView = viewSelf!!.findViewById(R.id.text_container)
+
             buildIndexes()
+            mapSectionAndViews(it)
 
             val btnSecNext: Button = viewSelf!!.findViewById(R.id.next_section)
             btnSecNext.setOnClickListener {
@@ -99,6 +100,16 @@ class TutorialDialogFragment: DialogFragment() {
         } catch (e: IllegalStateException) {
             Log.d("ABSDIALOGFRAG", "Exception", e)
         }
+    }
+    private fun mapSectionAndViews(it : FragmentActivity){
+        val tutorialText = resources.getStringArray(R.array.tutorial_all_text).toList()
+        for (i in  0..indexes.size-1){
+            var viewInflate = it.layoutInflater.inflate(R.layout.tutorial_default,null)
+            viewInflate.title_text_view.text = indexes[i]
+            viewInflate.body_text_view.text = tutorialText[i]
+            mapTutorial.put(indexes[i], viewInflate)
+        }
+
     }
     private fun buildIndexes(){
         var titles = resources.getStringArray(R.array.tutorial_title_array).toList()
@@ -173,12 +184,18 @@ class TutorialDialogFragment: DialogFragment() {
     }
 
     private fun onClickIndex(it:View){
+        val relLayout = viewSelf!!.findViewById<LinearLayout>(R.id.parent_rel_layout)
+        if(relLayout.childCount > 0){
+            relLayout.removeAllViews()
+        }
         for(i in 0..buttons.size-1){
             buttons[i].setTypeface(null, Typeface.NORMAL)
             if(buttons[i] == it){
                 selectedIndex = i
                 buttons[i].setTypeface(null, Typeface.BOLD)
-                (viewSelf!!.findViewById(R.id.text_container) as TextView).text = buttons[i].text
+                relLayout.addView(mapTutorial[indexes[i]])
+
+                //(viewSelf!!.findViewById(R.id.text_container) as TextView).text = buttons[i].text
             }
         }
     }

@@ -46,8 +46,8 @@ namespace PolyPaint.CustomInk
             name = basicShape.name;
             strokeType = basicShape.type;
             shapeStyle = basicShape.shapeStyle;
-            linksTo = new List<string>();
-            linksFrom = new List<string>();
+            linksTo = basicShape.linksTo;
+            linksFrom = basicShape.linksFrom;
         }
 
         protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)

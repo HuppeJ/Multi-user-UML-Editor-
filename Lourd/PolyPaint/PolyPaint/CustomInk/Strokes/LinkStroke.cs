@@ -556,7 +556,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         internal override bool HitTestPoint(Point point)
         {
-            return GetGeometry().FillContains(point);
+            return GetGeometry().FillContains(point, 3, ToleranceType.Absolute);
         }
 
         internal override bool HitTestPointIncludingEdition(Point point)

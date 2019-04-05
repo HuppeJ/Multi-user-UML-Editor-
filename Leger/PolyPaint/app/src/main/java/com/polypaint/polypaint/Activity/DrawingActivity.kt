@@ -52,6 +52,7 @@ import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
 import com.polypaint.polypaint.ResponseModel.HasUserDoneTutorialResponse
 import com.polypaint.polypaint.SocketReceptionModel.*
 import kotlinx.android.synthetic.main.toolbar.*
+import kotlinx.android.synthetic.main.view_freetext.view.*
 import java.lang.reflect.Type
 
 
@@ -132,8 +133,8 @@ class DrawingActivity : AppCompatActivity(){
             it.dispatchSetSelected(false)
         }
 
-        add_button.setOnClickListener {
-            addOnCanevas(ShapeTypes.DEFAULT)
+        freetext_button.setOnClickListener {
+            addOnCanevas(ShapeTypes.FREETEXT)
             saveCanevas()
         }
 
@@ -160,6 +161,20 @@ class DrawingActivity : AppCompatActivity(){
         }
         phase_button.setOnClickListener {
             addOnCanevas(ShapeTypes.PHASE)
+            saveCanevas()
+        }
+        link_button.setOnClickListener {
+            var linkDefaultPath : ArrayList<Coordinates> = ArrayList()
+            linkDefaultPath.add(Coordinates(65.0,65.0))
+            linkDefaultPath.add(Coordinates(250.0,65.0))
+            var newLink: Link = Link(UUID.randomUUID().toString(),"Link", AnchorPoint(), AnchorPoint(), 1, LinkStyle("#FF000000",10,0), linkDefaultPath )
+
+            ViewShapeHolder.getInstance().canevas.addLink(newLink)
+            val linkView: LinkView = LinkView(this)
+            linkView.setLinkAndAnchors(newLink)
+            ViewShapeHolder.getInstance().linkMap.forcePut(linkView, newLink.id)
+            parent_relative_layout?.addView(linkView)
+            ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(newLink.id)
             saveCanevas()
         }
 
@@ -372,6 +387,13 @@ class DrawingActivity : AppCompatActivity(){
                     //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
                 }
+                ShapeTypes.FREETEXT.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.FREETEXT)
+                    parent_relative_layout?.addView(viewType)
+
+                    //For Sync
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                }
 
             }
             syncLayoutFromCanevas()
@@ -416,6 +438,11 @@ class DrawingActivity : AppCompatActivity(){
                 shapeStyle.height = 189.0
                 shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Phase", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
+            ShapeTypes.FREETEXT->{
+                shapeStyle.width = 189.0
+                shapeStyle.height = 189.0
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "FreeText", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+            }
         }
 
         return shape
@@ -446,6 +473,9 @@ class DrawingActivity : AppCompatActivity(){
             }
             ShapeTypes.PHASE -> {
                 viewType = PhaseView(this)
+            }
+            ShapeTypes.FREETEXT->{
+                viewType = FreeTextView(this)
             }
         }
         viewType.addView(viewContainer)
@@ -636,7 +666,7 @@ class DrawingActivity : AppCompatActivity(){
                 //TODO : LINKS
                 Log.d("unstackView", "Link "+shapeUnstacked.name)
                 ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(shapeUnstacked.id)
-
+                //EmitAddLink ?
                 runOnUiThread {
                     ViewShapeHolder.getInstance().canevas.addLink(shapeUnstacked)
                     val linkView: LinkView = LinkView(this)
@@ -740,6 +770,15 @@ class DrawingActivity : AppCompatActivity(){
                             }
                         }
 
+                    }
+                    ShapeTypes.FREETEXT.value()->{
+                        runOnUiThread {
+                            view as FreeTextView
+                            view.free_text_text.text = basicShape.name
+                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                        }
                     }
 
                 }

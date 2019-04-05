@@ -30,7 +30,7 @@
     <string-array name="tutorial_title_array">
         <item>Shapes</item>
         <item>Links</item>
-        <item>Transfo</item>
+        <item>Transformation</item>
         <item>Tools</item>
     </string-array>
 
@@ -51,6 +51,29 @@
         <item>Lasso</item>
         <item>Clear all</item>
         <item>Canvas Resize</item>
+    </string-array>
+
+    <string-array name="tutorial_all_text">
+        <item>This section will show you all the actions you can do on shapes. Available shapes are : Activity, Artifact, Comment Text, Free Text, Phase, Role and UML Class"</item>
+        <item>To add a shape, you must tap on the desired shape located in the toolbar on the screen`s left-hand side. Once tapped, the shape should appear in the upper-left corner of the canvas area.</item>
+        <item>To move a shape, you must select it first. Once selected, the shape will have a blue outline that indicates that you are now free to edit this shape. If a shape has a red outline, this means someone else has selected this shape. You must wait for your buddy to finish before editing this shape. To move a shape, you can simply drag the shape around.</item>
+        <item>To delete a shape, you must select it first. Once selected, the shape will have a blue outline that indicates that you are now free to edit this shape. If a shape has a red outline, this means someone else has selected this shape. You must wait for your buddy to finish before editing this shape. To delete a shape, you just have to tap the little x in the shape`s upper-right corner. </item>
+        <item>To edit a shape, you must select it first. Once selected, the shape will have a blue outline that indicates that you are now free to edit this shape. If a shape has a red outline, this means someone else has selected this shape. You must wait for your buddy to finish before editing this shape. To edit a shape, you just have to tap the pen and paper in the shape`s upper-left corner. Once tap, you will be prompt with an edit modal. You will be given many option such as : the shape`s name, the shape`s outline and background color. For the UML Class, you will also have the option to change the attributes and method field.</item>
+        <item>This section will show you all the actions you can do on links. Links can live on their own, but are mainly use to link shapes together. You always start with a default link, but there multiple type of links implemented such as :  If a two-point link is not enough for you, you can create multiple kinks in them by dragging the button on the middle of a segment.</item>
+        <item>To add a link, you must select a shape, then from an anchor point, drag the link out of it.</item>
+        <item>To move a link, you must select it first. Similar to the shapes, the link will turn blue once you have selected it. A box will appear around the link. You can drag from anywhere in this box to move the whole link. Beware that if a link`s end is anchor to a shape, the anchored end will stay in-place. You can de-anchor a link`s end by simply moving the end outside of a shapes anchor point.</item>
+        <item>To delete a link, you must select it first. Similar to the shapes, the link will turn blue once you have selected it.</item>
+        <item>To edit a link, you must select it first. Similar to the shapes, the link will turn blue once you have selected it. Like shapes, you can edit a link by tapping the pen and paper inside the bounding box of a link. You will be prompt with a modal that gives you the following options : link name, link type, link color, link type, and the multiplicity. The multiplicity will be draw at the respective end point of the links.</item>
+        <item>This section will, show you the two transformation possible on all shapes and links in this app. Like any action on them, you must select a shape or link first. The two possible transformations are : Resize and Rotation.</item>
+        <item>To resize a shape or a link, you must use the stretching button and drag it. For a shape, the button is located in the shape`s bottom-right corner. The expected result on all shape is similar, the text will not scale, but the image will. For a link, the button should be in the bottom-right corner of the bounding box. When resizing a link, all the point in the link`s path will move along side the bounding box, except, obviously, the link`s end that are anchored.</item>
+        <item>To rotate a shape or a link, you must use the rotation gesture on a selected item. What we mean by rotating gesture is using two finger that makes a rotation. Like if you are drawing a circle with your two finger at the same time. On a shape, the whole shape and the text will rotate. But on a link, only the non-anchored point will move.</item>
+        <item>To help you do basic manipulation, we give you 6 tools to edit the canvas. The 6 tools are : Cut, Duplicate, Stack / Unstack, Lasso Selection, Clear all canvas and canvas resize </item>
+        <item>The cut tool is use to save an drawing element (shape or link) selected by you. The operation will delete it from the canvas but will be save in the clipboard. Beware, if you cut a drawing element and something was already in your clipboard, you will completely loose that something. This will also work if you have multiple items selected (see Lasso section).</item>
+        <item>The duplicate function serve two purposes. The first one is to duplicate a selected drawing element. If you duplicate a drawing element, the links and anchor will not follow on the duplicated shape. The second one is to paste what was in the clipboard. Once pasted, the shapes and links will have lost all of his anchored properties.</item>
+        <item>The tool stack / unstack is a special one. You can stack all of YOUR drawing element from the newest to the oldest. Once stacked, you can unstack the shapes that are in your stack. Much like the cut and duplicate behavior, when a drawing element goes into the stack, it will loose all of his anchored properties.</item>
+        <item>The Lasso tools will help you do action on multiple drawing element. To use it, press on the lasso in the toolbar, then tap on the canvas to make the selection. Each tap will add a point to the selection path. Once closed, all the drawing elements inside the selection area will be selected. Once you have multiple item selected, you can move them, cut them or duplicate them. You can not resize or rotate them all at the same time.</item>
+        <item>The clear all tool is pretty simple. It deletes everything from the canvas, for you and anyone in the room. Be careful with this one, there is no recovery system !</item>
+        <item>This function let you resize the overall space of the canvas. The canvas will highlight in blue with a resize button. Just drag it and it will create more space for your drawing.</item>
     </string-array>
 
 </resources>
