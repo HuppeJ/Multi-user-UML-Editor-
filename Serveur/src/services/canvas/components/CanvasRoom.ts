@@ -419,49 +419,26 @@ export default class CanvasRoom {
     }
 
     public getSelectedFormsSERI(data: IEditGalleryData): string {
-        let selectedFormsArray: string[] = Array.from(this.selectedForms.keys());
-
-        const filteredSelectedFormsArray = selectedFormsArray.filter((key) => {
-            if (this.selectedForms.get(key) == data.username) {
-                return false;
-            }
-
-            return true;
-        });
-
-        const filteredSelectedFormsArrayIds: string [] = [];
-
-        filteredSelectedFormsArray.forEach((formStr) => {
-            const form = JSON.parse(formStr);
-            filteredSelectedFormsArrayIds.push(form.id)
-        });
+        const selected: any = Array.from(this.selectedForms.keys());
+        const filtered: string [] = [];
+        selected.forEach((item: any) => {
+            filtered.push(item.id);
+        })
 
         return JSON.stringify({
-            selectedForms: filteredSelectedFormsArrayIds
+            selectedForms: filtered
         });
     }
 
     public getSelectedLinksSERI(data: IEditGalleryData): string {
-        let selectedLinksArray: string[] = Array.from(this.selectedLinks.keys());
-
-        const filteredSelectedLinksArray = selectedLinksArray.filter((key) => {
-            if (this.selectedLinks.get(key) == data.username) {
-                return false;
-            }
-
-            return true;
-        });
-
-        const filteredSelectedLinksArrayIds: string [] = [];
-
-        filteredSelectedLinksArray.forEach((linkStr) => {
-            const link = JSON.parse(linkStr);
-            filteredSelectedLinksArrayIds.push(link.id)
-        });
-
+        const selected: any = Array.from(this.selectedLinks.keys());
+        const filtered: string [] = [];
+        selected.forEach((item: any) => {
+            filtered.push(item.id);
+        })
 
         return JSON.stringify({
-            selectedLinks: filteredSelectedLinksArrayIds
+            selectedLinks: filtered
         });
     }
 

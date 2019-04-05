@@ -2,12 +2,19 @@ import CanvasRoom from "./CanvasRoom";
 import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData, IResizeCanevasData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
+import CanvasDataStoreManager from "./CanvasDataStoreManager";
 
 export default class CanvasManager {
     public canvasRooms: Map<string, CanvasRoom>; // [key: canvasRoomId, value: canvasRoom]
 
-    constructor() {
+    constructor(private canvasDataStoreManager: CanvasDataStoreManager) {
+        
         this.canvasRooms = new Map<string, CanvasRoom>();
+        // this.initializeCanvasManagerState();
+    }
+
+    private async initializeCanvasManagerState() {
+        await this.canvasDataStoreManager.getAllCanvases();
     }
 
     public getCanvasRoomIdFromName(canvasName: string): string {
@@ -42,7 +49,7 @@ export default class CanvasManager {
         return canvasRoom.logHistory(username, message);
     }
 
-    public getCanvasLogHistory(canvasRoomId: string): string {
+    public getCanvasLogHistorySERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return "";

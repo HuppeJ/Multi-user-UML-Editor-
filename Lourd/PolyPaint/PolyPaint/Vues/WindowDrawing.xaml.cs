@@ -167,6 +167,11 @@ namespace PolyPaint.Vues
                     popUpCommentVue.setParameters(strokes[0] as CustomStroke);
                     popUpComment.IsOpen = true;
                 }
+                else if (strokes[0] is FloatingTextStroke)
+                {
+                    popUpFloatingTextVue.setParameters(strokes[0] as CustomStroke);
+                    popUpFloatingText.IsOpen = true;
+                }
                 else
                 {
                     popUpNameVue.setParameters(strokes[0] as CustomStroke);
@@ -201,6 +206,23 @@ namespace PolyPaint.Vues
         public void CommentEdition(string text, Color borderColor, Color fillColor, int lineStyle)
         {
             popUpComment.IsOpen = false;
+            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = text;
+            stroke.shapeStyle.borderColor = borderColor.ToString();
+            stroke.shapeStyle.backgroundColor = fillColor.ToString();
+            stroke.shapeStyle.borderStyle = lineStyle;
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
+            surfaceDessin.RefreshChildren();
+            surfaceDessin.RefreshSelectedShape(stroke);
+            IsEnabled = true;
+        }
+
+
+        public void FloatingTextEdition(string text, Color borderColor, Color fillColor, int lineStyle)
+        {
+            popUpFloatingText.IsOpen = false;
             ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
             stroke.shapeStyle.borderColor = borderColor.ToString();
@@ -365,6 +387,70 @@ namespace PolyPaint.Vues
 
             InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(classStroke);
             DrawingService.AddClassFromCode(eventArgs);
+        }
+
+        private void AdjustToLargestClassWidth(object sender, EventArgs e)
+        {
+            StrokeCollection sc = surfaceDessin.Strokes;
+            StrokeCollection selectedStrokes = surfaceDessin.SelectedStrokes;
+            StrokeCollection selectedsc = new StrokeCollection();
+            StrokeCollection updatedsc = new StrokeCollection();
+
+            double maxWidth = 0;
+
+            foreach(ShapeStroke stroke in sc)
+            {
+                if(stroke.strokeType == 0)
+                {
+                    if(stroke.shapeStyle.width > maxWidth)
+                    {
+                        maxWidth = stroke.shapeStyle.width;
+                    }
+                }
+            }
+
+            for(int i=0; i<sc.Count; i++)
+            {
+                if ((sc[i] as ShapeStroke).strokeType == 0)
+                {
+                    (sc[i] as ShapeStroke).shapeStyle.width = maxWidth;
+                    var updatedStroke = sc[i];
+                    surfaceDessin.Strokes.RemoveAt(i);
+                    surfaceDessin.Strokes.Insert(i, updatedStroke);
+                    if (selectedStrokes.Contains(sc[i]))
+                    {
+                        selectedsc.Add(sc[i]);
+                    }
+                    // Send modifiation to server
+                    updatedsc.Add(sc[i]);
+                }
+            }
+
+            surfaceDessin.Select(selectedsc);
+            DrawingService.UpdateShapes(updatedsc);
+        }
+
+        private void ExportCanvas(object sender, EventArgs e)
+        {
+            // Displays a SaveFileDialog so the user can save the Image  
+            // assigned to Button2.  
+            System.Windows.Forms.SaveFileDialog saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            saveFileDialog1.Filter = "PNG Image|*.png";
+            saveFileDialog1.Title = "Save your canvas";
+            saveFileDialog1.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.  
+            if (saveFileDialog1.FileName != "")
+            {
+                // Saves the Image via a FileStream created by the OpenFile method.  
+                System.IO.FileStream fs =
+                   (System.IO.FileStream)saveFileDialog1.OpenFile();
+
+                surfaceDessin.GetCanvas().Save(fs,
+                           System.Drawing.Imaging.ImageFormat.Png);
+
+                fs.Close();
+            }
         }
     }
 }
