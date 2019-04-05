@@ -726,6 +726,7 @@ namespace PolyPaint.CustomInk
             InvalidateArrange();
 
             DrawingService.UpdateShapes(new StrokeCollection { customStroke });
+            DrawingService.UpdateLinks(new StrokeCollection { customStroke });
         }
 
         #region DragDelta

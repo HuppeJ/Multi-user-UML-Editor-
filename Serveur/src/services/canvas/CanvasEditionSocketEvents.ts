@@ -47,6 +47,8 @@ export default class CanvasEditionSocketEvents {
 
                     if (response.areFormsUpdated) {
                         console.log(socket.id + " updated forms " + data.forms);
+                        console.log(socket.id + " linksTo " + data.forms[0].linksTo);
+                        
                         io.to(canvasRoomId).emit("formsUpdated", dataStr);
                         canvasManager.logHistory(canvasRoomId, data.username, `updated forms`);
                     } else {

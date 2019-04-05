@@ -57,8 +57,8 @@ namespace PolyPaint.Services
                 RequestChatrooms();
             });
 
-            // Makes sure the chatroom "Everyone" is on the server
-            //CreateChatroom("MainRoom");
+            // Makes sure the chatroom "MainRoom" is joined
+            JoinChatroom("MainRoom");
         }
         
         public void SendMessage(string message, string username, long timestamp, string chatroomName)

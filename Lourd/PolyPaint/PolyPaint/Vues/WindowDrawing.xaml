@@ -187,6 +187,10 @@
                         Click="OpenClassPopup"
                         Content="Code" ToolTip="CLASS FROM CODE">
                 </Button>
+                <Button x:Name="LargestClassWidth" Width="40" Height="40" Margin="5" Padding="0,0"
+                        Click="AdjustToLargestClassWidth"
+                        Content="Width" ToolTip="Adjust to largest class width">
+                </Button>
 
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
