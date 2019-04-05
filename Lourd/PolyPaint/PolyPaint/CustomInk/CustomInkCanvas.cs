@@ -671,6 +671,10 @@ namespace PolyPaint.CustomInk
                 case StrokeTypes.LINK:
                     customStroke = new LinkStroke(e.Stroke.StylusPoints);
                     break;
+                case StrokeTypes.FLOATINGTEXT:
+                    customStroke = new CommentStroke(pts);
+                    (customStroke as CommentStroke).shapeStyle.borderColor = "#00FFFFFF";
+                    break;
                 default:
                     customStroke = new ClassStroke(pts);
                     break;

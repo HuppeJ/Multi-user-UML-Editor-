@@ -122,6 +122,15 @@
                         <Image Source="/Resources/NewLook/text-box-tool.png"  />
                     </StackPanel>
                 </Button>
+                <Button x:Name="FloatingText" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=FLOATINGTEXT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=FLOATINGTEXT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="FLOATINGTEXT">
+                    <StackPanel>
+                        <Image Source="/Resources/NewLook/text-box-tool.png"  />
+                    </StackPanel>
+                </Button>
                 <Button x:Name="Phase" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -205,6 +214,9 @@
         </Popup>
         <Popup x:Name="popUpLink" Placement="Center">
             <Vues:LinkPopup x:Name="popUpLinkVue"/>
+        </Popup>
+        <Popup x:Name="popUpComment" Placement="Center">
+            <Vues:CommentPopup x:Name="popUpCommentVue"/>
         </Popup>
         <Popup x:Name="popUpClassFromCode" Placement="Center">
             <Vues:ClassFromCodePopup x:Name="popUpClassFromCodeVue"/>

@@ -162,6 +162,11 @@ namespace PolyPaint.Vues
                     popUpLinkVue.setParameters();
                     popUpLink.IsOpen = true;
                 }
+                else if (strokes[0] is CommentStroke)
+                {
+                    popUpCommentVue.setParameters(strokes[0] as CustomStroke);
+                    popUpComment.IsOpen = true;
+                }
                 else
                 {
                     popUpNameVue.setParameters(strokes[0] as CustomStroke);
@@ -180,6 +185,22 @@ namespace PolyPaint.Vues
         public void Rename(string text, Color borderColor, Color fillColor, int lineStyle )
         {
             popUpName.IsOpen = false;
+            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = text;
+            stroke.shapeStyle.borderColor = borderColor.ToString();
+            stroke.shapeStyle.backgroundColor = fillColor.ToString();
+            stroke.shapeStyle.borderStyle = lineStyle;
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
+            surfaceDessin.RefreshChildren();
+            surfaceDessin.RefreshSelectedShape(stroke);
+            IsEnabled = true;
+        }
+
+        public void CommentEdition(string text, Color borderColor, Color fillColor, int lineStyle)
+        {
+            popUpComment.IsOpen = false;
             ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
             stroke.shapeStyle.borderColor = borderColor.ToString();
