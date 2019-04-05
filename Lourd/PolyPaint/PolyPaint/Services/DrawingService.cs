@@ -478,11 +478,29 @@ namespace PolyPaint.Services
                 {
                     if(customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {
-                        forms.Add((customStroke as ClassStroke).GetClassShape().forServer());
+                        BasicShape basicShape = (customStroke as ClassStroke).GetBasicShape().forServer();
+                        if (basicShape.linksTo == null)
+                        {
+                            basicShape.linksTo = new List<string>();
+                        }
+                        if (basicShape.linksFrom == null)
+                        {
+                            basicShape.linksFrom = new List<string>();
+                        }
+                        forms.Add(basicShape);
                     }
                     else
                     {
-                        forms.Add((customStroke as ShapeStroke).GetBasicShape().forServer());
+                        BasicShape basicShape = (customStroke as ShapeStroke).GetBasicShape().forServer();
+                        if (basicShape.linksTo == null)
+                        {
+                            basicShape.linksTo = new List<string>();
+                        }
+                        if (basicShape.linksFrom == null)
+                        {
+                            basicShape.linksFrom = new List<string>();
+                        }
+                        forms.Add(basicShape);
                     }
                 }
             }
@@ -595,7 +613,7 @@ namespace PolyPaint.Services
                     shapeStroke = new PhaseStroke(shape, points);
                     break;
                 default:
-                    shapeStroke = new ClassStroke(shape as ClassShape, points);
+                    shapeStroke = new ActorStroke(shape, points);
                     break;
             }
 

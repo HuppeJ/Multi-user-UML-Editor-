@@ -219,6 +219,18 @@ namespace PolyPaint.CustomInk
 
             canvas.AddStroke(linkBeingCreated);
             DrawingService.CreateLink(linkBeingCreated);
+
+            StrokeCollection shapesToUpdate = new StrokeCollection();
+            if (shapeStroke != null)
+            {
+                shapesToUpdate.Add(shapeStroke);
+            }
+            if (strokeTo != null)
+            {
+                shapesToUpdate.Add(strokeTo);
+            }
+            DrawingService.UpdateShapes(shapesToUpdate);
+
             canvas.Select(new StrokeCollection { linkBeingCreated });
         }
 

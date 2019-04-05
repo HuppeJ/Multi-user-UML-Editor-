@@ -76,7 +76,10 @@ namespace PolyPaint.CustomInk
                     // mettre a jour la position du point initial (from)
                     linkBeingUpdated.from = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
                     strokeToAttach?.linksFrom.Add(linkBeingUpdated.guid.ToString());
-
+                    if (strokeToAttach != null)
+                    {
+                        DrawingService.UpdateShapes(new StrokeCollection { strokeToAttach });
+                    }
                 }
                 else if (linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
                 {
@@ -85,6 +88,10 @@ namespace PolyPaint.CustomInk
                     // mettre a jour la position du point final (to)
                     linkBeingUpdated.to = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
                     strokeToAttach?.linksTo.Add(linkBeingUpdated.guid.ToString());
+                    if(strokeToAttach != null)
+                    {
+                        DrawingService.UpdateShapes(new StrokeCollection { strokeToAttach });
+                    }
                 }
 
                 linkBeingUpdated.addStylusPointsToLink();
@@ -570,6 +577,16 @@ namespace PolyPaint.CustomInk
             CustomStroke stroke = (CustomStroke)e.Stroke;
             AddStroke(stroke);
             AddTextBox(stroke);
+            if (stroke.isLinkStroke() && (stroke as LinkStroke).style.type == 1) // dotted linkStroke
+            {
+                Path path = new Path();
+                path.Data = stroke.GetGeometry();
+
+                Children.Add(path);
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
+            }
+
         }
 
         private void OnRemoteSelection(StrokeCollection strokes)
@@ -609,6 +626,17 @@ namespace PolyPaint.CustomInk
                     int index = Strokes.IndexOf(stroke2);
                     Strokes.RemoveAt(index);
                     Strokes.Insert(index, stroke);
+
+                    if (stroke.isLinkStroke() && (stroke as LinkStroke).style.type == 1) // dotted linkStroke
+                    {
+                        Path path = new Path();
+                        path.Data = stroke.GetGeometry();
+
+                        Children.Add(path);
+                        AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                        myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
+                    }
+
                     break;
                 }
             }
@@ -697,8 +725,8 @@ namespace PolyPaint.CustomInk
                     {
                         double ah = linkStroke.path.Count / 2;
                         int middleIndex = (int)Math.Floor(ah);
-                        x = linkStroke.path[middleIndex].x - 15;
-                        y = linkStroke.path[middleIndex].y + 15;
+                        x = linkStroke.path[middleIndex].x;
+                        y = linkStroke.path[middleIndex].y - 20;
                     }
                     else if(linkStroke.path.Count > 0)
                     {
@@ -706,7 +734,7 @@ namespace PolyPaint.CustomInk
                         int middleIndex = biggerMiddleIndex - 1;
 
                         x = (linkStroke.path[middleIndex].x + linkStroke.path[biggerMiddleIndex].x) / 2;
-                        y = (linkStroke.path[middleIndex].y + linkStroke.path[biggerMiddleIndex].y) / 2;
+                        y = (linkStroke.path[middleIndex].y + linkStroke.path[biggerMiddleIndex].y) / 2 - 20;
                     }
                     
                     CreateNameTextBox(stroke, x, y);
@@ -722,7 +750,7 @@ namespace PolyPaint.CustomInk
             double fromX = stylusPoints[0].X;
             double fromY = stylusPoints[0].Y - 20;
 
-            double toX = stylusPoints[stylusPoints.Count - 1].X;
+            double toX = stylusPoints[stylusPoints.Count - 1].X ;
             double toY = stylusPoints[stylusPoints.Count - 1].Y - 20;
 
             CustomTextBox from = new CustomTextBox();
