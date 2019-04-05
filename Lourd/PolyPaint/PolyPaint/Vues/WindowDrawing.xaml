@@ -26,7 +26,9 @@
                         <GradientStop Color="#FFE0E0E0" Offset="1"/>
                     </LinearGradientBrush>
                 </StackPanel.Background>
-                <Button x:Name="reinitialiser" Width="50" Height="50" Margin="5" Background="#00000000" Click="RefreshChildren" Command="{Binding Reinitialiser}" Foreground="Black">
+                <Button x:Name="reinitialiser" Width="50" Height="50" Margin="5" Background="#00000000" 
+                        Click="RefreshChildren" Command="{Binding Reinitialiser}" Foreground="Black"
+                        ToolTip="Reset" >
                     <StackPanel>
                         <Image Source="/Resources/NewLook/reset.png"/>
                     </StackPanel>
@@ -34,12 +36,15 @@
                 <Button x:Name="empiler" Width="50" Height="50" Margin="5" Background="#00000000" 
                         Command="{Binding Empiler}" 
                         CommandParameter="{Binding ElementName=surfaceDessin}"
-                        Click="Empiler" FontSize="32" Foreground="Black">
+                        Click="Empiler" FontSize="32" Foreground="Black"
+                        ToolTip="Pile up">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/unpile.png"/>
                     </StackPanel>
                 </Button>
-                <Button x:Name="depiler" Width="50" Height="50" Margin="5" Background="#00000000" Command="{Binding Depiler}" Click="RefreshChildren" FontSize="32" Foreground="Black">
+                <Button x:Name="depiler" Width="50" Height="50" Margin="5" Background="#00000000" 
+                        Command="{Binding Depiler}" Click="RefreshChildren" FontSize="32" Foreground="Black"
+                        ToolTip="Unpile">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/pile.png"/>
                     </StackPanel>
@@ -52,7 +57,8 @@
                         HorizontalContentAlignment="Left"                            
                         BorderBrush="Transparent"
                         Background="Transparent"                                
-                        Click="DupliquerSelection">
+                        Click="DupliquerSelection"
+                        ToolTip="Duplicate">
                         <StackPanel>
                             <Image Source="/Resources/NewLook/duplicate.png"  />
                         </StackPanel>
@@ -62,7 +68,8 @@
                         BorderBrush="Transparent"
                         Background="Transparent"
                         Foreground="Black"
-                        Click="SupprimerSelection" FontSize="14">
+                        Click="SupprimerSelection" FontSize="14"
+                        ToolTip="Cut">
                         <StackPanel>
                             <Image Source="/Resources/NewLook/scissors.png"  />
                         </StackPanel>
@@ -72,7 +79,8 @@
                             BorderBrush="{Binding OutilSelectionne, ConverterParameter=lasso, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                             Background="{Binding OutilSelectionne, ConverterParameter=lasso, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                             Command="{Binding ChoisirOutil}"
-                            CommandParameter="lasso">
+                            CommandParameter="lasso"
+                            ToolTip="Selection">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/lasso.png"  />
                     </StackPanel>
@@ -84,7 +92,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="CLASS_SHAPE">
+                        CommandParameter="CLASS_SHAPE" ToolTip="CLASS">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/class.png"  />
                     </StackPanel>
@@ -93,13 +101,13 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="ROLE">
+                        CommandParameter="ROLE" ToolTip="ROLE">
                 </Button>
                 <Button x:Name="Artifact" Width="30" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="ARTIFACT">
+                        CommandParameter="ARTIFACT" ToolTip="ARTIFACT">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/artefact.png"  />
                     </StackPanel>
@@ -108,7 +116,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="ACTIVITY">
+                        CommandParameter="ACTIVITY" ToolTip="ACTIVITY">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/activity.png"  />
                     </StackPanel>
@@ -117,7 +125,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="COMMENT">
+                        CommandParameter="COMMENT" ToolTip="COMMENT">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/text-box-tool.png"  />
                     </StackPanel>
@@ -126,7 +134,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=FLOATINGTEXT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=FLOATINGTEXT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="FLOATINGTEXT">
+                        CommandParameter="FLOATINGTEXT" ToolTip="FLOATINGTEXT">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/text-box-tool.png"  />
                     </StackPanel>
@@ -135,7 +143,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="PHASE">
+                        CommandParameter="PHASE" ToolTip="PHASE">
                     <StackPanel>
                         <Image Source="/Resources/NewLook/phase.png"  />
                     </StackPanel>
@@ -144,7 +152,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="LINK">
+                        CommandParameter="LINK" ToolTip="LINK">
                 </Button>
                 <!--<Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
@@ -159,7 +167,7 @@
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChoisirOutil}"
-                        CommandParameter="efface_trait">
+                        CommandParameter="efface_trait" ToolTip="ERASER">
                     <StackPanel>
                         <Image Source="/Resources/efface.png" />
                     </StackPanel>
@@ -177,7 +185,7 @@
 
                 <Button x:Name="ClassFromCodeButton" Width="40" Height="40" Margin="5" Padding="0,0"
                         Click="OpenClassPopup"
-                        Content="Code">
+                        Content="Code" ToolTip="CLASS FROM CODE">
                 </Button>
 
                 <StackPanel Orientation="Horizontal">
