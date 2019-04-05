@@ -438,7 +438,7 @@ export default class CanvasRoom {
         })
 
         return JSON.stringify({
-            selectedLinks: Array.from(this.selectedLinks.keys())
+            selectedLinks: filtered
         });
     }
 
