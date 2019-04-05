@@ -49,6 +49,7 @@ class LinkView: View{
     var nameView: TextView? = null
     var editButton: ImageButton? = null
     var angleButtons: ArrayList<ImageButton> = ArrayList()
+    var existingAngleButtons: ArrayList<ImageButton> = ArrayList()
     var startAnchorButton : ImageButton? = null
     var endAnchorButton: ImageButton? = null
     var deleteButton: ImageButton? = null
@@ -90,6 +91,8 @@ class LinkView: View{
         paint.color = Color.BLACK
         paint.strokeWidth = 5f
         paint.style = Paint.Style.FILL_AND_STROKE
+        paint.strokeJoin = Paint.Join.ROUND
+        paint.strokeCap = Paint.Cap.ROUND
 
     }
 
@@ -146,18 +149,8 @@ class LinkView: View{
     }
 
     private fun addButtons(parentView: RelativeLayout){
-        val layoutParams = ViewGroup.LayoutParams(100, 100)
-        parentView.removeView(deleteButton)
-        deleteButton = ImageButton(context)
-        deleteButton?.setImageResource(R.drawable.ic_delete)
-        deleteButton?.layoutParams=layoutParams
-        deleteButton?.x = start.x.toFloat() + 50
-        deleteButton?.y = start.y.toFloat() - 50
-        deleteButton?.setOnClickListener{
-            deleteLink()
-        }
-        deleteButton?.visibility = if(isButtonVisible)View.VISIBLE else View.INVISIBLE
-        parentView.addView(deleteButton)
+        val layoutParams = ViewGroup.LayoutParams(50, 50)
+
 
         parentView.removeView(startAnchorButton)
         startAnchorButton = ImageButton(context)
@@ -179,6 +172,27 @@ class LinkView: View{
         endAnchorButton?.visibility = if(isButtonVisible)View.VISIBLE else View.INVISIBLE
         parentView.addView(endAnchorButton)
 
+        for(existingAngleButton: ImageButton in existingAngleButtons){
+            parentView.removeView(existingAngleButton)
+        }
+        existingAngleButtons.clear()
+        val localLink = link
+        if(localLink != null) {
+            for (point: Coordinates in localLink.path) {
+                if(point != start && point != end) {
+                    val existingAngleButton = ImageButton(context)
+                    existingAngleButton.setImageResource(R.drawable.ic_resize)
+                    existingAngleButton.layoutParams = layoutParams
+                    existingAngleButton.x = point.x.toFloat() - existingAngleButton.layoutParams?.width!! / 2
+                    existingAngleButton.y = point.y.toFloat() - existingAngleButton.layoutParams?.height!! / 2
+                    existingAngleButton.setOnTouchListener(onTouchListenerExistingAngleButton)
+                    existingAngleButton.visibility = if (isButtonVisible) View.VISIBLE else View.INVISIBLE
+                    existingAngleButtons.add(existingAngleButton)
+                    parentView.addView(existingAngleButton)
+                }
+            }
+        }
+
         for(angleButton: ImageButton in angleButtons){
             parentView.removeView(angleButton)
         }
@@ -195,31 +209,49 @@ class LinkView: View{
             parentView.addView(angleButton)
         }
 
-        parentView.removeView(editButton)
-        editButton = ImageButton(context)
-        editButton?.setImageResource(R.drawable.ic_edit)
-        editButton?.layoutParams = layoutParams
-        var point: Coordinates =Coordinates(0.0,0.0)
-        val localLink = link
-        if(localLink != null) {
-            if (localLink.path.size > 1 && localLink.path.size % 2 != 0) {
-                point = localLink.path[(localLink.path.size - 1) / 2]
-            } else {
-                val firstPoint = localLink.path[(localLink.path.size - 1 )/ 2]
-                val secondPoint = localLink.path[(localLink.path.size - 1 )/ 2 + 1]
-                point = Coordinates(
-                    firstPoint.x + (secondPoint.x - firstPoint.x) / 2.0 + 40,
-                    firstPoint.y + (secondPoint.y - firstPoint.y) / 2.0
-                )
+
+
+        val localBoundingBox = boundingBox
+        if(localBoundingBox != null) {
+            parentView.removeView(deleteButton)
+            deleteButton = ImageButton(context)
+            deleteButton?.setImageResource(R.drawable.ic_delete)
+            deleteButton?.layoutParams = layoutParams
+            deleteButton?.x = localBoundingBox.rect.right
+            deleteButton?.y = localBoundingBox.rect.top - deleteButton?.layoutParams?.height!!
+            deleteButton?.setOnClickListener {
+                deleteLink()
             }
+            deleteButton?.visibility = if (isButtonVisible) View.VISIBLE else View.INVISIBLE
+            parentView.addView(deleteButton)
+
+
+            parentView.removeView(editButton)
+            editButton = ImageButton(context)
+            editButton?.setImageResource(R.drawable.ic_edit)
+            editButton?.layoutParams = layoutParams
+//            var point: Coordinates = Coordinates(0.0, 0.0)
+//            val localLink = link
+//            if (localLink != null) {
+//                if (localLink.path.size > 1 && localLink.path.size % 2 != 0) {
+//                    point = localLink.path[(localLink.path.size - 1) / 2]
+//                } else {
+//                    val firstPoint = localLink.path[(localLink.path.size - 1) / 2]
+//                    val secondPoint = localLink.path[(localLink.path.size - 1) / 2 + 1]
+//                    point = Coordinates(
+//                        firstPoint.x + (secondPoint.x - firstPoint.x) / 2.0 + 40,
+//                        firstPoint.y + (secondPoint.y - firstPoint.y) / 2.0
+//                    )
+//                }
+//            }
+            editButton?.x = localBoundingBox.rect.left - editButton?.layoutParams?.width!!
+            editButton?.y = localBoundingBox.rect.top - editButton?.layoutParams?.height!!
+            editButton?.setOnClickListener {
+                showModal()
+            }
+            editButton?.visibility = if (isButtonVisible) View.VISIBLE else View.INVISIBLE
+            parentView.addView(editButton)
         }
-        editButton?.x = point.x.toFloat()
-        editButton?.y = point.y.toFloat()
-        editButton?.setOnClickListener{
-            showModal()
-        }
-        editButton?.visibility = if(isButtonVisible)View.VISIBLE else View.INVISIBLE
-        parentView.addView(editButton)
     }
 
     private fun drawPath(paint: Paint, pathToDraw: ArrayList<Coordinates>, canvas: Canvas){
@@ -232,6 +264,8 @@ class LinkView: View{
         val linePath: Path = Path()
 
         var previousPoint: Coordinates = pathToDraw[0]
+        var pointToStartArrow: Coordinates = end.copy()
+
         for (point: Coordinates in pathToDraw) {
             if (point == start) {
                 continue
@@ -265,10 +299,20 @@ class LinkView: View{
                 previousPoint.x.toFloat(),
                 previousPoint.y.toFloat()
             )
-            linePath.lineTo(
-                point.x.toFloat(),
-                point.y.toFloat()
-            )
+            if(point == end && link?.type != LinkTypes.ONE_WAY_ASSOCIATION.ordinal &&
+                link?.type != LinkTypes.TWO_WAY_ASSOCIATION.ordinal && link?.type != LinkTypes.LINE.ordinal) {
+                pointToStartArrow.x = point.x - 40 * Math.cos(angle)
+                pointToStartArrow.y = point.y - 40 * Math.sin(angle)
+                linePath.lineTo(
+                    pointToStartArrow.x.toFloat(),
+                    pointToStartArrow.y.toFloat()
+                )
+            } else {
+                linePath.lineTo(
+                    point.x.toFloat(),
+                    point.y.toFloat()
+                )
+            }
             previousPoint = point
         }
 
@@ -296,6 +340,7 @@ class LinkView: View{
         val parentView = this.parent as RelativeLayout
 
         if(this.isSelected) {
+            setPaintColorWithLinkStyle()
             boundingBox?.setVisible(true)
             boundingBox?.rect = rect
             boundingBox?.invalidate()
@@ -307,7 +352,7 @@ class LinkView: View{
         when(link?.type){
             LinkTypes.AGGREGATION.ordinal->drawAggregation(canvas,angle, thickness)
             LinkTypes.COMPOSITION.ordinal->drawComposition(canvas,angle, thickness)
-            LinkTypes.HERITAGE.ordinal -> drawHeritage(canvas, angle2, thickness)
+            LinkTypes.HERITAGE.ordinal -> drawHeritage(canvas, angle2, thickness, pointToStartArrow)
             LinkTypes.ONE_WAY_ASSOCIATION.ordinal->drawArrowTip(canvas, angle, thickness, false)
             LinkTypes.TWO_WAY_ASSOCIATION.ordinal->{
                 drawArrowTip(canvas,firstLineAngle,thickness, true)
@@ -331,8 +376,8 @@ class LinkView: View{
         drawDiamond(canvas, lineAngle, diamondPaint)
     }
     private fun drawDiamond(canvas: Canvas, lineAngle: Double, paint: Paint){
-        val diamondLeftAngle: Double = lineAngle - Math.PI/4
-        val diamondRightAngle: Double = lineAngle + Math.PI/4
+        val diamondLeftAngle: Double = lineAngle - 3 * Math.PI/4
+        val diamondRightAngle: Double = lineAngle + 3 * Math.PI/4
         val leftPoint: Point = Point((end.x + 30 * Math.cos(diamondLeftAngle)).toInt(), (end.y+30 * Math.sin(diamondLeftAngle)).toInt() )
         val middlePoint: Point = Point((leftPoint.x + 30 * Math.cos(diamondRightAngle)).toInt(), (leftPoint.y+30 * Math.sin(diamondRightAngle)).toInt() )
         val rightPoint: Point = Point((end.x + 30 * Math.cos(diamondRightAngle)).toInt(), (end.y+30 * Math.sin(diamondRightAngle)).toInt() )
@@ -346,22 +391,25 @@ class LinkView: View{
         canvas.drawPath(arrowPath, paint)
     }
 
-    private fun drawHeritage(canvas: Canvas, perpendicularAngle: Double, thickness: Float){
+    private fun drawHeritage(canvas: Canvas, perpendicularAngle: Double, thickness: Float, pointToStartArrow: Coordinates){
         val arrowPaint = Paint()
         arrowPaint.color = paint.color
-        arrowPaint.strokeWidth = thickness
+        arrowPaint.strokeWidth = 5F
         arrowPaint.style = Paint.Style.STROKE
-        val leftAngle: Double = perpendicularAngle + 2*Math.PI/3
+        arrowPaint.strokeJoin = Paint.Join.ROUND
+        arrowPaint.strokeCap = Paint.Cap.ROUND
+
+        val leftAngle: Double = perpendicularAngle + 3* Math.PI/4
        // val rightAngle: Double = perpendicularAngle + Math.PI/3
-        val leftPoint: Point = Point((end.x + 30 * Math.cos(perpendicularAngle)).toInt(), (end.y+30 * Math.sin(perpendicularAngle)).toInt() )
-        val middlePoint: Point = Point((leftPoint.x + 60 * Math.cos(leftAngle)).toInt(), (leftPoint.y+60 * Math.sin(leftAngle)).toInt() )
-        val rightPoint: Point = Point((end.x - 30 * Math.cos(perpendicularAngle)).toInt(), (end.y - 30 * Math.sin(perpendicularAngle)).toInt() )
+        val leftPoint: Point = Point((pointToStartArrow.x + 21 * Math.cos(perpendicularAngle)).toInt(), (pointToStartArrow.y+21 * Math.sin(perpendicularAngle)).toInt() )
+        val middlePoint: Point = Point((leftPoint.x + 30 * Math.cos(leftAngle)).toInt(), (leftPoint.y+30 * Math.sin(leftAngle)).toInt() )
+        val rightPoint: Point = Point((pointToStartArrow.x - 21 * Math.cos(perpendicularAngle)).toInt(), (pointToStartArrow.y - 21 * Math.sin(perpendicularAngle)).toInt() )
         val arrowPath: Path = Path()
-        arrowPath.moveTo(end.x.toFloat(), end.y.toFloat())
+        arrowPath.moveTo(pointToStartArrow.x.toFloat(), pointToStartArrow.y.toFloat())
         arrowPath.lineTo(leftPoint.x.toFloat(), leftPoint.y.toFloat())
         arrowPath.lineTo(middlePoint.x.toFloat(), middlePoint.y.toFloat())
         arrowPath.lineTo(rightPoint.x.toFloat(), rightPoint.y.toFloat())
-        arrowPath.lineTo(end.x.toFloat(), end.y.toFloat())
+        arrowPath.lineTo(pointToStartArrow.x.toFloat(), pointToStartArrow.y.toFloat())
         arrowPath.close()
         canvas.drawPath(arrowPath, arrowPaint)
     }
@@ -373,6 +421,8 @@ class LinkView: View{
         arrowPaint.color = paint.color
         arrowPaint.strokeWidth = thickness
         arrowPaint.style = Paint.Style.STROKE
+        arrowPaint.strokeJoin = Paint.Join.ROUND
+        arrowPaint.strokeCap = Paint.Cap.ROUND
 
         var arrowLeftAngle: Double
         var arrowRightAngle: Double
@@ -493,6 +543,11 @@ class LinkView: View{
                 parent.removeView(angleButton)
             }
         }
+        for(existingAngleButton in existingAngleButtons) {
+            if (existingAngleButton != null) {
+                parent.removeView(existingAngleButton)
+            }
+        }
     }
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -535,7 +590,8 @@ class LinkView: View{
             emitSelection()
             selectAllConnectedShapes()
 
-            paint.color = Color.BLUE
+            setPaintColorWithLinkStyle()
+            //paint.color = Color.BLUE
         }else if(!this.isSelectedByOther){
             setPaintColorWithLinkStyle()
             isButtonVisible = false
@@ -614,6 +670,59 @@ class LinkView: View{
             Log.d("****", dialog?.arguments.toString())
             dialog?.show(activity.supportFragmentManager, "alllooooo")
         }
+    }
+
+    private var onTouchListenerExistingAngleButton = View.OnTouchListener { v, event ->
+        val parentView = this.parent as RelativeLayout
+        if(oldPreviewLink != null){
+            parentView.removeView(oldPreviewLink)
+        }
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                previewLinkView = LinkView(context)
+                oldFrameRawX = event.rawX
+                oldFrameRawY = event.rawY
+                isButtonPressed = true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val index = existingAngleButtons.indexOf(v)
+                val deltaX = event.rawX - oldFrameRawX
+                val deltaY = event.rawY - oldFrameRawY
+
+                v.x += deltaX
+                v.y += deltaY
+
+
+                val localLink: Link? = link
+                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",10,0), ArrayList())
+
+                if(localLink != null){
+                    previewLink.path.add(localLink.path[index])
+                    previewLink.path.add(Coordinates(v.x.toDouble() + v.layoutParams.width / 2, v.y.toDouble() + v.layoutParams.height / 2))
+                    previewLink.path.add(localLink.path[index+ 2])
+                    previewLinkView?.setLinkAndAnchors(previewLink)
+                }
+
+                oldPreviewLink = previewLinkView
+                parentView.addView(previewLinkView)
+
+                oldFrameRawY = event.rawY
+                oldFrameRawX = event.rawX
+
+            }
+            MotionEvent.ACTION_UP -> {
+                isButtonPressed = false
+                val index = existingAngleButtons.indexOf(v)
+                link?.path?.set(index + 1, Coordinates(v.x.toDouble() + v.layoutParams.width / 2, v.y.toDouble() + v.layoutParams.height / 2))
+
+
+                emitUpdate()
+                invalidate()
+                requestLayout()
+            }
+        }
+
+        true
     }
 
     private var onTouchListenerAngleButton = View.OnTouchListener { v, event ->

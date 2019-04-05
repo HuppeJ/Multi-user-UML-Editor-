@@ -78,7 +78,7 @@ open class BasicElementView: ConstraintLayout {
         isSelected = false
     }
 
-    private fun deselecteAllConnectedLinks(){
+    private fun deselectAllConnectedLinks(){
         for(id in FormsSelectionHolder.getInstance().linksSelectedId){
             ViewShapeHolder.getInstance().linkMap.inverse()[id]?.emitDeselection()
         }
@@ -88,7 +88,7 @@ open class BasicElementView: ConstraintLayout {
     override fun setSelected(selected: Boolean) {
         if(this.isSelected && !selected){
             emitDeselection()
-            deselecteAllConnectedLinks()
+            deselectAllConnectedLinks()
         }
         var realSelected = selected
         if(isSelectedByOther){
@@ -209,20 +209,20 @@ open class BasicElementView: ConstraintLayout {
                     when (v){
                         anchorPoint3->{
                             Log.d("Rotation", rotation.toString())
-                            newX = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
-                            newY = - (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                            newX = - (borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                            newY = - (borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
                         }
                         anchorPoint1->{
-                            newX = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
-                            newY = (borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                            newX = (borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                            newY = (borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
                         }
                         anchorPoint0->{
-                            newX = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
-                            newY = - (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                            newX = (borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                            newY = - (borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
                         }
                         anchorPoint2 ->{
-                            newX = -(borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
-                            newY = (borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
+                            newX = -(borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.sin(Math.toRadians(rotation.toDouble()))
+                            newY = (borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.cos(Math.toRadians(rotation.toDouble()))
                         }
                     }
                     point.y = centerY + newY
@@ -328,20 +328,20 @@ open class BasicElementView: ConstraintLayout {
                         when (anchorPointEnd.anchor){
                             3->{
                                 Log.d("Rotation", rotation.toString())
-                                newX = - (otherBasicView.borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
-                                newY = - (otherBasicView.borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newX = - (otherBasicView.borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = - (otherBasicView.borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
                             }
                             1->{
-                                newX = (otherBasicView.borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
-                                newY = (otherBasicView.borderResizableLayout.layoutParams.width + anchorPoint0.layoutParams.width) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newX = (otherBasicView.borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = (otherBasicView.borderResizableLayout.layoutParams.width /*+ anchorPoint0.layoutParams.width*/) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
                             }
                             0->{
-                                newX = (otherBasicView.borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
-                                newY = - (otherBasicView.borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newX = (otherBasicView.borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = - (otherBasicView.borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
                             }
                             2 ->{
-                                newX = -(otherBasicView.borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
-                                newY = (otherBasicView.borderResizableLayout.layoutParams.height + anchorPoint0.layoutParams.height) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newX = -(otherBasicView.borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.sin(Math.toRadians(otherBasicView.rotation.toDouble()))
+                                newY = (otherBasicView.borderResizableLayout.layoutParams.height /*+ anchorPoint0.layoutParams.height*/) / 2.0 * Math.cos(Math.toRadians(otherBasicView.rotation.toDouble()))
                             }
                         }
                         point.y = centerY + newY
@@ -717,7 +717,7 @@ open class BasicElementView: ConstraintLayout {
         when(event.action){
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
 
-                deselecteAllConnectedLinks()
+                deselectAllConnectedLinks()
                 emitDelete()
 
                 VFXHolder.getInstance().fireDeleteVFX(leftX+borderResizableLayout.layoutParams.width/2 ,topY+borderResizableLayout.layoutParams.height/2,context)

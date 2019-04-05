@@ -338,13 +338,13 @@ class DrawingActivity : AppCompatActivity(){
         //TODO: Probablement une meilleure facon de mapper la value à l'enum ...
         runOnUiThread {
             when (basicShape.type) {
-                ShapeTypes.DEFAULT.value() -> {
-                    val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
-                    parent_relative_layout?.addView(viewType)
-
-                    //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-                }
+//                ShapeTypes.DEFAULT.value() -> {
+//                    val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
+//                    parent_relative_layout?.addView(viewType)
+//
+//                    //For Sync
+//                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+//                }
                 ShapeTypes.CLASS_SHAPE.value() -> {
                     val viewType = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
                     parent_relative_layout?.addView(viewType)
@@ -407,7 +407,7 @@ class DrawingActivity : AppCompatActivity(){
         var shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
 
         when (shapeType) {
-            ShapeTypes.DEFAULT -> {}
+//            ShapeTypes.DEFAULT -> {}
             ShapeTypes.CLASS_SHAPE -> {
                 shapeStyle.width = 168.0
                 shapeStyle.height = 189.0
@@ -453,9 +453,9 @@ class DrawingActivity : AppCompatActivity(){
         val viewContainer = inflater!!.inflate(R.layout.basic_element, null)
 
         when(shapeType){
-            ShapeTypes.DEFAULT->{
-                viewType = BasicElementView(this)
-            }
+//            ShapeTypes.DEFAULT->{
+//                viewType = BasicElementView(this)
+//            }
             ShapeTypes.CLASS_SHAPE->{
                 viewType = ClassView(this)
             }
@@ -684,9 +684,10 @@ class DrawingActivity : AppCompatActivity(){
         Log.d("syncLayoutFromCanevas","***wawaw****")
 
         for (view in ViewShapeHolder.getInstance().map.keys){
-            if(!view.isSelected) {
+
                 val basicShapeId: String = ViewShapeHolder.getInstance().map.getValue(view)
                 val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
+            if(!view.isSelected) {
                 if (basicShape != null) {
                     view.x = (basicShape.shapeStyle.coordinates.x).toFloat() - shapeOffset
                     view.y = (basicShape.shapeStyle.coordinates.y).toFloat() - shapeOffset
@@ -697,8 +698,8 @@ class DrawingActivity : AppCompatActivity(){
                     // TODO : Jé's Fix : j'ai bougé les view.resize dans les différents case pour que la fonction redéfinie des enfants de BasicShape soit appelée (ex.: pour que la fonction .resize de ImageElementView soit appelée)
                     // TODO : les attributs xml des différentes View ne sont pas reconnues même avec le cast de la view (ex.:view as ImageElementView), voir les "// TODO : is null" ci-dessous, je n'ai pas trouvé pourquoi ça faisait cela^^
                     when (basicShape.type) {
-                        ShapeTypes.DEFAULT.value() -> {
-                        }
+//                        ShapeTypes.DEFAULT.value() -> {
+//                        }
                         ShapeTypes.CLASS_SHAPE.value() -> {
                             if (basicShape is ClassShape) {
 
@@ -729,11 +730,7 @@ class DrawingActivity : AppCompatActivity(){
                                         basicShape.shapeStyle.width.toInt(),
                                         basicShape.shapeStyle.height.toInt()
                                     )
-                                    view.outlineColor(
-                                        basicShape.shapeStyle.borderColor,
-                                        basicShape.shapeStyle.borderStyle
-                                    )
-                                    view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+
                                 }
                             }
                         }
@@ -742,8 +739,8 @@ class DrawingActivity : AppCompatActivity(){
                                 view as ImageElementView
                                 // TODO :  is null : view_image_element_name
                                 view.view_image_element_name.text = basicShape.name
-                                view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                                view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                             }
 
@@ -753,8 +750,8 @@ class DrawingActivity : AppCompatActivity(){
                                 view as CommentView
                                 var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
                                 commentText.text = basicShape.name
-                                view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                                view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                             }
 
@@ -764,23 +761,31 @@ class DrawingActivity : AppCompatActivity(){
                             runOnUiThread {
                                 view as PhaseView
                                 view.view_phase_name.text = basicShape.name
-                                view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+//                                view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                                 view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                                view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                            }
+                        }
+                        ShapeTypes.FREETEXT.value() -> {
+                            runOnUiThread {
+                                view as FreeTextView
+                                view.free_text_text.text = basicShape.name
+                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                             }
                         }
 
                     }
-                    ShapeTypes.FREETEXT.value()->{
-                        runOnUiThread {
-                            view as FreeTextView
-                            view.free_text_text.text = basicShape.name
-                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                        }
-                    }
-
+                }
+            }
+            if (basicShape != null) {
+                runOnUiThread {
+                    view.outlineColor(
+                        basicShape.shapeStyle.borderColor,
+                        basicShape.shapeStyle.borderStyle
+                    )
+                    view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                 }
             }
         }
