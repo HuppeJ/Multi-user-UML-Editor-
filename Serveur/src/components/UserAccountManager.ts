@@ -68,7 +68,7 @@ export default class UserAccountManager {
 
             const newUserEntity = {
                 username: username,
-                password: user.password,
+                password: user[0].password,
                 hasDoneTutorial: true,
             };
 
