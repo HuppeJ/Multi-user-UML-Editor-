@@ -201,8 +201,10 @@ class LassoView(context: Context?) : View(context) {
                                 ) {
                                     //if(!link.isSelectedByOther) {
                                         linksIn.add(link)
+                                    link.boundingBox?.isLasso = true
                                         link.isSelected = true
                                         link.hideButtons()
+
                                     //}
                                 }
                             }

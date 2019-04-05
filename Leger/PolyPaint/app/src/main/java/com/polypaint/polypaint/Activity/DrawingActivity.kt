@@ -53,6 +53,7 @@ import com.polypaint.polypaint.ResponseModel.HasUserDoneTutorialResponse
 import com.polypaint.polypaint.SocketReceptionModel.*
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.android.synthetic.main.view_freetext.view.*
+import java.lang.Exception
 import java.lang.reflect.Type
 
 
@@ -1317,19 +1318,29 @@ class DrawingActivity : AppCompatActivity(){
 
         runOnUiThread {
             Handler().postDelayed({
-                Log.d("after delay", "saveCanevasCall")
-                val bitmap: Bitmap = loadBitmapFromView(findViewById(R.id.parent_relative_layout), 50, 80)
-                val resized = Bitmap.createScaledBitmap(bitmap, (bitmap!!.width!!.times(1/2.1)).toInt(), (bitmap!!.height!!.times(1/2.1)).toInt(), true);
-                val thumbnailString: String = bitMapToString(resized)
-                Log.d("bitmapString", thumbnailString)
+                try {
+                    Log.d("after delay", "saveCanevasCall")
+                    val bitmap: Bitmap = loadBitmapFromView(findViewById(R.id.parent_relative_layout), 50, 80)
+                    val resized = Bitmap.createScaledBitmap(
+                        bitmap,
+                        (bitmap!!.width!!.times(1 / 2.1)).toInt(),
+                        (bitmap!!.height!!.times(1 / 2.1)).toInt(),
+                        true
+                    );
+                    val thumbnailString: String = bitMapToString(resized)
+                    Log.d("bitmapString", thumbnailString)
 
-                ViewShapeHolder.getInstance().canevas.thumbnail = thumbnailString
+                    ViewShapeHolder.getInstance().canevas.thumbnail = thumbnailString
 
-                val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas!!)
-                val gson = Gson()
-                val sendObj = gson.toJson(canvasEvent)
-                Log.d("createObj", sendObj)
-                // socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+                    val canvasEvent: CanvasEvent =
+                        CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas!!)
+                    val gson = Gson()
+                    val sendObj = gson.toJson(canvasEvent)
+                    Log.d("createObj", sendObj)
+                    // socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+                }catch (e: Exception){
+                    Log.d("Exception", "Trying to save thumbnail")
+                }
 
             }, 1000)
         }

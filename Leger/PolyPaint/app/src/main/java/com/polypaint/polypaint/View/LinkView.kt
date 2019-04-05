@@ -318,8 +318,8 @@ class LinkView: View{
 
         if(link?.style?.type == BorderTypes.DOTTED.ordinal){
             val array: FloatArray = FloatArray(2)
-            array[0] = 10f
-            array[1] = 5f
+            array[0] = 5f
+            array[1] = 20f
             paint.pathEffect = DashPathEffect(array, 1f)
         } else {
             paint.pathEffect = null

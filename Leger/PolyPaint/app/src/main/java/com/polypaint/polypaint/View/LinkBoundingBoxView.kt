@@ -32,6 +32,7 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
     var initialHeight: Double = 0.0
     var initialWidth: Double = 0.0
     var initialPath: ArrayList<Coordinates> = ArrayList()
+    var isLasso: Boolean = false
 
     init {
         paint.color = Color.parseColor("#809dce")
@@ -58,7 +59,11 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
     fun setVisible(isVisible: Boolean){
         if(isVisible){
             this.visibility = VISIBLE
-            resizeButton?.visibility = VISIBLE
+            if(isLasso){
+                resizeButton?.visibility = INVISIBLE
+            } else {
+                resizeButton?.visibility = VISIBLE
+            }
         } else {
             this.visibility = INVISIBLE
             resizeButton?.visibility = INVISIBLE
@@ -86,6 +91,9 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
             if (link != null) {
                 if (link.from.formId == "" && link.to.formId == "") {
                     resizeButton?.visibility = this.visibility
+                    if(isLasso){
+                        resizeButton?.visibility = INVISIBLE
+                    }
                 }
             }
         }
