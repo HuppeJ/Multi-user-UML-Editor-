@@ -20,6 +20,7 @@ import com.polypaint.polypaint.Enum.BorderTypes
 import com.polypaint.polypaint.Enum.LinkTypes
 import com.polypaint.polypaint.Enum.ThicknessTypes
 import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
+import com.polypaint.polypaint.Holder.FormsSelectionHolder
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
@@ -430,6 +431,7 @@ class LinkView: View{
 
     fun deleteLink(){
         emitDelete()
+        deselecteAllShapesSelected()
         ViewShapeHolder.getInstance().stackDrawingElementCreatedId.remove(link?.id)
 
         val fromId = link?.from?.formId
@@ -500,13 +502,38 @@ class LinkView: View{
         parentView.addView(boundingBox)
     }
 
+    private fun deselecteAllShapesSelected(){
+        for(id in FormsSelectionHolder.getInstance().formsSelectedId){
+            ViewShapeHolder.getInstance().map.inverse()[id]?.emitDeselection()
+        }
+        FormsSelectionHolder.getInstance().formsSelectedId.clear()
+    }
+
+    private fun selectAllConnectedShapes(){
+        val localLink = link
+        if(localLink != null) {
+            if(localLink.from.formId != null && localLink.from.formId != "") {
+                FormsSelectionHolder.getInstance().formsSelectedId.add(localLink.from.formId)
+            }
+            if(localLink.to.formId != null && localLink.to.formId != "") {
+                FormsSelectionHolder.getInstance().formsSelectedId.add(localLink.to.formId)
+            }
+            for(id in FormsSelectionHolder.getInstance().formsSelectedId){
+                ViewShapeHolder.getInstance().map.inverse()[id]?.emitSelection()
+            }
+        }
+    }
+
     override fun setSelected(selected: Boolean) {
         if(this.isSelected && !selected){
             emitDeselection()
+            deselecteAllShapesSelected()
         }
         if(selected){
             isButtonVisible = true
             emitSelection()
+            selectAllConnectedShapes()
+
             paint.color = Color.BLUE
         }else if(!this.isSelectedByOther){
             setPaintColorWithLinkStyle()
@@ -791,6 +818,7 @@ class LinkView: View{
                     val shape = ViewShapeHolder.getInstance().canevas.findShape(formId)
                     if(shape != null){
                         if(formId != anchorPointStart.formId){
+                            ViewShapeHolder.getInstance().map.inverse()[formId]?.emitDeselection()
                             shape.linksFrom.remove(link?.id)
 
                             formsToUpdate.add(shape)
@@ -806,6 +834,7 @@ class LinkView: View{
                     if (otherBasicViewId != null) {
                         val otherShape: BasicShape? = canevas.findShape(otherBasicViewId)
                         if (otherShape != null) {
+                            ViewShapeHolder.getInstance().map.inverse()[otherBasicViewId]?.emitSelection()
                             otherShape.linksFrom.add(link?.id)
                             formsToUpdate.add(otherShape)
                         }
@@ -935,6 +964,7 @@ class LinkView: View{
                     val shape = ViewShapeHolder.getInstance().canevas.findShape(formId)
                     if(shape != null){
                         if(formId != anchorPointEnd.formId) {
+                            ViewShapeHolder.getInstance().map.inverse()[formId]?.emitDeselection()
                             shape.linksTo.remove(link?.id)
                             formsToUpdate.add(shape)
                         }
@@ -949,6 +979,7 @@ class LinkView: View{
                     if (otherBasicViewId != null) {
                         val otherShape: BasicShape? = canevas.findShape(otherBasicViewId)
                         if (otherShape != null) {
+                            ViewShapeHolder.getInstance().map.inverse()[otherBasicViewId]?.emitSelection()
                             otherShape.linksTo.add(link?.id)
                             formsToUpdate.add(otherShape)
                         }
@@ -1053,7 +1084,7 @@ class LinkView: View{
             socket?.emit(SocketConstants.DELETE_LINKS, response)
         }
     }
-    private fun emitSelection(){
+    fun emitSelection(){
         val response: String = this.createLinksUpdateEvent()
 
         if(response !="") {
@@ -1061,7 +1092,7 @@ class LinkView: View{
             socket?.emit(SocketConstants.SELECT_LINKS, response)
         }
     }
-    private fun emitDeselection(){
+    fun emitDeselection(){
         val response: String = this.createLinksUpdateEvent()
 
         if(response !="") {

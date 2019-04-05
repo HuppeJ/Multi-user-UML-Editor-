@@ -17,10 +17,7 @@ import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
-import com.polypaint.polypaint.Holder.SyncShapeHolder
-import com.polypaint.polypaint.Holder.UserHolder
-import com.polypaint.polypaint.Holder.VFXHolder
-import com.polypaint.polypaint.Holder.ViewShapeHolder
+import com.polypaint.polypaint.Holder.*
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
@@ -81,9 +78,17 @@ open class BasicElementView: ConstraintLayout {
         isSelected = false
     }
 
+    private fun deselecteAllConnectedLinks(){
+        for(id in FormsSelectionHolder.getInstance().linksSelectedId){
+            ViewShapeHolder.getInstance().linkMap.inverse()[id]?.emitDeselection()
+        }
+        FormsSelectionHolder.getInstance().linksSelectedId.clear()
+    }
+
     override fun setSelected(selected: Boolean) {
         if(this.isSelected && !selected){
             emitDeselection()
+            deselecteAllConnectedLinks()
         }
         var realSelected = selected
         if(isSelectedByOther){
@@ -97,6 +102,27 @@ open class BasicElementView: ConstraintLayout {
             resizeButton.visibility = View.VISIBLE
             setAnchorsVisible(true)
             emitSelection()
+
+            val basicShapeId: String? = ViewShapeHolder.getInstance().map[this]
+            if(basicShapeId != null) {
+                val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
+                if(basicShape != null) {
+                    for (link in basicShape.linksFrom){
+                        if(link != null && link != "") {
+                            FormsSelectionHolder.getInstance().linksSelectedId.add(link)
+                        }
+                    }
+                    for (link in basicShape.linksTo){
+                        if(link != null && link != "") {
+                            FormsSelectionHolder.getInstance().linksSelectedId.add(link)
+                        }
+                    }
+                    for(id in FormsSelectionHolder.getInstance().linksSelectedId){
+                        ViewShapeHolder.getInstance().linkMap.inverse()[id]?.emitSelection()
+                    }
+                }
+            }
+
         }else {
             //first_line.text = "NoFocus"
             if(!this.isSelectedByOther) {
@@ -653,6 +679,8 @@ open class BasicElementView: ConstraintLayout {
     private var onTouchListenerDeleteButton = View.OnTouchListener { v, event ->
         when(event.action){
             MotionEvent.ACTION_DOWN -> {//first_line.text = "onTouchListenerDeleteButton"
+
+                deselecteAllConnectedLinks()
                 emitDelete()
 
                 VFXHolder.getInstance().fireDeleteVFX(leftX+borderResizableLayout.layoutParams.width/2 ,topY+borderResizableLayout.layoutParams.height/2,context)
@@ -819,7 +847,7 @@ open class BasicElementView: ConstraintLayout {
         SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
     }
 
-    private fun emitSelection(){
+    fun emitSelection(){
         val response: String = this.createFormsUpdateEvent()
 
         if(response !="") {
@@ -828,7 +856,7 @@ open class BasicElementView: ConstraintLayout {
         }
     }
 
-    private fun emitDeselection(){
+    fun emitDeselection(){
         val response: String = this.createFormsUpdateEvent()
 
         if(response !="") {
@@ -837,7 +865,7 @@ open class BasicElementView: ConstraintLayout {
         }
     }
 
-    private fun emitDelete(){
+    fun emitDelete(){
         val response: String = this.createFormsUpdateEvent()
 
         if(response !="") {
