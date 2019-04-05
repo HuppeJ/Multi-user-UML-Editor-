@@ -22,7 +22,7 @@ export default class UserAccountManager {
         };
 
         return this.datastore.save({
-            key: this.datastore.key('User'),
+            key: this.datastore.key(['User', name]),
             data: user
         });
     }
@@ -54,9 +54,6 @@ export default class UserAccountManager {
             .limit(1);
 
         const users = await this.datastore.runQuery(query);
-        console.log(users.toString())
-        console.log(users[0][0])
-        console.log(users[0])
 
         if (users[0][0] !== undefined) {
             const user = users[0].map(
@@ -64,22 +61,22 @@ export default class UserAccountManager {
                     return { 
                         username: entity.username,
                         password: entity.password,
-                        isNewbie: false,
+                        hasDoneTutorial: entity.hasDoneTutorial,
                     };
                 },
             );
 
-            // this.datastore.key('User')
+            const newUserEntity = {
+                username: username,
+                password: user.password,
+                hasDoneTutorial: true,
+            };
 
-            // this.datastore.update({
-            //     key: ,
-            //     data: user
-            // });
-    
+            this.datastore.upsert({
+                key: this.datastore.key(['User', username]),
+                data: newUserEntity
+            });
         }
-
- 
-        return users;
     }
 
     public async isUsernameAvailable(username: string) {
