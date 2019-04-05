@@ -691,12 +691,38 @@ namespace PolyPaint.CustomInk
 
         private void OnRemoteSelection(StrokeCollection strokes)
         {
-            RefreshChildren();
+            foreach (string strokeId in DrawingService.remoteSelectedStrokes)
+            {
+                foreach (CustomStroke stroke in Strokes)
+                {
+                    if (stroke.guid.ToString().Equals(strokeId))
+                    {
+                        AddRemoteSelectionAdorner(stroke);
+                        break;
+                    }
+                }
+            }
         }
 
         private void OnRemoteDeselection(StrokeCollection strokes)
         {
-            RefreshChildren();
+            Path path = new Path();
+            path.Data = new RectangleGeometry(new Rect(1, 1, 1, 1));
+            
+            foreach (UIElement child in Children)
+            {
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(child);
+                int numberArdorners = myAdornerLayer.GetAdorners(child)?.Count() == null ? 0 : myAdornerLayer.GetAdorners(child).Count();
+
+                for (int i = 0; i < numberArdorners; i++)
+
+                    if (myAdornerLayer.GetAdorners(child)[i] is RemoteSelectionAdorner)
+                    {
+                        myAdornerLayer.Remove(myAdornerLayer.GetAdorners(child)[i]);
+                        i--;
+                        numberArdorners--;
+                    }
+            }
         }
 
         private void OnRemoveStrokes(StrokeCollection strokes)
@@ -1497,6 +1523,36 @@ namespace PolyPaint.CustomInk
             }
 
             return destImage;
+        }
+
+        public sd.Image GetCanvas()
+        {
+            var rect = new Rect(RenderSize);
+            var visual = new DrawingVisual();
+
+            using (var dc = visual.RenderOpen())
+            {
+                dc.DrawRectangle(new VisualBrush(this), null, rect);
+            }
+
+            var rtb = new RenderTargetBitmap(
+                (int)rect.Width, (int)rect.Height, 96d, 96d, PixelFormats.Default);
+            rtb.Render(visual);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            byte[] buffer;
+            using (var stream = new MemoryStream())
+            {
+                encoder.Save(stream);
+                buffer = stream.ToArray();
+            }
+
+            MemoryStream ms = new MemoryStream(buffer, 0, buffer.Length);
+            ms.Write(buffer, 0, buffer.Length);
+            var returnImage = sd.Image.FromStream(ms, true);
+
+            return returnImage;
         }
     }
 }
