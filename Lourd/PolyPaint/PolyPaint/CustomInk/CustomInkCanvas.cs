@@ -691,12 +691,38 @@ namespace PolyPaint.CustomInk
 
         private void OnRemoteSelection(StrokeCollection strokes)
         {
-            RefreshChildren();
+            foreach (string strokeId in DrawingService.remoteSelectedStrokes)
+            {
+                foreach (CustomStroke stroke in Strokes)
+                {
+                    if (stroke.guid.ToString().Equals(strokeId))
+                    {
+                        AddRemoteSelectionAdorner(stroke);
+                        break;
+                    }
+                }
+            }
         }
 
         private void OnRemoteDeselection(StrokeCollection strokes)
         {
-            RefreshChildren();
+            Path path = new Path();
+            path.Data = new RectangleGeometry(new Rect(1, 1, 1, 1));
+            
+            foreach (UIElement child in Children)
+            {
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(child);
+                int numberArdorners = myAdornerLayer.GetAdorners(child)?.Count() == null ? 0 : myAdornerLayer.GetAdorners(child).Count();
+
+                for (int i = 0; i < numberArdorners; i++)
+
+                    if (myAdornerLayer.GetAdorners(child)[i] is RemoteSelectionAdorner)
+                    {
+                        myAdornerLayer.Remove(myAdornerLayer.GetAdorners(child)[i]);
+                        i--;
+                        numberArdorners--;
+                    }
+            }
         }
 
         private void OnRemoveStrokes(StrokeCollection strokes)
