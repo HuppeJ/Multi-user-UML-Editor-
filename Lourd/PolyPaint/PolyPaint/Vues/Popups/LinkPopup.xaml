@@ -21,64 +21,70 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="475" Margin="0">
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="480" Margin="0">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,0">
-                <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
-                    <TextBlock>Enter link label here:</TextBlock>
-                    <TextBox x:Name="TxtBox" Width="150" Margin="0,5"
-                                 materialDesign:HintAssist.Hint="Enter name here"   
-                                 Text="{Binding Label, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    </TextBox>
-                    <TextBlock Margin="0, 10, 0, 0">Choose link style:</TextBlock>
-                    <ListBox Name="MyList" SelectedValue="{Binding LinkStyle, Mode=TwoWay}">
-                        <sys:String>Full</sys:String>
-                        <sys:String>Dotted</sys:String>
-                    </ListBox>
-                    <ListBox Name="MyTypes" SelectedValue="{Binding LinkType, Mode=TwoWay}">
-                        <sys:String>Line</sys:String>
-                        <!--<sys:String>One way association</sys:String>
-                        <sys:String>Two way association</sys:String>
-                        <sys:String>Heritage</sys:String>
-                        <sys:String>Aggregation</sys:String>-->
-                        <sys:String>Composition</sys:String>
-                    </ListBox>
-                    <TextBlock Margin="0, 10, 0, 0">Choose link color:</TextBlock>
-                    <xctk:ColorPicker x:Name="colorSelector"                             
-                      VerticalContentAlignment="Stretch"
+            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,-0.333">
+
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25,24.667,25,89.667">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="36">
+                        <TextBlock Margin="0,5"><Run Text="Link label: "/></TextBlock>
+                        <TextBox x:Name="TxtBox" Width="86" MaxWidth="150"
+                        MinLines="1"
+                        MaxLines="1"
+                        VerticalAlignment="Top"
+                        Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="26"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                        <TextBlock>Type:</TextBlock>
+                        <ComboBox Margin="7,-6,0,0" ItemsSource="{Binding LinkTypesList}" SelectedValue="{Binding LinkType}" VerticalAlignment="Top" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                        <TextBlock>Style:</TextBlock>
+                        <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LinkStylesList}" SelectedValue="{Binding LinkStyle}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                        <TextBlock>Thickness:</TextBlock>
+                        <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LinkThicknessesList}" SelectedValue="{Binding LinkThickness}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
+                        <TextBlock Margin="0,0,0,0.2" Width="72">Border color:</TextBlock>
+                        <xctk:ColorPicker  x:Name="colorSelector" VerticalContentAlignment="Stretch"
                       Background="#00000000"
                       ShowDropDownButton="False"
                       ShowRecentColors="True"
                       BorderBrush="#80000000"
-                      Margin="5,0,0,0" Width="39" Height="38"
+                      Margin="0,0,0,0" Width="20" Height="20"
                       SelectedColor="{Binding SelectedColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       AvailableColorsHeader="Palette"
                       StandardColorsHeader="Base colors"
                       StandardButtonHeader="Standard"
                       RecentColorsHeader="Recently used"
                       UsingAlphaChannel="True"
-                      AdvancedButtonHeader="Personalized" />
-                    <TextBlock Margin="0, 10, 0, 0">Choose link thickness:</TextBlock>
-                    <Slider Width="100" Height="26" Minimum="1" Maximum="10" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0"
-                        Value="{Binding LinkThickness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        Margin="12"
-                        Foreground="Gray"                        
-                        TickFrequency="5" TickPlacement="BottomRight" IsSnapToTickEnabled="False"/>
-                    <!--<TextBlock>Enter multiplicity from here:</TextBlock>
-                    <TextBox x:Name="TxtBoxMultFrom" Width="150" Margin="0,5"
-                                 materialDesign:HintAssist.Hint="Enter multiplicity here"   
-                                 Text="{Binding MultiplicityFrom, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    </TextBox>
-                    <TextBlock>Enter multiplicity to here:</TextBlock>
-                    <TextBox x:Name="TxtBoxMultTo" Width="150" Margin="0,5"
-                                 materialDesign:HintAssist.Hint="Enter multiplicity here"   
-                                 Text="{Binding MultiplicityTo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                    </TextBox>-->
-                    <Button Content="Accept Changes" Margin="0,10,0,0" Click="Rename" Width="150"/>
+                      AdvancedButtonHeader="Personalized"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                        <TextBlock Margin="0,4,0,5.667">Multiplicity from: </TextBlock>
+                        <TextBox x:Name="TxtBoxMultFrom" Width="54" MaxWidth="150"
+                        MinLines="1"
+                        MaxLines="1"
+                        VerticalAlignment="Top"
+                        Text="{Binding MultiplicityFrom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Margin="4,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                        <TextBlock Margin="0,6,0,3.667">Multiplicity to: </TextBlock>
+                        <TextBox x:Name="TxtBoxMultTo" Width="54" MaxWidth="150"
+                        MinLines="1"
+                        MaxLines="1"
+                        VerticalAlignment="Top"
+                        Text="{Binding MultiplicityTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Margin="4,4,0,0"/>
+                    </StackPanel>
+
+                    <Button Content="Accept Changes" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
+
                 </StackPanel>
             </Border>
         </Grid>

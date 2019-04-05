@@ -41,6 +41,11 @@ namespace PolyPaint.CustomInk
             return base.GetBounds();
         }
 
+        public virtual Rect GetStraightBounds()
+        {
+            return base.GetBounds();
+        }
+
         public virtual CustomStroke CloneRotated(double rotation) {
             CustomStroke newStroke = (CustomStroke)Clone();
             return newStroke;

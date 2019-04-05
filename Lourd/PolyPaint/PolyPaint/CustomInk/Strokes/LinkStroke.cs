@@ -6,6 +6,7 @@ using PolyPaint.Enums;
 using System.Windows;
 using System.Windows.Ink;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk.Strokes
 {
@@ -19,18 +20,51 @@ namespace PolyPaint.CustomInk.Strokes
         public double rotation { get; set; }
 
         #region constructors
-        public LinkStroke(string id, string name, AnchorPoint from, AnchorPoint to, int strokeType, int linkType, LinkStyle style, List<Coordinates> path, StylusPointCollection pts) : base(pts)
+        public LinkStroke(Link link, StylusPointCollection pts) : base(pts)
         {
-            guid = new Guid(id);
-            this.name = name;
-            this.from = from;
-            this.to = to;
-            this.strokeType = strokeType;
-            this.linkType = linkType;
-            this.style = style;
-            this.path = path;
+            guid = new Guid(link.id);
+            this.name = link.name;
+            this.from = link.from;
+            this.to = link.to;
+            this.strokeType = (int)StrokeTypes.LINK;
+            this.linkType = link.type;
+            this.style = link.style;
+            this.path = link.path;
+            rotation = 0;
+
+            // dotted
+            if (style.type == 1)
+            {
+                DrawingAttributes.Color = Colors.White;
+            }
+            else // normal line
+            {
+                DrawingAttributes.Color = (Color)ColorConverter.ConvertFromString(style.color);
+            }
+
+            switch (style.thickness)
+            {
+                case 0:
+                    DrawingAttributes.Width = 2;
+                    DrawingAttributes.Height = 2;
+                    break;
+                case 1:
+                    DrawingAttributes.Width = 6;
+                    DrawingAttributes.Height = 6;
+                    break;
+                case 2:
+                    DrawingAttributes.Width = 10;
+                    DrawingAttributes.Height = 10;
+                    break;
+                default:
+                    DrawingAttributes.Width = 2;
+                    DrawingAttributes.Height = 2;
+                    break;
+            }
+
+            addStylusPointsToLink();
         }
-        
+
         public LinkStroke(LinkStroke linkStroke, StylusPointCollection pts) : base(pts)
         {
             guid = Guid.NewGuid();
@@ -81,10 +115,12 @@ namespace PolyPaint.CustomInk.Strokes
         }
 
 
-        public LinkStroke(Point pointFrom, string formId, int anchor, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
+        public LinkStroke(Point pointFrom, string formId, int anchor, LinkTypes linkType, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
         {
             guid = Guid.NewGuid();
             name = "";
+            this.linkType = (int)linkType;
+
             from = new AnchorPoint(formId, anchor, "");
             to = new AnchorPoint();
             to.SetDefaults();
@@ -370,14 +406,22 @@ namespace PolyPaint.CustomInk.Strokes
         internal int GetIndexforNewPoint(Point point)
         {
             int index = 0;
-            Rect rect;
-            RectangleGeometry rectGeometry = new RectangleGeometry();
+            LineGeometry pathGeom;
 
             for (int i = 0; i < path.Count - 1 && index == 0; i++)
             {
-                rect = new Rect(path[i].ToPoint(), path[i + 1].ToPoint());
-                rectGeometry.Rect = rect;
-                if (rectGeometry.FillContains(point))
+                pathGeom = new LineGeometry(path[i].ToPoint(), path[i+1].ToPoint());
+
+                double tolerance = 4;
+                if (style.thickness == 0)
+                {
+                    tolerance = 2;
+                } else if (style.thickness == 1)
+                {
+                    tolerance = 3;
+                }
+
+                if (pathGeom.FillContains(point, tolerance, ToleranceType.Absolute))
                 {
                     index = i + 1;
                 }
@@ -434,8 +478,8 @@ namespace PolyPaint.CustomInk.Strokes
 
         public override void updatePosition(Rect newRect)
         {
-            double diffX = newRect.X - GetBounds().X;
-            double diffY = newRect.Y - GetBounds().Y;
+            double diffX = newRect.X - GetStraightBounds().X;
+            double diffY = newRect.Y - GetStraightBounds().Y;
 
             for(int i=0; i<path.Count; i++)
             {
@@ -447,7 +491,7 @@ namespace PolyPaint.CustomInk.Strokes
         public void updatePositionResizeNotAttached(Rect newRect)
         {
             double[] limits = GetMaxAndMin();
-            Rect oldRect = GetBounds();
+            Rect oldRect = GetStraightBounds();
             double widthRatio = newRect.Width / oldRect.Width;
             double heightRatio = newRect.Height / oldRect.Height;
             foreach (Coordinates point in path)
@@ -459,10 +503,17 @@ namespace PolyPaint.CustomInk.Strokes
 
         public virtual Link GetLinkShape()
         {
-            return new Link(guid.ToString(), name, from, to, strokeType, style, path);
+            AnchorPoint fromForComm = from.GetForServer();
+            AnchorPoint toForComm = to.GetForServer();
+            List<Coordinates> newPath = new List<Coordinates>();
+            foreach (Coordinates coords in path)
+            {
+                newPath.Add(new Coordinates(coords.x * 2.1, coords.y * 2.1));
+            }
+            return new Link(guid.ToString(), name, fromForComm, toForComm, linkType, style, newPath);
         }
 
-        public override Rect GetBounds()
+        public override Rect GetStraightBounds()
         {
             double[] bounds = GetMaxAndMin();
 
@@ -470,7 +521,12 @@ namespace PolyPaint.CustomInk.Strokes
                 new Point(bounds[(int)LIMITS.MAXX], bounds[(int)LIMITS.MAXY]));
         }
 
-        private double[] GetMaxAndMin()
+        public override Rect GetBounds()
+        {
+            return Rect.Empty;
+        }
+
+        public double[] GetMaxAndMin()
         {
             double maxX = -999999999;
             double maxY = -999999999;
@@ -500,7 +556,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         internal override bool HitTestPoint(Point point)
         {
-            return HitTest(point);
+            return GetGeometry().FillContains(point);
         }
 
         internal override bool HitTestPointIncludingEdition(Point point)
@@ -511,7 +567,7 @@ namespace PolyPaint.CustomInk.Strokes
 
         public override Rect GetEditingBounds()
         {
-            Rect bounds = GetBounds();
+            Rect bounds = GetStraightBounds();
             double minX = Math.Min(Math.Min(Math.Min(bounds.TopLeft.X, bounds.TopRight.X), bounds.BottomLeft.X), bounds.BottomRight.X);
             double maxX = Math.Max(Math.Max(Math.Max(bounds.TopLeft.X, bounds.TopRight.X), bounds.BottomLeft.X), bounds.BottomRight.X);
             double minY = Math.Min(Math.Min(Math.Min(bounds.TopLeft.Y, bounds.TopRight.Y), bounds.BottomLeft.Y), bounds.BottomRight.Y);
@@ -519,6 +575,23 @@ namespace PolyPaint.CustomInk.Strokes
 
             bounds = new Rect(new Point(minX - 15, minY - 15), new Point(maxX + 15, maxY + 15));
             return bounds;
+        }
+
+        public override Point GetCenter()
+        {
+            Rect strokeBounds = GetStraightBounds();
+
+            Point leftTopPoint = GetTheLeftTopPoint();
+            Point rightBottomPoint = GetTheRightBottomPoint();
+            Point center = new Point(strokeBounds.X + strokeBounds.Width / 2, strokeBounds.Y + strokeBounds.Height / 2);
+            //new Point((leftTopPoint.X + rightBottomPoint.X) /2, (leftTopPoint.Y + rightBottomPoint.Y) / 2);
+
+            return center;
+        }
+
+        public override Rect GetCustomBound()
+        {
+            return GetStraightBounds();
         }
     }
 }

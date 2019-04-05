@@ -38,8 +38,8 @@ open class BasicElementView: ConstraintLayout {
     var start: Coordinates = Coordinates(0.0,0.0)
     var oldLink: LinkView? = null
     var isSelectedByOther: Boolean = false
-    open var mMinimumWidth : Float = 300F
-    open var mMinimumHeight : Float = 100F
+    open var mMinimumWidth : Float = 84F
+    open var mMinimumHeight : Float = 84F
     var socket: Socket? = null
 
     var pointerFinger1 : Int = -1
@@ -853,10 +853,6 @@ open class BasicElementView: ConstraintLayout {
         val formsArray: ArrayList<BasicShape> = ArrayList()
         var obj: String =""
         if(basicShape !=null) {
-            basicShape.shapeStyle.coordinates.x = (basicShape.shapeStyle.coordinates.x.toFloat() - SyncShapeHolder.getInstance().drawingActivity!!.shapeOffset).toDouble()
-            basicShape.shapeStyle.coordinates.y = (basicShape.shapeStyle.coordinates.y.toFloat() - SyncShapeHolder.getInstance().drawingActivity!!.shapeOffset).toDouble()
-
-
             formsArray.add(basicShape)
             val gson = Gson()
             val response: FormsUpdateEvent = FormsUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, formsArray)

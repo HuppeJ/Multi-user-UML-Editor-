@@ -24,8 +24,8 @@ namespace PolyPaint.CustomInk
 
         public ActorStroke(StylusPointCollection pts) : base(pts)
         {
-            shapeStyle.width = 30 * WIDTH;
-            shapeStyle.height = 70 * HEIGHT;
+            shapeStyle.width = 80;
+            shapeStyle.height = 80;
             shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());
 
             UpdateShapePoints();
@@ -45,7 +45,7 @@ namespace PolyPaint.CustomInk
 
             /*
             Rect editionBorder = new Rect(shapeStyle.coordinates.x - 15, shapeStyle.coordinates.y - 15,
-                WIDTH * shapeStyle.width + 30, HEIGHT * shapeStyle.height + 30);
+                 shapeStyle.width + 30, shapeStyle.height + 30);
             */
 
             // drawingContext.DrawRectangle(null, pen2, editionBorder);
@@ -60,31 +60,22 @@ namespace PolyPaint.CustomInk
             FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, 
                 new Typeface("Arial"), 12, Brushes.Black);
 
-            formattedText.MaxTextWidth = shapeStyle.width / WIDTH;
+            formattedText.MaxTextWidth = shapeStyle.width;
             formattedText.TextAlignment = TextAlignment.Center;
             formattedText.MaxTextHeight = 100;
 
             drawingContext.DrawText(formattedText, GetCustomBound().BottomLeft);
         }
-
+        
         public override Rect GetBounds()
         {
-            double width = shapeStyle.width / WIDTH;
-            double height = shapeStyle.height / HEIGHT;
-
-            Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y, 
-                width, height);
-
-            RotateTransform rotationTransform = new RotateTransform(shapeStyle.rotation, GetCenter().X, GetCenter().Y);
-            rect.Transform(rotationTransform.Value);
-
-            return rect;
+            return Rect.Empty;
         }
 
         public override Rect GetCustomBound()
         {
-            double width = shapeStyle.width / WIDTH;
-            double height = shapeStyle.height / HEIGHT;
+            double width = shapeStyle.width;
+            double height = shapeStyle.height;
 
             Rect rect = new Rect(shapeStyle.coordinates.x, shapeStyle.coordinates.y,
                 width, height);
@@ -123,8 +114,8 @@ namespace PolyPaint.CustomInk
 
         private void UpdateShapePoints()
         {
-            double width = shapeStyle.width / WIDTH;
-            double height = shapeStyle.height / HEIGHT;
+            double width = shapeStyle.width;
+            double height = shapeStyle.height;
 
             headRadiusX = width / 2;
             headRadiusY = height / 6;
@@ -150,7 +141,7 @@ namespace PolyPaint.CustomInk
         public override Point GetCenter()
         {
             Rect rect = GetCustomBound();
-            return new Point (rect.X + shapeStyle.width / WIDTH / 2, rect.Y + shapeStyle.height * HEIGHT / 2);
+            return new Point (rect.X + shapeStyle.width / 2, rect.Y + shapeStyle.height / 2);
         }
     }
 }

@@ -22,8 +22,8 @@ import kotlinx.android.synthetic.main.view_image_element.view.*
 
 
 class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementView(context) {
-    override var mMinimumWidth : Float = 140F
-    override var mMinimumHeight : Float = 200F
+    override var mMinimumWidth : Float = 84F
+    override var mMinimumHeight : Float = 84F
     private var shapeType : ShapeTypes? = shapeType
     private var imgBackground : ImageView? = null
     private var imgBackgroundBack : ImageView? = null
@@ -35,9 +35,9 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
 
         var child = activity.layoutInflater.inflate(R.layout.view_image_element, null)
 
-        var nameText: TextView = child.findViewById(R.id.view_image_element_name) as TextView
+        //var nameText: TextView = child.findViewById(R.id.view_image_element_name) as TextView
         // TODO : Initialiser le text avec le basictElement.name lorsqu'on aura déterminé comment les view vont être parsées
-        nameText.text = "basictElement.name"
+        //nameText.text = "ImageElementViewElement"
 
         /*
         val shape = ViewShapeHolder.getInstance().canevas.findShape(
@@ -76,8 +76,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         borderResizableLayout.layoutParams.width =  (mMinimumWidth).toInt()
 
         borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-        linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
-        linearLayoutCompat2Img.layoutParams.height = (3*mMinimumHeight/10).toInt()
+        //linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
 
     }
 
@@ -91,12 +90,10 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
             // TODO :  is null : linearLayoutCompatImg & linearLayoutCompat2Img
-            linearLayoutCompatImg.layoutParams.height = (7*newHeight / 10)
-            linearLayoutCompat2Img.layoutParams.height = (3 * newHeight / 10)
+            //linearLayoutCompatImg.layoutParams.height = (7*newHeight / 10)
         }else{
             borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-            linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
-            linearLayoutCompat2Img.layoutParams.height = (3*mMinimumHeight/10).toInt()
+            //linearLayoutCompatImg.layoutParams.height = (7*mMinimumHeight/10).toInt()
         }
 
         borderResizableLayout.requestLayout()

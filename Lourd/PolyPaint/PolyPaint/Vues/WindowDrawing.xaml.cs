@@ -81,8 +81,11 @@ namespace PolyPaint.Vues
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
-
         }
+
+        public void AlignLeft() => surfaceDessin.AlignLeft();
+
+        public void AlignCenter() => surfaceDessin.AlignCenter();
 
         private void DupliquerSelection(object sender, RoutedEventArgs e) => surfaceDessin.PasteStrokes();
 
@@ -90,6 +93,7 @@ namespace PolyPaint.Vues
 
         private void RefreshChildren(object sender, RoutedEventArgs e)
         {
+
             // pcq click et command ne fonctionnent pas ensemble
             var btn = sender as Button;
             btn.Command.Execute(btn.CommandParameter);
@@ -97,16 +101,12 @@ namespace PolyPaint.Vues
             surfaceDessin.RefreshChildren();
         }
 
-        private void surfaceDessin_OnKeyUp(object sender, KeyEventArgs e)
+        private void Empiler(object sender, RoutedEventArgs e)
         {
-            if (e.Key == Key.Delete)
-            {
-                if (surfaceDessin.SelectedStrokes.Count > 0)
-                {
-                    DrawingService.RemoveShapes(surfaceDessin.SelectedStrokes);
-                    surfaceDessin.DeleteStrokes(surfaceDessin.SelectedStrokes);
-                }
-            }
+            var btn = sender as Button;
+            btn.Command.Execute(btn.CommandParameter);
+
+            surfaceDessin.RefreshChildren();
         }
 
         // Quand une nouvelle nouvelle stroke a ete ajoute
@@ -162,6 +162,11 @@ namespace PolyPaint.Vues
                     popUpLinkVue.setParameters();
                     popUpLink.IsOpen = true;
                 }
+                else if (strokes[0] is CommentStroke)
+                {
+                    popUpCommentVue.setParameters(strokes[0] as CustomStroke);
+                    popUpComment.IsOpen = true;
+                }
                 else
                 {
                     popUpNameVue.setParameters(strokes[0] as CustomStroke);
@@ -174,15 +179,28 @@ namespace PolyPaint.Vues
         public void DeleteSelection()
         {
             StrokeCollection strokes = surfaceDessin.GetSelectedStrokes();
-            if (strokes.Count == 1)
-            {
-                surfaceDessin.DeleteStrokes(strokes);
-            }
+            surfaceDessin.DeleteStrokes(strokes);
         }
 
         public void Rename(string text, Color borderColor, Color fillColor, int lineStyle )
         {
             popUpName.IsOpen = false;
+            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
+            stroke.name = text;
+            stroke.shapeStyle.borderColor = borderColor.ToString();
+            stroke.shapeStyle.backgroundColor = fillColor.ToString();
+            stroke.shapeStyle.borderStyle = lineStyle;
+            StrokeCollection sc = new StrokeCollection();
+            sc.Add(stroke);
+            DrawingService.UpdateShapes(sc);
+            surfaceDessin.RefreshChildren();
+            surfaceDessin.RefreshSelectedShape(stroke);
+            IsEnabled = true;
+        }
+
+        public void CommentEdition(string text, Color borderColor, Color fillColor, int lineStyle)
+        {
+            popUpComment.IsOpen = false;
             ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
             stroke.name = text;
             stroke.shapeStyle.borderColor = borderColor.ToString();
@@ -255,12 +273,30 @@ namespace PolyPaint.Vues
             {
                 stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
             }
-            stroke.DrawingAttributes.Width = linkThickness;
-            stroke.DrawingAttributes.Height = linkThickness;
+
+            switch (linkThickness)
+            {
+                case 0:
+                    stroke.DrawingAttributes.Width = 2;
+                    stroke.DrawingAttributes.Height = 2;
+                    break;
+                case 1:
+                    stroke.DrawingAttributes.Width = 6;
+                    stroke.DrawingAttributes.Height = 6;
+                    break;
+                case 2:
+                    stroke.DrawingAttributes.Width = 10;
+                    stroke.DrawingAttributes.Height = 10;
+                    break;
+                default:
+                    stroke.DrawingAttributes.Width = 2;
+                    stroke.DrawingAttributes.Height = 2;
+                    break;
+            }
 
             StrokeCollection sc = new StrokeCollection();
             sc.Add(stroke);
-            DrawingService.UpdateShapes(sc);
+            DrawingService.UpdateLinks(sc);
 
             surfaceDessin.RefreshChildren();
             IsEnabled = true;
@@ -290,6 +326,31 @@ namespace PolyPaint.Vues
         {
             IsEnabled = true;
             popUpClassFromCode.IsOpen = false;
+        }
+
+        internal void SelectCSFile()
+        {
+            popUpClassFromCode.IsOpen = false;
+            string selectedFile = "";
+
+            var openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            openFileDialog.DefaultExt = "cs";
+            openFileDialog.Filter = "cs files (*.cs)|*.cs";
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                popUpClassFromCodeVue.CodeTextBox.Text = "";
+                selectedFile = openFileDialog.FileName;
+
+                System.IO.StreamReader reader = System.IO.File.OpenText(selectedFile);
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    popUpClassFromCodeVue.CodeTextBox.Text += line + Environment.NewLine;
+                }
+            }
+
+            popUpClassFromCode.IsOpen = true;
         }
 
         public void DrawClass(string name, List<string> properties, List<string> methods)

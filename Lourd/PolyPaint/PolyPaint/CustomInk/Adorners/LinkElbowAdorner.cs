@@ -9,6 +9,8 @@ using System;
 using System.Windows.Shapes;
 using PolyPaint.Templates;
 using PolyPaint.Enums;
+using PolyPaint.Services;
+using System.Windows.Ink;
 
 namespace PolyPaint.CustomInk
 {
@@ -42,7 +44,7 @@ namespace PolyPaint.CustomInk
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)
             // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = linkStroke.GetBounds();
+            strokeBounds = linkStroke.GetStraightBounds();
             center = this.linkStroke.GetCenter();
 
             anchors = new List<Thumb>();
@@ -55,9 +57,9 @@ namespace PolyPaint.CustomInk
             visualChildren = new VisualCollection(this);
             foreach (Thumb anchor in anchors)
             {
-                anchor.Cursor = Cursors.SizeNWSE;
-                anchor.Width = 10;
-                anchor.Height = 10;
+                anchor.Cursor = Cursors.ScrollAll;
+                anchor.Width = 6;
+                anchor.Height = 6;
                 anchor.Background = Brushes.Black;
 
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
@@ -66,8 +68,6 @@ namespace PolyPaint.CustomInk
 
                 visualChildren.Add(anchor);
             }
-
-            strokeBounds = linkStroke.GetBounds();
 
             line = new Path();
 
@@ -190,6 +190,9 @@ namespace PolyPaint.CustomInk
 
             linkStroke.path.Insert(indexInPath, new Coordinates(actualPos));
             linkStroke.addStylusPointsToLink();
+
+            DrawingService.UpdateLinks(new StrokeCollection { linkStroke });
+
             canvas.RefreshChildren();
             InvalidateArrange();
             visualChildren.Clear();

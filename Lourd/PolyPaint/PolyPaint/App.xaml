@@ -37,6 +37,9 @@
             <DataTemplate x:Key="DrawingTemplate">
                 <views:WindowDrawing/>
             </DataTemplate>
+            <DataTemplate x:Key="DrawingHistoryTemplate">
+                <views:DrawingHistoryView/>
+            </DataTemplate>
             <DataTemplate x:Key="DrawingChatTemplate">
                 <views:DrawingChatView/>
             </DataTemplate>
@@ -55,6 +58,9 @@
                     </DataTrigger>
                     <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.Drawing}">
                         <Setter Property="ContentTemplate" Value="{StaticResource DrawingChatTemplate}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.History}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource DrawingHistoryTemplate}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

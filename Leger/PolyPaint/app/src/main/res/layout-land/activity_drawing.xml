@@ -26,12 +26,14 @@
                     android:layout_height="wrap_content"
                     android:textSize="24dp"
                     android:text="Title"
-                    android:maxLines="6"
                     android:background="@drawable/style_edit_text"
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
                     android:id="@+id/canevas_title" android:layout_marginLeft="4dp" android:layout_marginStart="4dp"
                     app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"/>
+                    android:layout_marginRight="8dp"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="end"
+                    android:maxLines="2"/>
 
             <Button
                     android:id="@+id/clear_canvas_button"

@@ -29,6 +29,7 @@ namespace PolyPaint.CustomInk
         private Path linkPreview;
         LineGeometry linkPreviewGeom = new LineGeometry();
         int linkStrokeAnchor;
+        CustomStroke anchoredShapeStroke = null;
 
         public LinkAnchorPointAdorner(UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
@@ -44,7 +45,7 @@ namespace PolyPaint.CustomInk
             canvas = actualCanvas;
             linkStrokeAnchor = this.linkStroke.path.Count;
 
-            strokeBounds = linkStroke.GetBounds();
+            strokeBounds = linkStroke.GetStraightBounds();
             center = this.linkStroke.GetCenter();
 
             anchors = new List<Thumb>();
@@ -56,9 +57,9 @@ namespace PolyPaint.CustomInk
 
             foreach (Thumb anchor in anchors)
             {
-                anchor.Cursor = Cursors.SizeNWSE;
-                anchor.Width = 10;
-                anchor.Height = 10;
+                anchor.Cursor = Cursors.ScrollAll;
+                anchor.Width = 6;
+                anchor.Height = 6;
                 anchor.Background = Brushes.IndianRed;
 
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
@@ -67,8 +68,6 @@ namespace PolyPaint.CustomInk
 
                 visualChildren.Add(anchor);
             }
-
-            strokeBounds = linkStroke.GetBounds();
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -114,6 +113,18 @@ namespace PolyPaint.CustomInk
             if(linkStrokeAnchor == 0 || linkStrokeAnchor == linkStroke.path.Count - 1)
             {
                 canvas.addAnchorPoints();
+                string formId = "";
+                if(linkStrokeAnchor == 0)
+                {
+                    formId = linkStroke.from?.formId;
+                } else
+                {
+                    formId = linkStroke.to?.formId;
+                }
+                if(formId != null)
+                {
+                    canvas.StrokesDictionary.TryGetValue(formId, out anchoredShapeStroke);
+                }
             }
             canvas.isUpdatingLink = true;
         }
@@ -173,7 +184,20 @@ namespace PolyPaint.CustomInk
                     }
                 }
             }
-            
+
+            if (anchoredShapeStroke != null)
+            {
+                if(linkStrokeAnchor == 0) //from is changing
+                {
+
+                }
+                else // to is changing
+                {
+
+                }
+            }
+            // voir fonction du anchorPointAdorner
+
             canvas.updateLink(linkStrokeAnchor, linkStroke, strokeTo as ShapeStroke, number, actualPos);
 
             InvalidateArrange();

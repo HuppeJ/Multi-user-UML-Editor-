@@ -102,7 +102,12 @@ class MessageListFragment: Fragment(){
         // TODO: verifier l'event et la room qui joined.
         socket?.on(SocketConstants.MESSAGE_SENT, onNewMessage)
 
-        socket?.emit(SocketConstants.JOIN_CHATROOM, ChatroomEvent(UserHolder.getInstance().username, "MainRoom"))
+        val gson = Gson()
+        val joinChatEvent: ChatroomEvent = ChatroomEvent(UserHolder.getInstance().username, "MainRoom")
+        val sendObj = gson.toJson(joinChatEvent)
+
+
+        socket?.emit(SocketConstants.JOIN_CHATROOM, sendObj)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

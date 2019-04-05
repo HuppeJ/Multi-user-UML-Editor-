@@ -103,9 +103,9 @@ namespace PolyPaint.CustomInk
         {
             double xCenter = GetCenter().X;
             double yCenter = GetCenter().Y;
-            double margin = 10;
-            double halfWidth = GetBounds().Width / 2 + margin;
-            double halfHeight = GetBounds().Height / 2 + margin;
+            double margin = 3;
+            double halfWidth = shapeStyle.width / 2 + margin;
+            double halfHeight = shapeStyle.height / 2 + margin;
 
             Point pointRotatedAroundOrigin;
 
@@ -165,6 +165,11 @@ namespace PolyPaint.CustomInk
             double sinTheta = Math.Sin(rotationInRad);
 
             return new Point(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+        }
+
+        public override Rect GetStraightBounds()
+        {
+            return GetEditingBounds();
         }
     }
 }

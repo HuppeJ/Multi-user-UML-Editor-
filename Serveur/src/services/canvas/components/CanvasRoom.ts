@@ -1,4 +1,4 @@
-import { ICanevas, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData, IResizeCanevasData } from "../interfaces/interfaces";
+import { ICanevas, IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData, IResizeCanevasData, IHistoryData } from "../interfaces/interfaces";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasRoom {
@@ -6,12 +6,29 @@ export default class CanvasRoom {
     public selectedForms: any;  // selectedForms is a Map : [key: formId, value: username]
     public selectedLinks: any;  // selectedLinks is a Map : [key: linkId, value: username]
     public canvasSelected: boolean;  // selectedLinks is a Map : [key: formId, value: username]
+    public history: IHistoryData[]; 
+    public date: Date;
 
     constructor(public canvas: ICanevas) {
         this.connectedUsers = new Set();
         this.selectedForms = new Map<string, string>();
         this.selectedLinks = new Map<string, string>();
         this.canvasSelected = false;
+        this.history = [];
+        this.date = new Date();
+    }
+
+    public logHistory(username: string, message: string) {
+        const newLog: IHistoryData = {
+            username: username,
+            message: message,  
+            timestamp: this.date.getTime().toString(),
+            canevas: this.canvas
+        }
+
+        this.history.push(newLog);
+
+        return true;
     }
 
     public addUser(username: string) {
@@ -145,14 +162,14 @@ export default class CanvasRoom {
       
             // Check if all forms are not selected, if a form is already selected throw an Error.
             data.forms.forEach((form) => {
-                if (this.selectedForms.has(form.id)) {
+                if (this.selectedForms.has(form)) {
                     throw new Error(`The form with the id: "${form}" is already selected in the canvas : "${this.canvas.name}".`);
                 }
             });
 
             // If all forms are not selected, select them
             data.forms.forEach((form) => {
-                this.selectedForms.set(form.id, data.username);
+                this.selectedForms.set(form, data.username);
             });
 
 
@@ -173,7 +190,7 @@ export default class CanvasRoom {
 
             // Deselect all forms
             data.forms.forEach((form) => {
-                this.selectedForms.delete(form.id);
+                this.selectedForms.delete(form);
             });
 
             return true;
@@ -262,14 +279,14 @@ export default class CanvasRoom {
 
             // Check if all links are not selected, if a form is already selected throw an Error.
             data.links.forEach((link) => {
-                if (this.selectedLinks.has(link.id)) {
+                if (this.selectedLinks.has(link)) {
                     throw new Error(`The form with the id: "${link}" is already selected in the canvas : "${this.canvas.name}".`);
                 }
             });
 
             // If all links are not selected, select them
             data.links.forEach((link) => {
-                this.selectedLinks.set(link.id, data.username);
+                this.selectedLinks.set(link, data.username);
             });
 
             return true;
@@ -289,7 +306,7 @@ export default class CanvasRoom {
 
             // Deselect all links
             data.links.forEach((link) => {
-                this.selectedLinks.delete(link.id);
+                this.selectedLinks.delete(link);
             });
 
             return true;
@@ -401,16 +418,85 @@ export default class CanvasRoom {
         });
     }
 
-    public getSelectedFormsSERI(): string {
+    public getSelectedFormsSERI(data: IEditGalleryData): string {
+        let selectedFormsArray: string[] = Array.from(this.selectedForms.keys());
+
+        const filteredSelectedFormsArray = selectedFormsArray.filter((key) => {
+            if (this.selectedForms.get(key) == data.username) {
+                return false;
+            }
+
+            return true;
+        });
+
+        const filteredSelectedFormsArrayIds: string [] = [];
+
+        filteredSelectedFormsArray.forEach((formStr) => {
+            const form = JSON.parse(formStr);
+            filteredSelectedFormsArrayIds.push(form.id)
+        });
+
         return JSON.stringify({
-            selectedForms: Array.from(this.selectedForms.keys())
+            selectedForms: filteredSelectedFormsArrayIds
         });
     }
 
-    public getSelectedLinksSERI(): string {
-        return JSON.stringify({
-            selectedLinks: Array.from(this.selectedLinks.keys())
+    public getSelectedLinksSERI(data: IEditGalleryData): string {
+        let selectedLinksArray: string[] = Array.from(this.selectedLinks.keys());
+
+        const filteredSelectedLinksArray = selectedLinksArray.filter((key) => {
+            if (this.selectedLinks.get(key) == data.username) {
+                return false;
+            }
+
+            return true;
         });
+
+        const filteredSelectedLinksArrayIds: string [] = [];
+
+        filteredSelectedLinksArray.forEach((linkStr) => {
+            const link = JSON.parse(linkStr);
+            filteredSelectedLinksArrayIds.push(link.id)
+        });
+
+
+        return JSON.stringify({
+            selectedLinks: filteredSelectedLinksArrayIds
+        });
+    }
+
+    public getSelectedFormsByUser(username: string): any[] {
+        let selectedFormsArray: any[] = Array.from(this.selectedForms.keys());
+
+        const filteredSelectedFormsArray = selectedFormsArray.filter((key) => {
+            if (this.selectedForms.get(key) == username) {
+                return true;
+            }
+
+            return false;
+
+        });
+
+        return filteredSelectedFormsArray;
+    }
+
+    public getSelectedLinksByUser(username: string): any[] {
+        let selectedLinksArray: any[] = Array.from(this.selectedLinks.keys());
+
+        const filteredSelectedLinksArray = selectedLinksArray.filter((key) => {
+            if (this.selectedLinks.get(key) == username) {
+                return true;
+            }
+
+            return false;
+
+        });
+
+        return filteredSelectedLinksArray;
+    }
+
+    public getCanvasLogHistorySERI(): string {
+        return JSON.stringify(this.history);
     }
 
     // // fromJSON is used to convert an serialized version

@@ -10,6 +10,7 @@ using System;
 using System.Windows.Ink;
 using PolyPaint.Services;
 using PolyPaint.Vues;
+using PolyPaint.Templates;
 
 namespace PolyPaint.CustomInk
 {
@@ -17,46 +18,89 @@ namespace PolyPaint.CustomInk
     {
         List<Thumb> anchors;
         List<StrokeResizePointThumb> cheatAnchors;
+        Thumb moveThumb;
 
         VisualCollection visualChildren;
 
         // The bounds of the Strokes;
         Rect strokeBounds = Rect.Empty;
-        public ShapeStroke shapeStroke;
+        public CustomStroke customStroke;
 
         public CustomInkCanvas canvas;
 
+        RotateTransform rotationPreview;
         RotateTransform rotation;
 
         private Path resizePreview;
+        private Path outerBoundPath;
 
         Vector unitX = new Vector(1, 0);
         Vector unitY = new Vector(0, 1);
 
+        double horizontalChange = 0;
+        double verticalChange = 0;
+
+        const int MARGIN = 10;
+
         RectangleGeometry NewRectangle = new RectangleGeometry();
         RectangleGeometry OldRectangle = new RectangleGeometry();
+
+        double WIDTH_LEGER = 60;
 
         public ResizeAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
             visualChildren = new VisualCollection(this);
 
+            if (customStroke is ShapeStroke)
+                strokeBounds = customStroke.GetCustomBound();
+            else
+                strokeBounds = (customStroke as LinkStroke).GetStraightBounds();
+
             resizePreview = new Path();
-            resizePreview.Stroke = Brushes.Gray;
-            resizePreview.StrokeThickness = 2;
+            resizePreview.Stroke = Brushes.Black;
+            resizePreview.StrokeDashArray = new DoubleCollection { 5, 2 };
+            resizePreview.StrokeThickness = 1;
             visualChildren.Add(resizePreview);
 
-            shapeStroke = customStroke as ShapeStroke;
+            this.customStroke = customStroke;
             canvas = actualCanvas;
-            // rotation initiale de la stroke (pour dessiner le rectangle)
-            // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
-            strokeBounds = customStroke.GetCustomBound();
+
             Point center = customStroke.GetCenter();
-            rotation = new RotateTransform((customStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+            if(customStroke is ShapeStroke)
+                rotation = new RotateTransform((customStroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
+            else
+                rotation = new RotateTransform(0, center.X, center.Y);
             while (rotation.Angle < 0)
             {
                 rotation.Angle += 360;
             }
+
+            outerBoundPath = new Path();
+            outerBoundPath.Stroke = Brushes.Black;
+            outerBoundPath.StrokeDashArray = new DoubleCollection { 5, 2 }; 
+            outerBoundPath.StrokeThickness = 1;
+            Rect rect = customStroke.GetCustomBound();
+            rect.X -= MARGIN;
+            rect.Y -= MARGIN;
+            rect.Width += MARGIN * 2;
+            rect.Height += MARGIN * 2;
+            outerBoundPath.Data = new RectangleGeometry(rect, 0, 0, rotation);
+            visualChildren.Add(outerBoundPath);
+
+            moveThumb = new Thumb();
+            moveThumb.Cursor = Cursors.SizeAll;
+            moveThumb.Height = strokeBounds.Height + MARGIN * 2;
+            moveThumb.Width = strokeBounds.Width + MARGIN * 2;
+            moveThumb.Background = Brushes.Transparent;
+            moveThumb.DragDelta += new DragDeltaEventHandler(Move_DragDelta);
+            moveThumb.DragCompleted += new DragCompletedEventHandler(Move_DragCompleted);
+            moveThumb.DragStarted += new DragStartedEventHandler(All_DragStarted);
+            moveThumb.PreviewMouseUp += new MouseButtonEventHandler(LeftMouseUp);
+            moveThumb.RenderTransform = new RotateTransform(rotation.Angle, moveThumb.Width / 2, moveThumb.Height / 2); ;
+
+            visualChildren.Add(moveThumb);
+
             unitX = rotation.Value.Transform(unitX);
             unitY = rotation.Value.Transform(unitY);
             // RenderTransform = rotation;
@@ -74,9 +118,11 @@ namespace PolyPaint.CustomInk
             int index = 0;
             foreach (Thumb anchor in anchors)
             {
-                anchor.Width = 5;
-                anchor.Height = 5;
-                anchor.Background = Brushes.Gray;
+                anchor.Width = 8;
+                anchor.Height = 8;
+                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFBBBBBB"), 
+                    (Color)ColorConverter.ConvertFromString("#FF646464"), 45);
+                anchor.BorderBrush = Brushes.Black;
                 if (rotation.Angle % 360 >= 360 - 45 / 2 || rotation.Angle % 360 <= 45 / 2)
                 {
                     switch (index)
@@ -397,19 +443,20 @@ namespace PolyPaint.CustomInk
                 }
                 anchor.DragStarted += new DragStartedEventHandler(All_DragStarted);
                 anchor.DragCompleted += new DragCompletedEventHandler(All_DragCompleted);
-                visualChildren.Add(anchor);
+                if(!(customStroke is LinkStroke) || !(customStroke as LinkStroke).isAttached())
+                    visualChildren.Add(anchor);
                 index++;
             }
 
             cheatAnchors = new List<StrokeResizePointThumb>();
-            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 0));
-            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 1));
-            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 2));
-            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 3));
-            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 4));
-            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 5));
-            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 6));
-            cheatAnchors.Add(new StrokeResizePointThumb(shapeStroke, canvas, 7));
+            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 0));
+            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 1));
+            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 2));
+            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 3));
+            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 4));
+            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 5));
+            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 6));
+            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 7));
 
             index = 0;
             foreach (Thumb cheatAnchor in cheatAnchors)
@@ -549,8 +596,7 @@ namespace PolyPaint.CustomInk
                 index++;
             }
 
-            strokeBounds = customStroke.GetCustomBound();
-
+            rotationPreview = rotation.Clone();
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -559,7 +605,6 @@ namespace PolyPaint.CustomInk
             {
                 return finalSize;
             }
-
             // Top
             ArrangeAnchor(0, 0, -(strokeBounds.Height / 2));
             // Right
@@ -578,12 +623,35 @@ namespace PolyPaint.CustomInk
             ArrangeAnchor(7, strokeBounds.Width / 2, strokeBounds.Height / 2);
 
             resizePreview.Arrange(new Rect(finalSize));
+            outerBoundPath.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+
+            Rect handleRect = new Rect(strokeBounds.X - MARGIN,
+                                  strokeBounds.Y - MARGIN,
+                                  strokeBounds.Width + MARGIN * 2,
+                                  strokeBounds.Height + MARGIN * 2);
+            moveThumb.Arrange(handleRect);
 
             return finalSize;
         }
 
         private void ArrangeAnchor(int anchorNumber, double xOffset, double yOffset)
         {
+            if (xOffset > 0)
+            {
+                xOffset += MARGIN;
+            }
+            if (xOffset < 0)
+            {
+                xOffset -= MARGIN;
+            }
+            if (yOffset < 0)
+            {
+                yOffset -= MARGIN;
+            }
+            if (yOffset > 0)
+            {
+                yOffset += MARGIN;
+            }
             // The rectangle that determines the position of the Thumb.
             Rect handleRect = new Rect(strokeBounds.X + xOffset,
                                   strokeBounds.Y + yOffset,
@@ -596,20 +664,47 @@ namespace PolyPaint.CustomInk
             cheatAnchors[anchorNumber].Arrange(handleRect);
         }
 
-        void All_DragStarted(object sender,
-                                        DragStartedEventArgs e)
+        void All_DragStarted(object sender, DragStartedEventArgs e)
         {
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
-                                      shapeStroke.GetCustomBound().Y, 
-                                      shapeStroke.GetCustomBound().Width, 
-                                      shapeStroke.GetCustomBound().Height);
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X,
+                                      customStroke.GetCustomBound().Y,
+                                      customStroke.GetCustomBound().Width,
+                                      customStroke.GetCustomBound().Height);
             OldRectangle = new RectangleGeometry(rectangle, 0, 0, rotation);
         }
+
+        void LeftMouseUp(object sender, MouseEventArgs e)
+        {
+            if (customStroke is LinkStroke)
+            {
+                canvas.modifyLinkStrokePath(customStroke as LinkStroke, e.GetPosition(canvas));
+            }
+        }
         
-        void All_DragCompleted(object sender,
-                                        DragCompletedEventArgs e)
+        void All_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             Point actualPos = Mouse.GetPosition(this);
+            if (e.HorizontalChange == 0 && e.VerticalChange == 0)
+            {
+                visualChildren.Remove(resizePreview);
+                InvalidateArrange();
+                return;
+            }
+            
+            visualChildren.Remove(resizePreview);
+
+            canvas.ResizeShape(customStroke, NewRectangle, OldRectangle);
+
+            canvas.RefreshLinks(false);
+            canvas.RefreshChildren();
+
+            InvalidateArrange();
+
+            DrawingService.UpdateShapes(new StrokeCollection { customStroke });
+        }
+
+        void Move_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
             if (e.HorizontalChange == 0 && e.VerticalChange == 0)
             {
                 visualChildren.Remove(resizePreview);
@@ -620,27 +715,30 @@ namespace PolyPaint.CustomInk
 
             visualChildren.Remove(resizePreview);
 
-            canvas.ResizeShape(shapeStroke, NewRectangle, OldRectangle);
+            if (customStroke is LinkStroke && (customStroke as LinkStroke).isAttached())
+                canvas.MoveShape(horizontalChange, verticalChange);
+            else
+                canvas.MoveShape(NewRectangle.Rect.X - OldRectangle.Rect.X, NewRectangle.Rect.Y - OldRectangle.Rect.Y);
 
             canvas.RefreshLinks(false);
             canvas.RefreshChildren();
 
             InvalidateArrange();
 
-            DrawingService.UpdateShapes(new StrokeCollection { shapeStroke });
+            DrawingService.UpdateShapes(new StrokeCollection { customStroke });
         }
 
         #region DragDelta
         private void generatePreview(Rect rectangle)
         {
-            NewRectangle = new RectangleGeometry(rectangle, 0, 0, rotation);
+            NewRectangle = new RectangleGeometry(rectangle, 0, 0, rotationPreview);
             resizePreview.Data = NewRectangle;
             resizePreview.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
         }
 
         private Vector calculateDelta(DragDeltaEventArgs e)
         {
-            Point center = shapeStroke.GetCenter();
+            Point center = customStroke.GetCenter();
             RotateTransform rotationInverse = new RotateTransform(360 - rotation.Angle, center.X, center.Y);
             Vector dragVect = new Vector(e.HorizontalChange, e.VerticalChange);
             dragVect = rotationInverse.Value.Transform(dragVect);
@@ -648,131 +746,175 @@ namespace PolyPaint.CustomInk
             return dragVect;
         }
 
+        void Move_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Vector dragVect = new Vector(e.HorizontalChange, e.VerticalChange);
+            dragVect = rotation.Value.Transform(dragVect);
+
+            if (dragVect.X != 0 || dragVect.Y != 0)
+            {
+                rotationPreview.CenterX = customStroke.GetCenter().X + dragVect.X;
+                rotationPreview.CenterY = customStroke.GetCenter().Y + dragVect.Y;
+                Rect rectangle = new Rect(customStroke.GetCustomBound().X + dragVect.X,
+                                          customStroke.GetCustomBound().Y + dragVect.Y,
+                                          customStroke.GetCustomBound().Width,
+                                          customStroke.GetCustomBound().Height);
+                if(customStroke is LinkStroke && (customStroke as LinkStroke).isAttached())
+                {
+                    horizontalChange = e.HorizontalChange;
+                    verticalChange = e.VerticalChange;
+                    LinkStroke linkStroke = customStroke.Clone() as LinkStroke;
+                    linkStroke.path = new List<Coordinates>();
+                    foreach (Coordinates coord in (customStroke as LinkStroke).path)
+                    {
+                        linkStroke.path.Add(new Coordinates(coord.ToPoint()));
+                    }
+
+                    for (int i = 0; i < linkStroke.path.Count; i++)
+                    {
+                        if (i == 0 && linkStroke.isAttached() && linkStroke.from?.formId != null)
+                        {
+                            continue;
+                        }
+                        if (i == linkStroke.path.Count - 1 && linkStroke.isAttached() && linkStroke.to?.formId != null)
+                        {
+                            continue;
+                        }
+                        Coordinates coords = linkStroke.path[i];
+                        coords.x += e.HorizontalChange;
+                        coords.y += e.VerticalChange;
+                    }
+                    rectangle = linkStroke.GetStraightBounds();
+                }
+                generatePreview(rectangle);
+            }
+        }
+
         void Top_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y > shapeStroke.GetCustomBound().Height - 21)
+            if (delta.Y > customStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
-                delta.Y = shapeStroke.GetCustomBound().Height - 21;
+                delta.Y = customStroke.GetCustomBound().Height - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
-                                      shapeStroke.GetCustomBound().Y + delta.Y, 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Width), 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Height - delta.Y));
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X,
+                                      customStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width), 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height - delta.Y));
             generatePreview(rectangle);
         }
 
         void Right_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.X < -shapeStroke.GetCustomBound().Width + 21)
+            if (delta.X < -customStroke.GetCustomBound().Width + WIDTH_LEGER)
             {
-                delta.X = -shapeStroke.GetCustomBound().Width + 21;
+                delta.X = -customStroke.GetCustomBound().Width + WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
-                                      shapeStroke.GetCustomBound().Y, 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Width + delta.X), 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Height));
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X, 
+                                      customStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height));
             generatePreview(rectangle);
         }
 
         void Bottom_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y < -shapeStroke.GetCustomBound().Height + 21)
+            if (delta.Y < -customStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
-                delta.Y = -shapeStroke.GetCustomBound().Height + 21;
+                delta.Y = -customStroke.GetCustomBound().Height + WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
-                                      shapeStroke.GetCustomBound().Y, 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Width), 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Height + delta.Y));
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X, 
+                                      customStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width), 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height + delta.Y));
             generatePreview(rectangle);
         }
 
         void Left_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.X > shapeStroke.GetCustomBound().Width - 21)
+            if (delta.X > customStroke.GetCustomBound().Width - WIDTH_LEGER)
             {
-                delta.X = shapeStroke.GetCustomBound().Width - 21;
+                delta.X = customStroke.GetCustomBound().Width - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
-                                      shapeStroke.GetCustomBound().Y, 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Width - delta.X), 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Height));
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X + delta.X, 
+                                      customStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height));
             generatePreview(rectangle);
         }
 
         void TopLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y > shapeStroke.GetCustomBound().Height - 21)
+            if (delta.Y > customStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
-                delta.Y = shapeStroke.GetCustomBound().Height - 21;
+                delta.Y = customStroke.GetCustomBound().Height - WIDTH_LEGER;
             }
-            if (delta.X > shapeStroke.GetCustomBound().Width - 21)
+            if (delta.X > customStroke.GetCustomBound().Width - WIDTH_LEGER)
             {
-                delta.X = shapeStroke.GetCustomBound().Width - 21;
+                delta.X = customStroke.GetCustomBound().Width - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
-                                      shapeStroke.GetCustomBound().Y + delta.Y, 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Width - delta.X), 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Height - delta.Y));
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X + delta.X, 
+                                      customStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height - delta.Y));
             generatePreview(rectangle);
         }
 
         void TopRight_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y > shapeStroke.GetCustomBound().Height - 21)
+            if (delta.Y > customStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
-                delta.Y = shapeStroke.GetCustomBound().Height - 21;
+                delta.Y = customStroke.GetCustomBound().Height - WIDTH_LEGER;
             }
-            if (delta.X < -shapeStroke.GetCustomBound().Width + 21)
+            if (delta.X < -customStroke.GetCustomBound().Width + WIDTH_LEGER)
             {
-                delta.X = -shapeStroke.GetCustomBound().Width + 21;
+                delta.X = -customStroke.GetCustomBound().Width + WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
-                                      shapeStroke.GetCustomBound().Y + delta.Y, 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Width + delta.X), 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Height - delta.Y));
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X, 
+                                      customStroke.GetCustomBound().Y + delta.Y, 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height - delta.Y));
             generatePreview(rectangle);
         }
 
         void BottomLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y < -shapeStroke.GetCustomBound().Height + 21)
+            if (delta.Y < -customStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
-                delta.Y = -shapeStroke.GetCustomBound().Height + 21;
+                delta.Y = -customStroke.GetCustomBound().Height + WIDTH_LEGER;
             }
-            if (delta.X > shapeStroke.GetCustomBound().Width - 21)
+            if (delta.X > customStroke.GetCustomBound().Width - WIDTH_LEGER)
             {
-                delta.X = shapeStroke.GetCustomBound().Width - 21;
+                delta.X = customStroke.GetCustomBound().Width - WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X + delta.X, 
-                                      shapeStroke.GetCustomBound().Y, 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Width - delta.X), 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Height + delta.Y));
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X + delta.X, 
+                                      customStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width - delta.X), 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height + delta.Y));
             generatePreview(rectangle);
         }
 
         void BottomRight_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector delta = calculateDelta(e);
-            if (delta.Y < -shapeStroke.GetCustomBound().Height + 21)
+            if (delta.Y < -customStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
-                delta.Y = -shapeStroke.GetCustomBound().Height + 21;
+                delta.Y = -customStroke.GetCustomBound().Height + WIDTH_LEGER;
             }
-            if (delta.X < -shapeStroke.GetCustomBound().Width + 21)
+            if (delta.X < -customStroke.GetCustomBound().Width + WIDTH_LEGER)
             {
-                delta.X = -shapeStroke.GetCustomBound().Width + 21;
+                delta.X = -customStroke.GetCustomBound().Width + WIDTH_LEGER;
             }
-            Rect rectangle = new Rect(shapeStroke.GetCustomBound().X, 
-                                      shapeStroke.GetCustomBound().Y, 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Width + delta.X), 
-                                      Math.Max(21, shapeStroke.GetCustomBound().Height + delta.Y));
+            Rect rectangle = new Rect(customStroke.GetCustomBound().X, 
+                                      customStroke.GetCustomBound().Y, 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Width + delta.X), 
+                                      Math.Max(WIDTH_LEGER, customStroke.GetCustomBound().Height + delta.Y));
             generatePreview(rectangle);
         }
         #endregion

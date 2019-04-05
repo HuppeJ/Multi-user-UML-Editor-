@@ -4,7 +4,7 @@ import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 
 export default class CanvasManager {
-    private canvasRooms: Map<string, CanvasRoom>; // [key: canvasRoomId, value: canvasRoom]
+    public canvasRooms: Map<string, CanvasRoom>; // [key: canvasRoomId, value: canvasRoom]
 
     constructor() {
         this.canvasRooms = new Map<string, CanvasRoom>();
@@ -12,6 +12,10 @@ export default class CanvasManager {
 
     public getCanvasRoomIdFromName(canvasName: string): string {
         return `${CANVAS_ROOM_ID}_${canvasName}`;
+    }
+
+    public getNameFromCanvasRoomId(canvasRoomId: string): string {
+        return this.canvasRooms.get(canvasRoomId).canvas.name;
     }
 
     public resetServerState(): boolean {
@@ -27,6 +31,24 @@ export default class CanvasManager {
 
         return canvasRoom.isCanvasSaved(data);
 
+    }
+
+    public logHistory(canvasRoomId: string, username: string, message: string): boolean {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.logHistory(username, message);
+    }
+
+    public getCanvasLogHistory(canvasRoomId: string): string {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return "";
+        }
+
+        return canvasRoom.getCanvasLogHistorySERI();
     }
 
     public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
@@ -87,9 +109,10 @@ export default class CanvasManager {
         return false;
     }
 
-    // TODO : Non utilisée et Fonction pas testée... 
-    public getCanvasRoomFromSocketId(unsername: any): string {
+    public getCanvasRoomFromUsername(unsername: any): string {
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
+            console.log(canvasRoom.getConnectedUsersSERI())
+
             if (canvasRoom.hasUser(unsername)) {
                 return canvasRoomId;
             }
@@ -249,22 +272,22 @@ export default class CanvasManager {
     /***********************************************
     * Serialize / Deserialize
     ************************************************/
-    public getSelectedFormsInCanvasRoomSERI(canvasRoomId: string): string {
+    public getSelectedFormsInCanvasRoomSERI(canvasRoomId: string, data: IEditGalleryData): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return null;
         }
 
-        return canvasRoom.getSelectedFormsSERI();
+        return canvasRoom.getSelectedFormsSERI(data);
     }
 
-    public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string): string {
+    public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string, data: IEditGalleryData): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         if (!canvasRoom) {
             return null;
         }
 
-        return canvasRoom.getSelectedLinksSERI();
+        return canvasRoom.getSelectedLinksSERI(data);
     }
 
     public getCanvasSERI(canvasRoomId: string): string {

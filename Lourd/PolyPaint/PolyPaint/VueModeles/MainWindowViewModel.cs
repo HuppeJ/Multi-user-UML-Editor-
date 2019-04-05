@@ -362,6 +362,22 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region DrawingHistoryViewCommand
+        private ICommand _drawingHistoryViewCommand;
+        public ICommand DrawingHistoryViewCommand
+        {
+            get
+            {
+                return _drawingHistoryViewCommand ?? (_drawingHistoryViewCommand = new RelayCommand<Object>(GoToDrawingHistoryView));
+            }
+        }
+
+        private void GoToDrawingHistoryView(object o)
+        {
+            UserMode = UserModes.History;
+        }
+        #endregion
+
         #region BackToLoginCommand
         private ICommand _backToLoginCommand;
         public ICommand BackToLoginCommand
@@ -547,7 +563,7 @@ namespace PolyPaint.VueModeles
 
             int accessibility = CanvasPrivacy == "Public" ? 1 : 0;
             // Max: W:1520, H1200
-            Coordinates dimensions = new Coordinates(1520, 1200);
+            Coordinates dimensions = new Coordinates(500, 380);
 
             Templates.Canvas canvas = new Templates.Canvas(Guid.NewGuid().ToString(), CanvasName, username, username,
                                                             accessibility, password, new List<BasicShape>(), new List<Link>(), dimensions, EMPTY_CANVAS);

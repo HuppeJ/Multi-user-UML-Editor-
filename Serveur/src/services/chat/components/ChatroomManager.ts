@@ -5,6 +5,16 @@ import { IEditChatroomData, IMessageData } from "../../canvas/interfaces/interfa
 export default class ChatroomManager {
     private chatrooms = new Map(); // [key: chatroomId, value: Chatroom]
 
+    
+    constructor() {
+        this.chatrooms = new Map<string, Chatroom>();
+        const data: IEditChatroomData = {
+            username: "Main",
+            chatroomName: "MainRoom"
+        }
+        this.addChatroom(this.getChatroomIdFromName("MainRoom"), data);
+    }
+
     public getChatroomIdFromName(chatroomName: string): string {
         return `${CHAT_ROOM_ID}-${chatroomName}`;
     }
