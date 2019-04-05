@@ -53,6 +53,8 @@ class LinkView: View{
     var endAnchorButton: ImageButton? = null
     var deleteButton: ImageButton? = null
 
+    var isButtonPressed: Boolean = false
+
     var oldFrameRawX : Float = 0.0F
     var oldFrameRawY : Float = 0.0F
     val middlePoints: ArrayList<Coordinates> = ArrayList()
@@ -63,9 +65,6 @@ class LinkView: View{
     var oldPreviewLink: LinkView? = null
 
     var boundingBox : LinkBoundingBoxView? = null
-
-    var pointerFinger1 : Int = -1
-    var pointerFinger2 : Int = -1
 
     var fingersCoords : Array<Coordinates> = Array(4) { Coordinates(0.0,0.0) }
     var isButtonVisible: Boolean = false
@@ -431,7 +430,7 @@ class LinkView: View{
 
     fun deleteLink(){
         emitDelete()
-        deselecteAllShapesSelected()
+        deselectAllShapesSelected()
         ViewShapeHolder.getInstance().stackDrawingElementCreatedId.remove(link?.id)
 
         val fromId = link?.from?.formId
@@ -502,7 +501,7 @@ class LinkView: View{
         parentView.addView(boundingBox)
     }
 
-    private fun deselecteAllShapesSelected(){
+    private fun deselectAllShapesSelected(){
         for(id in FormsSelectionHolder.getInstance().formsSelectedId){
             ViewShapeHolder.getInstance().map.inverse()[id]?.emitDeselection()
         }
@@ -527,7 +526,7 @@ class LinkView: View{
     override fun setSelected(selected: Boolean) {
         if(this.isSelected && !selected){
             emitDeselection()
-            deselecteAllShapesSelected()
+            deselectAllShapesSelected()
         }
         if(selected){
             isButtonVisible = true
@@ -585,21 +584,6 @@ class LinkView: View{
         }
     }
 
-    private fun calculateDeltaAngle() : Float{
-        val angle1 : Double = Math.atan2( (fingersCoords[1].y - fingersCoords[0].y), (fingersCoords[1].x - fingersCoords[0].x))
-        val angle2 : Double = Math.atan2( (fingersCoords[3].y - fingersCoords[2].y), (fingersCoords[3].x - fingersCoords[2].x))
-
-        var angle = (Math.toDegrees(angle2 - angle1) % 360).toFloat()
-
-        if (angle < -180.0f){
-            angle += 360.0f
-        }else if (angle > 180.0f){
-            angle -= 360.0f
-        }
-
-        return angle
-    }
-
     fun moveLink(deltaX: Double, deltaY: Double){
         val localLink = link
         if(localLink != null) {
@@ -643,6 +627,7 @@ class LinkView: View{
                 previewLinkView = LinkView(context)
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
+                isButtonPressed = true
 //                boundingBox = LinkBoundingBoxView(context, rect)
 //                parentView.addView(boundingBox)
             }
@@ -699,6 +684,7 @@ class LinkView: View{
 
             }
             MotionEvent.ACTION_UP -> {
+                isButtonPressed = false
                 val index = angleButtons.indexOf(v)
                 val deltaX = event.rawX - oldFrameRawX
                 val deltaY = event.rawY - oldFrameRawY
@@ -740,6 +726,7 @@ class LinkView: View{
                 oldFrameRawX = event.rawX
                 oldFrameRawY = event.rawY
                 v.visibility = View.INVISIBLE
+                isButtonPressed = true
             }
             MotionEvent.ACTION_MOVE -> {
                 val deltaX = event.rawX - oldFrameRawX
@@ -761,6 +748,7 @@ class LinkView: View{
                 parentView.addView(previewLinkView)
             }
             MotionEvent.ACTION_UP -> {
+                isButtonPressed = false
                 v.visibility = View.VISIBLE
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                     basicView.setAnchorsVisible(false)
@@ -879,6 +867,8 @@ class LinkView: View{
                     }
                 }
 
+                isButtonPressed = true
+
 //                boundingBox = LinkBoundingBoxView(context, rect)
 //                parentView.addView(boundingBox)
 
@@ -906,6 +896,7 @@ class LinkView: View{
 
             }
             MotionEvent.ACTION_UP -> {
+                isButtonPressed = false
                 v.visibility = View.VISIBLE
                 for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                     basicView.setAnchorsVisible(false)

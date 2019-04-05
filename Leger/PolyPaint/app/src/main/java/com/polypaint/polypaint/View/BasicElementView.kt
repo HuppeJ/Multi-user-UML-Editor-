@@ -498,10 +498,37 @@ open class BasicElementView: ConstraintLayout {
                     oldFrameRawX = event.rawX
                     oldFrameRawY = event.rawY
 
-                    val parentView = v.parent as RelativeLayout
-                    parentView.dispatchSetSelected(false)
-                    v.isSelected = true
-                    //emitSelection()
+                    var isLinkMoving = false
+                    val basicShapeId = ViewShapeHolder.getInstance().map[this]
+                    if(basicShapeId != null ){
+                        val basicShape = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
+                        if(basicShape != null){
+                            for(link in basicShape.linksTo){
+                                if(link != null && link != ""){
+                                    val linkView = ViewShapeHolder.getInstance().linkMap.inverse()[link]
+                                    if(linkView!= null && linkView.isButtonPressed){
+                                        isLinkMoving = true
+                                        break
+                                    }
+                                }
+                            }
+                            for(link in basicShape.linksFrom){
+                                if(link != null && link != ""){
+                                    val linkView = ViewShapeHolder.getInstance().linkMap.inverse()[link]
+                                    if(linkView!= null && linkView.isButtonPressed){
+                                        isLinkMoving = true
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(!isLinkMoving) {
+                        val parentView = v.parent as RelativeLayout
+                        parentView.dispatchSetSelected(false)
+                        v.isSelected = true
+                        //emitSelection()
+                    }
 
                     pointerFinger1 = event.getPointerId(event.actionIndex)
                     fingersCoords[0].x = event.getX(event.findPointerIndex(pointerFinger1)).toDouble()
@@ -562,14 +589,16 @@ open class BasicElementView: ConstraintLayout {
                 }
                 MotionEvent.ACTION_UP -> {
                     // first_line.text = "ActionUp"
-                    val activity: AppCompatActivity = context as AppCompatActivity
-                    if (activity is DrawingActivity) {
-                        val drawingActivity: DrawingActivity = activity as DrawingActivity
-                        drawingActivity.syncCanevasFromLayout()
+                    if(isSelected) {
+                        val activity: AppCompatActivity = context as AppCompatActivity
+                        if (activity is DrawingActivity) {
+                            val drawingActivity: DrawingActivity = activity as DrawingActivity
+                            drawingActivity.syncCanevasFromLayout()
+                        }
+                        emitUpdate()
+                        emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksFrom!!)
+                        emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksTo!!)
                     }
-                    emitUpdate()
-                    emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksFrom!!)
-                    emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksTo!!)
                     pointerFinger1 = -1
                 }
                 MotionEvent.ACTION_POINTER_UP ->{
