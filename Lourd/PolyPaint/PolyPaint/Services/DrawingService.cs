@@ -554,6 +554,9 @@ namespace PolyPaint.Services
                 case StrokeTypes.PHASE:
                     shapeStroke = new PhaseStroke(points);
                     break;
+                case StrokeTypes.FLOATINGTEXT:
+                    shapeStroke = new FloatingTextStroke(points);
+                    break;
                 default:
                     shapeStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);
                     break;
@@ -592,6 +595,9 @@ namespace PolyPaint.Services
                     break;
                 case StrokeTypes.PHASE:
                     shapeStroke = new PhaseStroke(shape, points);
+                    break;
+                case StrokeTypes.FLOATINGTEXT:
+                    shapeStroke = new FloatingTextStroke(shape, points);
                     break;
                 default:
                     shapeStroke = new ClassStroke(shape as ClassShape, points);
