@@ -388,5 +388,46 @@ namespace PolyPaint.Vues
             InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(classStroke);
             DrawingService.AddClassFromCode(eventArgs);
         }
+
+        private void AdjustToLargestClassWidth(object sender, EventArgs e)
+        {
+            StrokeCollection sc = surfaceDessin.Strokes;
+            StrokeCollection selectedStrokes = surfaceDessin.SelectedStrokes;
+            StrokeCollection selectedsc = new StrokeCollection();
+            StrokeCollection updatedsc = new StrokeCollection();
+
+            double maxWidth = 0;
+
+            foreach(ShapeStroke stroke in sc)
+            {
+                if(stroke.strokeType == 0)
+                {
+                    if(stroke.shapeStyle.width > maxWidth)
+                    {
+                        maxWidth = stroke.shapeStyle.width;
+                    }
+                }
+            }
+
+            for(int i=0; i<sc.Count; i++)
+            {
+                if ((sc[i] as ShapeStroke).strokeType == 0)
+                {
+                    (sc[i] as ShapeStroke).shapeStyle.width = maxWidth;
+                    var updatedStroke = sc[i];
+                    surfaceDessin.Strokes.RemoveAt(i);
+                    surfaceDessin.Strokes.Insert(i, updatedStroke);
+                    if (selectedStrokes.Contains(sc[i]))
+                    {
+                        selectedsc.Add(sc[i]);
+                    }
+                    // Send modifiation to server
+                    updatedsc.Add(sc[i]);
+                }
+            }
+
+            surfaceDessin.Select(selectedsc);
+            DrawingService.UpdateShapes(updatedsc);
+        }
     }
 }
