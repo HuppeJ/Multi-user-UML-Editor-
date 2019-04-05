@@ -169,6 +169,20 @@ class DrawingActivity : AppCompatActivity(){
             addOnCanevas(ShapeTypes.PHASE)
             saveCanevas()
         }
+        link_button.setOnClickListener {
+            var linkDefaultPath : ArrayList<Coordinates> = ArrayList()
+            linkDefaultPath.add(Coordinates(65.0,65.0))
+            linkDefaultPath.add(Coordinates(250.0,65.0))
+            var newLink: Link = Link(UUID.randomUUID().toString(),"Link", AnchorPoint(), AnchorPoint(), 1, LinkStyle("#FF000000",10,0), linkDefaultPath )
+
+            ViewShapeHolder.getInstance().canevas.addLink(newLink)
+            val linkView: LinkView = LinkView(this)
+            linkView.setLinkAndAnchors(newLink)
+            ViewShapeHolder.getInstance().linkMap.forcePut(linkView, newLink.id)
+            parent_relative_layout?.addView(linkView)
+            ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(newLink.id)
+            saveCanevas()
+        }
 
         clear_canvas_button.setOnClickListener {
             emitClearCanvas()
