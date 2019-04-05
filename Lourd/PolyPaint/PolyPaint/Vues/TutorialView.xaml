@@ -53,7 +53,7 @@
             <TextBlock Margin="985,650,75,28" FontSize="12" Text="Page"/>
             <TextBlock Margin="1014,650,30,31" FontSize="12" Text="{Binding TutorialPage}"/>
             <TextBlock Margin="1030,650,30,31" FontSize="12" Text="of"/>
-            <TextBlock Margin="1048,650,30,31" FontSize="12" Text="X"/>
+            <TextBlock Margin="1047,650,30,31" FontSize="12" Text="22"/>
         </Grid>
     </materialDesign:Card>
 </UserControl>

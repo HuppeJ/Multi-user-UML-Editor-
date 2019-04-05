@@ -199,6 +199,7 @@
     <Compile Include="CustomInk\Adorners\LinkRotateAdorner.cs" />
     <Compile Include="CustomInk\Adorners\SelectionMultipleAdorner.cs" />
     <Compile Include="CustomInk\Adorners\ResizeAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\ShapeNameAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\Adorners\EditionAdorner.cs" />

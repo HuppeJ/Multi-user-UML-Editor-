@@ -95,7 +95,7 @@ namespace PolyPaint.Enums
 
         public static string FORMS_ALIGNMENT_TITLE = "Alignment Tool";
         public static string FORMS_ALIGNMENT = "This tool allows you to align the forms that you are currently selecting."
-                       + Environment.NewLine + "You can align your forms to the left or to the center.";
+                       + Environment.NewLine + "You can align your forms to the left or to the center. The buttons to access the tool appear when you select forms.";
 
         public static string CANVAS_RESIZE_TITLE = "Canvas Resize Tool";
         public static string CANVAS_RESIZE = "You can change the canvas' size by dragging the adorners around it.";
