@@ -16,9 +16,9 @@
     </string-array>
 
     <string-array name="link_thickness_array">
-        <item>10 px</item>
-        <item>15 px</item>
-        <item>20 px</item>
+        <item>Thin</item>
+        <item>Normal</item>
+        <item>Thick</item>
     </string-array>
 
     <string-array name="link_colors_array">

@@ -222,6 +222,40 @@ namespace PolyPaint.VueModeles
                 OnPropertyChanged();
             }
         }
+
+        private int _tutorialPage = 1;
+        public int TutorialPage
+        {
+            get { return _tutorialPage; }
+            set
+            {
+                _tutorialPage = value;
+                UpdateTutorial();
+                OnPropertyChanged();
+            }
+        }
+
+        private string _tutorialText = TutorialTexts.INTRO;
+        public string TutorialText
+        {
+            get { return _tutorialText; }
+            set
+            {
+                _tutorialText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _tutorialTextTitle = TutorialTexts.INTRO_TITLE;
+        public string TutorialTextTitle
+        {
+            get { return _tutorialTextTitle; }
+            set
+            {
+                _tutorialTextTitle = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Connect Command
@@ -362,6 +396,22 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
+        #region OfflineModeCommand
+        private ICommand _offlineModeCommand;
+        public ICommand OfflineModeCommand
+        {
+            get
+            {
+                return _offlineModeCommand ?? (_offlineModeCommand = new RelayCommand<Object>(OfflineMode));
+            }
+        }
+
+        private void OfflineMode(object o)
+        {
+            UserMode = UserModes.Offline;
+        }
+        #endregion
+
         #region DrawingHistoryViewCommand
         private ICommand _drawingHistoryViewCommand;
         public ICommand DrawingHistoryViewCommand
@@ -409,6 +459,82 @@ namespace PolyPaint.VueModeles
             CloseChatWindow?.Invoke();
             DrawingService.LeaveCanvas();
             UserMode = UserModes.Gallery;
+        }
+        #endregion
+
+        #region GoToGalleryCommand
+        private ICommand _goToGalleryCommand;
+        public ICommand GoToGalleryCommand
+        {
+            get
+            {
+                return _goToGalleryCommand ?? (_goToGalleryCommand = new RelayCommand<Object>(GoToGallery));
+            }
+        }
+
+        private void GoToGallery(object o)
+        {
+            UserMode = UserModes.Gallery;
+        }
+        #endregion
+
+        #region AccessTutorialCommand
+        private ICommand _accessTutorialCommand;
+        public ICommand AccessTutorialCommand
+        {
+            get
+            {
+                return _accessTutorialCommand ?? (_accessTutorialCommand = new RelayCommand<Object>(AccessTutorial));
+            }
+        }
+
+        private void AccessTutorial(object o)
+        {
+            TutorialPage = 1;
+            UserMode = UserModes.Tutorial;
+        }
+        #endregion
+
+        #region NextTutorialPageCommand
+        private ICommand _nextTutorialPageCommand;
+        public ICommand NextTutorialPageCommand
+        {
+            get
+            {
+                return _nextTutorialPageCommand ?? (_nextTutorialPageCommand = new RelayCommand<Object>(NextTutorialPage, CanNextTutorialPage));
+            }
+        }
+
+        private void NextTutorialPage(object o)
+        {
+            TutorialPage++;
+        }
+
+        private bool CanNextTutorialPage(object o)
+        {
+            // False if it's the last page ?
+            return true;
+        }
+        #endregion
+
+        #region PreviousTutorialPageCommand
+        private ICommand _previousTutorialPageCommand;
+        public ICommand PreviousTutorialPageCommand
+        {
+            get
+            {
+                return _previousTutorialPageCommand ?? (_previousTutorialPageCommand = new RelayCommand<Object>(PreviousTutorialPage, CanPreviousTutorialPage));
+            }
+        }
+
+        private void PreviousTutorialPage(object o)
+        {
+            TutorialPage--;
+        }
+
+        private bool CanPreviousTutorialPage(object o)
+        {
+            return TutorialPage > 1;
         }
         #endregion
 
@@ -818,6 +944,109 @@ namespace PolyPaint.VueModeles
                     rooms.Add(room);
                 }
                 selectedRoom = rooms.ElementAt(rooms.IndexOf(room));
+            }
+        }
+        #endregion
+
+        #region Tutorial
+        private void UpdateTutorial()
+        {
+            switch (TutorialPage)
+            {
+                case 1:
+                    TutorialText = TutorialTexts.INTRO;
+                    TutorialTextTitle = TutorialTexts.INTRO_TITLE;
+                    break;
+                case 2:
+                    TutorialText = TutorialTexts.DRAWING_FORMS;
+                    TutorialTextTitle = TutorialTexts.DRAWING_FORMS_TITLE;
+                    break;
+                case 3:
+                    TutorialText = TutorialTexts.ADD_DRAWING_FORM;
+                    TutorialTextTitle = TutorialTexts.ADD_DRAWING_FORMS_TITLE;
+                    break;
+                case 4:
+                    TutorialText = TutorialTexts.MOVE_DRAWING_FORM;
+                    TutorialTextTitle = TutorialTexts.MOVE_DRAWING_FORMS_TITLE;
+                    break;
+                case 5:
+                    TutorialText = TutorialTexts.DELETE_DRAWING_FORM;
+                    TutorialTextTitle = TutorialTexts.DELETE_DRAWING_FORMS_TITLE;
+                    break;
+                case 6:
+                    TutorialText = TutorialTexts.EDIT_DRAWING_FORM;
+                    TutorialTextTitle = TutorialTexts.EDIT_DRAWING_FORMS_TITLE;
+                    break;
+                case 7:
+                    TutorialText = TutorialTexts.CONNECTION_FORMS;
+                    TutorialTextTitle = TutorialTexts.CONNECTION_FORMS_TITLE;
+                    break;
+                case 8:
+                    TutorialText = TutorialTexts.ADD_CONNECTION_FORM_BUTTON;
+                    TutorialTextTitle = TutorialTexts.ADD_CONNECTION_FORMS_TITLE;
+                    break;
+                case 9:
+                    TutorialText = TutorialTexts.ADD_CONNECTION_FORM_LINKED;
+                    TutorialTextTitle = TutorialTexts.ADD_CONNECTION_FORMS_TITLE;
+                    break;
+                case 10:
+                    TutorialText = TutorialTexts.MOVE_CONNECTION_FORM;
+                    TutorialTextTitle = TutorialTexts.MOVE_CONNECTION_FORMS_TITLE;
+                    break;
+                case 11:
+                    TutorialText = TutorialTexts.DELETE_CONNECTION_FORM;
+                    TutorialTextTitle = TutorialTexts.DELETE_CONNECTION_FORMS_TITLE;
+                    break;
+                case 12:
+                    TutorialText = TutorialTexts.EDIT_CONNECTION_FORM;
+                    TutorialTextTitle = TutorialTexts.EDIT_CONNECTION_FORMS_TITLE;
+                    break;
+                case 13:
+                    TutorialText = TutorialTexts.RESIZE_FORMS;
+                    TutorialTextTitle = TutorialTexts.RESIZE_FORMS_TITLE;
+                    break;
+                case 14:
+                    TutorialText = TutorialTexts.ROTATE_FORM;
+                    TutorialTextTitle = TutorialTexts.ROTATE_FORMS_TITLE;
+                    break;
+                case 15:
+                    TutorialText = TutorialTexts.TOOLS;
+                    TutorialTextTitle = TutorialTexts.TOOLS_TITLE;
+                    break;
+                case 16:
+                    TutorialText = TutorialTexts.CUT;
+                    TutorialTextTitle = TutorialTexts.CUT_TITLE;
+                    break;
+                case 17:
+                    TutorialText = TutorialTexts.DUPLICATE;
+                    TutorialTextTitle = TutorialTexts.DUPLICATE_TITLE;
+                    break;
+                case 18:
+                    TutorialText = TutorialTexts.STACK;
+                    TutorialTextTitle = TutorialTexts.STACK;
+                    break;
+                case 19:
+                    TutorialText = TutorialTexts.LASSO;
+                    TutorialTextTitle = TutorialTexts.LASSO_TITLE;
+                    break;
+                case 20:
+                    TutorialText = TutorialTexts.CLEAR;
+                    TutorialTextTitle = TutorialTexts.CLEAR_TITLE;
+                    break;
+                case 21:
+                    TutorialText = TutorialTexts.CANVAS_RESIZE;
+                    TutorialTextTitle = TutorialTexts.CANVAS_RESIZE_TITLE;
+                    break;
+                case 22:
+                    TutorialText = TutorialTexts.END;
+                    TutorialTextTitle = TutorialTexts.END_TITLE;
+                    break;
+                case 23:
+                    TutorialPage = 1;
+                    UserMode = UserModes.Gallery;
+                    break;
+                default:
+                    break;
             }
         }
         #endregion

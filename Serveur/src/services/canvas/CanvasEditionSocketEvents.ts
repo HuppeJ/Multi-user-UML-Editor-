@@ -32,7 +32,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO à enlever
                     io.to(CanvasTestRoom).emit("formCreated", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error1]: ", e);
                 }
             });
 
@@ -59,7 +59,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("formsUpdated", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error2]: ", e);
                 }
             });
 
@@ -85,7 +85,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("formsDeleted", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error3]: ", e);
                 }
             });
 
@@ -111,7 +111,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("formsSelected", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error4]: ", e);
                 }
             });
 
@@ -136,7 +136,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("formsDeselected", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error5]: ", e);
                 }
             });
 
@@ -151,7 +151,7 @@ export default class CanvasEditionSocketEvents {
 
                     socket.emit("selectedForms", selectedForms);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error6]: ", e);
                 }
             });
 
@@ -180,7 +180,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("linkCreated", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error7]: ", e);
                 }
             });
 
@@ -206,7 +206,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("linksUpdated", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error8]: ", e);
                 }
             });
 
@@ -328,7 +328,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO à enlever
                     io.to(CanvasTestRoom).emit("canvasReinitialized", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error9]: ", e);
                 }
             });
 
@@ -355,7 +355,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("canvasResized", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error10]: ", e);
                 }
             });
 
@@ -380,7 +380,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("canvasSelected", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error11]: ", e);
                 }
             });
 

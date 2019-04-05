@@ -199,6 +199,7 @@
     <Compile Include="CustomInk\Adorners\LinkRotateAdorner.cs" />
     <Compile Include="CustomInk\Adorners\SelectionMultipleAdorner.cs" />
     <Compile Include="CustomInk\Adorners\ResizeAdorner.cs" />
+    <Compile Include="CustomInk\Adorners\ShapeNameAdorner.cs" />
     <Compile Include="CustomInk\ClassTextBox.cs" />
     <Compile Include="CustomInk\CustomTextBox.cs" />
     <Compile Include="CustomInk\Adorners\EditionAdorner.cs" />
@@ -221,6 +222,7 @@
     <Compile Include="CustomInk\Strokes\CustomStroke.cs" />
     <Compile Include="CustomInk\Strokes\LinkStroke.cs" />
     <Compile Include="CustomInk\Strokes\ShapeStroke.cs" />
+    <Compile Include="Enums\TutorialTexts.cs" />
     <Compile Include="Enums\UserModes.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -266,6 +268,9 @@
     </Compile>
     <Compile Include="Vues\DrawingHistoryView.xaml.cs">
       <DependentUpon>DrawingHistoryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\TutorialView.xaml.cs">
+      <DependentUpon>TutorialView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\Popups\ChatPopup.xaml.cs">
       <DependentUpon>ChatPopup.xaml</DependentUpon>
@@ -378,6 +383,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\DrawingHistoryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\TutorialView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

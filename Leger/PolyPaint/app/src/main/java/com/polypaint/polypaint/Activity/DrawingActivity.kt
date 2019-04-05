@@ -235,7 +235,9 @@ class DrawingActivity : AppCompatActivity(){
                     val linkView: LinkView = LinkView(this)
                     linkView.setLinkAndAnchors(link)
                     ViewShapeHolder.getInstance().linkMap.forcePut(linkView, link.id)
+                    linkView.setPaintColorWithLinkStyle()
                     parent_relative_layout?.addView(linkView)
+
                 }
                 linksToAdd.clear()
 
@@ -639,7 +641,7 @@ class DrawingActivity : AppCompatActivity(){
                 //TODO : LINKS
                 Log.d("unstackView", "Link "+shapeUnstacked.name)
                 ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(shapeUnstacked.id)
-
+                //EmitAddLink ?
                 runOnUiThread {
                     ViewShapeHolder.getInstance().canevas.addLink(shapeUnstacked)
                     val linkView: LinkView = LinkView(this)

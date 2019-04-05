@@ -343,7 +343,8 @@ namespace PolyPaint.Services
             Application.Current.Dispatcher.Invoke(new Action(() => { OnResizeCanvas(canvas.dimensions); }), DispatcherPriority.ContextIdle);
             localSelectedStrokes = new List<string>();
             localAddedStrokes = new List<string>();
-            socket.Emit("getSelectedForms", canvasName);
+            EditGalleryData editGallerysData = new EditGalleryData(username, canvasName, "");
+            socket.Emit("getSelectedForms", serializer.Serialize(editGallerysData));
             foreach (Link link in canvas.links)
             {
                 LinkStroke linkStroke = LinkStrokeFromLink(link);
@@ -364,8 +365,8 @@ namespace PolyPaint.Services
 
         public static void LeaveCanvas()
         {
-            EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
-            socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
+            //EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
+            //socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
             RefreshCanvases();
         }
 
