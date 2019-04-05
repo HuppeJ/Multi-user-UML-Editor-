@@ -51,6 +51,7 @@ import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
 import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
 import com.polypaint.polypaint.SocketReceptionModel.*
 import kotlinx.android.synthetic.main.toolbar.*
+import kotlinx.android.synthetic.main.view_freetext.view.*
 import java.lang.reflect.Type
 
 
@@ -139,7 +140,7 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         add_button.setOnClickListener {
-            addOnCanevas(ShapeTypes.DEFAULT)
+            addOnCanevas(ShapeTypes.FREETEXT)
             saveCanevas()
         }
 
@@ -377,6 +378,13 @@ class DrawingActivity : AppCompatActivity(){
                     //For Sync
                     ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
                 }
+                ShapeTypes.FREETEXT.value() -> {
+                    val viewType = newViewOnCanevas(ShapeTypes.FREETEXT)
+                    parent_relative_layout?.addView(viewType)
+
+                    //For Sync
+                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                }
 
             }
             syncLayoutFromCanevas()
@@ -421,6 +429,11 @@ class DrawingActivity : AppCompatActivity(){
                 shapeStyle.height = 189.0
                 shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Phase", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
+            ShapeTypes.FREETEXT->{
+                shapeStyle.width = 189.0
+                shapeStyle.height = 189.0
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "FreeText", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+            }
         }
 
         return shape
@@ -451,6 +464,9 @@ class DrawingActivity : AppCompatActivity(){
             }
             ShapeTypes.PHASE -> {
                 viewType = PhaseView(this)
+            }
+            ShapeTypes.FREETEXT->{
+                viewType = FreeTextView(this)
             }
         }
         viewType.addView(viewContainer)
@@ -728,6 +744,15 @@ class DrawingActivity : AppCompatActivity(){
                         runOnUiThread {
                             view as PhaseView
                             view.view_phase_name.text = basicShape.name
+                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                        }
+                    }
+                    ShapeTypes.FREETEXT.value()->{
+                        runOnUiThread {
+                            view as FreeTextView
+                            view.free_text_text.text = basicShape.name
                             view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
                             view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                             view.backgroundColor(basicShape.shapeStyle.backgroundColor)

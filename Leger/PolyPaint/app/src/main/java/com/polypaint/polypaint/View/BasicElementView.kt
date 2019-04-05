@@ -126,7 +126,7 @@ open class BasicElementView: ConstraintLayout {
         }
     }
 
-    fun setAnchorsVisible(isVisible: Boolean){
+    open fun setAnchorsVisible(isVisible: Boolean){
         if(isVisible){
             anchorPoint0.visibility = View.VISIBLE
             anchorPoint1.visibility = View.VISIBLE

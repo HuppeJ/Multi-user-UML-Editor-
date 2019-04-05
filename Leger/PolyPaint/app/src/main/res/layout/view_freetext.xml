@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        android:id="@+id/free_text_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        app:layout_constraintVertical_bias="0.498" xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <TextView
+                android:id="@+id/free_text_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="FreeText text"
+                android:gravity="center"/>
+
+</RelativeLayout>
