@@ -13,7 +13,7 @@
 
 
     <androidx.appcompat.widget.AppCompatTextView
-            android:text="PoPolyPaint"
+            android:text="PolyPaint"
             android:textSize="56dp"
             android:textStyle="bold|italic"
             android:layout_width="wrap_content"

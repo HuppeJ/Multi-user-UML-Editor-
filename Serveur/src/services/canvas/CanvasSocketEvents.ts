@@ -119,7 +119,7 @@ export default class CanvasSocketEvents {
     
                     socket.emit("joinCanvasRoomResponse", JSON.stringify(response));
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error joinCanvas]: ", e);
                 }
             });
 

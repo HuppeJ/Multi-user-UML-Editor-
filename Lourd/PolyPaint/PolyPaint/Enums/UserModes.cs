@@ -23,7 +23,8 @@ namespace PolyPaint.Enums
         ROLE,
         COMMENT,
         PHASE,
-        LINK
+        LINK,
+        FLOATINGTEXT
     }
 
     public enum LinkTypes

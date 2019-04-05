@@ -18,6 +18,7 @@ import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Enum.BorderTypes
 import com.polypaint.polypaint.Enum.LinkTypes
+import com.polypaint.polypaint.Enum.ThicknessTypes
 import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
@@ -118,8 +119,14 @@ class LinkView: View{
 
 
         if( link?.style?.thickness != null) {
-            thickness = link?.style?.thickness!!.toFloat()
+            when(link?.style?.thickness){
+                ThicknessTypes.THIN.ordinal-> thickness = 10F
+                ThicknessTypes.NORMAL.ordinal-> thickness = 15F
+                ThicknessTypes.THICK.ordinal-> thickness = 20F
+            }
+            //thickness = link?.style?.thickness!!.toFloat()
         }
+
 
         val localLink: Link? = link
         if(localLink != null) {

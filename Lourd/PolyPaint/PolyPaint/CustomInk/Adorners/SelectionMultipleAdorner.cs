@@ -18,8 +18,8 @@ namespace PolyPaint.CustomInk
     {
         Thumb moveThumb;
         private DeleteButton deleteButton;
-        private DeleteButton centerAlignButton;
-        private DeleteButton leftAlignButton;
+        private CenterAlignButton centerAlignButton;
+        private LeftAlignButton leftAlignButton;
 
         VisualCollection visualChildren;
 
@@ -107,7 +107,7 @@ namespace PolyPaint.CustomInk
 
             visualChildren.Add(deleteButton);
 
-            centerAlignButton = new DeleteButton(strokes, canvas);
+            centerAlignButton = new CenterAlignButton(strokes, canvas);
             centerAlignButton.Cursor = Cursors.Hand;
             centerAlignButton.Width = 20;
             centerAlignButton.Height = 20;
@@ -124,7 +124,7 @@ namespace PolyPaint.CustomInk
 
             visualChildren.Add(centerAlignButton);
 
-            leftAlignButton = new DeleteButton(strokes, canvas);
+            leftAlignButton = new LeftAlignButton(strokes, canvas);
             leftAlignButton.Cursor = Cursors.Hand;
             leftAlignButton.Width = 20;
             leftAlignButton.Height = 20;
@@ -141,9 +141,9 @@ namespace PolyPaint.CustomInk
 
             visualChildren.Add(leftAlignButton);
 
-            rectangleCenter = new Rect(strokeBounds.X + strokeBounds.Width / 2, strokeBounds.Y - 20, 20, 20);
-            rectangleLeftAlign = new Rect(strokeBounds.X - 20, strokeBounds.Y + strokeBounds.Height / 2, 20, 20);
-            rectangleDelete = new Rect(strokeBounds.TopRight.X + 20, strokeBounds.TopRight.Y - 20, 20, 20);
+            rectangleCenter = new Rect(strokeBounds.X + strokeBounds.Width / 2 - 10, strokeBounds.Y - 20, 20, 20);
+            rectangleLeftAlign = new Rect(strokeBounds.X, strokeBounds.Y - 20, 20, 20);
+            rectangleDelete = new Rect(strokeBounds.TopRight.X - 20, strokeBounds.TopRight.Y - 20, 20, 20);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
