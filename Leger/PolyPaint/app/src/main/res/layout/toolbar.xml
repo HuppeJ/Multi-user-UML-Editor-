@@ -10,9 +10,11 @@
             android:background="?attr/colorPrimary"
     >
         <Button android:layout_width="40dp"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_gravity="end"
                 android:id="@+id/help_button"
+                android:background="@drawable/help_button"
+                android:textColor="#fff"
                 android:text="?"/>
 
     </androidx.appcompat.widget.Toolbar>
