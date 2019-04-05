@@ -2,11 +2,12 @@ import * as SocketEvents from "../../constants/SocketEvents";
 import { ICanevas, IEditCanevasData, IEditGalleryData } from "./interfaces/interfaces";
 import CanvasManager from "./components/CanvasManager";
 import { POINT_CONVERSION_COMPRESSED } from "constants";
+import CanvasDataStoreManager from "./components/CanvasDataStoreManager";
 
 export const CanvasTestRoom: string = "Canvas_test_room";
 
 export default class CanvasSocketEvents {
-    constructor(io: any, canvasManager: CanvasManager) {
+    constructor(io: any, canvasManager: CanvasManager, canvasDataStoreManager: CanvasDataStoreManager) {
         io.on("connection", function (socket: any) {
             console.log(socket.id + " connected to Canvas server");
 
@@ -14,7 +15,7 @@ export default class CanvasSocketEvents {
                 try {
                     const data: IEditGalleryData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
-                    socket.emit("createCanvasResponse", canvasManager.getCanvasLogHistory(canvasRoomId));
+                    socket.emit("getCanvasLogHistoryResponse", canvasManager.getCanvasLogHistory(canvasRoomId));
                 } catch (e) {
                     console.log("[Error]: ", e);
                 }
@@ -32,6 +33,7 @@ export default class CanvasSocketEvents {
                 }
             });
 
+            // ICI
             socket.on("createCanvas", function (dataStr: string) {
                 try {
                     console.log(dataStr);
@@ -48,6 +50,7 @@ export default class CanvasSocketEvents {
                     if (response.isCreated) {
                         // (broadcast)
                         io.sockets.emit("canvasCreated", canvasManager.getCanvasRoomsSERI());
+                        
                         console.log(socket.id + " created  canvasRoom " + data.canevas.name);
                         canvasManager.logHistory(canvasRoomId, data.username, `created the canvas`);
                     } else {
