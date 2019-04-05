@@ -452,5 +452,11 @@ namespace PolyPaint.Vues
                 fs.Close();
             }
         }
+
+        private void OpenTutorial(object sender, RoutedEventArgs e)
+        {
+
+            DrawingService.OpenTutorial();
+        }
     }
 }

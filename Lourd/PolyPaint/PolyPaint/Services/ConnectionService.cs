@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using PolyPaint.Modeles;
 using Quobject.SocketIoClientDotNet.Client;
 using System.Web.Script.Serialization;
@@ -16,6 +16,7 @@ namespace PolyPaint.Services
         public static event Action ConnectionClosed;
         
         public static string username = null;
+        public static bool hasUserDoneTutorial = false;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         private static string url = "https://projet-3-228722.appspot.com";
@@ -51,10 +52,18 @@ namespace PolyPaint.Services
                 if(!isLoginSuccessful)
                 {
                     username = null;
+                } else
+                {
+                    socket.Emit("hasUserDoneTutorial", username);
                 }
 
                 UserLogin?.Invoke(isLoginSuccessful);
             });
+
+            socket.On("hasUserDoneTutorialResponse", (data =>
+            {
+                hasUserDoneTutorial = serializer.Deserialize<dynamic>((string)data)["hasUserDoneTutorial"];
+            }));
 
             socket.On("disconnect", (data) =>
             {

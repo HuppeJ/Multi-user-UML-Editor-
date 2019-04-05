@@ -9,13 +9,11 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class DrawingChatView : UserControl
     {
-
         public DrawingChatView()
         {
             InitializeComponent();
         }
 
-        // ne garde pas encore le meme chat qu'avant
         private void ChangeChatMode(object sender, RoutedEventArgs e)
         {
             grid.Children.Remove(this.ChatView);
@@ -30,13 +28,8 @@ namespace PolyPaint.Vues
         {
             chatButton.Visibility = Visibility.Visible;
             chatButton.IsHitTestVisible = true;
-            //ColumnDefinition col = new ColumnDefinition();
-            //col.Width = GridLength.Auto;
-            //this.grid.ColumnDefinitions.Add(col);
 
             grid.Children.Add(chatUserControl);
         }
-
-
     }
 }

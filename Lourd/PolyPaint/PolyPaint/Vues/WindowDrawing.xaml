@@ -195,6 +195,10 @@
                         Click="ExportCanvas"
                         Content="Export" ToolTip="EXPORT CANVAS">
                 </Button>
+                <Button x:Name="TutoButton" Width="40" Height="40" Margin="5" Padding="0,0"
+                        Click="OpenTutorial"
+                        Content="Tuto" ToolTip="OPEN TUTORIAL">
+                </Button>
 
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
