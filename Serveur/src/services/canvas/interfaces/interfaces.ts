@@ -35,7 +35,6 @@ export interface IEditChatroomData {
     chatroomName: string
 }
 
-// TODO: vérifier format
 export interface IMessageData {
     username: string,
     chatroomName: string,
