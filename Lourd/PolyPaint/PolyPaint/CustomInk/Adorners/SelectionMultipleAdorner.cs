@@ -11,10 +11,11 @@ using System.Windows.Ink;
 using PolyPaint.Services;
 using PolyPaint.Vues;
 using System.Windows.Media.Imaging;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
-    class SelectionMultipleAdorner : Adorner
+    class SelectionMultipleAdorner : CustomAdorner
     {
         Thumb moveThumb;
         private DeleteButton deleteButton;
@@ -42,6 +43,8 @@ namespace PolyPaint.CustomInk
         public SelectionMultipleAdorner(UIElement adornedElement, StrokeCollection strokes, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            adornedStroke = null;
+
             visualChildren = new VisualCollection(this);
             strokesSelected = strokes;
 

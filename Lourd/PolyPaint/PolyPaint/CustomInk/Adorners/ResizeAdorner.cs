@@ -11,10 +11,11 @@ using System.Windows.Ink;
 using PolyPaint.Services;
 using PolyPaint.Vues;
 using PolyPaint.Templates;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
-    class ResizeAdorner : Adorner
+    class ResizeAdorner : CustomAdorner
     {
         List<Thumb> anchors;
         List<StrokeResizePointThumb> cheatAnchors;
@@ -50,6 +51,8 @@ namespace PolyPaint.CustomInk
         public ResizeAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            adornedStroke = customStroke;
+
             visualChildren = new VisualCollection(this);
 
             if (customStroke is ShapeStroke)
@@ -932,7 +935,5 @@ namespace PolyPaint.CustomInk
         {
             return visualChildren[index];
         }
-
-
     }
 }

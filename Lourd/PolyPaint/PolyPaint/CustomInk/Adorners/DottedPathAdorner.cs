@@ -1,4 +1,5 @@
-﻿using PolyPaint.CustomInk.Strokes;
+﻿using PolyPaint.CustomInk.Adorners;
+using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
 using PolyPaint.Templates;
 using System;
@@ -10,7 +11,7 @@ using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk
 {
-    class DottedPathAdorner : Adorner
+    class DottedPathAdorner : CustomAdorner
     {
         Rect strokeBounds = Rect.Empty;
         private LinkStroke linkStroke;
@@ -29,7 +30,9 @@ namespace PolyPaint.CustomInk
         public DottedPathAdorner(UIElement adornedElement, LinkStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
-            this.linkStroke = stroke;
+            adornedStroke = stroke;
+
+            linkStroke = stroke;
             this.canvas = canvas;
             visualChildren = new VisualCollection(this);
             strokeBounds = stroke.GetBounds();

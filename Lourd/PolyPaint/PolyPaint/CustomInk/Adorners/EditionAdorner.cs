@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.CustomInk.Adorners;
+using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Ink;
@@ -8,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace PolyPaint.CustomInk
 {
-    class EditionAdorner : Adorner
+    class EditionAdorner : CustomAdorner
     {
         private CustomStroke stroke;
         private EditionButton editButton;
@@ -26,6 +27,8 @@ namespace PolyPaint.CustomInk
         public EditionAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
+            adornedStroke = stroke;
+
             this.stroke = stroke;
             this.canvas = canvas;
 
