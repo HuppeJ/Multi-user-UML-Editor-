@@ -105,8 +105,8 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>,  v
             }
 
 
-            if(canevas.thumbnailLeger != "" && canevas.thumbnailLeger != null) {
-                imageView.setImageDrawable(getDrawableThumbnail(canevas.thumbnailLeger))
+            if(canevas.thumbnail != "" && canevas.thumbnail != null) {
+                imageView.setImageDrawable(getDrawableThumbnail(canevas.thumbnail))
             } else {
                 imageView.setImageResource(R.drawable.ic_picture)
             }
@@ -126,9 +126,9 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>,  v
 
     private fun getDrawableThumbnail(thumbnailString: String): BitmapDrawable {
         val bitmap: Bitmap? = stringToBitMap(thumbnailString)
-        val resized = Bitmap.createScaledBitmap(bitmap, (bitmap!!.width!!.times(0.6)).toInt(), (bitmap!!.height!!.times(0.6)).toInt(), true);
+        //val resized = Bitmap.createScaledBitmap(bitmap, (bitmap!!.width!!.times(1/2.1)).toInt(), (bitmap!!.height!!.times(1/2.1)).toInt(), true);
 
-        return bitmapToDrawable(resized!!)
+        return bitmapToDrawable(bitmap!!)
     }
 
     private fun bitmapToDrawable(bitmap:Bitmap): BitmapDrawable {

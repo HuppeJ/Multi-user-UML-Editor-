@@ -33,6 +33,8 @@ namespace PolyPaint.Templates
         public string username { get; set; }
         public Canvas canevas { get; set; }
 
+        public EditCanevasData() { }
+
         public EditCanevasData(string username, Canvas canevas)
         {
             this.username = username;

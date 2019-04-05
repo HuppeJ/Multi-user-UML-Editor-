@@ -99,6 +99,7 @@ class SocketConstants{
 
 
         const val SAVE_CANVAS: String = "saveCanvas"
+        const val CANVAS_SAVED: String = "canvasSaved"
         const val SAVE_CANVAS_RESPONSE: String = "saveCanvasResponse"
 
 

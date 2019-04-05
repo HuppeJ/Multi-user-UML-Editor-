@@ -17,6 +17,7 @@ import com.polypaint.polypaint.Activity.DrawingActivity
 import com.polypaint.polypaint.Application.PolyPaint
 import com.polypaint.polypaint.Enum.AnchorPoints
 import com.polypaint.polypaint.Fragment.EditBasicElementDialogFragment
+import com.polypaint.polypaint.Holder.SyncShapeHolder
 import com.polypaint.polypaint.Holder.UserHolder
 import com.polypaint.polypaint.Holder.VFXHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
@@ -815,6 +816,7 @@ open class BasicElementView: ConstraintLayout {
             Log.d("emitingUpdate", response)
             socket?.emit(SocketConstants.UPDATE_FORMS, response)
         }
+        SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
     }
 
     private fun emitSelection(){
@@ -842,6 +844,8 @@ open class BasicElementView: ConstraintLayout {
             Log.d("emitingDelete", response)
             socket?.emit(SocketConstants.DELETE_FORMS, response)
         }
+
+        SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
     }
 
     private fun createFormsUpdateEvent(): String{
@@ -849,6 +853,10 @@ open class BasicElementView: ConstraintLayout {
         val formsArray: ArrayList<BasicShape> = ArrayList()
         var obj: String =""
         if(basicShape !=null) {
+            basicShape.shapeStyle.coordinates.x = (basicShape.shapeStyle.coordinates.x.toFloat() - SyncShapeHolder.getInstance().drawingActivity!!.shapeOffset).toDouble()
+            basicShape.shapeStyle.coordinates.y = (basicShape.shapeStyle.coordinates.y.toFloat() - SyncShapeHolder.getInstance().drawingActivity!!.shapeOffset).toDouble()
+
+
             formsArray.add(basicShape)
             val gson = Gson()
             val response: FormsUpdateEvent = FormsUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, formsArray)

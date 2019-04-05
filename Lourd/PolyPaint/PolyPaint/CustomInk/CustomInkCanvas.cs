@@ -15,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Path = System.Windows.Shapes.Path;
+using sd = System.Drawing;
+using s2d = System.Drawing.Drawing2D;
 
 namespace PolyPaint.CustomInk
 {
@@ -1134,6 +1136,46 @@ namespace PolyPaint.CustomInk
                 string thumbnailString = Convert.ToBase64String(buffer);
                 DrawingService.SendCanvas(thumbnailString);
             }
+
+            sd.Image image = (sd.Bitmap)((new sd.ImageConverter()).ConvertFrom(buffer));
+
+            sd.Bitmap bitmap = ResizeImage(image, 80, 50);
+
+            using (var stream = new MemoryStream())
+            {
+                bitmap.Save(stream, sd.Imaging.ImageFormat.Png);
+                byte [] resizedImageBuffer = stream.ToArray();
+                string thumbnailString = Convert.ToBase64String(resizedImageBuffer);
+                //DrawingService.SendCanvas(thumbnailString);
+            }
         }
+
+        
+        private sd.Bitmap ResizeImage(sd.Image image, int width, int height)
+        {
+            var destRect = new sd.Rectangle(0, 0, width, height);
+            var destImage = new sd.Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = sd.Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = s2d.CompositingMode.SourceCopy;
+                graphics.CompositingQuality = s2d.CompositingQuality.HighQuality;
+                graphics.InterpolationMode = s2d.InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = s2d.SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = s2d.PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new sd.Imaging.ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(s2d.WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, sd.GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+
     }
 }
