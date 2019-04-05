@@ -1524,5 +1524,35 @@ namespace PolyPaint.CustomInk
 
             return destImage;
         }
+
+        public sd.Image GetCanvas()
+        {
+            var rect = new Rect(RenderSize);
+            var visual = new DrawingVisual();
+
+            using (var dc = visual.RenderOpen())
+            {
+                dc.DrawRectangle(new VisualBrush(this), null, rect);
+            }
+
+            var rtb = new RenderTargetBitmap(
+                (int)rect.Width, (int)rect.Height, 96d, 96d, PixelFormats.Default);
+            rtb.Render(visual);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            byte[] buffer;
+            using (var stream = new MemoryStream())
+            {
+                encoder.Save(stream);
+                buffer = stream.ToArray();
+            }
+
+            MemoryStream ms = new MemoryStream(buffer, 0, buffer.Length);
+            ms.Write(buffer, 0, buffer.Length);
+            var returnImage = sd.Image.FromStream(ms, true);
+
+            return returnImage;
+        }
     }
 }

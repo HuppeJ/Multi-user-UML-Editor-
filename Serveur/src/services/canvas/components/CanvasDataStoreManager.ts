@@ -12,7 +12,7 @@ export default class CanvasDataStoreManager {
 
     public async addCanvas(canvas: ICanevas, canvasHistorySERI: string) {
         const canvasData = {
-            id: canvas.name,
+            name: canvas.name,
             canvasStr: JSON.stringify(canvas),
             canvasHistoryStr: canvasHistorySERI
         };

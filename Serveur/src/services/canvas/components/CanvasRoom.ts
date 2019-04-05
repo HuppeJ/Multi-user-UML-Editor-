@@ -419,14 +419,26 @@ export default class CanvasRoom {
     }
 
     public getSelectedFormsSERI(data: IEditGalleryData): string {
+        const selected: any = Array.from(this.selectedForms.keys());
+        const filtered: string [] = [];
+        selected.forEach((item: any) => {
+            filtered.push(item.id);
+        })
+
         return JSON.stringify({
-            selectedForms: JSON.stringify(Array.from(this.selectedForms.keys()))
+            selectedForms: filtered
         });
     }
 
     public getSelectedLinksSERI(data: IEditGalleryData): string {
+        const selected: any = Array.from(this.selectedLinks.keys());
+        const filtered: string [] = [];
+        selected.forEach((item: any) => {
+            filtered.push(item.id);
+        })
+
         return JSON.stringify({
-            selectedLinks: JSON.stringify(Array.from(this.selectedLinks.keys()))
+            selectedLinks: filtered
         });
     }
 
