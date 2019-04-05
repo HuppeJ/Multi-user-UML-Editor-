@@ -256,6 +256,17 @@ namespace PolyPaint.VueModeles
                 OnPropertyChanged();
             }
         }
+
+        private string _tutorialImageSource = TutorialTexts.INTRO_IMAGE;
+        public string TutorialImageSource
+        {
+            get { return _tutorialImageSource; }
+            set
+            {
+                _tutorialImageSource = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Connect Command
@@ -956,90 +967,112 @@ namespace PolyPaint.VueModeles
                 case 1:
                     TutorialText = TutorialTexts.INTRO;
                     TutorialTextTitle = TutorialTexts.INTRO_TITLE;
+                    TutorialImageSource = TutorialTexts.INTRO_IMAGE;
                     break;
                 case 2:
                     TutorialText = TutorialTexts.DRAWING_FORMS;
                     TutorialTextTitle = TutorialTexts.DRAWING_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.DRAWING_FORMS_IMAGE;
                     break;
                 case 3:
                     TutorialText = TutorialTexts.ADD_DRAWING_FORM;
                     TutorialTextTitle = TutorialTexts.ADD_DRAWING_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.ADD_DRAWING_FORMS_IMAGE;
                     break;
                 case 4:
                     TutorialText = TutorialTexts.MOVE_DRAWING_FORM;
                     TutorialTextTitle = TutorialTexts.MOVE_DRAWING_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.MOVE_DRAWING_FORMS_IMAGE;
                     break;
                 case 5:
                     TutorialText = TutorialTexts.DELETE_DRAWING_FORM;
                     TutorialTextTitle = TutorialTexts.DELETE_DRAWING_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.DELETE_DRAWING_FORMS_IMAGE;
                     break;
                 case 6:
                     TutorialText = TutorialTexts.EDIT_DRAWING_FORM;
                     TutorialTextTitle = TutorialTexts.EDIT_DRAWING_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.EDIT_DRAWING_FORMS_IMAGE;
                     break;
                 case 7:
                     TutorialText = TutorialTexts.CONNECTION_FORMS;
                     TutorialTextTitle = TutorialTexts.CONNECTION_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.CONNECTION_FORMS_IMAGE;
                     break;
                 case 8:
                     TutorialText = TutorialTexts.ADD_CONNECTION_FORM_BUTTON;
                     TutorialTextTitle = TutorialTexts.ADD_CONNECTION_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.ADD_CONNECTION_FORMS_BUTTON_IMAGE;
                     break;
                 case 9:
                     TutorialText = TutorialTexts.ADD_CONNECTION_FORM_LINKED;
                     TutorialTextTitle = TutorialTexts.ADD_CONNECTION_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.ADD_CONNECTION_FORMS_LINKED_IMAGE;
                     break;
                 case 10:
                     TutorialText = TutorialTexts.MOVE_CONNECTION_FORM;
                     TutorialTextTitle = TutorialTexts.MOVE_CONNECTION_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.MOVE_CONNECTION_FORMS_IMAGE;
                     break;
                 case 11:
                     TutorialText = TutorialTexts.DELETE_CONNECTION_FORM;
                     TutorialTextTitle = TutorialTexts.DELETE_CONNECTION_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.DELETE_CONNECTION_FORMS_IMAGE;
                     break;
                 case 12:
                     TutorialText = TutorialTexts.EDIT_CONNECTION_FORM;
                     TutorialTextTitle = TutorialTexts.EDIT_CONNECTION_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.EDIT_CONNECTION_FORMS_IMAGE;
                     break;
                 case 13:
                     TutorialText = TutorialTexts.RESIZE_FORMS;
                     TutorialTextTitle = TutorialTexts.RESIZE_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.RESIZE_FORMS_IMAGE;
                     break;
                 case 14:
                     TutorialText = TutorialTexts.ROTATE_FORM;
                     TutorialTextTitle = TutorialTexts.ROTATE_FORMS_TITLE;
+                    TutorialImageSource = TutorialTexts.ROTATE_FORMS_IMAGE;
                     break;
                 case 15:
                     TutorialText = TutorialTexts.TOOLS;
                     TutorialTextTitle = TutorialTexts.TOOLS_TITLE;
+                    TutorialImageSource = TutorialTexts.TOOLS_IMAGE;
                     break;
                 case 16:
                     TutorialText = TutorialTexts.CUT;
                     TutorialTextTitle = TutorialTexts.CUT_TITLE;
+                    TutorialImageSource = TutorialTexts.CUT_IMAGE;
                     break;
                 case 17:
                     TutorialText = TutorialTexts.DUPLICATE;
                     TutorialTextTitle = TutorialTexts.DUPLICATE_TITLE;
+                    TutorialImageSource = TutorialTexts.DUPLICATE_IMAGE;
                     break;
                 case 18:
                     TutorialText = TutorialTexts.STACK;
                     TutorialTextTitle = TutorialTexts.STACK;
+                    TutorialImageSource = TutorialTexts.STACK_IMAGE;
                     break;
                 case 19:
                     TutorialText = TutorialTexts.LASSO;
                     TutorialTextTitle = TutorialTexts.LASSO_TITLE;
+                    TutorialImageSource = TutorialTexts.LASSO_IMAGE;
                     break;
                 case 20:
                     TutorialText = TutorialTexts.CLEAR;
                     TutorialTextTitle = TutorialTexts.CLEAR_TITLE;
+                    TutorialImageSource = TutorialTexts.CLEAR_IMAGE;
                     break;
                 case 21:
                     TutorialText = TutorialTexts.CANVAS_RESIZE;
                     TutorialTextTitle = TutorialTexts.CANVAS_RESIZE_TITLE;
+                    TutorialImageSource = TutorialTexts.CANVAS_RESIZE_IMAGE;
                     break;
                 case 22:
                     TutorialText = TutorialTexts.END;
                     TutorialTextTitle = TutorialTexts.END_TITLE;
+                    TutorialImageSource = TutorialTexts.END_IMAGE;
                     break;
                 case 23:
                     TutorialPage = 1;

@@ -672,8 +672,8 @@ namespace PolyPaint.CustomInk
                     customStroke = new LinkStroke(e.Stroke.StylusPoints);
                     break;
                 case StrokeTypes.FLOATINGTEXT:
-                    customStroke = new CommentStroke(pts);
-                    (customStroke as CommentStroke).shapeStyle.borderColor = "#00FFFFFF";
+                    customStroke = new FloatingTextStroke(pts);
+                    (customStroke as FloatingTextStroke).shapeStyle.borderColor = "#00FFFFFF";
                     break;
                 default:
                     customStroke = new ClassStroke(pts);
@@ -1148,15 +1148,32 @@ namespace PolyPaint.CustomInk
                     }
                 }
                 selectionPath.Segments.Add(new LineSegment(e.GetPosition(this), true));
+                StrokeCollection phaseStrokes = new StrokeCollection();
                 foreach (CustomStroke stroke in Strokes)
                 {
                     if (stroke.HitTestPoint(e.GetPosition(this)) && 
                         !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                     {
                         if (beingSelected.Any())
-                            beingSelected.Clear();
-                        beingSelected.Add(stroke);
+                        {
+                            if(!(stroke is PhaseStroke))
+                            {
+                                beingSelected.Clear();
+                                beingSelected.Add(stroke);
+                            }
+                            else
+                            {
+                                phaseStrokes.Add(stroke);
+                            }
+                        } else
+                        {
+                            beingSelected.Add(stroke);
+                        }
                     }
+                }
+                if(!beingSelected.Any() && phaseStrokes.Any())
+                {
+                    beingSelected.Add(phaseStrokes[0]);
                 }
             }
             else if (EditingMode == InkCanvasEditingMode.EraseByStroke)

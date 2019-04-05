@@ -213,6 +213,7 @@
     <Compile Include="CustomInk\Strokes\ActorStroke.cs" />
     <Compile Include="CustomInk\Adorners\AnchorPointAdorner.cs" />
     <Compile Include="CustomInk\Strokes\ArtifactStroke.cs" />
+    <Compile Include="CustomInk\Strokes\FloatingTextStroke.cs" />
     <Compile Include="CustomInk\Strokes\PhaseStroke.cs" />
     <Compile Include="CustomInk\Strokes\CommentStroke.cs" />
     <Compile Include="CustomInk\Strokes\ClassStroke.cs" />
@@ -279,6 +280,9 @@
     </Compile>
     <Compile Include="Vues\Popups\ChangeCanvasProtectionPopup.xaml.cs">
       <DependentUpon>ChangeCanvasProtectionPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\FloatingTextPopup.xaml.cs">
+      <DependentUpon>FloatingTextPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\Popups\JoinRoomPopup.xaml.cs">
       <DependentUpon>JoinRoomPopup.xaml</DependentUpon>
@@ -398,6 +402,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vues\Popups\FloatingTextPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vues\Popups\JoinRoomPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -480,6 +488,7 @@
     <Resource Include="Resources\align_center.png" />
     <Resource Include="Resources\NewLook\horizontal-align-center.png" />
     <Resource Include="Resources\NewLook\left-align.png" />
+    <Resource Include="Resources\TutorialImages\Tutorial.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
@@ -489,5 +498,6 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

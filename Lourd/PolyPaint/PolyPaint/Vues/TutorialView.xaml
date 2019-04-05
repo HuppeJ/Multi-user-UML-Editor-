@@ -41,6 +41,8 @@
             <TextBlock Height="50" Width="400" Margin="14,18,686,632" FontSize="35">Tutorial</TextBlock>
             <Rectangle HorizontalAlignment="Stretch" Fill="Black" Margin="11,75,300,620"></Rectangle>
 
+            <Image Source="{Binding TutorialImageSource}" Width="500" Height="500" Margin="89,132,511,68"/>
+
             <Rectangle VerticalAlignment="Stretch" Fill="Black" Margin="706,126,389,74"></Rectangle>
 
             <Button Content="Leave Tutorial" Margin="923,31,27,637" Command="{Binding GoToGalleryCommand}" Width="150"/>
