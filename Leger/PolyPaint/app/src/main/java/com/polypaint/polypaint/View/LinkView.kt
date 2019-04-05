@@ -272,11 +272,13 @@ class LinkView: View{
             previousPoint = point
         }
 
-        if(link?.style?.type == BorderTypes.DOTED.ordinal){
+        if(link?.style?.type == BorderTypes.DOTTED.ordinal){
             val array: FloatArray = FloatArray(2)
             array[0] = 10f
             array[1] = 5f
             paint.pathEffect = DashPathEffect(array, 1f)
+        } else {
+            paint.pathEffect = null
         }
         paint.strokeWidth = thickness
 
@@ -331,9 +333,9 @@ class LinkView: View{
     private fun drawDiamond(canvas: Canvas, lineAngle: Double, paint: Paint){
         val diamondLeftAngle: Double = lineAngle - Math.PI/4
         val diamondRightAngle: Double = lineAngle + Math.PI/4
-        val leftPoint: Point = Point((end.x + 45 * Math.cos(diamondLeftAngle)).toInt(), (end.y+45 * Math.sin(diamondLeftAngle)).toInt() )
-        val middlePoint: Point = Point((leftPoint.x + 45 * Math.cos(diamondRightAngle)).toInt(), (leftPoint.y+45 * Math.sin(diamondRightAngle)).toInt() )
-        val rightPoint: Point = Point((end.x + 45 * Math.cos(diamondRightAngle)).toInt(), (end.y+45 * Math.sin(diamondRightAngle)).toInt() )
+        val leftPoint: Point = Point((end.x + 30 * Math.cos(diamondLeftAngle)).toInt(), (end.y+30 * Math.sin(diamondLeftAngle)).toInt() )
+        val middlePoint: Point = Point((leftPoint.x + 30 * Math.cos(diamondRightAngle)).toInt(), (leftPoint.y+30 * Math.sin(diamondRightAngle)).toInt() )
+        val rightPoint: Point = Point((end.x + 30 * Math.cos(diamondRightAngle)).toInt(), (end.y+30 * Math.sin(diamondRightAngle)).toInt() )
         val arrowPath: Path = Path()
         arrowPath.moveTo(end.x.toFloat(), end.y.toFloat())
         arrowPath.lineTo(leftPoint.x.toFloat(), leftPoint.y.toFloat())
@@ -387,23 +389,23 @@ class LinkView: View{
 
         val arrowPath: Path = Path()
         arrowPath.moveTo(middlePoint.x.toFloat(), middlePoint.y.toFloat())
-        arrowPath.lineTo(middlePoint.x.toFloat() + 45 * Math.cos(arrowLeftAngle).toFloat(), middlePoint.y.toFloat()+45 * Math.sin(arrowLeftAngle).toFloat())
+        arrowPath.lineTo(middlePoint.x.toFloat() + 30 * Math.cos(arrowLeftAngle).toFloat(), middlePoint.y.toFloat()+30 * Math.sin(arrowLeftAngle).toFloat())
         arrowPath.moveTo(middlePoint.x.toFloat(), middlePoint.y.toFloat())
-        arrowPath.lineTo(middlePoint.x.toFloat() + 45 * Math.cos(arrowRightAngle).toFloat(), middlePoint.y.toFloat()+45 * Math.sin(arrowRightAngle).toFloat())
+        arrowPath.lineTo(middlePoint.x.toFloat() + 30 * Math.cos(arrowRightAngle).toFloat(), middlePoint.y.toFloat()+30 * Math.sin(arrowRightAngle).toFloat())
         arrowPath.close()
         canvas.drawPath(arrowPath, arrowPaint)
     }
 
     private fun addTextViews(parentView: RelativeLayout){
         multiplicityFrom = TextView(context)
-        multiplicityFrom?.x = start.x.toFloat() +15
-        multiplicityFrom?.y = start.y.toFloat()
+        multiplicityFrom?.x = start.x.toFloat()
+        multiplicityFrom?.y = start.y.toFloat() - 42
         multiplicityFrom?.setText(link?.from?.multiplicity)
         parentView.addView(multiplicityFrom)
 
         multiplicityTo = TextView(context)
-        multiplicityTo?.x = end.x.toFloat() +15
-        multiplicityTo?.y = end.y.toFloat()
+        multiplicityTo?.x = end.x.toFloat()
+        multiplicityTo?.y = end.y.toFloat() - 42
         multiplicityTo?.setText(link?.to?.multiplicity)
         parentView.addView(multiplicityTo)
 
@@ -422,8 +424,8 @@ class LinkView: View{
                 )
             }
         }
-        nameView?.x =point.x.toFloat() + 40
-        nameView?.y =point.y.toFloat() - 80
+        nameView?.x =point.x.toFloat()
+        nameView?.y =point.y.toFloat() - 42
         nameView?.setText(link?.name)
         parentView.addView(nameView)
     }

@@ -107,14 +107,18 @@ open class BasicElementView: ConstraintLayout {
             if(basicShapeId != null) {
                 val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
                 if(basicShape != null) {
-                    for (link in basicShape.linksFrom){
-                        if(link != null && link != "") {
-                            FormsSelectionHolder.getInstance().linksSelectedId.add(link)
+                    if(basicShape.linksFrom != null) {
+                        for (link in basicShape.linksFrom) {
+                            if (link != null && link != "") {
+                                FormsSelectionHolder.getInstance().linksSelectedId.add(link)
+                            }
                         }
                     }
-                    for (link in basicShape.linksTo){
-                        if(link != null && link != "") {
-                            FormsSelectionHolder.getInstance().linksSelectedId.add(link)
+                    if(basicShape.linksTo != null) {
+                        for (link in basicShape.linksTo) {
+                            if (link != null && link != "") {
+                                FormsSelectionHolder.getInstance().linksSelectedId.add(link)
+                            }
                         }
                     }
                     for(id in FormsSelectionHolder.getInstance().linksSelectedId){
@@ -503,21 +507,25 @@ open class BasicElementView: ConstraintLayout {
                     if(basicShapeId != null ){
                         val basicShape = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
                         if(basicShape != null){
-                            for(link in basicShape.linksTo){
-                                if(link != null && link != ""){
-                                    val linkView = ViewShapeHolder.getInstance().linkMap.inverse()[link]
-                                    if(linkView!= null && linkView.isButtonPressed){
-                                        isLinkMoving = true
-                                        break
+                            if(basicShape.linksTo != null) {
+                                for (link in basicShape.linksTo) {
+                                    if (link != null && link != "") {
+                                        val linkView = ViewShapeHolder.getInstance().linkMap.inverse()[link]
+                                        if (linkView != null && linkView.isButtonPressed) {
+                                            isLinkMoving = true
+                                            break
+                                        }
                                     }
                                 }
                             }
-                            for(link in basicShape.linksFrom){
-                                if(link != null && link != ""){
-                                    val linkView = ViewShapeHolder.getInstance().linkMap.inverse()[link]
-                                    if(linkView!= null && linkView.isButtonPressed){
-                                        isLinkMoving = true
-                                        break
+                            if(basicShape.linksFrom != null) {
+                                for (link in basicShape.linksFrom) {
+                                    if (link != null && link != "") {
+                                        val linkView = ViewShapeHolder.getInstance().linkMap.inverse()[link]
+                                        if (linkView != null && linkView.isButtonPressed) {
+                                            isLinkMoving = true
+                                            break
+                                        }
                                     }
                                 }
                             }

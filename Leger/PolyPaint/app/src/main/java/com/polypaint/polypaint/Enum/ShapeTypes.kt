@@ -7,6 +7,6 @@ enum class ShapeTypes{
     ROLE {override fun value () = 3},
     COMMENT {override fun value () = 4},
     PHASE {override fun value () = 5},
-    DEFAULT {override fun value () = 10};
+    DEFAULT {override fun value () = 6};
     abstract fun value(): Int
 }
