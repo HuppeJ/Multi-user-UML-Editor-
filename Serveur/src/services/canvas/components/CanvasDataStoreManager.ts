@@ -10,10 +10,11 @@ export default class CanvasDataStoreManager {
         this.datastore = datastore;
     }
 
-    public async addCanvas(canvas: ICanevas) {
+    public async addCanvas(canvas: ICanevas, canvasHistorySERI: string) {
         const canvasData = {
             id: canvas.name,
-            canvasStr: JSON.stringify(canvas)
+            canvasStr: JSON.stringify(canvas),
+            canvasHistoryStr: canvasHistorySERI
         };
 
         return this.datastore.save({

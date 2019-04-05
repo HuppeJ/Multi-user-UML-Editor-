@@ -420,13 +420,13 @@ export default class CanvasRoom {
 
     public getSelectedFormsSERI(data: IEditGalleryData): string {
         return JSON.stringify({
-            selectedForms: Array.from(this.selectedForms.keys())
+            selectedForms: JSON.stringify(Array.from(this.selectedForms.keys()))
         });
     }
 
     public getSelectedLinksSERI(data: IEditGalleryData): string {
         return JSON.stringify({
-            selectedLinks: Array.from(this.selectedLinks.keys())
+            selectedLinks: JSON.stringify(Array.from(this.selectedLinks.keys()))
         });
     }
 
