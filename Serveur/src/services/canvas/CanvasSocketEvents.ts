@@ -51,7 +51,7 @@ export default class CanvasSocketEvents {
                         io.sockets.emit("canvasCreated", canvasManager.getCanvasRoomsSERI());
                         console.log(socket.id + " created  canvasRoom " + data.canevas.name);
                         canvasManager.logHistory(canvasRoomId, data.username, `created the canvas`);
-                       // canvasDataStoreManager.addCanvas(data.canevas, canvasManager.getCanvasLogHistorySERI(canvasRoomId))
+                        canvasDataStoreManager.addCanvas(data.canevas, canvasManager.getCanvasLogHistory(canvasRoomId))
                     } else {
                         console.log(socket.id + " failed to create canvasRoom " + data.canevas.name);
                     }
@@ -147,6 +147,8 @@ export default class CanvasSocketEvents {
 
             socket.on("saveCanvas", function (dataStr: string) {
                 try {
+                    console.log("onsaveCanvas")
+
                     const data: IEditCanevasData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
 
@@ -156,6 +158,7 @@ export default class CanvasSocketEvents {
 
                     if (response.isCanvasSaved) {
                         console.log(socket.id + " saved canvas " + data.canevas.name);
+                        canvasDataStoreManager.updateCanvas(data.canevas, canvasManager.getCanvasLogHistory(canvasRoomId))
                         io.emit("canvasSaved", dataStr);
                     } else {
                         console.log(socket.id + " failed to save canvas " + data.canevas.name);
