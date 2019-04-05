@@ -195,6 +195,8 @@ class LassoView(context: Context?) : View(context) {
                             if(isAllPathIn){
                                 if((viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.from?.formId])
                                     && viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.to?.formId])) ||
+                                    (viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.from?.formId]) && link.link?.to?.formId == "") ||
+                                    (viewsIn.contains(ViewShapeHolder.getInstance().map.inverse()[link.link?.to?.formId]) && link.link?.from?.formId == "") ||
                                     (link.link?.from?.formId == "" && link.link?.to?.formId == "")
                                 ) {
                                     //if(!link.isSelectedByOther) {
