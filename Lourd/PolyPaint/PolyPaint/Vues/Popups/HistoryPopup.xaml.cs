@@ -1,5 +1,6 @@
 ﻿using PolyPaint.Modeles;
 using PolyPaint.Utilitaires;
+using PolyPaint.VueModeles;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -13,11 +14,18 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class HistoryPopup
     {
+        private VueModele dataContext = null;
         private WindowDrawing drawingview = null;
 
         public HistoryPopup()
         {
             InitializeComponent();
+            Loaded += new RoutedEventHandler(HistoryPopup_Loaded);
+        }
+
+        void HistoryPopup_Loaded(object sender, RoutedEventArgs e)
+        {
+            dataContext = DataContext as VueModele;
         }
 
         public void Initialize()
@@ -62,9 +70,25 @@ namespace PolyPaint.Vues
             return foundElement;
         }
 
+        private void ShowPreview(object sender, RoutedEventArgs e)
+        {
+            string thumbnail = ((Button)sender).Tag as string;
+            dataContext.thumbnail = thumbnail;
+            popUpHistoryPreviewVue.Initialize();
+            popUpHistoryPreview.IsOpen = true;
+            IsEnabled = false;
+        }
+
         private void Close(object sender, RoutedEventArgs e)
         {
+            ClosePopup();
             drawingview.ClosePopup();
+        }
+
+        internal void ClosePopup()
+        {
+            popUpHistoryPreview.IsOpen = false;
+            IsEnabled = true;
         }
     }
 }

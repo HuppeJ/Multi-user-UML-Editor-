@@ -276,6 +276,9 @@
     <Compile Include="Vues\DrawingHistoryView.xaml.cs">
       <DependentUpon>DrawingHistoryView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\HistoryPreviewPopup.xaml.cs">
+      <DependentUpon>HistoryPreviewPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Popups\HistoryPopup.xaml.cs">
       <DependentUpon>HistoryPopup.xaml</DependentUpon>
     </Compile>
@@ -397,6 +400,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\DrawingHistoryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\HistoryPreviewPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

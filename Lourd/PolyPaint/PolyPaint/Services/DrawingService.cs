@@ -15,7 +15,7 @@ using System.Windows.Threading;
 
 namespace PolyPaint.Services
 {
-    class DrawingService: ConnectionService
+    class DrawingService : ConnectionService
     {
         public static event Action<JoinCanvasRoomResponse> JoinCanvasRoom;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
@@ -36,7 +36,9 @@ namespace PolyPaint.Services
 
         public static event Action<History> UpdateHistory;
 
-        private static JavaScriptSerializer serializer = new JavaScriptSerializer();
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer{
+            MaxJsonLength = int.MaxValue
+        };
         public static string canvasName;
         public static Templates.Canvas currentCanvas;
         public static List<string> remoteSelectedStrokes = new List<string>();
@@ -420,7 +422,7 @@ namespace PolyPaint.Services
             canvas.thumbnail = thumbnail;
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
             // Commente pour pas buster le cloud (à uncomment avant la remise)
-            //socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
+            socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
         }
 
         public static void RefreshCanvases()
