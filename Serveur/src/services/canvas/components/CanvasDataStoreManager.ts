@@ -1,6 +1,6 @@
-import { ICanevas, IHistoryData } from "../interfaces/interfaces";
+import { ICanevas, IHistoryData, ICanvasDataStore } from "../interfaces/interfaces";
 
-export const CANVAS_TABLE: string  = "Canvas";
+export const CANVAS_TABLE: string = "Canvas";
 
 
 export default class CanvasDataStoreManager {
@@ -11,51 +11,77 @@ export default class CanvasDataStoreManager {
     }
 
     public async addCanvas(canvas: ICanevas, canvasHistory: IHistoryData[]) {
-        const name: string = canvas.name;
+        try {
+            const name: string = canvas.name;
 
-        const canvasData = {
-            canvasName: name,
-            canvas: canvas,
-            canvasHistory: canvasHistory
-        };
-
-        return this.datastore.save({
-            key: this.datastore.key([CANVAS_TABLE, name]),
-            data: canvasData,
-            excludeFromIndexes: ['canvas.thumbnail', 'canvasHistory[].canevas.thumbnail']
-        });
-    }
-
-    public async updateCanvas(canvas: ICanevas, canvasHistory: IHistoryData[]) {
-        console.log("updateCanvas", canvas, canvasHistory)
-        const query = this.datastore
-            .createQuery(CANVAS_TABLE)
-            .filter('canvasName', '=', canvas.name)
-            .limit(1);
-
-        const canvases = await this.datastore.runQuery(query);
-
-        if (canvases[0][0] !== undefined) {
-            const newCanvasEntity = {
-                canvasName: canvas.name,
+            const canvasData = {
+                canvasName: name,
                 canvas: canvas,
                 canvasHistory: canvasHistory
             };
 
-            this.datastore.upsert({
-                key: this.datastore.key([CANVAS_TABLE, canvas.name]),
-                data: newCanvasEntity,
-                excludeFromIndexes: ['canvas.thumbnail', 'canvasHistory[].canevas.thumbnail'],
+            return this.datastore.save({
+                key: this.datastore.key([CANVAS_TABLE, name]),
+                data: canvasData,
+                excludeFromIndexes: ['canvas.thumbnail', 'canvasHistory[].canevas.thumbnail']
             });
+
+        } catch (e) {
+            console.log("[Error_addCanvas]: ", e)
+        }
+    }
+
+    public async updateCanvas(canvas: ICanevas, canvasHistory: IHistoryData[]) {
+        try {
+            console.log("updateCanvas", canvas, canvasHistory)
+            const query = this.datastore
+                .createQuery(CANVAS_TABLE)
+                .filter('canvasName', '=', canvas.name)
+                .limit(1);
+
+            const canvases = await this.datastore.runQuery(query);
+
+            if (canvases[0][0] !== undefined) {
+                const newCanvasEntity = {
+                    canvasName: canvas.name,
+                    canvas: canvas,
+                    canvasHistory: canvasHistory
+                };
+
+                this.datastore.upsert({
+                    key: this.datastore.key([CANVAS_TABLE, canvas.name]),
+                    data: newCanvasEntity,
+                    excludeFromIndexes: ['canvas.thumbnail', 'canvasHistory[].canevas.thumbnail'],
+                });
+            }
+        } catch (e) {
+            console.log("[Error_updateCanvas]: ", e)
         }
     }
 
 
-    public async getAllCanvases(): Promise<string> {
-        const query = this.datastore
-        .createQuery(CANVAS_TABLE)
+    public async getAllCanvases(): Promise<ICanvasDataStore[]> {
+        try {
+            const query = this.datastore.createQuery(CANVAS_TABLE);
+            const canvases = await this.datastore.runQuery(query);
 
-        console.log(query)
-        return "";
+            const parsedCanvases: ICanvasDataStore[] = [];
+
+            canvases[0].forEach((data: any) => {
+
+                parsedCanvases.push({
+                    canvas: data.canvas,
+                    canvasHistory: data.canvasHistory,
+                    canvasName: data.canvasName,
+                } as ICanvasDataStore);
+            });
+
+            return parsedCanvases;
+
+        } catch (e) {
+            console.log("[Error_getAllCanvases]: ", e)
+        }
     }
+
+
 }

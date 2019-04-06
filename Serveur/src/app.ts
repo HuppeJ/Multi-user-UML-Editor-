@@ -33,7 +33,6 @@ const chatroomManager = new ChatroomManager();
 import CanvasManager from "./services/canvas/components/CanvasManager";
 const canvasManager = new CanvasManager(canvasDataStoreManager);
 
-
 // Initialise Socket Events
 import ChatSocketEvents from "./services/chat/ChatSocketEvents";
 new ChatSocketEvents(io, chatroomManager);
@@ -51,6 +50,9 @@ import CanvasEditionSocketEvents from './services/canvas/CanvasEditionSocketEven
 import CanvasRoom from './services/canvas/components/CanvasRoom';
 import { IUpdateFormsData, IUpdateLinksData, IEditGalleryData } from './services/canvas/interfaces/interfaces';
 new CanvasEditionSocketEvents(io, canvasManager);
+
+
+canvasManager.initializeCanvasManagerState()
 
 // Set up the Socket.io communication system
 io.on('connection', (socket: any) => {
