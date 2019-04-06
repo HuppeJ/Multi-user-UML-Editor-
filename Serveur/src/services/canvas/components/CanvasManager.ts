@@ -14,10 +14,8 @@ export default class CanvasManager {
     public async initializeCanvasManagerState() {
         const canvases: ICanvasDataStore[] = await this.canvasDataStoreManager.getAllCanvases();
         canvases.forEach((canvasDataStore: ICanvasDataStore) => {
-            console.log(canvasDataStore.canevas)
-
             const canvasRoomId: string = this.getCanvasRoomIdFromName(canvasDataStore.canvasName);
-            if (this.loadCanvasRoom(canvasRoomId, canvasDataStore.canevas)) {
+            if (this.loadCanvasRoom(canvasRoomId, canvasDataStore.canvas)) {
                 this.setHistory(canvasRoomId, canvasDataStore.canvasHistory)
             }
         });

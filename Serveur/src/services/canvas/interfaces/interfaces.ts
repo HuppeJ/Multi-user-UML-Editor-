@@ -46,7 +46,7 @@ export interface IMessageData {
 * Interfaces for objects
 ************************************************/
 export interface ICanvasDataStore {
-    canevas: ICanevas
+    canvas: ICanevas
     canvasHistory: IHistoryData[],  
     canvasName: string,
 }
