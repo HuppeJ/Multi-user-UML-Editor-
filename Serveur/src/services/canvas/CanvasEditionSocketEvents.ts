@@ -102,7 +102,11 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areFormsSelected) {
-                        console.log(socket.id + " selected forms " + data.forms);
+                        let message: string = socket.id + " selected forms ";
+                        data.forms.forEach(element => {
+                            message += "[" + element.id + "] ";
+                        });
+                        console.log(message);
                         io.to(canvasRoomId).emit("formsSelected", dataStr);
                     } else {
                         console.log(socket.id + " failed to select forms " + data.forms);
@@ -127,7 +131,11 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areFormsDeselected) {
-                        console.log(socket.id + " deselected forms " + data.forms);
+                        let message: string = socket.id + " deselected forms ";
+                        data.forms.forEach(element => {
+                            message += "[" + element.id + "] ";
+                        });
+                        console.log(message);
                         io.to(canvasRoomId).emit("formsDeselected", dataStr);
                     } else {
                         console.log(socket.id + " failed to deselect forms " + data.forms);
@@ -248,7 +256,11 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areLinksSelected) {
-                        console.log(socket.id + " selected links " + data.links);
+                        let message: string = socket.id + " selected links ";
+                        data.links.forEach(element => {
+                            message += "[" + element.id + "] ";
+                        });
+                        console.log(message);
                         io.to(canvasRoomId).emit("linksSelected", dataStr);
                     } else {
                         console.log(socket.id + " failed to select links " + data.links);
@@ -273,7 +285,11 @@ export default class CanvasEditionSocketEvents {
                     };
 
                     if (response.areLinksDeselected) {
-                        console.log(socket.id + " deselected links " + data.links);
+                        let message: string = socket.id + " deselected links ";
+                        data.links.forEach(element => {
+                            message += "[" + element.id + "] ";
+                        });
+                        console.log(message);
                         io.to(canvasRoomId).emit("linksDeselected", dataStr);
                     } else {
                         console.log(socket.id + " failed to deselect links " + data.links);
