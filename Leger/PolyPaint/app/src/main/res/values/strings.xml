@@ -12,7 +12,7 @@
 
     <string-array name="link_styles_array">
         <item>Full</item>
-        <item>Doted</item>
+        <item>Dotted</item>
     </string-array>
 
     <string-array name="link_thickness_array">

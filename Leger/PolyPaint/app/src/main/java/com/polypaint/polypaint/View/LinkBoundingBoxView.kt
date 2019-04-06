@@ -32,16 +32,18 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
     var initialHeight: Double = 0.0
     var initialWidth: Double = 0.0
     var initialPath: ArrayList<Coordinates> = ArrayList()
+    var isLasso: Boolean = false
 
     init {
-        paint.color = Color.DKGRAY
+        paint.color = Color.parseColor("#809dce")
         paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 5F
     }
 
     override fun onAttachedToWindow() {
         val parentView = this.parent as RelativeLayout
         setOnTouchListener(onTouchListenerBody)
-        val layoutParams = ViewGroup.LayoutParams(100, 100)
+        val layoutParams = ViewGroup.LayoutParams(50, 50)
         resizeButton = ImageButton(context)
         resizeButton?.setImageResource(R.drawable.ic_resize)
         resizeButton?.layoutParams = layoutParams
@@ -57,7 +59,11 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
     fun setVisible(isVisible: Boolean){
         if(isVisible){
             this.visibility = VISIBLE
-            resizeButton?.visibility = VISIBLE
+            if(isLasso){
+                resizeButton?.visibility = INVISIBLE
+            } else {
+                resizeButton?.visibility = VISIBLE
+            }
         } else {
             this.visibility = INVISIBLE
             resizeButton?.visibility = INVISIBLE
@@ -85,6 +91,9 @@ class LinkBoundingBoxView(context: Context?, var linkView: LinkView) : View(cont
             if (link != null) {
                 if (link.from.formId == "" && link.to.formId == "") {
                     resizeButton?.visibility = this.visibility
+                    if(isLasso){
+                        resizeButton?.visibility = INVISIBLE
+                    }
                 }
             }
         }

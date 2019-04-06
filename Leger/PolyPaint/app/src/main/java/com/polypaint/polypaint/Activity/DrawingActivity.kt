@@ -49,9 +49,11 @@ import com.polypaint.polypaint.Fragment.TutorialDialogFragment
 import com.polypaint.polypaint.Holder.*
 import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
 import com.polypaint.polypaint.ResponseModel.GetSelectedLinksResponse
+import com.polypaint.polypaint.ResponseModel.HasUserDoneTutorialResponse
 import com.polypaint.polypaint.SocketReceptionModel.*
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.android.synthetic.main.view_freetext.view.*
+import java.lang.Exception
 import java.lang.reflect.Type
 
 
@@ -90,14 +92,7 @@ class DrawingActivity : AppCompatActivity(){
         setSupportActionBar(activityToolbar)
 
         help_button.setOnClickListener {
-            var activity: AppCompatActivity = this@DrawingActivity as AppCompatActivity
-            var dialog: DialogFragment = TutorialDialogFragment()
-            //var bundle: Bundle = Bundle()
-            //bundle.putSerializable("canevas", selectedCanevas)
-            //dialog.arguments = bundle
-
-            //Log.d("****", dialog.arguments.toString())
-            dialog.show(activity.supportFragmentManager, "TutorialDialog")
+            showTutorial()
         }
 
         drawer = drawer {
@@ -298,6 +293,7 @@ class DrawingActivity : AppCompatActivity(){
         socket?.on(SocketConstants.CANVAS_DESELECTED, onCanevasDeselected)
         socket?.on(SocketConstants.SELECTED_FORMS, onGetSelectedForms)
         socket?.on(SocketConstants.SELECTED_LINKS, onGetSelectedLinks)
+        socket?.on(SocketConstants.HAS_USER_DONE_TUTORIAL_RESPONSE, onHasUserDoneTutorial)
         socket?.on(SocketConstants.GET_CANVAS_RESPONSE, onGetCanevas)
 
         getCanevas()
@@ -309,6 +305,8 @@ class DrawingActivity : AppCompatActivity(){
 
         //addViewToLayout
         parent_relative_layout?.addView(view)
+        parent_relative_layout?.dispatchSetSelected(false)
+
         //addShapeToCanevas
         ViewShapeHolder.getInstance().canevas.addShape(shape)
         //mapViewAndShapeId
@@ -328,6 +326,9 @@ class DrawingActivity : AppCompatActivity(){
 
         syncLayoutFromCanevas()
 
+        view.isSelected=true
+
+
         //LAUNCH VFX
         VFXHolder.getInstance().fireVFX(
             (shape.shapeStyle.coordinates.x + 100F).toFloat(),
@@ -343,13 +344,13 @@ class DrawingActivity : AppCompatActivity(){
         //TODO: Probablement une meilleure facon de mapper la value à l'enum ...
         runOnUiThread {
             when (basicShape.type) {
-                ShapeTypes.DEFAULT.value() -> {
-                    val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
-                    parent_relative_layout?.addView(viewType)
-
-                    //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
-                }
+//                ShapeTypes.DEFAULT.value() -> {
+//                    val viewType = newViewOnCanevas(ShapeTypes.DEFAULT)
+//                    parent_relative_layout?.addView(viewType)
+//
+//                    //For Sync
+//                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+//                }
                 ShapeTypes.CLASS_SHAPE.value() -> {
                     val viewType = newViewOnCanevas(ShapeTypes.CLASS_SHAPE)
                     parent_relative_layout?.addView(viewType)
@@ -412,7 +413,7 @@ class DrawingActivity : AppCompatActivity(){
         var shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "defaultShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
 
         when (shapeType) {
-            ShapeTypes.DEFAULT -> {}
+//            ShapeTypes.DEFAULT -> {}
             ShapeTypes.CLASS_SHAPE -> {
                 shapeStyle.width = 168.0
                 shapeStyle.height = 189.0
@@ -458,9 +459,9 @@ class DrawingActivity : AppCompatActivity(){
         val viewContainer = inflater!!.inflate(R.layout.basic_element, null)
 
         when(shapeType){
-            ShapeTypes.DEFAULT->{
-                viewType = BasicElementView(this)
-            }
+//            ShapeTypes.DEFAULT->{
+//                viewType = BasicElementView(this)
+//            }
             ShapeTypes.CLASS_SHAPE->{
                 viewType = ClassView(this)
             }
@@ -689,94 +690,122 @@ class DrawingActivity : AppCompatActivity(){
         Log.d("syncLayoutFromCanevas","***wawaw****")
 
         for (view in ViewShapeHolder.getInstance().map.keys){
-            val basicShapeId:  String = ViewShapeHolder.getInstance().map.getValue(view)
-            val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
-            if(basicShape != null) {
-                view.x = (basicShape.shapeStyle.coordinates.x).toFloat() - shapeOffset
-                view.y = (basicShape.shapeStyle.coordinates.y).toFloat() - shapeOffset
-                view.leftX = view.x
-                view.topY = view.y
-                view.rotation = basicShape.shapeStyle.rotation.toFloat()
 
-                // TODO : Jé's Fix : j'ai bougé les view.resize dans les différents case pour que la fonction redéfinie des enfants de BasicShape soit appelée (ex.: pour que la fonction .resize de ImageElementView soit appelée)
-                // TODO : les attributs xml des différentes View ne sont pas reconnues même avec le cast de la view (ex.:view as ImageElementView), voir les "// TODO : is null" ci-dessous, je n'ai pas trouvé pourquoi ça faisait cela^^
-                when(basicShape.type){
-                    ShapeTypes.DEFAULT.value()-> { }
-                    ShapeTypes.CLASS_SHAPE.value()-> {
-                        if(basicShape is ClassShape){
+                val basicShapeId: String = ViewShapeHolder.getInstance().map.getValue(view)
+                val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
+            if(!view.isSelected) {
+                if (basicShape != null) {
+                    view.x = (basicShape.shapeStyle.coordinates.x).toFloat() - shapeOffset
+                    view.y = (basicShape.shapeStyle.coordinates.y).toFloat() - shapeOffset
+                    view.leftX = view.x
+                    view.topY = view.y
+                    view.rotation = basicShape.shapeStyle.rotation.toFloat()
+
+                    // TODO : Jé's Fix : j'ai bougé les view.resize dans les différents case pour que la fonction redéfinie des enfants de BasicShape soit appelée (ex.: pour que la fonction .resize de ImageElementView soit appelée)
+                    // TODO : les attributs xml des différentes View ne sont pas reconnues même avec le cast de la view (ex.:view as ImageElementView), voir les "// TODO : is null" ci-dessous, je n'ai pas trouvé pourquoi ça faisait cela^^
+                    when (basicShape.type) {
+//                        ShapeTypes.DEFAULT.value() -> {
+//                        }
+                        ShapeTypes.CLASS_SHAPE.value() -> {
+                            if (basicShape is ClassShape) {
 
 
-                            runOnUiThread{
-                                view as ClassView
-                                Log.d("syncLayoutFromCanevas", basicShape.name+" w "+basicShape.shapeStyle.width.toInt()+" h "+ basicShape.shapeStyle.height.toInt())
+                                runOnUiThread {
+                                    view as ClassView
+                                    Log.d(
+                                        "syncLayoutFromCanevas",
+                                        basicShape.name + " w " + basicShape.shapeStyle.width.toInt() + " h " + basicShape.shapeStyle.height.toInt()
+                                    )
 
-                                view.class_name.text = basicShape.name
-                                var tmp : String = ""
-                                if(basicShape.attributes != null) {
-                                    for (e in basicShape.attributes) {
-                                        tmp += e + "\n"
+                                    view.class_name.text = basicShape.name
+                                    var tmp: String = ""
+                                    if (basicShape.attributes != null) {
+                                        for (e in basicShape.attributes) {
+                                            tmp += e + "\n"
+                                        }
                                     }
-                                }
-                                view.class_attributes.text = tmp
-                                tmp = ""
-                                if(basicShape.methods != null) {
-                                    for (e in basicShape.methods) {
-                                        tmp += e + "\n"
+                                    view.class_attributes.text = tmp
+                                    tmp = ""
+                                    if (basicShape.methods != null) {
+                                        for (e in basicShape.methods) {
+                                            tmp += e + "\n"
+                                        }
                                     }
+                                    view.class_methods.text = tmp
+                                    view.resize(
+                                        basicShape.shapeStyle.width.toInt(),
+                                        basicShape.shapeStyle.height.toInt()
+                                    )
+
                                 }
-                                view.class_methods.text = tmp
-                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                                view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                                view.backgroundColor(basicShape.shapeStyle.backgroundColor)
                             }
                         }
-                    }
-                    ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
-                        runOnUiThread {
-                            view as ImageElementView
-                            // TODO :  is null : view_image_element_name
-                            view.view_image_element_name.text = basicShape.name
-                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                        ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
+                            runOnUiThread {
+                                view as ImageElementView
+                                // TODO :  is null : view_image_element_name
+                                view.view_image_element_name.text = basicShape.name
+                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                            }
+
+                        }
+                        ShapeTypes.COMMENT.value() -> {
+                            runOnUiThread {
+                                view as CommentView
+                                var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
+                                commentText.text = basicShape.name
+                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                            }
+
+                        }
+
+                        ShapeTypes.PHASE.value() -> {
+                            runOnUiThread {
+                                view as PhaseView
+                                view.view_phase_name.text = basicShape.name
+//                                view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                            }
+                        }
+                        ShapeTypes.FREETEXT.value() -> {
+                            runOnUiThread {
+                                view as FreeTextView
+                                view.free_text_text.text = basicShape.name
+                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
+                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
+                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                            }
                         }
 
                     }
-                    ShapeTypes.COMMENT.value()-> {
-                        runOnUiThread{
-                            view as CommentView
-                            var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
-                            commentText.text = basicShape.name
-                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                        }
-
-                    }
-
-                    ShapeTypes.PHASE.value()-> {
-                        runOnUiThread {
-                            view as PhaseView
-                            view.view_phase_name.text = basicShape.name
-                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                        }
-                    }
-                    ShapeTypes.FREETEXT.value()->{
-                        runOnUiThread {
-                            view as FreeTextView
-                            view.free_text_text.text = basicShape.name
-                            view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                            view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                            view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                        }
-                    }
-
                 }
-
+            }
+            if (basicShape != null) {
+                runOnUiThread {
+                    view.outlineColor(
+                        basicShape.shapeStyle.borderColor,
+                        basicShape.shapeStyle.borderStyle
+                    )
+                    view.backgroundColor(basicShape.shapeStyle.backgroundColor)
+                }
             }
         }
+    }
+
+    fun showTutorial(){
+        var activity: AppCompatActivity = this@DrawingActivity as AppCompatActivity
+        var dialog: TutorialDialogFragment = TutorialDialogFragment()
+        //var bundle: Bundle = Bundle()
+        //bundle.putSerializable("canevas", selectedCanevas)
+        //dialog.arguments = bundle
+
+        //Log.d("****", dialog.arguments.toString())
+        dialog.showModal(activity.supportFragmentManager, "TutorialDialog")
     }
 
     public fun syncCanevasFromLayout(){
@@ -842,10 +871,11 @@ class DrawingActivity : AppCompatActivity(){
         val sendObj = gson.toJson(galleryEditEvent)
 
         socket?.emit(SocketConstants.GET_CANVAS, sendObj)
+        socket?.emit(SocketConstants.HAS_USER_DONE_TUTORIAL, UserHolder.getInstance().username)
     }
 
     private var onFormsUpdated: Emitter.Listener = Emitter.Listener {
-        Log.d("onFormsUpdated", "alllooo")
+        Log.d("onFormsUpdated", it[0].toString())
 
         val gsonBuilder: GsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
@@ -864,7 +894,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onFormsSelected: Emitter.Listener = Emitter.Listener {
-        Log.d("onFormsSelected", "alllooo")
+        Log.d("onFormsSelected", it[0].toString())
 
         val gsonBuilder: GsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
@@ -878,16 +908,19 @@ class DrawingActivity : AppCompatActivity(){
                     val view: BasicElementView? = ViewShapeHolder.getInstance().map.inverse()[form.id]
                     if(view != null) {
                         view.setIsSelectedByOther(true)
+                        view.invalidate()
+                        view.requestLayout()
                     }
 
-                    syncLayoutFromCanevas()
+
+                    //syncLayoutFromCanevas()
                 }
             }
         }
     }
 
     private var onFormsDeselected: Emitter.Listener = Emitter.Listener {
-        Log.d("onFormsDeselected", "alllooo")
+        Log.d("onFormsDeselected", it[0].toString())
 
         val gsonBuilder: GsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
@@ -910,7 +943,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onFormsDeleted: Emitter.Listener = Emitter.Listener {
-        Log.d("onFormsDeleted", "alllooo")
+        Log.d("onFormsDeleted", it[0].toString())
 
         val gsonBuilder: GsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(FormsUpdateEvent::class.java, deserializer)
@@ -934,7 +967,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onLinksUpdated: Emitter.Listener = Emitter.Listener {
-        Log.d("onLinksUpdated", "alllooo")
+        Log.d("onLinksUpdated", it[0].toString())
 
         val gson = Gson()
 
@@ -956,7 +989,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onLinksSelected: Emitter.Listener = Emitter.Listener {
-        Log.d("onLinksSelected", "alllooo")
+        Log.d("onLinksSelected", it[0].toString())
 
         val gson = Gson()
 
@@ -977,7 +1010,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onLinksDeselected: Emitter.Listener = Emitter.Listener {
-        Log.d("onLinksDeselected", "alllooo")
+        Log.d("onLinksDeselected", it[0].toString())
 
         val gson = Gson()
 
@@ -998,7 +1031,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onLinksDeleted: Emitter.Listener = Emitter.Listener {
-        Log.d("onLinksDeleted", "alllooo")
+        Log.d("onLinksDeleted", it[0].toString())
 
         val gson = Gson()
         val obj: LinksUpdateEvent = gson.fromJson(it[0].toString())
@@ -1014,7 +1047,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onCanvasReinitialized: Emitter.Listener = Emitter.Listener {
-        Log.d("onCanvasReinitialized", "alllooo")
+        Log.d("onCanvasReinitialized", "allo")
         runOnUiThread {
             ViewShapeHolder.getInstance().removeAll()
             ViewShapeHolder.getInstance().stackDrawingElementCreatedId = Stack<String>()
@@ -1024,7 +1057,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onFormsCreated: Emitter.Listener = Emitter.Listener {
-        Log.d("onFormsCreated", "alllooo")
+        Log.d("onFormsCreated", it[0].toString())
 
 
         val gsonBuilder: GsonBuilder = GsonBuilder()
@@ -1044,7 +1077,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onLinkCreated: Emitter.Listener = Emitter.Listener {
-        Log.d("onLinkCreated", "alllooo")
+        Log.d("onLinkCreated", it[0].toString())
 
         val gson = Gson()
         val obj: LinksUpdateEvent = gson.fromJson(it[0].toString())
@@ -1118,7 +1151,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onGetSelectedForms: Emitter.Listener = Emitter.Listener {
-        Log.d("onGetSelectedForms", "alllooo")
+        Log.d("onGetSelectedForms", it[0].toString())
 
         val gson = Gson()
         val obj: GetSelectedFormsResponse =  gson.fromJson(it[0].toString())
@@ -1134,7 +1167,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onGetSelectedLinks: Emitter.Listener = Emitter.Listener {
-        Log.d("onGetSelectedLinks", "alllooo")
+        Log.d("onGetSelectedLinks", it[0].toString())
 
         val gson = Gson()
         val obj: GetSelectedLinksResponse =  gson.fromJson(it[0].toString())
@@ -1148,6 +1181,18 @@ class DrawingActivity : AppCompatActivity(){
             }
         }
     }
+
+    private var onHasUserDoneTutorial: Emitter.Listener = Emitter.Listener {
+        Log.d("onHasUserDoneTutorial", it[0].toString())
+
+        val gson = Gson()
+        val obj: HasUserDoneTutorialResponse =  gson.fromJson(it[0].toString())
+
+        if(!obj.hasUserDoneTutorial){
+            showTutorial()
+        }
+    }
+
 
     private var onGetCanevas: Emitter.Listener = Emitter.Listener {
         Log.d("onGetCanvas", "alllooo")
@@ -1278,19 +1323,29 @@ class DrawingActivity : AppCompatActivity(){
 
         runOnUiThread {
             Handler().postDelayed({
-                Log.d("after delay", "saveCanevasCall")
-                val bitmap: Bitmap = loadBitmapFromView(findViewById(R.id.parent_relative_layout), 50, 80)
-                val resized = Bitmap.createScaledBitmap(bitmap, (bitmap!!.width!!.times(1/2.1)).toInt(), (bitmap!!.height!!.times(1/2.1)).toInt(), true);
-                val thumbnailString: String = bitMapToString(resized)
-                Log.d("bitmapString", thumbnailString)
+                try {
+                    Log.d("after delay", "saveCanevasCall")
+                    val bitmap: Bitmap = loadBitmapFromView(findViewById(R.id.parent_relative_layout), 50, 80)
+                    val resized = Bitmap.createScaledBitmap(
+                        bitmap,
+                        (bitmap!!.width!!.times(1 / 2.1)).toInt(),
+                        (bitmap!!.height!!.times(1 / 2.1)).toInt(),
+                        true
+                    );
+                    val thumbnailString: String = bitMapToString(resized)
+                    Log.d("bitmapString", thumbnailString)
 
-                ViewShapeHolder.getInstance().canevas.thumbnail = thumbnailString
+                    ViewShapeHolder.getInstance().canevas.thumbnail = thumbnailString
 
-                val canvasEvent: CanvasEvent = CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas!!)
-                val gson = Gson()
-                val sendObj = gson.toJson(canvasEvent)
-                Log.d("createObj", sendObj)
-                // socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+                    val canvasEvent: CanvasEvent =
+                        CanvasEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas!!)
+                    val gson = Gson()
+                    val sendObj = gson.toJson(canvasEvent)
+                    Log.d("createObj", sendObj)
+                    // socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+                }catch (e: Exception){
+                    Log.d("Exception", "Trying to save thumbnail")
+                }
 
             }, 1000)
         }
