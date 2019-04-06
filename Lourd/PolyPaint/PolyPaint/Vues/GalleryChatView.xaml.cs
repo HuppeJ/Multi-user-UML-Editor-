@@ -6,11 +6,11 @@ using System.Windows.Controls;
 namespace PolyPaint.Vues
 {
     /// <summary>
-    /// Interaction logic for DrawingChatView.xaml
+    /// Interaction logic for GalleryChatView.xaml
     /// </summary>
-    public partial class DrawingChatView : UserControl
+    public partial class GalleryChatView : UserControl
     {
-        public DrawingChatView()
+        public GalleryChatView()
         {
             InitializeComponent();
         }
