@@ -73,13 +73,15 @@ namespace PolyPaint.CustomInk
             if (isUpdatingLink)
             {
                 linkBeingUpdated.path[linkStrokeAnchor] = new Coordinates(pointPosition);
+                string multiplicity = "";
 
                 if (linkStrokeAnchor == 0)
                 {
                     RemoveShapeStrokeLinkFrom(linkBeingUpdated);
 
                     // mettre a jour la position du point initial (from)
-                    linkBeingUpdated.from = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
+                    multiplicity = linkBeingUpdated.from?.multiplicity == null ? "" : linkBeingUpdated.from.multiplicity;
+                    linkBeingUpdated.from = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, multiplicity);
                     if(strokeToAttach != null)
                     {
                         DrawingService.SelectShapes(new StrokeCollection{ strokeToAttach });
@@ -93,9 +95,10 @@ namespace PolyPaint.CustomInk
                 else if (linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
                 {
                     RemoveShapeStrokeLinkTo(linkBeingUpdated);
+                    multiplicity = linkBeingUpdated.from?.multiplicity == null ? "" : linkBeingUpdated.from.multiplicity;
 
                     // mettre a jour la position du point final (to)
-                    linkBeingUpdated.to = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
+                    linkBeingUpdated.to = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, multiplicity);
                     if (strokeToAttach != null)
                     {
                         DrawingService.SelectShapes(new StrokeCollection { strokeToAttach });
