@@ -305,6 +305,8 @@ class DrawingActivity : AppCompatActivity(){
 
         //addViewToLayout
         parent_relative_layout?.addView(view)
+        parent_relative_layout?.dispatchSetSelected(false)
+
         //addShapeToCanevas
         ViewShapeHolder.getInstance().canevas.addShape(shape)
         //mapViewAndShapeId
@@ -323,6 +325,9 @@ class DrawingActivity : AppCompatActivity(){
         emitAddForm(shape)
 
         syncLayoutFromCanevas()
+
+        view.isSelected=true
+
 
         //LAUNCH VFX
         VFXHolder.getInstance().fireVFX(

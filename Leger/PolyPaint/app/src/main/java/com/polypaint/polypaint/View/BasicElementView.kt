@@ -74,7 +74,7 @@ open class BasicElementView: ConstraintLayout {
         //DEFAULT STATE
 
         var parent = this.parent as RelativeLayout
-        parent.dispatchSetSelected(false)
+        //parent.dispatchSetSelected(false)
         isSelected = false
     }
 
