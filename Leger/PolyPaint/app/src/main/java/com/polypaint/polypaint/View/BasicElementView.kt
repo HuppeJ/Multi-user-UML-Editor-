@@ -412,6 +412,8 @@ open class BasicElementView: ConstraintLayout {
                             socket?.emit(SocketConstants.UPDATE_FORMS, formsObj)
 
                             parentView.addView(link)
+                            FormsSelectionHolder.getInstance().linksSelectedId.add(linkShape.id)
+                            ViewShapeHolder.getInstance().linkMap.inverse()[linkShape.id]?.emitSelection()
                         }
                     }
                     oldLink = null

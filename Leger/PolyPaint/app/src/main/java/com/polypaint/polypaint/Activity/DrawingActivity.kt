@@ -1042,7 +1042,7 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     private var onCanvasReinitialized: Emitter.Listener = Emitter.Listener {
-        Log.d("onCanvasReinitialized", it[0].toString())
+        Log.d("onCanvasReinitialized", "allo")
         runOnUiThread {
             ViewShapeHolder.getInstance().removeAll()
             ViewShapeHolder.getInstance().stackDrawingElementCreatedId = Stack<String>()
