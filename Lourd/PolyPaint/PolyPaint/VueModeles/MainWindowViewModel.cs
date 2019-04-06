@@ -983,6 +983,11 @@ namespace PolyPaint.VueModeles
         {
             if (response.isCanvasRoomJoined)
             {
+                if(UserMode == UserModes.Gallery)
+                {
+                    CloseChatWindow?.Invoke();
+                }
+                
                 if (!ConnectionService.hasUserDoneTutorial)
                 {
                     UserMode = UserModes.Tutorial;

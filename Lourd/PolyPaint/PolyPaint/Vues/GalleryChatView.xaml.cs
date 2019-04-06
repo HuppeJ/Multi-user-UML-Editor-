@@ -10,9 +10,26 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class GalleryChatView : UserControl
     {
+        MainWindowViewModel dataContext = null;
+
         public GalleryChatView()
         {
             InitializeComponent();
+            Loaded += new RoutedEventHandler(GalleryChat_Loaded);
+        }
+
+        void GalleryChat_Loaded(object sender, RoutedEventArgs e)
+        {
+            dataContext = DataContext as MainWindowViewModel;
+            if (dataContext.IsChatWindowOpened)
+            {
+                grid.Children.Remove(ChatView);
+                chatButton.Visibility = Visibility.Hidden;
+                chatButton.IsHitTestVisible = false;
+
+                var wind = new ChatPopup(ChatView, this, dataContext);
+                wind.Show();
+            }
         }
 
         private void ChangeChatMode(object sender, RoutedEventArgs e)

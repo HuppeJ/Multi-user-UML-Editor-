@@ -34,13 +34,16 @@ namespace PolyPaint.Vues.Popups
         {
             grid.Children.Remove(chatUserControl);
 
-            if(drawingChatView != null)
+            if(!(DataContext as MainWindowViewModel).IsChatWindowOpened)
             {
-                drawingChatView.IntegrateChat(chatUserControl);
-            }
-            else if(galleryChatView != null)
-            {
-                galleryChatView.IntegrateChat(chatUserControl);
+                if (drawingChatView != null)
+                {
+                    drawingChatView.IntegrateChat(chatUserControl);
+                }
+                else if (galleryChatView != null)
+                {
+                    galleryChatView.IntegrateChat(chatUserControl);
+                }
             }
         }
 
