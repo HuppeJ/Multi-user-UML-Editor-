@@ -33,7 +33,6 @@ export default class CanvasDataStoreManager {
 
     public async updateCanvas(canvas: ICanevas, canvasHistory: IHistoryData[]) {
         try {
-            console.log("updateCanvas", canvas, canvasHistory)
             const query = this.datastore
                 .createQuery(CANVAS_TABLE)
                 .filter('canvasName', '=', canvas.name)

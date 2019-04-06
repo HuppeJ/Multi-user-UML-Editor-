@@ -19,8 +19,6 @@ export default class CanvasManager {
                 this.setHistory(canvasRoomId, canvasDataStore.canvasHistory)
             }
         });
-
-        console.log(this.getCanvasRoomsSERI())
     }
 
     public setHistory(canvasRoomId: string, history: IHistoryData[],) {
