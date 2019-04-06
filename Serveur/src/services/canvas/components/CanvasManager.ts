@@ -150,8 +150,6 @@ export default class CanvasManager {
 
     public getCanvasRoomFromUsername(unsername: any): string {
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
-            console.log(canvasRoom.getConnectedUsersSERI())
-
             if (canvasRoom.hasUser(unsername)) {
                 return canvasRoomId;
             }
