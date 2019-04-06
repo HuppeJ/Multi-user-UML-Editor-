@@ -288,17 +288,14 @@
                      MaxHeight="300"/>
 
         </Border>
-        <!--Back to gallery button-->
-        <Button x:Name="LogoutButton" Margin="5,30,5,5"
-                Content="Back to Gallery"
-                Command="{Binding BackToGalleryCommand}" Grid.Row="1"/>
-        <Button x:Name="CreateChatroomButton" Margin="60,5,60,50" Grid.Row="1" Padding="0"
+
+        <Button x:Name="CreateChatroomButton" Margin="60,25,60,25" Grid.Row="1" Padding="0"
             Content="Create"
             Click="CreateRoomPopup"/>
-        <Button x:Name="JoinChatroomButton" Margin="5,5,120,50" Grid.Row="1" Padding="0"
+        <Button x:Name="JoinChatroomButton" Margin="5,25,120,25" Grid.Row="1" Padding="0"
             Content="Join"
             Click="JoinRoomPopup" Tag="{Binding joinableRooms}"/>
-        <Button x:Name="LeaveChatroomButton" Margin="120,5,5,50" Grid.Row="1" Padding="0"
+        <Button x:Name="LeaveChatroomButton" Margin="120,25,5,25" Grid.Row="1" Padding="0"
             Content="Leave"
             Command="{Binding LeaveChatroomCommand}" CommandParameter="{Binding selectedRoom}"/>
         <!--Messages-->

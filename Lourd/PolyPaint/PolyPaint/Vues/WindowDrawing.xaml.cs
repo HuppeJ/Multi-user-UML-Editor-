@@ -458,5 +458,10 @@ namespace PolyPaint.Vues
 
             DrawingService.OpenTutorial();
         }
+
+        private void BackToGallery(object sender, RoutedEventArgs e)
+        {
+            DrawingService.GoToGallery();
+        }
     }
 }

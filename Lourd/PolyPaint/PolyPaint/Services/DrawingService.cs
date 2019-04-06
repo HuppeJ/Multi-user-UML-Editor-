@@ -730,5 +730,10 @@ namespace PolyPaint.Services
         {
             Application.Current.Dispatcher.Invoke(new Action(() => { GoToTutorial(); }), DispatcherPriority.Render);
         }
+
+        internal static void GoToGallery()
+        {
+            BackToGallery?.Invoke();
+        }
     }
 }

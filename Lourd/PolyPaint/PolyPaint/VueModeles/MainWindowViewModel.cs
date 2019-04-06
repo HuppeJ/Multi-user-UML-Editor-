@@ -1009,6 +1009,7 @@ namespace PolyPaint.VueModeles
 
         private void BackToGallery()
         {
+            CloseChatWindow?.Invoke();
             UserMode = UserModes.Gallery;
         }
 
