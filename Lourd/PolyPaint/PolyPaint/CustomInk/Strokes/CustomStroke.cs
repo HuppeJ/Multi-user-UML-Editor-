@@ -92,6 +92,11 @@ namespace PolyPaint.CustomInk
             return GetType() == typeof(LinkStroke);
         }
 
+        public bool isProccessStroke()
+        {
+            return GetType() == typeof(ActorStroke) || GetType() == typeof(ActivityStroke) || GetType() == typeof(ArtifactStroke);
+        }
+
         public virtual void updatePosition(Rect newRect) { }
 
         public virtual void updateLinks() { }

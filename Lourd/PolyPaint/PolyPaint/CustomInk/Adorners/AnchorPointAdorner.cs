@@ -11,6 +11,8 @@ using System.Windows.Ink;
 using PolyPaint.Services;
 using PolyPaint.Enums;
 using PolyPaint.CustomInk.Adorners;
+using System.Windows.Controls;
+using PolyPaint.Vues;
 
 namespace PolyPaint.CustomInk
 {
@@ -59,13 +61,17 @@ namespace PolyPaint.CustomInk
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
-
+            
             foreach (Thumb anchor in anchors)
             {
                 anchor.Cursor = Cursors.ScrollAll;
                 anchor.Width = 6;
                 anchor.Height = 6;
-                anchor.Background = Brushes.IndianRed;
+                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFDDDDDD"),
+                    (Color)ColorConverter.ConvertFromString("#809dce"), 45); ;
+                anchor.BorderBrush = Brushes.Black;
+                anchor.BorderThickness = new Thickness(2);
+                anchor.Margin = new Thickness(0);
 
                 anchor.DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
@@ -73,7 +79,7 @@ namespace PolyPaint.CustomInk
 
                 visualChildren.Add(anchor);
             }
-
+            
             cheatAnchors = new List<StrokeAnchorPointThumb>();
             cheatAnchors.Add(new StrokeAnchorPointThumb(shapeStroke, canvas, 0));
             cheatAnchors.Add(new StrokeAnchorPointThumb(shapeStroke, canvas, 1));
@@ -112,10 +118,10 @@ namespace PolyPaint.CustomInk
         private void ArrangeAnchor(int anchorNumber, double xOffset, double yOffset)
         {
             // The rectangle that determines the position of the Thumb.
-            Rect handleRect = new Rect(strokeBounds.X + xOffset,
-                                  strokeBounds.Y + yOffset,
-                                  strokeBounds.Width,
-                                  strokeBounds.Height);
+            Rect handleRect = new Rect(strokeBounds.X + xOffset -2,
+                                  strokeBounds.Y + yOffset -2,
+                                  strokeBounds.Width + 4,
+                                  strokeBounds.Height + 4);
             handleRect.Transform(rotation.Value);
 
             // Draws the thumb and the rectangle around the strokes.
@@ -181,27 +187,27 @@ namespace PolyPaint.CustomInk
             pos.X += 5;
             pos.Y += 5;
 
-            if(shapeStroke.strokeType == (int)StrokeTypes.ROLE)
+            if(shapeStroke is ActorStroke)
             {
-                if (strokeTo?.GetType() == typeof(ActivityStroke))
+                if (strokeTo is ActivityStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
-                    MessageBox.Show("A role can only be linked to an activity.");
-            } else if (shapeStroke.strokeType == (int)StrokeTypes.ARTIFACT)
+                    ShowMessage("A role can only be linked to an activity.");
+            } else if (shapeStroke is ArtifactStroke)
             {
-                if (strokeTo?.GetType() == typeof(ActivityStroke))
+                if (strokeTo is ActivityStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
-                    MessageBox.Show("An artifact can only be linked to an activity.");
-            } else if (shapeStroke.strokeType == (int)StrokeTypes.ACTIVITY)
+                    ShowMessage("An artifact can only be linked to an activity.");
+            } else if (shapeStroke is ActivityStroke)
             {
-                if (strokeTo?.GetType() == typeof(ArtifactStroke))
+                if (strokeTo is ArtifactStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
-                    MessageBox.Show("An activity can only be linked to an artifact.");
-            } else if (strokeTo?.GetType() == typeof(ArtifactStroke) || strokeTo?.GetType() == typeof(ActorStroke) || strokeTo?.GetType() == typeof(ActivityStroke))
+                    ShowMessage("An activity can only be linked to an artifact.");
+            } else if (strokeTo != null && strokeTo.isProccessStroke())
             {
-                MessageBox.Show("Cannot create link.");
+                ShowMessage("Cannot create link.");
             }
             else
             {
@@ -235,6 +241,22 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateShapes(shapesToUpdate);
 
             canvas.Select(new StrokeCollection { linkBeingCreated });
+        }
+
+        private void ShowMessage(string message)
+        {
+            var parent = canvas.Parent;
+            while (!(parent is WindowDrawing))
+            {
+                parent = LogicalTreeHelper.GetParent(parent);
+            }
+
+            WindowDrawing windowDrawing = (WindowDrawing)parent;
+            if (windowDrawing != null)
+            {
+                windowDrawing.OpenMessagePopup(message);
+            }
+            
         }
 
         // Override the VisualChildrenCount and 

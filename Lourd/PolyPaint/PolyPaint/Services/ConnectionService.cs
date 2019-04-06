@@ -2,6 +2,8 @@ using System;
 using PolyPaint.Modeles;
 using Quobject.SocketIoClientDotNet.Client;
 using System.Web.Script.Serialization;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace PolyPaint.Services
 {
@@ -19,9 +21,9 @@ namespace PolyPaint.Services
         public static bool hasUserDoneTutorial = false;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
-        //private static string url = "https://projet-3-228722.appspot.com";
-        // private static string url = "http://localhost:5020";
-        private static string url = "http://localhost:8010";
+        private static string url = "https://projet-3-228722.appspot.com";
+        //private static string url = "http://localhost:5020";
+        // private static string url = "http://localhost:8010";
         // private static string url = "http://10.200.3.1:5020";
         // private static string url = "http://10.200.31.156:5020";
 
@@ -42,8 +44,8 @@ namespace PolyPaint.Services
 
             socket.On("createUserResponse", (data) => {
                 bool isUserCreated = serializer.Deserialize<dynamic>((string)data)["isUserCreated"];
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { UserCreation(isUserCreated); }), DispatcherPriority.Render);
 
-                UserCreation?.Invoke(isUserCreated);
             });
 
             socket.On("loginUserResponse", (data) =>
@@ -57,8 +59,9 @@ namespace PolyPaint.Services
                 {
                     socket.Emit("hasUserDoneTutorial", username);
                 }
+                
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { UserLogin(isLoginSuccessful); }), DispatcherPriority.Render);
 
-                UserLogin?.Invoke(isLoginSuccessful);
             });
 
             socket.On("hasUserDoneTutorialResponse", (data =>

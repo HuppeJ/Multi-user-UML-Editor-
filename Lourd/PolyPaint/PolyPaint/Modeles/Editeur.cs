@@ -193,12 +193,15 @@ namespace PolyPaint.Modeles
             }
         }
 
-        public bool PeutReinitialiser(object o) => (traits.Count != 0);
+        public bool PeutReinitialiser(object o) => (true);
         // On vide la surface de dessin de tous ses traits.
         public void Reinitialiser(object o)
         {
-            DrawingService.Reset();
-            traits.Clear();
+            if (traits.Count > 0)
+            {
+                DrawingService.Reset();
+                traits.Clear();
+            }
         }
 
         public void ChooseStrokeTypeCommand(string strokeType) {

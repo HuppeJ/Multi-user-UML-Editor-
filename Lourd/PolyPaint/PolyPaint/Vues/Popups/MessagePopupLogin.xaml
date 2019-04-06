@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PolyPaint.Vues.FloatingTextPopup"
+﻿<UserControl x:Class="PolyPaint.Vues.MessagePopupLogin"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -21,22 +21,15 @@
     </UserControl.Resources>
 
     <Border BorderBrush="DodgerBlue" BorderThickness="2" >
-        <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="254" Margin="0" ForceCursor="True">
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,0,15" Width="152" Height="119">
-                    <TextBlock>Floating text content:</TextBlock>
-                    <TextBox x:Name="ClassNameTextBox" MaxWidth="150"
-                        TextWrapping="Wrap"
-                        VerticalScrollBarVisibility="Auto"
-                        VerticalAlignment="Top"
-                        Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="103"/>
+        <materialDesign:Card VerticalAlignment="Center" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" Width="396" Height="138" Margin="0" ForceCursor="True">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="10,35,10,28" Width="376">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"  Width="376" Height="40">
+                    <TextBlock x:Name="MessageText" MaxWidth="400" Height="auto" Width="auto"
+                            TextWrapping="Wrap"
+                            VerticalAlignment="Top"
+                            Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="20,0,0,0"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
-                    <TextBlock Margin="0,0,0,0.2" Width="72">Text color:</TextBlock>
-                    <wpfx:ColorPicker  x:Name="pickFillColor" Width="78" MaxWidth="150" Margin="0,0,0,0.2"
-                                   SelectedColor="{Binding FillColor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                </StackPanel>
-                <Button Content="Accept Changes" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
+                <Button Content="Ok" Click="ClosePopup" Width="150" HorizontalAlignment="Right" IsDefault="True"/>
             </StackPanel>
         </materialDesign:Card>
     </Border>

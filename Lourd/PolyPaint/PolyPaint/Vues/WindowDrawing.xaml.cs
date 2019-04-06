@@ -45,7 +45,7 @@ namespace PolyPaint.Vues
         {
             // DrawingService.LeaveCanvas();
         }
-
+        
         // Pour gérer les points de contrôles.
         private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
         private void GlisserTermine(object sender, DragCompletedEventArgs e)
@@ -159,7 +159,7 @@ namespace PolyPaint.Vues
                 }
                 else if((strokes[0] as CustomStroke).strokeType == (int)StrokeTypes.LINK)
                 {
-                    popUpLinkVue.setParameters();
+                    popUpLinkVue.setParameters(strokes[0] as LinkStroke, surfaceDessin);
                     popUpLink.IsOpen = true;
                 }
                 else if (strokes[0] is CommentStroke)
@@ -296,26 +296,9 @@ namespace PolyPaint.Vues
                 stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
             }
 
-            switch (linkThickness)
-            {
-                case 0:
-                    stroke.DrawingAttributes.Width = 4;
-                    stroke.DrawingAttributes.Height = 4;
-                    break;
-                case 1:
-                    stroke.DrawingAttributes.Width = 6;
-                    stroke.DrawingAttributes.Height = 6;
-                    break;
-                case 2:
-                    stroke.DrawingAttributes.Width = 8;
-                    stroke.DrawingAttributes.Height = 8;
-                    break;
-                default:
-                    stroke.DrawingAttributes.Width = 4;
-                    stroke.DrawingAttributes.Height = 4;
-                    break;
-            }
-
+            stroke.DrawingAttributes.Width = stroke.getThickness();
+            stroke.DrawingAttributes.Height = stroke.getThickness();
+            
             StrokeCollection sc = new StrokeCollection();
             sc.Add(stroke);
             DrawingService.UpdateLinks(sc);
@@ -348,6 +331,19 @@ namespace PolyPaint.Vues
         {
             IsEnabled = true;
             popUpClassFromCode.IsOpen = false;
+        }
+
+        public void CloseMessagePopup()
+        {
+            IsEnabled = true;
+            popUpMessage.IsOpen = false;
+        }
+
+        public void OpenMessagePopup(string message)
+        {
+            popUpMessageVue.setParameters(message);
+            popUpMessage.IsOpen = true;
+            IsEnabled = false;
         }
 
         internal void SelectCSFile()

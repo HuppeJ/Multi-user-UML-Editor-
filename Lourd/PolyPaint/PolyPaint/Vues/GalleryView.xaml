@@ -36,7 +36,7 @@
                 <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}"
                     Background="#403196f3"
                     Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
-                    Height="200" Margin="0,0,0,0">
+                    Height="250" Margin="0,0,0,0">
                     <Grid>
                         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
                             <!--Name-->
@@ -51,7 +51,7 @@
                                    Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" FontSize="16"
                                    Text="{Binding author}"/>
                             </StackPanel>
-                            <Image Source="{Binding thumbnail, Mode=OneWay, Converter={StaticResource StringToByteArrayConverter}}" Width="300" Height="150"/>
+                            <Image Source="{Binding thumbnail, Mode=OneWay, Converter={StaticResource StringToByteArrayConverter}}" Width="350" Height="200"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0">
                                 <Button Content="Edit protection" x:Name="EditButton" Visibility="Collapsed"
                                         Command="{Binding Path=DataContext.SelectProtectedCanvasCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"

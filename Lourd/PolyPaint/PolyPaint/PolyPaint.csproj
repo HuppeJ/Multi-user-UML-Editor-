@@ -192,11 +192,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Convertisseurs\ConvertisseurDate.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
     <Compile Include="Convertisseurs\StringToByteArrayConverter.cs" />
     <Compile Include="Convertisseurs\MultiValueEqualityConverter.cs" />
     <Compile Include="CustomInk\Adorners\CustomAdorner.cs" />
-    <Compile Include="CustomInk\Adorners\CustomPath.cs" />
     <Compile Include="CustomInk\Adorners\DottedPathAdorner.cs" />
     <Compile Include="CustomInk\Adorners\LinkRotateAdorner.cs" />
     <Compile Include="CustomInk\Adorners\SelectionMultipleAdorner.cs" />
@@ -275,8 +275,23 @@
     <Compile Include="Vues\DrawingHistoryView.xaml.cs">
       <DependentUpon>DrawingHistoryView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\HistoryPreviewPopup.xaml.cs">
+      <DependentUpon>HistoryPreviewPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Popups\HistoryPopup.xaml.cs">
       <DependentUpon>HistoryPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\MessagePopupCreateUser.xaml.cs">
+      <DependentUpon>MessagePopupCreateUser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\MessagePopupCreateRoom.xaml.cs">
+      <DependentUpon>MessagePopupCreateRoom.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\MessagePopupLogin.xaml.cs">
+      <DependentUpon>MessagePopupLogin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\MessagePopup.xaml.cs">
+      <DependentUpon>MessagePopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\TutorialView.xaml.cs">
       <DependentUpon>TutorialView.xaml</DependentUpon>
@@ -399,9 +414,29 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vues\Popups\HistoryPreviewPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vues\Popups\HistoryPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopupCreateUser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopupCreateRoom.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopupLogin.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vues\TutorialView.xaml">
       <Generator>MSBuild:Compile</Generator>
