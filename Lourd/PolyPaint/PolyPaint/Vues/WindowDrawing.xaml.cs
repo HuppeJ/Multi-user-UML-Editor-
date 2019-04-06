@@ -463,5 +463,18 @@ namespace PolyPaint.Vues
         {
             DrawingService.GoToGallery();
         }
+
+        private void ViewHistoryPopup(object sender, RoutedEventArgs e)
+        {
+            popUpHistoryVue.Initialize();
+            popUpHistory.IsOpen = true;
+            IsEnabled = false;
+        }
+
+        internal void ClosePopup()
+        {
+            popUpHistory.IsOpen = false;
+            IsEnabled = true;
+        }
     }
 }

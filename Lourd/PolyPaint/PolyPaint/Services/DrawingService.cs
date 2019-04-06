@@ -34,6 +34,8 @@ namespace PolyPaint.Services
         public static event Action ReintializeCanvas;
         public static event Action GoToTutorial;
 
+        public static event Action<History> UpdateHistory;
+
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         public static string canvasName;
         public static Templates.Canvas currentCanvas;
@@ -330,6 +332,14 @@ namespace PolyPaint.Services
                 localSelectedStrokes = new List<string>();
                 remoteSelectedStrokes = new List<string>();
                 Application.Current.Dispatcher.Invoke(new Action(() => { RemoteReset(); }), DispatcherPriority.Render);
+            });
+
+            socket.On("getCanvasLogHistoryResponse", (data) =>
+            {
+                HistoryData[] historyData = serializer.Deserialize<HistoryData[]>((string)data);
+                History history = new History(historyData);
+
+                Application.Current.Dispatcher.Invoke(new Action(() => { UpdateHistory(history); }), DispatcherPriority.Render);
             });
 
             RefreshCanvases();
@@ -761,6 +771,12 @@ namespace PolyPaint.Services
         internal static void GoToGallery()
         {
             BackToGallery?.Invoke();
+        }
+
+        internal static void GetHistoryLog(object o)
+        {
+            EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
+            socket.Emit("getCanvasLogHistory", serializer.Serialize(editGalleryData));
         }
     }
 }
