@@ -192,6 +192,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Convertisseurs\ConvertisseurDate.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
     <Compile Include="Convertisseurs\StringToByteArrayConverter.cs" />
     <Compile Include="Convertisseurs\MultiValueEqualityConverter.cs" />

@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:Converters="clr-namespace:PolyPaint.Convertisseurs"
              mc:Ignorable="d"
              Padding="0,0,0,0" Margin="0,0,0,0" Background="Transparent"
              >
@@ -18,19 +17,22 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Converters:ConvertisseurDate x:Key="ConvertisseurDate"/>
 
             <DataTemplate x:Key="historyLogDataTemplate">
-                <!--Name-->
-                <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left"
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="{Binding timestamp, Mode=OneWay, Converter={StaticResource ConvertisseurDate}}"></TextBlock>
+                    <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left"
                     Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                     SnapsToDevicePixels="True">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0} {1}">
-                            <Binding Path="username" />
-                            <Binding Path="message" />
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} {1}">
+                                <Binding Path="username" />
+                                <Binding Path="message" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </StackPanel>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
