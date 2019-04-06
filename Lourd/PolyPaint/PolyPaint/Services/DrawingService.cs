@@ -342,6 +342,11 @@ namespace PolyPaint.Services
                 Application.Current.Dispatcher.Invoke(new Action(() => { UpdateHistory(history); }), DispatcherPriority.Render);
             });
 
+            socket.On("disconnect", (data) =>
+            {
+                BackToGallery?.Invoke();
+            });
+
             RefreshCanvases();
         }
 
@@ -403,8 +408,8 @@ namespace PolyPaint.Services
 
         public static void LeaveCanvas()
         {
-            //EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
-            //socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
+            EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
+            socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
             RefreshCanvases();
         }
 

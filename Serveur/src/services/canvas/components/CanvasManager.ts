@@ -317,7 +317,7 @@ export default class CanvasManager {
             return null;
         }
 
-        return canvasRoom.getSelectedFormsSERI(data);
+        return canvasRoom.getSelectedFormsSERI();
     }
 
     public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string, data: IEditGalleryData): string {
@@ -326,7 +326,7 @@ export default class CanvasManager {
             return null;
         }
 
-        return canvasRoom.getSelectedLinksSERI(data);
+        return canvasRoom.getSelectedLinksSERI();
     }
 
     public getCanvasSERI(canvasRoomId: string): string {
