@@ -21,8 +21,8 @@ namespace PolyPaint.Services
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
-        public static event Action<StrokeCollection> UpdateSelection;
-        public static event Action<StrokeCollection> UpdateDeselection;
+        public static event Action UpdateSelection;
+        public static event Action UpdateDeselection;
 
         public static event Action<PublicCanvases> UpdatePublicCanvases;
         public static event Action<PrivateCanvases> UpdatePrivateCanvases;
@@ -189,7 +189,7 @@ namespace PolyPaint.Services
                         strokes.Add(linkStroke);
                         if (!remoteSelectedStrokes.Contains(linkStroke.guid.ToString()))
                             remoteSelectedStrokes.Add(linkStroke.guid.ToString());
-                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(strokes); }), DispatcherPriority.Render);
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(); }), DispatcherPriority.Render);
                     }
                 }
             });
@@ -206,7 +206,7 @@ namespace PolyPaint.Services
                         strokes.Add(linkStroke);
                         if (remoteSelectedStrokes.Contains(linkStroke.guid.ToString()))
                             remoteSelectedStrokes.Remove(linkStroke.guid.ToString());
-                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(strokes); }), DispatcherPriority.Render);
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(); }), DispatcherPriority.Render);
                     }
                 }
             });
@@ -266,7 +266,7 @@ namespace PolyPaint.Services
                         strokes.Add(stroke);
                         if(!remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                             remoteSelectedStrokes.Add(stroke.guid.ToString());
-                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(strokes); }), DispatcherPriority.Render);
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateSelection(); }), DispatcherPriority.Render);
                     }
                 }
             });
@@ -283,12 +283,37 @@ namespace PolyPaint.Services
                         strokes.Add(stroke);
                         if(remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                             remoteSelectedStrokes.Remove(stroke.guid.ToString());
-                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(strokes); }), DispatcherPriority.Render);
+                        Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(); }), DispatcherPriority.Render);
                     }
                 }
             });
             #endregion
 
+            socket.On("selectedForms", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                foreach (string id in response.selectedForms)
+                {
+                    if(!remoteSelectedStrokes.Contains(id))
+                    {
+                        remoteSelectedStrokes.Add(id);
+                    }
+                }
+                Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(); }), DispatcherPriority.Render);
+            });
+
+            socket.On("selectedLinks", (data) =>
+            {
+                dynamic response = JObject.Parse((string)data);
+                foreach (string id in response.selectedLinks)
+                {
+                    if (!remoteSelectedStrokes.Contains(id))
+                    {
+                        remoteSelectedStrokes.Add(id);
+                    }
+                }
+                Application.Current.Dispatcher.Invoke(new Action(() => { UpdateDeselection(); }), DispatcherPriority.Render);
+            });
 
             socket.On("canvasSaved", (data) =>
             {
@@ -347,6 +372,7 @@ namespace PolyPaint.Services
             localAddedStrokes = new List<string>();
             EditGalleryData editGallerysData = new EditGalleryData(username, canvasName, "");
             socket.Emit("getSelectedForms", serializer.Serialize(editGallerysData));
+            socket.Emit("getSelectedLinks", serializer.Serialize(editGallerysData));
             foreach (Link link in canvas.links)
             {
                 LinkStroke linkStroke = LinkStrokeFromLink(link);
@@ -461,7 +487,8 @@ namespace PolyPaint.Services
         {
             foreach (CustomStroke stroke in strokes)
             {
-                localSelectedStrokes.Add(stroke.guid.ToString());
+                if(!localSelectedStrokes.Contains(stroke.guid.ToString()))
+                    localSelectedStrokes.Add(stroke.guid.ToString());
             }
             EmitIfStrokes("selectForms", createUpdateFormsData(strokes));
             EmitIfStrokes("selectLinks", createUpdateLinksData(strokes));
