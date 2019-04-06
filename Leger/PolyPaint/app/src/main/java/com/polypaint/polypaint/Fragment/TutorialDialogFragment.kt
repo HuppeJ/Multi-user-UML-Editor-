@@ -10,8 +10,11 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.polypaint.polypaint.Application.PolyPaint
+import com.polypaint.polypaint.Holder.UserHolder
 import androidx.fragment.app.FragmentActivity
 import com.polypaint.polypaint.R
+import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.Tutorial.Section
 import com.polypaint.polypaint.Tutorial.Section1
 import kotlinx.android.synthetic.main.dialog_tutorial.*
@@ -19,6 +22,8 @@ import kotlinx.android.synthetic.main.dialog_tutorial.view.*
 import kotlinx.android.synthetic.main.tutorial_default.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+import android.util.Log
+import androidx.fragment.app.FragmentManager
 import kotlin.collections.HashMap
 
 class TutorialDialogFragment: DialogFragment() {
@@ -82,7 +87,19 @@ class TutorialDialogFragment: DialogFragment() {
         super.onDestroy()
     }
     private fun closeModal(){
+        val app = activity!!.application as PolyPaint
+        val socket = app.socket
+        socket?.emit(SocketConstants.USER_HAS_DONE_TUTORIAL, UserHolder.getInstance().username)
+    }
 
+    fun showModal(manager: FragmentManager, tag: String) {
+        try {
+            val ft = manager.beginTransaction()
+            ft.add(this, tag)
+            ft.commitAllowingStateLoss()
+        } catch (e: IllegalStateException) {
+            Log.d("ABSDIALOGFRAG", "Exception", e)
+        }
     }
     private fun mapSectionAndViews(it : FragmentActivity){
         val tutorialText = resources.getStringArray(R.array.tutorial_all_text).toList()

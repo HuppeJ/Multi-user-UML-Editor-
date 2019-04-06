@@ -51,7 +51,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         imgBackground = imgFront
         imgBackgroundBack = imgBack
         when(this.shapeType){
-            ShapeTypes.DEFAULT->{ }
+//            ShapeTypes.DEFAULT->{ }
 
             ShapeTypes.ARTIFACT -> {
                 imgFront.setBackgroundResource(R.drawable.ic_artefact)
@@ -104,7 +104,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
         when(borderType){
             0->{
                 when(this.shapeType){
-                    ShapeTypes.DEFAULT->{ }
+//                    ShapeTypes.DEFAULT->{ }
 
                     ShapeTypes.ARTIFACT -> {
                         imgBackground!!.setBackgroundResource(R.drawable.ic_artefact)
@@ -121,7 +121,7 @@ class ImageElementView(context: Context, shapeType: ShapeTypes): BasicElementVie
             }
             1->{
                 when(this.shapeType){
-                    ShapeTypes.DEFAULT->{ }
+//                    ShapeTypes.DEFAULT->{ }
 
                     ShapeTypes.ARTIFACT -> {
                         imgBackground!!.setBackgroundResource(R.drawable.ic_artefact_dashed)

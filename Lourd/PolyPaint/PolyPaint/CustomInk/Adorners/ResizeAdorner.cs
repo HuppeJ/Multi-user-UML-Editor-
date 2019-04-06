@@ -11,10 +11,11 @@ using System.Windows.Ink;
 using PolyPaint.Services;
 using PolyPaint.Vues;
 using PolyPaint.Templates;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
-    class ResizeAdorner : Adorner
+    class ResizeAdorner : CustomAdorner
     {
         List<Thumb> anchors;
         List<StrokeResizePointThumb> cheatAnchors;
@@ -50,6 +51,12 @@ namespace PolyPaint.CustomInk
         public ResizeAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            if(customStroke is LinkStroke)
+            {
+                WIDTH_LEGER = 1;
+            }
+            adornedStroke = customStroke;
+
             visualChildren = new VisualCollection(this);
 
             if (customStroke is ShapeStroke)
@@ -97,7 +104,12 @@ namespace PolyPaint.CustomInk
             moveThumb.DragCompleted += new DragCompletedEventHandler(Move_DragCompleted);
             moveThumb.DragStarted += new DragStartedEventHandler(All_DragStarted);
             moveThumb.PreviewMouseUp += new MouseButtonEventHandler(LeftMouseUp);
-            moveThumb.RenderTransform = new RotateTransform(rotation.Angle, moveThumb.Width / 2, moveThumb.Height / 2); ;
+            TransformGroup transform = new TransformGroup();
+            transform.Children.Add(new RotateTransform(rotation.Angle, moveThumb.Width / 2, moveThumb.Height / 2));
+            transform.Children.Add(new TranslateTransform(-canvas.ActualWidth / 2 + strokeBounds.Width / 2 + strokeBounds.X,
+                -canvas.ActualHeight / 2 + strokeBounds.Height / 2 + strokeBounds.Y));
+            moveThumb.RenderTransform = transform;
+            
 
             visualChildren.Add(moveThumb);
 
@@ -629,7 +641,7 @@ namespace PolyPaint.CustomInk
                                   strokeBounds.Y - MARGIN,
                                   strokeBounds.Width + MARGIN * 2,
                                   strokeBounds.Height + MARGIN * 2);
-            moveThumb.Arrange(handleRect);
+            moveThumb.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
 
             return finalSize;
         }
@@ -932,7 +944,5 @@ namespace PolyPaint.CustomInk
         {
             return visualChildren[index];
         }
-
-
     }
 }

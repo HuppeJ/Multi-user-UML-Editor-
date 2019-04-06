@@ -8,10 +8,11 @@ using System.Windows.Controls.Primitives;
 using System;
 using System.Windows.Shapes;
 using PolyPaint.Templates;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
-    class LinkAnchorPointAdorner : Adorner
+    class LinkAnchorPointAdorner : CustomAdorner
     {
         List<Thumb> anchors;
         VisualCollection visualChildren;
@@ -34,6 +35,8 @@ namespace PolyPaint.CustomInk
         public LinkAnchorPointAdorner(UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            adornedStroke = linkStroke;
+
             visualChildren = new VisualCollection(this);
 
             linkPreview = new Path();
@@ -54,7 +57,7 @@ namespace PolyPaint.CustomInk
             {
                 anchors.Add(new Thumb());
             }
-
+            int index = 0;
             foreach (Thumb anchor in anchors)
             {
                 anchor.Cursor = Cursors.ScrollAll;
@@ -66,7 +69,10 @@ namespace PolyPaint.CustomInk
                 anchor.DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);
                 anchor.DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);
 
+                SetAnchorRenderTransfrom(index, linkStroke.path[index].x, linkStroke.path[index].y);
+
                 visualChildren.Add(anchor);
+                index++;
             }
         }
 
@@ -100,8 +106,18 @@ namespace PolyPaint.CustomInk
             // Draws the thumb and the rectangle around the strokes.
             if (anchorNumber < anchors.Count)
             {
-                anchors[anchorNumber].Arrange(handleRect);
+                anchors[anchorNumber].Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
             }
+        }
+
+        private void SetAnchorRenderTransfrom(int anchorNumber, double xOffset, double yOffset)
+        {
+
+            TransformGroup transform = new TransformGroup();
+            transform.Children.Add(new RotateTransform(linkStroke.rotation, anchors[anchorNumber].Width / 2, anchors[anchorNumber].Height / 2));
+            transform.Children.Add(new TranslateTransform(-canvas.ActualWidth / 2 + xOffset,
+               -canvas.ActualHeight / 2 + yOffset));
+            anchors[anchorNumber].RenderTransform = transform;
         }
 
         void dragHandle_DragStarted(object sender, DragStartedEventArgs e)
@@ -142,6 +158,12 @@ namespace PolyPaint.CustomInk
             {
                 linkPreviewGeom.StartPoint = pos;
                 linkPreviewGeom.EndPoint = linkStroke.path[1].ToPoint();
+            }
+
+            if(linkStroke.path.Count > 2)
+            {
+                linkPreview.Stroke = Brushes.Transparent;
+                linkPreview.StrokeThickness = 0;
             }
 
             linkPreview.Data = linkPreviewGeom;

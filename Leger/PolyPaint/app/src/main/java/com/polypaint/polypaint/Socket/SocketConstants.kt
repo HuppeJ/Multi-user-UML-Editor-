@@ -120,6 +120,12 @@ class SocketConstants{
         const val MESSAGE_SENT: String = "messageSent"
 
 
+        // Tutorial
+        const val HAS_USER_DONE_TUTORIAL: String = "hasUserDoneTutorial"
+        const val HAS_USER_DONE_TUTORIAL_RESPONSE: String = "hasUserDoneTutorialResponse"
+        const val USER_HAS_DONE_TUTORIAL: String = "userHasDoneTutorial"
+
+
         const val JOIN_CANVAS_TEST: String = "joinCanvasTest"
         const val JOIN_CANVAS_TEST_RESPONSE: String = "joinCanvasTestResponse"
         const val CANVAS_UPDATE_TEST: String = "canvasUpdateTest"
