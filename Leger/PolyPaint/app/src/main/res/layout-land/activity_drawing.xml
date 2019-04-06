@@ -37,7 +37,7 @@
 
             <Button
                     android:id="@+id/clear_canvas_button"
-                    android:background="@drawable/ic_clear_canvas"
+                    android:background="@drawable/ic_replay"
                     android:clickable="true"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -49,7 +49,7 @@
             <ToggleButton
                     android:id="@+id/selection_button"
                     android:textSize="14dp"
-                    android:background="@drawable/ic_lasso"
+                    android:background="@drawable/lasso_selector"
                     android:clickable="true"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -58,7 +58,10 @@
                     app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp" app:layout_constraintHorizontal_bias="0.416"
-                    app:layout_constraintStart_toEndOf="@+id/clear_canvas_button"/>
+                    app:layout_constraintStart_toEndOf="@+id/clear_canvas_button"
+                    android:textOn=""
+                    android:textOff=""
+                    android:text=""/>
 
             <Button
                     android:id="@+id/duplicate_button"
@@ -255,17 +258,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/comment_button" android:layout_marginTop="16dp"
                     app:layout_constraintHorizontal_bias="0.411"
                     app:layout_constraintStart_toEndOf="@+id/phase_button"/>
-
-            <Button
-                    android:text="SAVE"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/save_button"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
-                    app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

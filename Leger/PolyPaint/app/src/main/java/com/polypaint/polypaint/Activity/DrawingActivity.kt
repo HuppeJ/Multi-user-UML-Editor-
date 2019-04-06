@@ -205,10 +205,6 @@ class DrawingActivity : AppCompatActivity(){
             saveCanevas()
         }
 
-        save_button.setOnClickListener{
-            saveCanevas()
-        }
-
 //        selection_button.setOnClickListener {
 //            parent_relative_layout?.addView(LassoView(this))
 //        }
@@ -1342,7 +1338,7 @@ class DrawingActivity : AppCompatActivity(){
                     val gson = Gson()
                     val sendObj = gson.toJson(canvasEvent)
                     Log.d("createObj", sendObj)
-                    // socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+                    socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
                 }catch (e: Exception){
                     Log.d("Exception", "Trying to save thumbnail")
                 }
@@ -1473,11 +1469,11 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     open protected var onSelectLasso = CompoundButton.OnCheckedChangeListener { _, isChecked ->
-
         if(isChecked) {
             lassoView = LassoView(this)
             parent_relative_layout?.addView(lassoView)
             parent_relative_layout?.dispatchSetSelected(false)
+
         } else {
             parent_relative_layout?.removeView(lassoView)
         }

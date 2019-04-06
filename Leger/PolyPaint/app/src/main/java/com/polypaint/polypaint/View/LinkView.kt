@@ -215,7 +215,7 @@ class LinkView: View{
         if(localBoundingBox != null) {
             parentView.removeView(deleteButton)
             deleteButton = ImageButton(context)
-            deleteButton?.setImageResource(R.drawable.ic_delete)
+            deleteButton?.setImageResource(R.drawable.ic_rubbish_bin)
             deleteButton?.layoutParams = layoutParams
             deleteButton?.x = localBoundingBox.rect.right
             deleteButton?.y = localBoundingBox.rect.top - deleteButton?.layoutParams?.height!!

@@ -76,12 +76,6 @@ class LoginActivity:Activity(){
             createUser()
         }
 
-        // TODO remove, it's temporary for testing
-        var resetServerButton: Button = findViewById(R.id.reset_server_state)
-        resetServerButton.setOnClickListener {
-            resetServer()
-        }
-
         socket?.on(SocketConstants.LOGIN_USER_RESPONSE, onLogin)
 
     }

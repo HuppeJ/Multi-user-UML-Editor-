@@ -23,11 +23,12 @@
             android:layout_height="24dp"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="8dp" android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp" android:layout_marginRight="8dp"/>
+            android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+            android:tint="@color/colorPrimaryLight"/>
 
     <ImageButton
             android:id="@+id/deleteButton"
-            android:src="@drawable/ic_delete"
+            android:src="@drawable/ic_rubbish_bin"
             android:layout_width="24dp"
             android:layout_height="24dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +45,8 @@
             android:layout_marginRight="8dp"
             app:layout_constraintHorizontal_bias="0.0"
             android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:tint="@color/colorPrimaryLight"/>
 
     <RelativeLayout
             android:id="@+id/borderResizableLayout"
@@ -80,7 +82,8 @@
             android:layout_height="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/resizeButton"/>
+            app:layout_constraintBottom_toBottomOf="@+id/resizeButton"
+            android:tint="@color/colorPrimaryLight"/>
 
 
     <ImageButton
@@ -96,7 +99,8 @@
             app:layout_constraintVertical_bias="1.0" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp"
+            android:tint="@color/colorPrimaryLight"/>
 
     <ImageButton
             android:id="@+id/resizeButton"
@@ -104,7 +108,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+    />
 
 
     <TextView
