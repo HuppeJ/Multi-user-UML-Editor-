@@ -4,6 +4,7 @@ import CanvasManager from "./components/CanvasManager";
 import { IEditCanevasData, IUpdateFormsData, IUpdateLinksData, IEditGalleryData, IResizeCanevasData } from "./interfaces/interfaces";
 
 export default class CanvasEditionSocketEvents {
+
     constructor(io: any, canvasManager: CanvasManager) {
         io.on('connection', function (socket: any) {
 
@@ -22,7 +23,26 @@ export default class CanvasEditionSocketEvents {
                     if (response.isFormCreated) {
                         console.log(socket.id + " created form " + data.forms[0]);
                         io.to(canvasRoomId).emit("formCreated", JSON.stringify(data));
-                        canvasManager.logHistory(canvasRoomId, data.username, `created a form`);
+                        let message: string = "added ";
+                        switch (data.forms[0].type) {
+                            case 0: message += "a class";
+                            break;
+                            case 1: message += "an artifact";
+                            break;
+                            case 2: message += "an activity";
+                            break;
+                            case 3: message += "a role";
+                            break;
+                            case 4: message += "a comment";
+                            break;
+                            case 5: message += "a phase";
+                            break;
+                            case 6: message += "a link";
+                            break;
+                            case 7: message += "a freetext";
+                            break;
+                        }
+                        canvasManager.logHistory(canvasRoomId, data.username, message );
                     } else {
                         console.log(socket.id + " failed to create form " + data.forms[0]);
                     }
@@ -50,7 +70,29 @@ export default class CanvasEditionSocketEvents {
                         console.log(socket.id + " linksTo " + data.forms[0].linksTo);
                         
                         io.to(canvasRoomId).emit("formsUpdated", dataStr);
-                        canvasManager.logHistory(canvasRoomId, data.username, `updated forms`);
+                        let message: string = "moved multiple forms";
+                        if(data.forms.length == 1) {
+                            message = "updated ";
+                            switch (data.forms[0].type) {
+                                case 0: message += "a class";
+                                break;
+                                case 1: message += "an artifact";
+                                break;
+                                case 2: message += "an activity";
+                                break;
+                                case 3: message += "a role";
+                                break;
+                                case 4: message += "a comment";
+                                break;
+                                case 5: message += "a phase";
+                                break;
+                                case 6: message += "a link";
+                                break;
+                                case 7: message += "a freetext";
+                                break;
+                            }
+                        }
+                        canvasManager.logHistory(canvasRoomId, data.username, message);
                     } else {
                         console.log(socket.id + " failed to update forms " + data.forms);
                     }
@@ -77,7 +119,29 @@ export default class CanvasEditionSocketEvents {
                     if (response.areFormsDeleted) {
                         console.log(socket.id + " deleted forms " + data.forms);
                         io.to(canvasRoomId).emit("formsDeleted", dataStr);
-                        canvasManager.logHistory(canvasRoomId, data.username, `deleted forms`);
+                        let message: string = "deleted multiple forms";
+                        if(data.forms.length == 1) {
+                            message = "deleted ";
+                            switch (data.forms[0].type) {
+                                case 0: message += "a class";
+                                break;
+                                case 1: message += "an artifact";
+                                break;
+                                case 2: message += "an activity";
+                                break;
+                                case 3: message += "a role";
+                                break;
+                                case 4: message += "a comment";
+                                break;
+                                case 5: message += "a phase";
+                                break;
+                                case 6: message += "a link";
+                                break;
+                                case 7: message += "a freetext";
+                                break;
+                            }
+                        }
+                        canvasManager.logHistory(canvasRoomId, data.username, message);
                     } else {
                         console.log(socket.id + " failed to delete forms " + data.forms);
                     }
@@ -206,7 +270,11 @@ export default class CanvasEditionSocketEvents {
                     if (response.areLinksUpdated) {
                         console.log(socket.id + " updated links " + data.links);
                         io.to(canvasRoomId).emit("linksUpdated", dataStr);
-                        canvasManager.logHistory(canvasRoomId, data.username, `updated links`);
+                        let message: string = "moved multiple links";
+                        if(data.links.length == 1) {
+                            message = "updated a link";
+                        }
+                        canvasManager.logHistory(canvasRoomId, data.username, message);
                     } else {
                         console.log(socket.id + " failed to update links " + data.links);
                     }
@@ -232,7 +300,11 @@ export default class CanvasEditionSocketEvents {
                     if (response.areLinksDeleted) {
                         console.log(socket.id + " deleted links " + data.links);
                         io.to(canvasRoomId).emit("linksDeleted", dataStr);
-                        canvasManager.logHistory(canvasRoomId, data.username, `deleted links`);
+                        let message: string = "deleted links";
+                        if(data.links.length == 1) {
+                            message = "deleted a link ";
+                        }
+                        canvasManager.logHistory(canvasRoomId, data.username, message);
                     } else {
                         console.log(socket.id + " failed to delete links " + data.links);
                     }
