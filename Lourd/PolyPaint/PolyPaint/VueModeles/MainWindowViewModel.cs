@@ -399,13 +399,18 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _createUserViewCommand ?? (_createUserViewCommand = new RelayCommand<Object>(GoToCreateUserView));
+                return _createUserViewCommand ?? (_createUserViewCommand = new RelayCommand<Object>(GoToCreateUserView, CanGoCreateUser));
             }
         }
 
         private void GoToCreateUserView(object o)
         {
             UserMode = UserModes.CreateUser;
+        }
+
+        private bool CanGoCreateUser(object o)
+        {
+            return IsConnected;
         }
         #endregion
 
