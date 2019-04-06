@@ -11,6 +11,9 @@ namespace PolyPaint.Convertisseurs
             string timeString = value as string;
             long time = long.Parse(timeString);
 
+            // Removing 4 hours
+            time -= 14400000;
+
             return value = DateTimeOffset.FromUnixTimeMilliseconds(time).DateTime;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
