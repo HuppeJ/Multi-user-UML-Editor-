@@ -362,7 +362,12 @@ open class BasicElementView: ConstraintLayout {
                             R.id.anchorPoint3 -> anchorPointStart =
                                 AnchorPoint(thisBasicViewId, AnchorPoints.LEFT.ordinal)
                         }
-                        if (anchorPointStart.formId != "") {
+                        Log.d("anchorPointStart", anchorPointStart.formId)
+                        Log.d("anchorPointEnd", anchorPointEnd.formId)
+                        Log.d("anchorPointStart", anchorPointStart.anchor.toString())
+                        Log.d("anchorPointEnd", anchorPointEnd.anchor.toString())
+                        if (anchorPointStart.formId != "" && (anchorPointEnd.formId !=  anchorPointStart.formId || anchorPointEnd.anchor !=  anchorPointStart.anchor)) {
+                            Log.d("Passed if ", "allo")
                             val path: ArrayList<Coordinates> = ArrayList()
                             path.add(start)
                             path.add(link.end)

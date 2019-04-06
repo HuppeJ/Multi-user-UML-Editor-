@@ -91,8 +91,8 @@ class LinkView: View{
         paint.color = Color.BLACK
         paint.strokeWidth = 5f
         paint.style = Paint.Style.FILL_AND_STROKE
-        paint.strokeJoin = Paint.Join.ROUND
-        paint.strokeCap = Paint.Cap.ROUND
+        //paint.strokeJoin = Paint.Join.ROUND
+        //paint.strokeCap = Paint.Cap.ROUND
 
     }
 
@@ -299,10 +299,17 @@ class LinkView: View{
                 previousPoint.x.toFloat(),
                 previousPoint.y.toFloat()
             )
-            if(point == end && link?.type != LinkTypes.ONE_WAY_ASSOCIATION.ordinal &&
-                link?.type != LinkTypes.TWO_WAY_ASSOCIATION.ordinal && link?.type != LinkTypes.LINE.ordinal) {
+            if(point == end  && link != null && link?.type != LinkTypes.ONE_WAY_ASSOCIATION.ordinal &&
+                link?.type != LinkTypes.TWO_WAY_ASSOCIATION.ordinal && link?.type != LinkTypes.LINE.ordinal && link?.type != LinkTypes.HERITAGE.ordinal) {
                 pointToStartArrow.x = point.x - 40 * Math.cos(angle)
                 pointToStartArrow.y = point.y - 40 * Math.sin(angle)
+                linePath.lineTo(
+                    pointToStartArrow.x.toFloat(),
+                    pointToStartArrow.y.toFloat()
+                )
+            }else if(point == end && link?.type == LinkTypes.HERITAGE.ordinal) {
+                pointToStartArrow.x = point.x - 20 * Math.cos(angle)
+                pointToStartArrow.y = point.y - 20 * Math.sin(angle)
                 linePath.lineTo(
                     pointToStartArrow.x.toFloat(),
                     pointToStartArrow.y.toFloat()
@@ -318,8 +325,8 @@ class LinkView: View{
 
         if(link?.style?.type == BorderTypes.DOTTED.ordinal){
             val array: FloatArray = FloatArray(2)
-            array[0] = 5f
-            array[1] = 20f
+            array[0] = 10f
+            array[1] = 5f
             paint.pathEffect = DashPathEffect(array, 1f)
         } else {
             paint.pathEffect = null
