@@ -30,6 +30,7 @@ export default class CanvasRoom {
     }
 
     public logHistory(username: string, message: string) {
+        this.date = new Date();
         const newLog: IHistoryData = {
             username: username,
             message: message,  
