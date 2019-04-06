@@ -27,6 +27,8 @@ namespace PolyPaint.VueModeles
         private IDialogService dialogService;
         private TaskFactory ctxTaskFactory;
         public event Action CloseChatWindow;
+        public bool IsChatWindowOpened = false;
+        public bool IsChatWindowClosing = false;
 
         public event Action LoginFailed;
         public event Action CreateUserFailed;
@@ -402,13 +404,18 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _createUserViewCommand ?? (_createUserViewCommand = new RelayCommand<Object>(GoToCreateUserView));
+                return _createUserViewCommand ?? (_createUserViewCommand = new RelayCommand<Object>(GoToCreateUserView, CanGoCreateUser));
             }
         }
 
         private void GoToCreateUserView(object o)
         {
             UserMode = UserModes.CreateUser;
+        }
+
+        private bool CanGoCreateUser(object o)
+        {
+            return IsConnected;
         }
         #endregion
 
@@ -488,6 +495,7 @@ namespace PolyPaint.VueModeles
 
         private void BackToGallery(object o)
         {
+            IsChatWindowClosing = true;
             CloseChatWindow?.Invoke();
             DrawingService.LeaveCanvas();
             UserMode = UserModes.Gallery;
@@ -590,6 +598,22 @@ namespace PolyPaint.VueModeles
         private bool CanPreviousTutorialPage(object o)
         {
             return TutorialPage > 1;
+        }
+        #endregion
+
+        #region ChatWindowOpenedCommand
+        private ICommand _chatWindowOpenedCommand;
+        public ICommand ChatWindowOpenedCommand
+        {
+            get
+            {
+                return _chatWindowOpenedCommand ?? (_chatWindowOpenedCommand = new RelayCommand<Object>(ChatWindowOpened));
+            }
+        }
+
+        private void ChatWindowOpened(object o)
+        {
+            IsChatWindowOpened = true;
         }
         #endregion
 
@@ -975,6 +999,12 @@ namespace PolyPaint.VueModeles
         {
             if (response.isCanvasRoomJoined)
             {
+                if(UserMode == UserModes.Gallery)
+                {
+                    IsChatWindowClosing = true;
+                    CloseChatWindow?.Invoke();
+                }
+                
                 if (!ConnectionService.hasUserDoneTutorial)
                 {
                     UserMode = UserModes.Tutorial;
@@ -996,6 +1026,8 @@ namespace PolyPaint.VueModeles
 
         private void BackToGallery()
         {
+            IsChatWindowClosing = true;
+            CloseChatWindow?.Invoke();
             UserMode = UserModes.Gallery;
         }
 
@@ -1031,6 +1063,7 @@ namespace PolyPaint.VueModeles
 
         private void GoToTutorial()
         {
+            IsChatWindowClosing = true;
             CloseChatWindow?.Invoke();
             UserMode = UserModes.Tutorial;
         }

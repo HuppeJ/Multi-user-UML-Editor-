@@ -192,6 +192,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Convertisseurs\ConvertisseurDate.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
     <Compile Include="Convertisseurs\StringToByteArrayConverter.cs" />
     <Compile Include="Convertisseurs\MultiValueEqualityConverter.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Services\IDialogService.cs" />
     <Compile Include="Templates\AnchorPoint.cs" />
     <Compile Include="Templates\BasicShape.cs" />
+    <Compile Include="Templates\HistoryData.cs" />
     <Compile Include="Templates\Canvas.cs" />
     <Compile Include="Templates\CanvasSocketCommunication.cs" />
     <Compile Include="Templates\ChatroomJoin.cs" />
@@ -248,6 +250,7 @@
     <Compile Include="Templates\LinkStyle.cs" />
     <Compile Include="Templates\Chatroom.cs" />
     <Compile Include="Templates\PrivateCanvases.cs" />
+    <Compile Include="Templates\History.cs" />
     <Compile Include="Templates\PublicCanvases.cs" />
     <Compile Include="Templates\RoomList.cs" />
     <Compile Include="Templates\ShapeStyle.cs" />
@@ -266,8 +269,14 @@
     <Compile Include="Vues\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\GalleryChatView.xaml.cs">
+      <DependentUpon>GalleryChatView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\DrawingHistoryView.xaml.cs">
       <DependentUpon>DrawingHistoryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\HistoryPopup.xaml.cs">
+      <DependentUpon>HistoryPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\Popups\MessagePopupCreateUser.xaml.cs">
       <DependentUpon>MessagePopupCreateUser.xaml</DependentUpon>
@@ -394,7 +403,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vues\GalleryChatView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vues\DrawingHistoryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\HistoryPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -32,7 +32,7 @@
                 <views:CreateUserView/>
             </DataTemplate>
             <DataTemplate x:Key="GalleryTemplate">
-                <views:GalleryView/>
+                <views:GalleryChatView/>
             </DataTemplate>
             <DataTemplate x:Key="DrawingTemplate">
                 <views:WindowDrawing/>

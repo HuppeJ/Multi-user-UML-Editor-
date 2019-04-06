@@ -18,7 +18,6 @@ namespace PolyPaint.CustomInk
     class ResizeAdorner : CustomAdorner
     {
         List<Thumb> anchors;
-        List<StrokeResizePointThumb> cheatAnchors;
         Thumb moveThumb;
 
         VisualCollection visualChildren;
@@ -65,8 +64,7 @@ namespace PolyPaint.CustomInk
                 strokeBounds = (customStroke as LinkStroke).GetStraightBounds();
 
             resizePreview = new Path();
-            resizePreview.Stroke = Brushes.Black;
-            resizePreview.StrokeDashArray = new DoubleCollection { 5, 2 };
+            resizePreview.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBBBBBB"));
             resizePreview.StrokeThickness = 1;
             visualChildren.Add(resizePreview);
 
@@ -132,8 +130,8 @@ namespace PolyPaint.CustomInk
             {
                 anchor.Width = 8;
                 anchor.Height = 8;
-                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFBBBBBB"), 
-                    (Color)ColorConverter.ConvertFromString("#FF646464"), 45);
+                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFc8d4ea"),
+                (Color)ColorConverter.ConvertFromString("#FF809dce"), 45);
                 anchor.BorderBrush = Brushes.Black;
                 if (rotation.Angle % 360 >= 360 - 45 / 2 || rotation.Angle % 360 <= 45 / 2)
                 {
@@ -457,154 +455,46 @@ namespace PolyPaint.CustomInk
                 anchor.DragCompleted += new DragCompletedEventHandler(All_DragCompleted);
                 if(!(customStroke is LinkStroke) || !(customStroke as LinkStroke).isAttached())
                     visualChildren.Add(anchor);
-                index++;
-            }
-
-            cheatAnchors = new List<StrokeResizePointThumb>();
-            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 0));
-            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 1));
-            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 2));
-            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 3));
-            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 4));
-            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 5));
-            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 6));
-            cheatAnchors.Add(new StrokeResizePointThumb(customStroke, canvas, 7));
-
-            index = 0;
-            foreach (Thumb cheatAnchor in cheatAnchors)
-            {
-                cheatAnchor.Width = 1;
-                cheatAnchor.Height = 1;
-                if (rotation.Angle % 360 >= 315 || rotation.Angle % 360 <= 45)
+                double xOffset = 0;
+                double yOffset = 0;
+                switch (index)
                 {
-                    switch (index)
-                    {
-                        case 0:
-                            cheatAnchor.Cursor = Cursors.SizeNS;
-                            break;
-                        case 1:
-                            cheatAnchor.Cursor = Cursors.SizeWE;
-                            break;
-                        case 2:
-                            cheatAnchor.Cursor = Cursors.SizeNS;
-                            break;
-                        case 3:
-                            cheatAnchor.Cursor = Cursors.SizeWE;
-                            break;
-                        case 4:
-                            cheatAnchor.Cursor = Cursors.SizeNWSE;
-                            break;
-                        case 5:
-                            cheatAnchor.Cursor = Cursors.SizeNESW;
-                            break;
-                        case 6:
-                            cheatAnchor.Cursor = Cursors.SizeNWSE;
-                            break;
-                        case 7:
-                            cheatAnchor.Cursor = Cursors.SizeNESW;
-                            break;
-                        default:
-                            break;
-                    }
+                    case 0: //Top
+                        xOffset = strokeBounds.Width / 2;
+                        yOffset = - MARGIN;
+                        break;
+                    case 1: //Right
+                        xOffset = strokeBounds.Width + MARGIN;
+                        yOffset = strokeBounds.Height / 2;
+                        break;
+                    case 2: //Bottom
+                        xOffset = strokeBounds.Width / 2;
+                        yOffset = strokeBounds.Height + MARGIN;
+                        break;
+                    case 3: //Left
+                        xOffset = -MARGIN;
+                        yOffset = strokeBounds.Height / 2;
+                        break;
+                    case 4: //TopLeft
+                        xOffset = -MARGIN;
+                        yOffset = -MARGIN;
+                        break;
+                    case 5: //TopRight
+                        xOffset = strokeBounds.Width + MARGIN;
+                        yOffset = - MARGIN;
+                        break;
+                    case 6: //BottomLeft
+                        xOffset = - MARGIN;
+                        yOffset = strokeBounds.Height + MARGIN;
+                        break;
+                    case 7: //BottomRight
+                        xOffset = strokeBounds.Width + MARGIN;
+                        yOffset = strokeBounds.Height + MARGIN;
+                        break;
+                    default:
+                        break;
                 }
-                else if (rotation.Angle % 360 > 45 && rotation.Angle % 360 <= 135)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            cheatAnchor.Cursor = Cursors.SizeNWSE;
-                            break;
-                        case 1:
-                            cheatAnchor.Cursor = Cursors.SizeNESW;
-                            break;
-                        case 2:
-                            cheatAnchor.Cursor = Cursors.SizeNWSE;
-                            break;
-                        case 3:
-                            cheatAnchor.Cursor = Cursors.SizeNESW;
-                            break;
-                        case 4:
-                            cheatAnchor.Cursor = Cursors.SizeWE;
-                            break;
-                        case 5:
-                            cheatAnchor.Cursor = Cursors.SizeNS;
-                            break;
-                        case 6:
-                            cheatAnchor.Cursor = Cursors.SizeWE;
-                            break;
-                        case 7:
-                            cheatAnchor.Cursor = Cursors.SizeNS;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                else if (rotation.Angle % 360 > 135 && rotation.Angle % 360 <= 225)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            cheatAnchor.Cursor = Cursors.SizeWE;
-                            break;
-                        case 1:
-                            cheatAnchor.Cursor = Cursors.SizeNS;
-                            break;
-                        case 2:
-                            cheatAnchor.Cursor = Cursors.SizeWE;
-                            break;
-                        case 3:
-                            cheatAnchor.Cursor = Cursors.SizeNS;
-                            break;
-                        case 4:
-                            cheatAnchor.Cursor = Cursors.SizeNESW;
-                            break;
-                        case 5:
-                            cheatAnchor.Cursor = Cursors.SizeNWSE;
-                            break;
-                        case 6:
-                            cheatAnchor.Cursor = Cursors.SizeNESW;
-                            break;
-                        case 7:
-                            cheatAnchor.Cursor = Cursors.SizeNWSE;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            cheatAnchor.Cursor = Cursors.SizeNWSE;
-                            break;
-                        case 1:
-                            cheatAnchor.Cursor = Cursors.SizeNESW;
-                            break;
-                        case 2:
-                            cheatAnchor.Cursor = Cursors.SizeNWSE;
-                            break;
-                        case 3:
-                            cheatAnchor.Cursor = Cursors.SizeNESW;
-                            break;
-                        case 4:
-                            cheatAnchor.Cursor = Cursors.SizeNS;
-                            break;
-                        case 5:
-                            cheatAnchor.Cursor = Cursors.SizeWE;
-                            break;
-                        case 6:
-                            cheatAnchor.Cursor = Cursors.SizeNS;
-                            break;
-                        case 7:
-                            cheatAnchor.Cursor = Cursors.SizeWE;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                canvas.Children.Add(cheatAnchor);
+                ArrangeAnchor(anchor, xOffset, yOffset);
                 index++;
             }
 
@@ -617,63 +507,30 @@ namespace PolyPaint.CustomInk
             {
                 return finalSize;
             }
-            // Top
-            ArrangeAnchor(0, 0, -(strokeBounds.Height / 2));
-            // Right
-            ArrangeAnchor(1, strokeBounds.Width / 2, 0);
-            // Bottom
-            ArrangeAnchor(2, 0, strokeBounds.Height / 2);
-            // Left
-            ArrangeAnchor(3, -(strokeBounds.Width / 2), 0);
-            // TopLeft
-            ArrangeAnchor(4, -(strokeBounds.Width / 2), -(strokeBounds.Height / 2));
-            // TopRight
-            ArrangeAnchor(5, strokeBounds.Width / 2, -(strokeBounds.Height / 2));
-            // BottomLeft
-            ArrangeAnchor(6, -(strokeBounds.Width / 2), strokeBounds.Height / 2);
-            // BottomRight
-            ArrangeAnchor(7, strokeBounds.Width / 2, strokeBounds.Height / 2);
+
+            for (int i = 0; i < anchors.Count; i++)
+            {
+                anchors[i].Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+            }
 
             resizePreview.Arrange(new Rect(finalSize));
             outerBoundPath.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
-
-            Rect handleRect = new Rect(strokeBounds.X - MARGIN,
-                                  strokeBounds.Y - MARGIN,
-                                  strokeBounds.Width + MARGIN * 2,
-                                  strokeBounds.Height + MARGIN * 2);
+            
             moveThumb.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
 
             return finalSize;
         }
 
-        private void ArrangeAnchor(int anchorNumber, double xOffset, double yOffset)
+        private void ArrangeAnchor(Thumb anchor, double xOffset, double yOffset)
         {
-            if (xOffset > 0)
-            {
-                xOffset += MARGIN;
-            }
-            if (xOffset < 0)
-            {
-                xOffset -= MARGIN;
-            }
-            if (yOffset < 0)
-            {
-                yOffset -= MARGIN;
-            }
-            if (yOffset > 0)
-            {
-                yOffset += MARGIN;
-            }
-            // The rectangle that determines the position of the Thumb.
-            Rect handleRect = new Rect(strokeBounds.X + xOffset,
-                                  strokeBounds.Y + yOffset,
-                                  strokeBounds.Width,
-                                  strokeBounds.Height);
-
-            handleRect.Transform(rotation.Value);
-            // Draws the thumb and the rectangle around the strokes.
-            anchors[anchorNumber].Arrange(handleRect);
-            cheatAnchors[anchorNumber].Arrange(handleRect);
+            
+            TransformGroup transformAnchor = new TransformGroup();
+            transformAnchor.Children.Add(new RotateTransform(rotation.Angle, 
+                -xOffset + strokeBounds.Width / 2 + anchor.Width / 2,
+                -yOffset + strokeBounds.Height / 2 + anchor.Height / 2)); 
+            transformAnchor.Children.Add(new TranslateTransform(-canvas.ActualWidth / 2 + strokeBounds.X + xOffset,
+                -canvas.ActualHeight / 2 + strokeBounds.Y + yOffset));
+            anchor.RenderTransform = transformAnchor;
         }
 
         void All_DragStarted(object sender, DragStartedEventArgs e)
@@ -749,16 +606,6 @@ namespace PolyPaint.CustomInk
             resizePreview.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
         }
 
-        private Vector calculateDelta(DragDeltaEventArgs e)
-        {
-            Point center = customStroke.GetCenter();
-            RotateTransform rotationInverse = new RotateTransform(360 - rotation.Angle, center.X, center.Y);
-            Vector dragVect = new Vector(e.HorizontalChange, e.VerticalChange);
-            dragVect = rotationInverse.Value.Transform(dragVect);
-            
-            return dragVect;
-        }
-
         void Move_DragDelta(object sender, DragDeltaEventArgs e)
         {
             Vector dragVect = new Vector(e.HorizontalChange, e.VerticalChange);
@@ -805,7 +652,7 @@ namespace PolyPaint.CustomInk
 
         void Top_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Vector delta = calculateDelta(e);
+            Vector delta = new Vector(e.HorizontalChange, e.VerticalChange);
             if (delta.Y > customStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
                 delta.Y = customStroke.GetCustomBound().Height - WIDTH_LEGER;
@@ -819,7 +666,7 @@ namespace PolyPaint.CustomInk
 
         void Right_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Vector delta = calculateDelta(e);
+            Vector delta = new Vector(e.HorizontalChange, e.VerticalChange);
             if (delta.X < -customStroke.GetCustomBound().Width + WIDTH_LEGER)
             {
                 delta.X = -customStroke.GetCustomBound().Width + WIDTH_LEGER;
@@ -833,7 +680,7 @@ namespace PolyPaint.CustomInk
 
         void Bottom_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Vector delta = calculateDelta(e);
+            Vector delta = new Vector(e.HorizontalChange, e.VerticalChange);
             if (delta.Y < -customStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
                 delta.Y = -customStroke.GetCustomBound().Height + WIDTH_LEGER;
@@ -847,7 +694,7 @@ namespace PolyPaint.CustomInk
 
         void Left_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Vector delta = calculateDelta(e);
+            Vector delta = new Vector(e.HorizontalChange, e.VerticalChange);
             if (delta.X > customStroke.GetCustomBound().Width - WIDTH_LEGER)
             {
                 delta.X = customStroke.GetCustomBound().Width - WIDTH_LEGER;
@@ -861,7 +708,7 @@ namespace PolyPaint.CustomInk
 
         void TopLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Vector delta = calculateDelta(e);
+            Vector delta = new Vector(e.HorizontalChange, e.VerticalChange);
             if (delta.Y > customStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
                 delta.Y = customStroke.GetCustomBound().Height - WIDTH_LEGER;
@@ -879,7 +726,7 @@ namespace PolyPaint.CustomInk
 
         void TopRight_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Vector delta = calculateDelta(e);
+            Vector delta = new Vector(e.HorizontalChange, e.VerticalChange);
             if (delta.Y > customStroke.GetCustomBound().Height - WIDTH_LEGER)
             {
                 delta.Y = customStroke.GetCustomBound().Height - WIDTH_LEGER;
@@ -897,7 +744,7 @@ namespace PolyPaint.CustomInk
 
         void BottomLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Vector delta = calculateDelta(e);
+            Vector delta = new Vector(e.HorizontalChange, e.VerticalChange);
             if (delta.Y < -customStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
                 delta.Y = -customStroke.GetCustomBound().Height + WIDTH_LEGER;
@@ -915,7 +762,7 @@ namespace PolyPaint.CustomInk
 
         void BottomRight_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Vector delta = calculateDelta(e);
+            Vector delta = new Vector(e.HorizontalChange, e.VerticalChange);
             if (delta.Y < -customStroke.GetCustomBound().Height + WIDTH_LEGER)
             {
                 delta.Y = -customStroke.GetCustomBound().Height + WIDTH_LEGER;

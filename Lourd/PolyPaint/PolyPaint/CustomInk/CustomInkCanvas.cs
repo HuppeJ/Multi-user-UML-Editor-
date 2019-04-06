@@ -349,6 +349,12 @@ namespace PolyPaint.CustomInk
             DrawingService.SaveCanvas += ConvertInkCanvasToByteArray;
             DrawingService.RefreshChildren += RefreshChildren;
             DrawingService.RemoteReset += RemoteReset;
+            DrawingService.BackToGallery += DeselectAll;
+        }
+
+        private void DeselectAll()
+        {
+            Select(new StrokeCollection());
         }
 
         private void RemoteReset()
@@ -393,53 +399,58 @@ namespace PolyPaint.CustomInk
             StrokeCollection strokesToSelect = new StrokeCollection();
             StrokeCollection strokesToRemove = new StrokeCollection();
             List<string> selectedIds = new List<string>();
-            foreach (CustomStroke newStroke in GetSelectedStrokes())
+            SelectedStrokes = GetSelectedStrokes();
+            foreach (CustomStroke newStroke in SelectedStrokes)
             {
                 selectedIds.Add(newStroke.guid.ToString());
                 if(!DrawingService.localSelectedStrokes.Contains(newStroke.guid.ToString())) {
                     strokesToSelect.Add(newStroke);
                 }
             }
-            foreach (string id in DrawingService.localSelectedStrokes)
-            {
-                if (!selectedIds.Contains(id))
-                {
-                    strokesToRemove.Add(StrokesDictionary[id]);
-                }
-            }
-            SelectedStrokes = GetSelectedStrokes();
             if (strokesToSelect.Count > 0)
             {
                 StrokeCollection adjacentStrokes = new StrokeCollection();
-                foreach(CustomStroke stroke in strokesToSelect)
+                foreach (CustomStroke stroke in strokesToSelect)
                 {
-                    if(stroke is LinkStroke)
+                    if (stroke is LinkStroke)
                     {
-                        if((stroke as LinkStroke).isAttached())
+                        if ((stroke as LinkStroke).isAttached())
                         {
-                            if((stroke as LinkStroke).from?.formId != null)
+                            if ((stroke as LinkStroke).from?.formId != null)
                             {
-                                Stroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).from?.formId];
-                                if(!strokesToSelect.Contains(adjacentStroke))
+                                CustomStroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).from?.formId];
+                                if (!strokesToSelect.Contains(adjacentStroke) &&
+                                    !adjacentStrokes.Contains(adjacentStroke))
+                                {
                                     adjacentStrokes.Add(adjacentStroke);
+                                    selectedIds.Add(adjacentStroke.guid.ToString());
+                                }
                             }
                             if ((stroke as LinkStroke).to?.formId != null)
                             {
-                                Stroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).to?.formId];
-                                if (!strokesToSelect.Contains(adjacentStroke))
+                                CustomStroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).to?.formId];
+                                if (!strokesToSelect.Contains(adjacentStroke) && 
+                                    !adjacentStrokes.Contains(adjacentStroke))
+                                {
                                     adjacentStrokes.Add(adjacentStroke);
+                                    selectedIds.Add(adjacentStroke.guid.ToString());
+                                }
                             }
                         }
                     }
                     else
                     {
-                        if((stroke as ShapeStroke).linksFrom.Count > 0)
+                        if ((stroke as ShapeStroke).linksFrom.Count > 0)
                         {
-                            foreach(string linkId in (stroke as ShapeStroke).linksFrom)
+                            foreach (string linkId in (stroke as ShapeStroke).linksFrom)
                             {
                                 CustomStroke adjacentLink = StrokesDictionary[linkId];
-                                if (!strokesToSelect.Contains(adjacentLink))
+                                if (!strokesToSelect.Contains(adjacentLink) && 
+                                    !adjacentStrokes.Contains(adjacentLink))
+                                {
                                     adjacentStrokes.Add(adjacentLink);
+                                    selectedIds.Add(adjacentLink.guid.ToString());
+                                }
                             }
                         }
                         if ((stroke as ShapeStroke).linksTo.Count > 0)
@@ -447,14 +458,25 @@ namespace PolyPaint.CustomInk
                             foreach (string linkId in (stroke as ShapeStroke).linksTo)
                             {
                                 CustomStroke adjacentLink = StrokesDictionary[linkId];
-                                if (!strokesToSelect.Contains(adjacentLink))
+                                if (!strokesToSelect.Contains(adjacentLink) && 
+                                    !adjacentStrokes.Contains(adjacentLink))
+                                {
                                     adjacentStrokes.Add(adjacentLink);
+                                    selectedIds.Add(adjacentLink.guid.ToString());
+                                }
                             }
                         }
                     }
                 }
                 strokesToSelect.Add(adjacentStrokes);
                 DrawingService.SelectShapes(strokesToSelect);
+            }
+            foreach (string id in DrawingService.localSelectedStrokes)
+            {
+                if (!selectedIds.Contains(id))
+                {
+                    strokesToRemove.Add(StrokesDictionary[id]);
+                }
             }
             if (strokesToRemove.Count > 0)
             {
@@ -470,7 +492,8 @@ namespace PolyPaint.CustomInk
                                 Stroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).from?.formId];
                                 if (!strokesToRemove.Contains(adjacentStroke) && 
                                     !GetSelectedStrokes().Contains(adjacentStroke) &&
-                                    !adjacentStrokes.Contains(adjacentStroke))
+                                    !adjacentStrokes.Contains(adjacentStroke) &&
+                                    !strokesToSelect.Contains(adjacentStroke))
                                     adjacentStrokes.Add(adjacentStroke);
                             }
                             if ((stroke as LinkStroke).to?.formId != null)
@@ -478,7 +501,8 @@ namespace PolyPaint.CustomInk
                                 Stroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).to?.formId];
                                 if (!strokesToRemove.Contains(adjacentStroke) && 
                                     !GetSelectedStrokes().Contains(adjacentStroke) &&
-                                    !adjacentStrokes.Contains(adjacentStroke))
+                                    !adjacentStrokes.Contains(adjacentStroke) &&
+                                    !strokesToSelect.Contains(adjacentStroke))
                                     adjacentStrokes.Add(adjacentStroke);
                             }
                         }
@@ -492,7 +516,8 @@ namespace PolyPaint.CustomInk
                                 CustomStroke adjacentLink = StrokesDictionary[linkId];
                                 if (!strokesToRemove.Contains(adjacentLink) && 
                                     !GetSelectedStrokes().Contains(adjacentLink) &&
-                                    !adjacentStrokes.Contains(adjacentLink))
+                                    !adjacentStrokes.Contains(adjacentLink) &&
+                                    !strokesToSelect.Contains(adjacentLink))
                                     adjacentStrokes.Add(adjacentLink);
                             }
                         }
@@ -503,7 +528,8 @@ namespace PolyPaint.CustomInk
                                 CustomStroke adjacentLink = StrokesDictionary[linkId];
                                 if (!strokesToRemove.Contains(adjacentLink) && 
                                     !GetSelectedStrokes().Contains(adjacentLink) &&
-                                    !adjacentStrokes.Contains(adjacentLink))
+                                    !adjacentStrokes.Contains(adjacentLink) &&
+                                    !strokesToSelect.Contains(adjacentLink))
                                     adjacentStrokes.Add(adjacentLink);
                             }
                         }
@@ -706,7 +732,7 @@ namespace PolyPaint.CustomInk
 
         }
 
-        private void OnRemoteSelection(StrokeCollection strokes)
+        private void OnRemoteSelection()
         {
             foreach (string strokeId in DrawingService.remoteSelectedStrokes)
             {
@@ -721,7 +747,7 @@ namespace PolyPaint.CustomInk
             }
         }
 
-        private void OnRemoteDeselection(StrokeCollection strokes)
+        private void OnRemoteDeselection()
         {
             Path path = new Path();
             path.Data = new RectangleGeometry(new Rect(1, 1, 1, 1));
@@ -740,6 +766,7 @@ namespace PolyPaint.CustomInk
                         numberArdorners--;
                     }
             }
+            OnRemoteSelection();
         }
 
         private void OnRemoveStrokes(StrokeCollection strokes)
@@ -1264,9 +1291,9 @@ namespace PolyPaint.CustomInk
                 {
                     if (GetSelectedStrokes().Count == 1)
                     {
+                        myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
-                        myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
 
                         Thumb anchor = new Thumb();

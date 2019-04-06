@@ -11,107 +11,117 @@ export default class UserAccountManager {
     }
 
     public async addUser(name: string, password: string) {
-        const user = {
-            username: name,
-            // Store a hash of the password
-            password: crypto
-                .createHash('sha256')
-                .update(password)
-                .digest('hex'),
-            hasDoneTutorial: false,
-        };
+        try {
+            const user = {
+                username: name,
+                // Store a hash of the password
+                password: crypto
+                    .createHash('sha256')
+                    .update(password)
+                    .digest('hex'),
+                hasDoneTutorial: false,
+            };
 
-        return this.datastore.save({
-            key: this.datastore.key(['User', name]),
-            data: user
-        });
+            return this.datastore.save({
+                key: this.datastore.key(['User', name]),
+                data: user
+            });
+        } catch (e) { console.log("[Error_addUserAccountManader]", e) }
     }
 
     public async hasUserDoneTutorial(username: string) {
-        const query = this.datastore
-            .createQuery('User')
-            .filter('username', '=', username)
-            .limit(1);
+        try {
+            const query = this.datastore
+                .createQuery('User')
+                .filter('username', '=', username)
+                .limit(1);
 
-        const users = await this.datastore.runQuery(query);
-        if (users[0][0] !== undefined) {
-            const user = users[0].map(
-                (entity: any) => {
-                    return { hasDoneTutorial: entity.hasDoneTutorial };
-                },
-            );
+            const users = await this.datastore.runQuery(query);
+            if (users[0][0] !== undefined) {
+                const user = users[0].map(
+                    (entity: any) => {
+                        return { hasDoneTutorial: entity.hasDoneTutorial };
+                    },
+                );
 
-            return user[0].hasDoneTutorial
-        }
+                return user[0].hasDoneTutorial
+            }
 
-        return false;
+            return false;
+        } catch (e) { console.log("[Error_hasUserDoneTutorial]", e) }
     }
 
     public async userHasDoneTutorial(username: string) {
-        const query = this.datastore
-            .createQuery('User')
-            .filter('username', '=', username)
-            .limit(1);
+        try {
+            const query = this.datastore
+                .createQuery('User')
+                .filter('username', '=', username)
+                .limit(1);
 
-        const users = await this.datastore.runQuery(query);
+            const users = await this.datastore.runQuery(query);
 
-        if (users[0][0] !== undefined) {
-            const user = users[0].map(
-                (entity: any) => {
-                    return { 
-                        username: entity.username,
-                        password: entity.password,
-                        hasDoneTutorial: entity.hasDoneTutorial,
-                    };
-                },
-            );
+            if (users[0][0] !== undefined) {
+                const user = users[0].map(
+                    (entity: any) => {
+                        return {
+                            username: entity.username,
+                            password: entity.password,
+                            hasDoneTutorial: entity.hasDoneTutorial,
+                        };
+                    },
+                );
 
-            const newUserEntity = {
-                username: username,
-                password: user[0].password,
-                hasDoneTutorial: true,
-            };
+                const newUserEntity = {
+                    username: username,
+                    password: user[0].password,
+                    hasDoneTutorial: true,
+                };
 
-            this.datastore.upsert({
-                key: this.datastore.key(['User', username]),
-                data: newUserEntity
-            });
-        }
+                this.datastore.upsert({
+                    key: this.datastore.key(['User', username]),
+                    data: newUserEntity
+                });
+            }
+        } catch (e) { console.log("[Error_userHasDoneTutorial]", e) }
     }
 
     public async isUsernameAvailable(username: string) {
-        const query = this.datastore
-            .createQuery('User')
-            .filter('username', '=', username)
-            .limit(1);
+        try {
+            const query = this.datastore
+                .createQuery('User')
+                .filter('username', '=', username)
+                .limit(1);
 
-        const users = await this.datastore.runQuery(query);
+            const users = await this.datastore.runQuery(query);
 
-        return users[0][0] === undefined;
+            return users[0][0] === undefined;
+        } catch (e) { console.log("[Error_isUsernameAvailable]", e) }
     }
 
     public async authenticateUser(username: string, password: string, socketId: any) {
-        if (this.isConnected(username)) {
-            return false;
-        }
-        const query = this.datastore
-            .createQuery('User')
-            .filter('username', '=', username)
-            .limit(1);
-
-        const users = await this.datastore.runQuery(query);
-        if (users[0][0] !== undefined) {
-            const user = users[0].map(
-                (entity: any) => {
-                    return { password: entity.password };
-                },
-            );
-            if (user[0].password === crypto.createHash('sha256').update(password).digest('hex')) {
-                this.connectedUsers.set(socketId, username);
-                return true;
+        try {
+            if (this.isConnected(username)) {
+                return false;
             }
-        }
-        return false;
+            const query = this.datastore
+                .createQuery('User')
+                .filter('username', '=', username)
+                .limit(1);
+
+            const users = await this.datastore.runQuery(query);
+            if (users[0][0] !== undefined) {
+                const user = users[0].map(
+                    (entity: any) => {
+                        return { password: entity.password };
+                    },
+                );
+                if (user[0].password === crypto.createHash('sha256').update(password).digest('hex')) {
+                    this.connectedUsers.set(socketId, username);
+                    return true;
+                }
+            }
+            return false;
+        } catch (e) { console.log("[Error_authenticateUser]", e) }
     }
 
     public getUsernameBySocketId(socketId: any): string {

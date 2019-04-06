@@ -240,7 +240,7 @@ namespace PolyPaint.CustomInk
             }
             DrawingService.UpdateShapes(shapesToUpdate);
 
-            // canvas.Select(new StrokeCollection { linkBeingCreated });
+            canvas.Select(new StrokeCollection { linkBeingCreated });
         }
 
         private void ShowMessage(string message)

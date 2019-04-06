@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData, IResizeCanevasData, IHistoryData } from "../interfaces/interfaces";
+import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData, IResizeCanevasData, IHistoryData, ICanvasDataStore, ICanevas } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 import CanvasDataStoreManager from "./CanvasDataStoreManager";
@@ -7,14 +7,37 @@ import CanvasDataStoreManager from "./CanvasDataStoreManager";
 export default class CanvasManager {
     public canvasRooms: Map<string, CanvasRoom>; // [key: canvasRoomId, value: canvasRoom]
 
-    constructor(private canvasDataStoreManager: CanvasDataStoreManager) {
-        
+    constructor(private canvasDataStoreManager: CanvasDataStoreManager) {     
         this.canvasRooms = new Map<string, CanvasRoom>();
-        // this.initializeCanvasManagerState();
     }
 
-    private async initializeCanvasManagerState() {
-        await this.canvasDataStoreManager.getAllCanvases();
+    public async initializeCanvasManagerState() {
+        const canvases: ICanvasDataStore[] = await this.canvasDataStoreManager.getAllCanvases();
+        canvases.forEach((canvasDataStore: ICanvasDataStore) => {
+            const canvasRoomId: string = this.getCanvasRoomIdFromName(canvasDataStore.canvasName);
+            if (this.loadCanvasRoom(canvasRoomId, canvasDataStore.canvas)) {
+                this.setHistory(canvasRoomId, canvasDataStore.canvasHistory)
+            }
+        });
+    }
+
+    public setHistory(canvasRoomId: string, history: IHistoryData[],) {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return false;
+        }
+
+        return canvasRoom.history = history;
+    }
+
+    public loadCanvasRoom(canvasRoomId: string, canvas: ICanevas): boolean {
+        if (this.canvasRooms.has(canvasRoomId)) {
+            return false;
+        }
+
+        const canvasRoom = new CanvasRoom(canvas);
+        this.canvasRooms.set(canvasRoomId, canvasRoom);
+        return true;
     }
 
     public getCanvasRoomIdFromName(canvasName: string): string {
@@ -127,8 +150,6 @@ export default class CanvasManager {
 
     public getCanvasRoomFromUsername(unsername: any): string {
         for (const [canvasRoomId, canvasRoom] of this.canvasRooms.entries()) {
-            console.log(canvasRoom.getConnectedUsersSERI())
-
             if (canvasRoom.hasUser(unsername)) {
                 return canvasRoomId;
             }
@@ -294,7 +315,7 @@ export default class CanvasManager {
             return null;
         }
 
-        return canvasRoom.getSelectedFormsSERI(data);
+        return canvasRoom.getSelectedFormsSERI();
     }
 
     public getSelectedLinksInCanvasRoomSERI(canvasRoomId: string, data: IEditGalleryData): string {
@@ -303,8 +324,14 @@ export default class CanvasManager {
             return null;
         }
 
-        return canvasRoom.getSelectedLinksSERI(data);
+        return canvasRoom.getSelectedLinksSERI();
     }
+
+    public getCanvas(canvasRoomId: string): ICanevas {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        return canvasRoom.canvas;
+    }
+
 
     public getCanvasSERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);

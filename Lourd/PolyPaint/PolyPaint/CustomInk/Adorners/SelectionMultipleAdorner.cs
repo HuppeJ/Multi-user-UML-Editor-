@@ -33,6 +33,8 @@ namespace PolyPaint.CustomInk
         private Path resizePreview;
         private Path outerBoundPath;
 
+        List<Path> shapeBorders = new List<Path>();
+
         RectangleGeometry NewRectangle = new RectangleGeometry();
         RectangleGeometry OldRectangle = new RectangleGeometry();
 
@@ -47,6 +49,21 @@ namespace PolyPaint.CustomInk
 
             visualChildren = new VisualCollection(this);
             strokesSelected = strokes;
+
+            foreach (CustomStroke stroke in strokesSelected)
+            {
+                if(stroke is ShapeStroke)
+                {
+                    RotateTransform rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, stroke.GetCenter().X, stroke.GetCenter().Y);
+                    Path path = new Path();
+                    path.Data = new RectangleGeometry(stroke.GetCustomBound(), 0, 0, rotation);
+                    path.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF809dce"));
+                    path.StrokeThickness = 2;
+                    shapeBorders.Add(path);
+
+                    visualChildren.Add(path);
+                }
+            }
 
             double maxX = -9999999;
             double minX = 9999999;
@@ -164,6 +181,11 @@ namespace PolyPaint.CustomInk
             deleteButton.Arrange(rectangleDelete);
             leftAlignButton.Arrange(rectangleLeftAlign);
             centerAlignButton.Arrange(rectangleCenter);
+
+            foreach(Path path in shapeBorders)
+            {
+                path.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+            }
 
             return finalSize;
         }

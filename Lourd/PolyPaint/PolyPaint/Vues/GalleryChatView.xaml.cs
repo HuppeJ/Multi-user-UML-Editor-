@@ -6,19 +6,19 @@ using System.Windows.Controls;
 namespace PolyPaint.Vues
 {
     /// <summary>
-    /// Interaction logic for DrawingChatView.xaml
+    /// Interaction logic for GalleryChatView.xaml
     /// </summary>
-    public partial class DrawingChatView : UserControl
+    public partial class GalleryChatView : UserControl
     {
         MainWindowViewModel dataContext = null;
 
-        public DrawingChatView()
+        public GalleryChatView()
         {
             InitializeComponent();
-            Loaded += new RoutedEventHandler(DrawingChat_Loaded);
+            Loaded += new RoutedEventHandler(GalleryChat_Loaded);
         }
 
-        void DrawingChat_Loaded(object sender, RoutedEventArgs e)
+        void GalleryChat_Loaded(object sender, RoutedEventArgs e)
         {
             dataContext = DataContext as MainWindowViewModel;
             if (dataContext.IsChatWindowOpened)
