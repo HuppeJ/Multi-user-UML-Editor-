@@ -105,6 +105,9 @@ io.on('connection', (socket: any) => {
                         }
 
                         canvasRoom.removeUser(username);
+
+                        // Save canvas in datastore
+                        canvasDataStoreManager.updateCanvas(canvasRoom.canvas, canvasManager.getCanvasLogHistory(canvasRoomId))
                     }
                 }
             }

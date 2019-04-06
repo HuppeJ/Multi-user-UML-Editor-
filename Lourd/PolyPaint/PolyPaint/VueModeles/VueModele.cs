@@ -30,7 +30,6 @@ namespace PolyPaint.VueModeles
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 
-
         public StrokeCollection SelectedStrokes
         {
             get { return editeur.selectedStrokes; }
@@ -48,8 +47,30 @@ namespace PolyPaint.VueModeles
         {
             get { return editeur.OutilSelectionne; }            
             set { ProprieteModifiee(); }
-        }        
-        
+        }
+
+        private AsyncObservableCollection<HistoryData> _historyLogs = new AsyncObservableCollection<HistoryData>();
+        public AsyncObservableCollection<HistoryData> historyLogs
+        {
+            get { return _historyLogs; }
+            set
+            {
+                _historyLogs = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private HistoryData _selectedHistoryLog;
+        public HistoryData selectedHistoryLog
+        {
+            get { return _selectedHistoryLog; }
+            set
+            {
+                _selectedHistoryLog = value;
+                ProprieteModifiee();
+            }
+        }
+
         /* public string CouleurSelectionnee
         {
             get { return editeur.CouleurSelectionnee; }
@@ -61,7 +82,7 @@ namespace PolyPaint.VueModeles
             get { return editeur.TailleTrait; }
             set { editeur.TailleTrait = value; }
         }*/
-       
+
         public StrokeCollection Traits { get; set; }
 
         #region Commandes pour la vue
@@ -124,6 +145,8 @@ namespace PolyPaint.VueModeles
             //Command for sending editor actions to server
             SendNewStrokeCommand = new RelayCommand<CustomStroke>(SendNewStroke);
             editeur.AddStrokeFromModel += OnStrokeCollectedEvent;
+
+            DrawingService.UpdateHistory += UpdateHistory;
         }
 
         /// <summary>
@@ -189,7 +212,7 @@ namespace PolyPaint.VueModeles
                 AjusterPointe();
             } */               
         }
-        
+
         /*
         private void AddStroke(Stroke stroke)
         {
@@ -208,6 +231,21 @@ namespace PolyPaint.VueModeles
             AttributsDessin.Width = editeur.TailleTrait;
             AttributsDessin.Height = editeur.TailleTrait;
         } */
+        #region GetCanvasHistoryLogCommand
+        private ICommand _getCanvasHistoryLogCommand;
+        public ICommand GetCanvasHistoryLogCommand
+        {
+            get
+            {
+                return _getCanvasHistoryLogCommand ?? (_getCanvasHistoryLogCommand = new RelayCommand<object>(DrawingService.GetHistoryLog));
+            }
+        }
+        #endregion
+
+        private void UpdateHistory(History history)
+        {
+            historyLogs = new AsyncObservableCollection<HistoryData>(history.history);
+        }
 
         #region Initialize DrawingService Command
         private ICommand _initializeDrawingCommand;

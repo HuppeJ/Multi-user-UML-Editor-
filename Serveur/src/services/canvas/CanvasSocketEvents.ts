@@ -1,8 +1,7 @@
-import * as SocketEvents from "../../constants/SocketEvents";
 import { ICanevas, IEditCanevasData, IEditGalleryData } from "./interfaces/interfaces";
 import CanvasManager from "./components/CanvasManager";
-import { POINT_CONVERSION_COMPRESSED } from "constants";
 import CanvasDataStoreManager from "./components/CanvasDataStoreManager";
+import { EMPTY_THUMBNAIL } from "../../constants/thumbnail";
 
 export const CanvasTestRoom: string = "Canvas_test_room";
 
@@ -41,8 +40,12 @@ export default class CanvasSocketEvents {
 
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
     
+
+                    const updatedData: IEditCanevasData = data;
+                    updatedData.canevas.thumbnail = EMPTY_THUMBNAIL;
+
                     const response = {
-                        isCreated: canvasManager.addCanvasRoom(canvasRoomId, data),
+                        isCreated: canvasManager.addCanvasRoom(canvasRoomId, updatedData),
                         canvasName: data.canevas.name
                     };
     
@@ -124,7 +127,7 @@ export default class CanvasSocketEvents {
 
             socket.on("leaveCanvasRoom", function (dataStr: string) {
                 try {
-                    console.log(dataStr);
+                    console.log("leaveCanvasRoom", dataStr);
                     const data: IEditGalleryData = JSON.parse(dataStr);
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevasName);
     
@@ -134,6 +137,8 @@ export default class CanvasSocketEvents {
     
                     if (response.isCanvasRoomLeaved) {
                         socket.leave(canvasRoomId);
+                        const canvas: ICanevas = canvasManager.getCanvas(canvasRoomId);
+                        canvasDataStoreManager.updateCanvas(canvas, canvasManager.getCanvasLogHistory(canvasRoomId))
                         console.log(socket.id + " leaved canvasRoom " + data.canevasName);
                     } else {
                         console.log(socket.id + " failed to leave canvasRoom " + data.canevasName);
@@ -158,7 +163,6 @@ export default class CanvasSocketEvents {
 
                     if (response.isCanvasSaved) {
                         console.log(socket.id + " saved canvas " + data.canevas.name);
-                        canvasDataStoreManager.updateCanvas(data.canevas, canvasManager.getCanvasLogHistory(canvasRoomId))
                         io.emit("canvasSaved", dataStr);
                     } else {
                         console.log(socket.id + " failed to save canvas " + data.canevas.name);

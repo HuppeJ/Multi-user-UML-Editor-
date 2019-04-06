@@ -278,7 +278,7 @@ export default class CanvasRoom {
                 });
 
                 if (!linkIsDeleted) {
-                    throw new Error(`There is no form with the id: "${newlink.id}" in the canvas : "${this.canvas.name}".`);
+                    throw new Error(`There is no link with the id: "${newlink.id}" in the canvas : "${this.canvas.name}".`);
                 }
             });
 
