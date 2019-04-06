@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
+using System.Windows;
+using System.Windows.Threading;
 using PolyPaint.Modeles;
 using PolyPaint.Templates;
 
@@ -24,26 +26,27 @@ namespace PolyPaint.Services
             socket.On("messageSent", (data) =>
             {
                 ChatMessageTemplate message = serializer.Deserialize<ChatMessageTemplate>((string)data);
-
-                NewMessage?.Invoke(message);
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { NewMessage(message); }), DispatcherPriority.ContextIdle);
             });
 
             socket.On("getChatroomsResponse", (data) =>
             {
                 RoomList roomlist = serializer.Deserialize<RoomList>((string)data);
-                GetChatrooms?.Invoke(roomlist);
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { GetChatrooms(roomlist); }), DispatcherPriority.ContextIdle);
+                
             });
 
             socket.On("createChatroomResponse", (data) =>
             {
                 CreateChatroomResponse response = serializer.Deserialize<CreateChatroomResponse>((string)data);
-                RoomCreation?.Invoke(response);
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { RoomCreation(response); }), DispatcherPriority.ContextIdle);
             });
 
             socket.On("joinChatroomResponse", (data) =>
             {
                 JoinChatroomResponse response = serializer.Deserialize<JoinChatroomResponse>((string)data);
-                RoomJoin?.Invoke(response);
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { RoomJoin(response); }), DispatcherPriority.ContextIdle);
+
                 RequestChatrooms();
             });
 

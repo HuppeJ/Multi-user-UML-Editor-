@@ -45,16 +45,16 @@ namespace PolyPaint.CustomInk.Strokes
             switch (style.thickness)
             {
                 case 0:
-                    DrawingAttributes.Width = 4;
-                    DrawingAttributes.Height = 4;
+                    DrawingAttributes.Width = getThickness();
+                    DrawingAttributes.Height = getThickness();
                     break;
                 case 1:
-                    DrawingAttributes.Width = 6;
-                    DrawingAttributes.Height = 6;
+                    DrawingAttributes.Width = getThickness();
+                    DrawingAttributes.Height = getThickness();
                     break;
                 case 2:
-                    DrawingAttributes.Width = 8;
-                    DrawingAttributes.Height = 8;
+                    DrawingAttributes.Width = getThickness();
+                    DrawingAttributes.Height = getThickness();
                     break;
                 default:
                     DrawingAttributes.Width = 4;
@@ -92,6 +92,9 @@ namespace PolyPaint.CustomInk.Strokes
             style = new LinkStyle();
             style.SetDefaults();
             path = new List<Coordinates>();
+
+            DrawingAttributes.Width = getThickness();
+            DrawingAttributes.Height = getThickness();
 
             StylusPoint firstPoint = pts[0];
             StylusPoint lastPoint = pts[pts.Count - 1];
@@ -158,6 +161,12 @@ namespace PolyPaint.CustomInk.Strokes
 
         }
 
+        public bool isLinkAggCompHeritage()
+        {
+            return (LinkTypes)linkType == LinkTypes.HERITAGE ||
+                (LinkTypes)linkType == LinkTypes.AGGREGATION || (LinkTypes)linkType == LinkTypes.COMPOSITION;
+        }
+               
         public int getThickness()
         {
             int thickness = 4;
@@ -165,16 +174,16 @@ namespace PolyPaint.CustomInk.Strokes
             switch (style.thickness)
             {
                 case 0:
-                    thickness = 4;
+                    thickness = 2;
                     break;
                 case 1:
-                    thickness = 6;
+                    thickness = 4;
                     break;
                 case 2:
-                    thickness = 8;
+                    thickness = 6;
                     break;
                 default:
-                    thickness = 4;
+                    thickness = 2;
                     break;
             }
 
@@ -197,13 +206,11 @@ namespace PolyPaint.CustomInk.Strokes
                     break;
                 case LinkTypes.ONE_WAY_ASSOCIATION:
                     //on the to point
+                    StylusPoints.Add(new StylusPoint(path[path.Count - 1].x, path[path.Count - 1].y));
                     AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
                     break;
                 case LinkTypes.TWO_WAY_ASSOCIATION:
-                    // on the from point
-                    AddAssociationArrow(path[0], path[1], 0);
-                    //on the to point
-                    AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
+                    AddTwoWayAssociationArrow();
                     break;
                 case LinkTypes.HERITAGE:
                     //on the to point
@@ -222,6 +229,25 @@ namespace PolyPaint.CustomInk.Strokes
             }
         }
 
+        private void AddTwoWayAssociationArrow()
+        {
+            while (StylusPoints.Count > 1)
+            {
+                StylusPoints.RemoveAt(1);
+            }
+            // on the from point
+            StylusPoints.Add(new StylusPoint(path[0].x, path[0].y));
+            AddAssociationArrow(path[0], path[1], 0);
+
+            for (int i = 1; i < path.Count; i++)
+            {
+                StylusPoints.Add(new StylusPoint(path[i].x, path[i].y));
+            }
+
+            //on the to point
+            AddAssociationArrow(path[path.Count - 1], path[path.Count - 2], path.Count - 1);
+        }
+
         #region AddArrow functions
         private void AddAssociationArrow(Coordinates firstPoint, Coordinates lastPoint, int pathIndex)
         {
@@ -230,7 +256,6 @@ namespace PolyPaint.CustomInk.Strokes
             Point actualArrowPoint1 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), 45);
             Point actualArrowPoint2 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), -45);
 
-            StylusPoints.Add(new StylusPoint(path[pathIndex].x, path[pathIndex].y));
             StylusPoints.Add(new StylusPoint(actualArrowPoint1.X, actualArrowPoint1.Y));
             StylusPoints.Add(new StylusPoint(path[pathIndex].x, path[pathIndex].y));
             StylusPoints.Add(new StylusPoint(actualArrowPoint2.X, actualArrowPoint2.Y));

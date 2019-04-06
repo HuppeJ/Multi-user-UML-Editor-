@@ -28,26 +28,28 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Margin="0">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+    <Border BorderBrush="DodgerBlue" BorderThickness="2" >
+        <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Margin="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,0">
-                <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
-                    <TextBlock Text="Choose a room:" FontSize="20"/>
-                    <ListBox ItemsSource="{Binding joinableRooms}" 
+                <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,0">
+                    <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" Margin="25,25,25,25">
+                        <TextBlock Text="Choose a room:" FontSize="20"/>
+                        <ListBox ItemsSource="{Binding joinableRooms}" 
                      ItemTemplate="{DynamicResource roomsDataTemplate}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      SelectedItem="{Binding selectedJoinRoom}" 
                      MaxHeight="300"/>
 
-                    <Button Content="Join room" Margin="0,10,0,0" Width="150" IsDefault="True" Click="Close" Command="{Binding JoinChatroomCommand}" CommandParameter="{Binding selectedJoinRoom}"/>
-                    <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close"/>
-                </StackPanel>
-            </Border>
-        </Grid>
-    </materialDesign:Card>
+                        <Button Content="Join room" Margin="0,10,0,0" Width="150" IsDefault="True" Click="Close" Command="{Binding JoinChatroomCommand}" CommandParameter="{Binding selectedJoinRoom}"/>
+                        <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </materialDesign:Card>
+    </Border>
 </UserControl>

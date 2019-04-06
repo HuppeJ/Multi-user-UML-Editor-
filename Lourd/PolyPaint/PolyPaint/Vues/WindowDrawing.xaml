@@ -232,6 +232,9 @@
             </StackPanel>
 
         </Border>
+        <Popup x:Name="popUpMessage" Placement="Center">
+            <Vues:MessagePopup x:Name="popUpMessageVue"/>
+        </Popup>
         <Popup x:Name="popUpName" Placement="Center">
             <Vues:RenamePopup x:Name="popUpNameVue"/>
         </Popup>

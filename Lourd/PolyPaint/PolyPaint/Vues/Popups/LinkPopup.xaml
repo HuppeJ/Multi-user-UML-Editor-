@@ -21,38 +21,43 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="480" Margin="0">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+    <Border BorderBrush="DodgerBlue" BorderThickness="2" >
+        <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="480" Margin="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="11*"/>
+                    <ColumnDefinition Width="9*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,0,3,-0.333">
+                <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="-3,-6,3,0" Grid.ColumnSpan="2">
 
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25,24.667,25,89.667">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="36">
-                        <TextBlock Margin="0,5"><Run Text="Link label: "/></TextBlock>
-                        <TextBox x:Name="TxtBox" Width="86" MaxWidth="150"
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25,24.667,25,89.667">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="36">
+                            <TextBlock Margin="0,5"><Run Text="Link label: "/></TextBlock>
+                            <TextBox x:Name="TxtBox" Width="86" MaxWidth="150"
                         MinLines="1"
                         MaxLines="1"
                         VerticalAlignment="Top"
                         Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="26"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
-                        <TextBlock>Type:</TextBlock>
-                        <ComboBox Margin="7,-6,0,0" ItemsSource="{Binding LinkTypesList}" SelectedValue="{Binding LinkType}" VerticalAlignment="Top" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
-                        <TextBlock>Style:</TextBlock>
-                        <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LinkStylesList}" SelectedValue="{Binding LinkStyle}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
-                        <TextBlock>Thickness:</TextBlock>
-                        <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LinkThicknessesList}" SelectedValue="{Binding LinkThickness}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
-                        <TextBlock Margin="0,0,0,0.2" Width="72">Border color:</TextBlock>
-                        <xctk:ColorPicker  x:Name="colorSelector" VerticalContentAlignment="Stretch"
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                            <TextBlock>Type:</TextBlock>
+                            <ComboBox Margin="7,-6,0,0" ItemsSource="{Binding LinkTypesList}" SelectedValue="{Binding LinkType}" VerticalAlignment="Top" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                            <TextBlock>Style:</TextBlock>
+                            <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LinkStylesList}" SelectedValue="{Binding LinkStyle}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                            <TextBlock>Thickness:</TextBlock>
+                            <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LinkThicknessesList}" SelectedValue="{Binding LinkThickness}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
+                            <TextBlock Margin="0,0,0,0.2" Width="72">Border color:</TextBlock>
+                            <xctk:ColorPicker  x:Name="colorSelector" VerticalContentAlignment="Stretch"
                       Background="#00000000"
                       ShowDropDownButton="False"
                       ShowRecentColors="True"
@@ -65,28 +70,29 @@
                       RecentColorsHeader="Recently used"
                       UsingAlphaChannel="True"
                       AdvancedButtonHeader="Personalized"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
-                        <TextBlock Margin="0,4,0,5.667">Multiplicity from: </TextBlock>
-                        <TextBox x:Name="TxtBoxMultFrom" Width="54" MaxWidth="150"
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                            <TextBlock Margin="0,4,0,5.667">Multiplicity from:</TextBlock>
+                            <TextBox x:Name="TxtBoxMultFrom" Width="54" MaxWidth="150"
                         MinLines="1"
                         MaxLines="1"
                         VerticalAlignment="Top"
                         Text="{Binding MultiplicityFrom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Margin="4,0,0,0"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
-                        <TextBlock Margin="0,6,0,3.667">Multiplicity to: </TextBlock>
-                        <TextBox x:Name="TxtBoxMultTo" Width="54" MaxWidth="150"
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                            <TextBlock Margin="0,6,0,3.667">Multiplicity to:</TextBlock>
+                            <TextBox x:Name="TxtBoxMultTo" Width="54" MaxWidth="150"
                         MinLines="1"
                         MaxLines="1"
                         VerticalAlignment="Top"
                         Text="{Binding MultiplicityTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Margin="4,4,0,0"/>
+                        </StackPanel>
+
+                        <Button Content="Accept Changes" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
+
                     </StackPanel>
-
-                    <Button Content="Accept Changes" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
-
-                </StackPanel>
-            </Border>
-        </Grid>
-    </materialDesign:Card>
+                </Border>
+            </Grid>
+        </materialDesign:Card>
+    </Border>
 </UserControl>
