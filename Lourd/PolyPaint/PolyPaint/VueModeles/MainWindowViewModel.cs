@@ -940,7 +940,7 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                Application.Current.Dispatcher.Invoke(new Action(() => { CreateUserFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { CreateUserFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
                 //dialogService.ShowNotification("The user could not be created");
             }
         }
@@ -955,7 +955,7 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                Application.Current.Dispatcher.Invoke(new Action(() => { LoginFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { LoginFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
                 //LoginFailed?.Invoke();
                 //dialogService.ShowNotification("Login failed :/");
             }
@@ -1009,7 +1009,7 @@ namespace PolyPaint.VueModeles
             {
                 if(response.chatroomName != "MainRoom")
                 {
-                    Application.Current.Dispatcher.Invoke(new Action(() => { CreateChatRoomFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { CreateChatRoomFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
 
                     //dialogService.ShowNotification("This room already exists");
                 }
