@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using Path = System.Windows.Shapes.Path;
 using sd = System.Drawing;
 using s2d = System.Drawing.Drawing2D;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
@@ -37,6 +38,10 @@ namespace PolyPaint.CustomInk
         
         Point oldLeftTopPoint = new Point(0, 0);
         Point newLeftTopPoint = new Point(0, 0);
+
+        Point previewLinkStart = new Point(0, 0);
+        LinkStroke previewLink = new LinkStroke(new StylusPointCollection { new StylusPoint(0,0) });
+        bool isAddingLink = false;
 
         #region Dictionary
         public void AddStroke(CustomStroke stroke)
@@ -68,13 +73,15 @@ namespace PolyPaint.CustomInk
             if (isUpdatingLink)
             {
                 linkBeingUpdated.path[linkStrokeAnchor] = new Coordinates(pointPosition);
+                string multiplicity = "";
 
                 if (linkStrokeAnchor == 0)
                 {
                     RemoveShapeStrokeLinkFrom(linkBeingUpdated);
 
                     // mettre a jour la position du point initial (from)
-                    linkBeingUpdated.from = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
+                    multiplicity = linkBeingUpdated.from?.multiplicity == null ? "" : linkBeingUpdated.from.multiplicity;
+                    linkBeingUpdated.from = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, multiplicity);
                     if(strokeToAttach != null)
                     {
                         DrawingService.SelectShapes(new StrokeCollection{ strokeToAttach });
@@ -88,9 +95,10 @@ namespace PolyPaint.CustomInk
                 else if (linkStrokeAnchor == linkBeingUpdated.path.Count - 1)
                 {
                     RemoveShapeStrokeLinkTo(linkBeingUpdated);
+                    multiplicity = linkBeingUpdated.from?.multiplicity == null ? "" : linkBeingUpdated.from.multiplicity;
 
                     // mettre a jour la position du point final (to)
-                    linkBeingUpdated.to = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, "");
+                    linkBeingUpdated.to = new AnchorPoint(strokeToAttach?.guid.ToString(), strokeToAttachAnchor, multiplicity);
                     if (strokeToAttach != null)
                     {
                         DrawingService.SelectShapes(new StrokeCollection { strokeToAttach });
@@ -384,53 +392,58 @@ namespace PolyPaint.CustomInk
             StrokeCollection strokesToSelect = new StrokeCollection();
             StrokeCollection strokesToRemove = new StrokeCollection();
             List<string> selectedIds = new List<string>();
-            foreach (CustomStroke newStroke in GetSelectedStrokes())
+            SelectedStrokes = GetSelectedStrokes();
+            foreach (CustomStroke newStroke in SelectedStrokes)
             {
                 selectedIds.Add(newStroke.guid.ToString());
                 if(!DrawingService.localSelectedStrokes.Contains(newStroke.guid.ToString())) {
                     strokesToSelect.Add(newStroke);
                 }
             }
-            foreach (string id in DrawingService.localSelectedStrokes)
-            {
-                if (!selectedIds.Contains(id))
-                {
-                    strokesToRemove.Add(StrokesDictionary[id]);
-                }
-            }
-            SelectedStrokes = GetSelectedStrokes();
             if (strokesToSelect.Count > 0)
             {
                 StrokeCollection adjacentStrokes = new StrokeCollection();
-                foreach(CustomStroke stroke in strokesToSelect)
+                foreach (CustomStroke stroke in strokesToSelect)
                 {
-                    if(stroke is LinkStroke)
+                    if (stroke is LinkStroke)
                     {
-                        if((stroke as LinkStroke).isAttached())
+                        if ((stroke as LinkStroke).isAttached())
                         {
-                            if((stroke as LinkStroke).from?.formId != null)
+                            if ((stroke as LinkStroke).from?.formId != null)
                             {
-                                Stroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).from?.formId];
-                                if(!strokesToSelect.Contains(adjacentStroke))
+                                CustomStroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).from?.formId];
+                                if (!strokesToSelect.Contains(adjacentStroke) &&
+                                    !adjacentStrokes.Contains(adjacentStroke))
+                                {
                                     adjacentStrokes.Add(adjacentStroke);
+                                    selectedIds.Add(adjacentStroke.guid.ToString());
+                                }
                             }
                             if ((stroke as LinkStroke).to?.formId != null)
                             {
-                                Stroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).to?.formId];
-                                if (!strokesToSelect.Contains(adjacentStroke))
+                                CustomStroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).to?.formId];
+                                if (!strokesToSelect.Contains(adjacentStroke) && 
+                                    !adjacentStrokes.Contains(adjacentStroke))
+                                {
                                     adjacentStrokes.Add(adjacentStroke);
+                                    selectedIds.Add(adjacentStroke.guid.ToString());
+                                }
                             }
                         }
                     }
                     else
                     {
-                        if((stroke as ShapeStroke).linksFrom.Count > 0)
+                        if ((stroke as ShapeStroke).linksFrom.Count > 0)
                         {
-                            foreach(string linkId in (stroke as ShapeStroke).linksFrom)
+                            foreach (string linkId in (stroke as ShapeStroke).linksFrom)
                             {
                                 CustomStroke adjacentLink = StrokesDictionary[linkId];
-                                if (!strokesToSelect.Contains(adjacentLink))
+                                if (!strokesToSelect.Contains(adjacentLink) && 
+                                    !adjacentStrokes.Contains(adjacentLink))
+                                {
                                     adjacentStrokes.Add(adjacentLink);
+                                    selectedIds.Add(adjacentLink.guid.ToString());
+                                }
                             }
                         }
                         if ((stroke as ShapeStroke).linksTo.Count > 0)
@@ -438,14 +451,25 @@ namespace PolyPaint.CustomInk
                             foreach (string linkId in (stroke as ShapeStroke).linksTo)
                             {
                                 CustomStroke adjacentLink = StrokesDictionary[linkId];
-                                if (!strokesToSelect.Contains(adjacentLink))
+                                if (!strokesToSelect.Contains(adjacentLink) && 
+                                    !adjacentStrokes.Contains(adjacentLink))
+                                {
                                     adjacentStrokes.Add(adjacentLink);
+                                    selectedIds.Add(adjacentLink.guid.ToString());
+                                }
                             }
                         }
                     }
                 }
                 strokesToSelect.Add(adjacentStrokes);
                 DrawingService.SelectShapes(strokesToSelect);
+            }
+            foreach (string id in DrawingService.localSelectedStrokes)
+            {
+                if (!selectedIds.Contains(id))
+                {
+                    strokesToRemove.Add(StrokesDictionary[id]);
+                }
             }
             if (strokesToRemove.Count > 0)
             {
@@ -459,13 +483,19 @@ namespace PolyPaint.CustomInk
                             if ((stroke as LinkStroke).from?.formId != null)
                             {
                                 Stroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).from?.formId];
-                                if (!strokesToRemove.Contains(adjacentStroke) && !GetSelectedStrokes().Contains(adjacentStroke))
+                                if (!strokesToRemove.Contains(adjacentStroke) && 
+                                    !GetSelectedStrokes().Contains(adjacentStroke) &&
+                                    !adjacentStrokes.Contains(adjacentStroke) &&
+                                    !strokesToSelect.Contains(adjacentStroke))
                                     adjacentStrokes.Add(adjacentStroke);
                             }
                             if ((stroke as LinkStroke).to?.formId != null)
                             {
                                 Stroke adjacentStroke = StrokesDictionary[(stroke as LinkStroke).to?.formId];
-                                if (!strokesToRemove.Contains(adjacentStroke) && !GetSelectedStrokes().Contains(adjacentStroke))
+                                if (!strokesToRemove.Contains(adjacentStroke) && 
+                                    !GetSelectedStrokes().Contains(adjacentStroke) &&
+                                    !adjacentStrokes.Contains(adjacentStroke) &&
+                                    !strokesToSelect.Contains(adjacentStroke))
                                     adjacentStrokes.Add(adjacentStroke);
                             }
                         }
@@ -477,7 +507,10 @@ namespace PolyPaint.CustomInk
                             foreach (string linkId in (stroke as ShapeStroke).linksFrom)
                             {
                                 CustomStroke adjacentLink = StrokesDictionary[linkId];
-                                if (!strokesToRemove.Contains(adjacentLink) && !GetSelectedStrokes().Contains(adjacentLink))
+                                if (!strokesToRemove.Contains(adjacentLink) && 
+                                    !GetSelectedStrokes().Contains(adjacentLink) &&
+                                    !adjacentStrokes.Contains(adjacentLink) &&
+                                    !strokesToSelect.Contains(adjacentLink))
                                     adjacentStrokes.Add(adjacentLink);
                             }
                         }
@@ -486,7 +519,10 @@ namespace PolyPaint.CustomInk
                             foreach (string linkId in (stroke as ShapeStroke).linksTo)
                             {
                                 CustomStroke adjacentLink = StrokesDictionary[linkId];
-                                if (!strokesToRemove.Contains(adjacentLink) && !GetSelectedStrokes().Contains(adjacentLink))
+                                if (!strokesToRemove.Contains(adjacentLink) && 
+                                    !GetSelectedStrokes().Contains(adjacentLink) &&
+                                    !adjacentStrokes.Contains(adjacentLink) &&
+                                    !strokesToSelect.Contains(adjacentLink))
                                     adjacentStrokes.Add(adjacentLink);
                             }
                         }
@@ -689,7 +725,7 @@ namespace PolyPaint.CustomInk
 
         }
 
-        private void OnRemoteSelection(StrokeCollection strokes)
+        private void OnRemoteSelection()
         {
             foreach (string strokeId in DrawingService.remoteSelectedStrokes)
             {
@@ -704,7 +740,7 @@ namespace PolyPaint.CustomInk
             }
         }
 
-        private void OnRemoteDeselection(StrokeCollection strokes)
+        private void OnRemoteDeselection()
         {
             Path path = new Path();
             path.Data = new RectangleGeometry(new Rect(1, 1, 1, 1));
@@ -723,28 +759,69 @@ namespace PolyPaint.CustomInk
                         numberArdorners--;
                     }
             }
+            OnRemoteSelection();
         }
 
         private void OnRemoveStrokes(StrokeCollection strokes)
         {
+
             foreach (CustomStroke stroke in strokes)
             {
+                RemoveAdorners(stroke);
+
                 foreach (CustomStroke stroke2 in Strokes)
                 {
-                    if(stroke.guid.Equals(stroke2.guid))
+                    if (stroke.guid.Equals(stroke2.guid))
                     {
                         RemoveStroke(stroke2);
                         break;
                     }
                 }
             }
-            RefreshChildren();
+            //RefreshChildren();
+        }
+
+        private void RemoveAdorners(CustomStroke stroke)
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                UIElement child = Children[i];
+                // egalement regarder si le child est de type customTextBox si oui -> Uid
+                if (child is CustomTextBox)
+                {
+                    if (((CustomTextBox)child).Uid == stroke.guid.ToString())
+                    {
+                        Children.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(child);
+                int numberArdorners = myAdornerLayer?.GetAdorners(child)?.Count() == null ? 0 : myAdornerLayer.GetAdorners(child).Count();
+
+
+                for (int j = 0; j < numberArdorners; j++)
+                {
+
+                    if ((myAdornerLayer.GetAdorners(child)[j] as CustomAdorner).adornedStroke?.guid.ToString() != null
+                        && (myAdornerLayer.GetAdorners(child)[j] as CustomAdorner).adornedStroke.guid.ToString() == stroke.guid.ToString())
+                    {
+                        myAdornerLayer.Remove(myAdornerLayer.GetAdorners(child)[j]);
+                        j--;
+                        numberArdorners--;
+                    }
+
+                }
+            }
         }
         #endregion
 
         private void OnUpdateStroke(InkCanvasStrokeCollectedEventArgs e)
         {
             CustomStroke stroke = (CustomStroke)e.Stroke;
+
+            RemoveAdorners(stroke);
+
             foreach (CustomStroke stroke2 in Strokes)
             {
                 if (stroke.guid.Equals(stroke2.guid))
@@ -766,7 +843,9 @@ namespace PolyPaint.CustomInk
                     break;
                 }
             }
-            RefreshChildren();
+            // faire les Add de refreshChildren
+            RefreshAdornersRemoteChildren();
+            //RefreshChildren();
         }
 
         #region OnStrokeCollected
@@ -1140,7 +1219,7 @@ namespace PolyPaint.CustomInk
             Children.Clear();
 
             isUpdatingLink = false;
-            
+
             StrokeCollection selectedStrokes = new StrokeCollection();
 
             // Add selection adorners to selectedStrokes
@@ -1151,6 +1230,11 @@ namespace PolyPaint.CustomInk
 
             addAdorners(selectedStrokes);
 
+            RefreshAdornersRemoteChildren();
+        }
+
+        private void RefreshAdornersRemoteChildren()
+        {
             foreach (string strokeId in DrawingService.remoteSelectedStrokes)
             {
                 foreach (CustomStroke stroke in Strokes)
@@ -1239,7 +1323,7 @@ namespace PolyPaint.CustomInk
         {
             foreach (CustomStroke stroke in Strokes)
             {
-                if(stroke.GetType() != typeof(LinkStroke))
+                if(stroke.GetType() != typeof(LinkStroke) && !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                 {
                     Path path = new Path();
                     path.Data = stroke.GetGeometry();
@@ -1350,7 +1434,15 @@ namespace PolyPaint.CustomInk
                     RefreshChildren();
                     beingSelected.Clear();
                 }
-            } else
+            }
+            else if(EditingMode == InkCanvasEditingMode.Ink && 
+                      (StrokeTypes)Enum.Parse(typeof(StrokeTypes), StrokeType) == StrokeTypes.LINK)
+            {
+                previewLinkStart = e.GetPosition(this);
+                isAddingLink = true;
+                base.OnPreviewMouseDown(e);
+            }
+            else
             {
                 base.OnPreviewMouseDown(e);
             }
@@ -1370,7 +1462,7 @@ namespace PolyPaint.CustomInk
                     beingSelected = new StrokeCollection();
                     foreach (CustomStroke stroke in Strokes)
                     {
-                        if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)) && 
+                        if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)) &&
                             !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                         {
                             beingSelected.Add(stroke);
@@ -1384,6 +1476,15 @@ namespace PolyPaint.CustomInk
                         beingSelected.Clear();
                     }
                 }
+            }
+            else if (isAddingLink)
+            {
+                if (Strokes.Contains(previewLink))
+                    Strokes.Remove(previewLink);
+                previewLink = new LinkStroke(new StylusPointCollection {
+                    new StylusPoint(previewLinkStart.X, previewLinkStart.Y),
+                    new StylusPoint(e.GetPosition(this).X, e.GetPosition(this).Y)});
+                Strokes.Add(previewLink);
             }
             else
             {
@@ -1446,6 +1547,13 @@ namespace PolyPaint.CustomInk
             else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
             {
                 selectionPath.Segments.Clear();
+            }
+            else if (isAddingLink)
+            {
+                if (Strokes.Contains(previewLink))
+                    Strokes.Remove(previewLink);
+                isAddingLink = false;
+                base.OnMouseUp(e);
             }
             else
             {

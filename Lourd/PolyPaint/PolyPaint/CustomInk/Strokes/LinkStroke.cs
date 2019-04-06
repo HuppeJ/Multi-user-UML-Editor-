@@ -35,7 +35,7 @@ namespace PolyPaint.CustomInk.Strokes
             // dotted
             if (style.type == 1)
             {
-                DrawingAttributes.Color = Colors.White;
+                DrawingAttributes.Color = Colors.Transparent;
             }
             else // normal line
             {
@@ -45,20 +45,20 @@ namespace PolyPaint.CustomInk.Strokes
             switch (style.thickness)
             {
                 case 0:
-                    DrawingAttributes.Width = 2;
-                    DrawingAttributes.Height = 2;
+                    DrawingAttributes.Width = 4;
+                    DrawingAttributes.Height = 4;
                     break;
                 case 1:
                     DrawingAttributes.Width = 6;
                     DrawingAttributes.Height = 6;
                     break;
                 case 2:
-                    DrawingAttributes.Width = 10;
-                    DrawingAttributes.Height = 10;
+                    DrawingAttributes.Width = 8;
+                    DrawingAttributes.Height = 8;
                     break;
                 default:
-                    DrawingAttributes.Width = 2;
-                    DrawingAttributes.Height = 2;
+                    DrawingAttributes.Width = 4;
+                    DrawingAttributes.Height = 4;
                     break;
             }
 
@@ -118,7 +118,7 @@ namespace PolyPaint.CustomInk.Strokes
         public LinkStroke(Point pointFrom, string formId, int anchor, LinkTypes linkType, StylusPointCollection stylusPointCollection) : base(stylusPointCollection)
         {
             guid = Guid.NewGuid();
-            name = "";
+            name = "Link";
             this.linkType = (int)linkType;
 
             from = new AnchorPoint(formId, anchor, "");
@@ -156,6 +156,29 @@ namespace PolyPaint.CustomInk.Strokes
                 StylusPoints.RemoveAt(0);
             }
 
+        }
+
+        public int getThickness()
+        {
+            int thickness = 4;
+
+            switch (style.thickness)
+            {
+                case 0:
+                    thickness = 4;
+                    break;
+                case 1:
+                    thickness = 6;
+                    break;
+                case 2:
+                    thickness = 8;
+                    break;
+                default:
+                    thickness = 4;
+                    break;
+            }
+
+            return thickness;
         }
 
         public void addToPointToLink(Point pointTo, string formId, int anchor)
@@ -202,7 +225,7 @@ namespace PolyPaint.CustomInk.Strokes
         #region AddArrow functions
         private void AddAssociationArrow(Coordinates firstPoint, Coordinates lastPoint, int pathIndex)
         {
-            Point pointOnStroke = GetPointForArrow(firstPoint, lastPoint, 10);
+            Point pointOnStroke = GetPointForArrow(firstPoint, lastPoint, 15);
 
             Point actualArrowPoint1 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), 45);
             Point actualArrowPoint2 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), -45);

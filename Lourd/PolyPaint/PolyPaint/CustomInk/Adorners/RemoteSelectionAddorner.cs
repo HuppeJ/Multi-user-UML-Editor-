@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using PolyPaint.CustomInk.Adorners;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -6,7 +7,7 @@ using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk
 {
-    class RemoteSelectionAdorner : Adorner
+    class RemoteSelectionAdorner : CustomAdorner
     {
         private CustomStroke stroke;
         private CustomInkCanvas canvas;
@@ -20,6 +21,8 @@ namespace PolyPaint.CustomInk
         public RemoteSelectionAdorner(UIElement adornedElement, CustomStroke stroke, CustomInkCanvas canvas)
           : base(adornedElement)
         {
+            adornedStroke = stroke;
+
             this.stroke = stroke;
             this.canvas = canvas;
             visualChildren = new VisualCollection(this);

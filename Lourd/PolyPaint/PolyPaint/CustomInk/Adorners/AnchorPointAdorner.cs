@@ -10,10 +10,11 @@ using System;
 using System.Windows.Ink;
 using PolyPaint.Services;
 using PolyPaint.Enums;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
-    class AnchorPointAdorner : Adorner
+    class AnchorPointAdorner : CustomAdorner
     {
         List<Thumb> anchors;
         List<StrokeAnchorPointThumb> cheatAnchors;
@@ -36,6 +37,8 @@ namespace PolyPaint.CustomInk
         public AnchorPointAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            adornedStroke = customStroke;
+
             visualChildren = new VisualCollection(this);
 
             linkPreview = new Path();

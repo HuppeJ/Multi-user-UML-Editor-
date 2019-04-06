@@ -5,9 +5,10 @@ import com.polypaint.polypaint.R
 import android.view.LayoutInflater
 import java.io.Serializable
 import java.util.*
+import kotlin.collections.ArrayList
 
 
-open class BasicShape (var id: String, var type: Int, var name: String, var shapeStyle: ShapeStyle, var linksTo: ArrayList<String?>, var linksFrom: ArrayList<String?>) : Serializable, DrawingElement(id) {
+open class BasicShape (var id: String = "", var type: Int = 0, var name: String = "", var shapeStyle: ShapeStyle , var linksTo: ArrayList<String?> = ArrayList(), var linksFrom: ArrayList<String?> = ArrayList()) : Serializable, DrawingElement(id) {
 //    private var inflater : LayoutInflater? = null
 
     init {

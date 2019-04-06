@@ -37,6 +37,7 @@ namespace PolyPaint.CustomInk
 
         public ClassStroke(StylusPointCollection pts) : base(pts)
         {
+            name = "Class";
             shapeStyle.width = 80;
             shapeStyle.height = 90;
 

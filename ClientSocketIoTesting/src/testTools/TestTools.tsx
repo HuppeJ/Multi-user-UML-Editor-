@@ -29,6 +29,12 @@ export class TestTools extends React.Component<ITestToolsProps, ITestToolsState>
         this.addTestTool("getServerState", "", this.props.socket);
         this.addTestTool("resetServerState", "", this.props.socket);
 
+        this.addTestTool("hasUserDoneTutorial", "", this.props.socket, "yu");
+        this.addTestTool("userHasDoneTutorial", "", this.props.socket, "yu");
+
+
+
+
         this.addTestTool("createCanvas", "canvasRoomCreated", this.props.socket, this.getMockCanvas_IEditCanevasData("CanvasRoom1"));
         this.addTestTool("createCanvas", "canvasRoomCreated", this.props.socket, this.getMockCanvas_IEditCanevasData("CanvasRoom2"));
 
