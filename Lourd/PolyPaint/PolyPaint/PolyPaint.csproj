@@ -267,6 +267,9 @@
     <Compile Include="Vues\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\GalleryChatView.xaml.cs">
+      <DependentUpon>GalleryChatView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\DrawingHistoryView.xaml.cs">
       <DependentUpon>DrawingHistoryView.xaml</DependentUpon>
     </Compile>
@@ -380,6 +383,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\ChatView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\GalleryChatView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -43,7 +43,7 @@ namespace PolyPaint.Vues
 
         void window_Closing(object sender, global::System.ComponentModel.CancelEventArgs e)
         {
-            DrawingService.LeaveCanvas();
+            // DrawingService.LeaveCanvas();
         }
 
         // Pour gérer les points de contrôles.
@@ -457,6 +457,11 @@ namespace PolyPaint.Vues
         {
 
             DrawingService.OpenTutorial();
+        }
+
+        private void BackToGallery(object sender, RoutedEventArgs e)
+        {
+            DrawingService.GoToGallery();
         }
     }
 }

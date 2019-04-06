@@ -393,8 +393,8 @@ namespace PolyPaint.Services
 
         public static void LeaveCanvas()
         {
-            //EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
-            //socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
+            EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
+            socket.Emit("leaveCanvasRoom", serializer.Serialize(editGalleryData));
             RefreshCanvases();
         }
 
@@ -756,6 +756,11 @@ namespace PolyPaint.Services
         internal static void OpenTutorial()
         {
             Application.Current.Dispatcher.Invoke(new Action(() => { GoToTutorial(); }), DispatcherPriority.Render);
+        }
+
+        internal static void GoToGallery()
+        {
+            BackToGallery?.Invoke();
         }
     }
 }
