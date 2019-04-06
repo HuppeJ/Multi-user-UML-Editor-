@@ -348,6 +348,12 @@ namespace PolyPaint.CustomInk
             DrawingService.SaveCanvas += ConvertInkCanvasToByteArray;
             DrawingService.RefreshChildren += RefreshChildren;
             DrawingService.RemoteReset += RemoteReset;
+            DrawingService.BackToGallery += DeselectAll;
+        }
+
+        private void DeselectAll()
+        {
+            Select(new StrokeCollection());
         }
 
         private void RemoteReset()

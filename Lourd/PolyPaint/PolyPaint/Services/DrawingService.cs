@@ -332,6 +332,11 @@ namespace PolyPaint.Services
                 Application.Current.Dispatcher.Invoke(new Action(() => { RemoteReset(); }), DispatcherPriority.Render);
             });
 
+            socket.On("disconnect", (data) =>
+            {
+                BackToGallery?.Invoke();
+            });
+
             RefreshCanvases();
         }
 
