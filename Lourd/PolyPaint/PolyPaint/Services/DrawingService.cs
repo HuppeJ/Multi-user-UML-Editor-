@@ -422,7 +422,7 @@ namespace PolyPaint.Services
             canvas.thumbnail = thumbnail;
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
             // Commente pour pas buster le cloud (à uncomment avant la remise)
-            socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
+            // socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
         }
 
         public static void RefreshCanvases()
