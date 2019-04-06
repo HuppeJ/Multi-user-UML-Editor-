@@ -30,7 +30,6 @@ namespace PolyPaint.CustomInk
             {
                 windowDrawing.RenameSelection();
             }
-            
         }
 
     }

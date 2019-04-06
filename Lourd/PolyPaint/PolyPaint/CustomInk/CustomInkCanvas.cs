@@ -1284,9 +1284,9 @@ namespace PolyPaint.CustomInk
                 {
                     if (GetSelectedStrokes().Count == 1)
                     {
+                        myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
-                        myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
                     }
                     /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
