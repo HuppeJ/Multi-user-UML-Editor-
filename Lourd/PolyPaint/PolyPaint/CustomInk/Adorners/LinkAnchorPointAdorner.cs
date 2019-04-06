@@ -9,6 +9,7 @@ using System;
 using System.Windows.Shapes;
 using PolyPaint.Templates;
 using PolyPaint.CustomInk.Adorners;
+using PolyPaint.Vues;
 
 namespace PolyPaint.CustomInk
 {
@@ -329,9 +330,7 @@ namespace PolyPaint.CustomInk
 
 
             //TODO eliminate preview
-
-            //linkPreview.Stroke = Brushes.Transparent;
-            //linkPreview.StrokeThickness = 0;
+            visualChildren.Remove(linkPreview);
 
             InvalidateArrange();
         }
@@ -351,7 +350,19 @@ namespace PolyPaint.CustomInk
         private void ShowMessage(string message)
         {
             hasFailed = true;
-            MessageBox.Show(message);
+
+            var parent = canvas.Parent;
+            while (!(parent is WindowDrawing))
+            {
+                parent = LogicalTreeHelper.GetParent(parent);
+            }
+
+            WindowDrawing windowDrawing = (WindowDrawing)parent;
+            if (windowDrawing != null)
+            {
+                windowDrawing.OpenMessagePopup(message);
+            }
+
         }
 
         // Override the VisualChildrenCount and 

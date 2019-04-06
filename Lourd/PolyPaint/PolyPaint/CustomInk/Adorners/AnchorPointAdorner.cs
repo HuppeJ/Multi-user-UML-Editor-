@@ -12,6 +12,7 @@ using PolyPaint.Services;
 using PolyPaint.Enums;
 using PolyPaint.CustomInk.Adorners;
 using System.Windows.Controls;
+using PolyPaint.Vues;
 
 namespace PolyPaint.CustomInk
 {
@@ -191,22 +192,22 @@ namespace PolyPaint.CustomInk
                 if (strokeTo is ActivityStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
-                    MessageBox.Show("A role can only be linked to an activity.");
+                    ShowMessage("A role can only be linked to an activity.");
             } else if (shapeStroke is ArtifactStroke)
             {
                 if (strokeTo is ActivityStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
-                    MessageBox.Show("An artifact can only be linked to an activity.");
+                    ShowMessage("An artifact can only be linked to an activity.");
             } else if (shapeStroke is ActivityStroke)
             {
                 if (strokeTo is ArtifactStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
-                    MessageBox.Show("An activity can only be linked to an artifact.");
+                    ShowMessage("An activity can only be linked to an artifact.");
             } else if (strokeTo != null && strokeTo.isProccessStroke())
             {
-                MessageBox.Show("Cannot create link.");
+                ShowMessage("Cannot create link.");
             }
             else
             {
@@ -240,6 +241,22 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateShapes(shapesToUpdate);
 
             // canvas.Select(new StrokeCollection { linkBeingCreated });
+        }
+
+        private void ShowMessage(string message)
+        {
+            var parent = canvas.Parent;
+            while (!(parent is WindowDrawing))
+            {
+                parent = LogicalTreeHelper.GetParent(parent);
+            }
+
+            WindowDrawing windowDrawing = (WindowDrawing)parent;
+            if (windowDrawing != null)
+            {
+                windowDrawing.OpenMessagePopup(message);
+            }
+            
         }
 
         // Override the VisualChildrenCount and 

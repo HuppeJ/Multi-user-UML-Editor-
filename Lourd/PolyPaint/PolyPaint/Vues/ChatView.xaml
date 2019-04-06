@@ -358,6 +358,9 @@
         <Popup x:Name="popUpJoinRoom" Placement="Center">
             <Vues:JoinRoomPopup x:Name="popUpJoinRoomVue"/>
         </Popup>
-        
+        <Popup x:Name="popUpMessage" Placement="Center">
+            <Vues:MessagePopupCreateRoom x:Name="popUpMessageVue"/>
+        </Popup>
+
     </Grid>
 </UserControl>

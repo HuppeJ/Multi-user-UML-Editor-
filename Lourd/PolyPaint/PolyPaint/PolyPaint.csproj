@@ -269,6 +269,18 @@
     <Compile Include="Vues\DrawingHistoryView.xaml.cs">
       <DependentUpon>DrawingHistoryView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\MessagePopupCreateUser.xaml.cs">
+      <DependentUpon>MessagePopupCreateUser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\MessagePopupCreateRoom.xaml.cs">
+      <DependentUpon>MessagePopupCreateRoom.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\MessagePopupLogin.xaml.cs">
+      <DependentUpon>MessagePopupLogin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\MessagePopup.xaml.cs">
+      <DependentUpon>MessagePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\TutorialView.xaml.cs">
       <DependentUpon>TutorialView.xaml</DependentUpon>
     </Compile>
@@ -385,6 +397,22 @@
     <Page Include="Vues\DrawingHistoryView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopupCreateUser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopupCreateRoom.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopupLogin.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vues\TutorialView.xaml">
       <Generator>MSBuild:Compile</Generator>
