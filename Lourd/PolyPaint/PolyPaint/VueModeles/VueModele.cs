@@ -71,6 +71,17 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private string _thumbnail;
+        public string thumbnail
+        {
+            get { return _thumbnail; }
+            set
+            {
+                _thumbnail = value;
+                ProprieteModifiee();
+            }
+        }
+
         /* public string CouleurSelectionnee
         {
             get { return editeur.CouleurSelectionnee; }
@@ -239,6 +250,22 @@ namespace PolyPaint.VueModeles
             {
                 return _getCanvasHistoryLogCommand ?? (_getCanvasHistoryLogCommand = new RelayCommand<object>(DrawingService.GetHistoryLog));
             }
+        }
+        #endregion
+
+        #region UpdateThumbnailCommand
+        private ICommand _updateThumbnailCommand;
+        public ICommand UpdateThumbnailCommand
+        {
+            get
+            {
+                return _updateThumbnailCommand ?? (_updateThumbnailCommand = new RelayCommand<object>(UpdateThumbnail));
+            }
+        }
+
+        private void UpdateThumbnail(object o)
+        {
+            _thumbnail = o as string;
         }
         #endregion
 
