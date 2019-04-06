@@ -60,7 +60,8 @@ namespace PolyPaint.CustomInk
             rotateHandle.Cursor = Cursors.Hand;
             rotateHandle.Width = 10;
             rotateHandle.Height = 10;
-            rotateHandle.Background = Brushes.Blue;
+            rotateHandle.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFc8d4ea"),
+                (Color)ColorConverter.ConvertFromString("#FF809dce"), 45);
 
             rotateHandle.DragDelta += new DragDeltaEventHandler(rotateHandle_DragDelta);
             rotateHandle.DragCompleted += new DragCompletedEventHandler(rotateHandle_DragCompleted);
@@ -73,10 +74,9 @@ namespace PolyPaint.CustomInk
             rotateHandle.RenderTransform = transform;
 
             line = new Path();
-            line.Stroke = Brushes.Blue;
+            line.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF809dce"));
             line.StrokeThickness = 1;
 
-            // Bug. Cheat, but the geometry, the selection Rectangle (newRect) should be the right one.. geom of the stroke?
             line.RenderTransform = rotation;
 
             visualChildren.Add(line);
@@ -85,7 +85,7 @@ namespace PolyPaint.CustomInk
             pathPreview.IsClosed = false;
             rotatePreview = new Path();
             rotatePreview.Data = new PathGeometry();
-            rotatePreview.Stroke = Brushes.Blue;
+            rotatePreview.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBBBBBB"));
             rotatePreview.StrokeThickness = 2;
             visualChildren.Add(rotatePreview);
         }

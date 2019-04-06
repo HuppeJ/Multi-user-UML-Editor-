@@ -348,6 +348,12 @@ namespace PolyPaint.CustomInk
             DrawingService.SaveCanvas += ConvertInkCanvasToByteArray;
             DrawingService.RefreshChildren += RefreshChildren;
             DrawingService.RemoteReset += RemoteReset;
+            DrawingService.BackToGallery += DeselectAll;
+        }
+
+        private void DeselectAll()
+        {
+            Select(new StrokeCollection());
         }
 
         private void RemoteReset()
@@ -1284,9 +1290,9 @@ namespace PolyPaint.CustomInk
                 {
                     if (GetSelectedStrokes().Count == 1)
                     {
+                        myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
-                        myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
                     }
                     /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)

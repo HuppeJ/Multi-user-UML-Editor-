@@ -25,6 +25,7 @@ namespace PolyPaint.CustomInk
 
         RotateTransform rotation;
         private Path rotatePreview;
+        Path line;
 
         RectangleGeometry NewRectangle = new RectangleGeometry();
 
@@ -49,20 +50,41 @@ namespace PolyPaint.CustomInk
             rotation = new RotateTransform((stroke as ShapeStroke).shapeStyle.rotation, center.X, center.Y);
 
             visualChildren = new VisualCollection(this);
+
+            line = new Path();
+            line.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF809dce"));
+            line.StrokeThickness = 1;
+
+            line.Data = new LineGeometry(new Point(center.X, center.Y - strokeBounds.Height / 2 - 10),
+                                         new Point(center.X, center.Y - strokeBounds.Height / 2 - HANDLEMARGIN));
+            line.RenderTransform = rotation;
+
+            visualChildren.Add(line);
+
             rotateHandle = new Thumb();
             rotateHandle.Cursor = Cursors.Hand;
             rotateHandle.Width = 10;
             rotateHandle.Height = 10;
-            rotateHandle.Background = Brushes.Blue;
+            rotateHandle.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFc8d4ea"),
+                (Color)ColorConverter.ConvertFromString("#FF809dce"), 45);
 
             rotateHandle.DragDelta += new DragDeltaEventHandler(rotateHandle_DragDelta);
             rotateHandle.DragCompleted += new DragCompletedEventHandler(rotateHandle_DragCompleted);
-            
+
+            TransformGroup transform = new TransformGroup();
+            transform.Children.Add(new RotateTransform(rotation.Angle, 
+                rotateHandle.Width / 2,
+                rotateHandle.Height / 2 + HANDLEMARGIN + stroke.GetCustomBound().Height / 2));
+            transform.Children.Add(new TranslateTransform(-canvas.ActualWidth / 2 + strokeBounds.X + strokeBounds.Width / 2,
+                -canvas.ActualHeight / 2 + strokeBounds.Y - HANDLEMARGIN));
+
+            rotateHandle.RenderTransform = transform;
+
             visualChildren.Add(rotateHandle);
 
             rotatePreview = new Path();
-            rotatePreview.Stroke = Brushes.Blue;
-            rotatePreview.StrokeThickness = 2;
+            rotatePreview.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBBBBBB"));
+            rotatePreview.StrokeThickness = 1;
             visualChildren.Add(rotatePreview);
         }
 
@@ -93,8 +115,12 @@ namespace PolyPaint.CustomInk
             }
 
             // Draws the thumb and the rectangle around the strokes.
-            rotateHandle.Arrange(handleRect);
+            rotateHandle.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+
             rotatePreview.Arrange(new Rect(finalSize));
+
+            line.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+
             return finalSize;
         }
 
@@ -155,6 +181,17 @@ namespace PolyPaint.CustomInk
             NewRectangle = new RectangleGeometry(stroke.GetCustomBound(), 0, 0, rotation);
             rotatePreview.Data = NewRectangle;
             rotatePreview.Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+
+            line.RenderTransform = rotation;
+
+            TransformGroup transform = new TransformGroup();
+            transform.Children.Add(new RotateTransform(rotation.Angle, 
+                rotateHandle.Width / 2, 
+                rotateHandle.Height / 2 + HANDLEMARGIN + stroke.GetCustomBound().Height / 2));
+            transform.Children.Add(new TranslateTransform(-canvas.ActualWidth / 2 + strokeBounds.X + strokeBounds.Width / 2,
+                -canvas.ActualHeight / 2 + strokeBounds.Y - HANDLEMARGIN));
+
+            rotateHandle.RenderTransform = transform;
         }
 
         /// <summary>

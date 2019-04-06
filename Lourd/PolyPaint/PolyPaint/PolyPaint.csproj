@@ -240,6 +240,7 @@
     <Compile Include="Services\IDialogService.cs" />
     <Compile Include="Templates\AnchorPoint.cs" />
     <Compile Include="Templates\BasicShape.cs" />
+    <Compile Include="Templates\HistoryData.cs" />
     <Compile Include="Templates\Canvas.cs" />
     <Compile Include="Templates\CanvasSocketCommunication.cs" />
     <Compile Include="Templates\ChatroomJoin.cs" />
@@ -249,6 +250,7 @@
     <Compile Include="Templates\LinkStyle.cs" />
     <Compile Include="Templates\Chatroom.cs" />
     <Compile Include="Templates\PrivateCanvases.cs" />
+    <Compile Include="Templates\History.cs" />
     <Compile Include="Templates\PublicCanvases.cs" />
     <Compile Include="Templates\RoomList.cs" />
     <Compile Include="Templates\ShapeStyle.cs" />
@@ -272,6 +274,9 @@
     </Compile>
     <Compile Include="Vues\DrawingHistoryView.xaml.cs">
       <DependentUpon>DrawingHistoryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Popups\HistoryPopup.xaml.cs">
+      <DependentUpon>HistoryPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\TutorialView.xaml.cs">
       <DependentUpon>TutorialView.xaml</DependentUpon>
@@ -391,6 +396,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\DrawingHistoryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\HistoryPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
