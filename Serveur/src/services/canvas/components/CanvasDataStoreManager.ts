@@ -1,4 +1,4 @@
-import { ICanevas, IHistoryData } from "../interfaces/interfaces";
+import { ICanevas, IHistoryData, ICanvasDataStore } from "../interfaces/interfaces";
 
 export const CANVAS_TABLE: string  = "Canvas";
 
@@ -51,11 +51,30 @@ export default class CanvasDataStoreManager {
     }
 
 
-    public async getAllCanvases(): Promise<string> {
-        const query = this.datastore
-        .createQuery(CANVAS_TABLE)
+    public async getAllCanvases(): Promise<ICanvasDataStore[]> {
+        console.log("getAllCanvases1")
 
-        console.log(query)
-        return "";
+        const query = this.datastore.createQuery(CANVAS_TABLE);
+        const canvases = await this.datastore.runQuery(query);
+        
+        const parsedCanvases: ICanvasDataStore[] = [];
+        console.log("getAllCanvases1_canvases[0]", canvases[0])
+        console.log("getAllCanvases2_canvases[0][0]", canvases[0][0])
+        console.log("getAllCanvases3_canvases[0][1]", canvases[0][1])
+        console.log("getAllCanvases4_canvases[1]", canvases[1])
+
+        canvases[0].forEach((data: any) => {
+            parsedCanvases.push({
+                canevas: data.canevas,
+                canvasHistory: data.canvasHistory,  
+                canvasName: data.canvasName,
+            } as ICanvasDataStore);
+
+            console.log("DATA :" , data.canevas)
+        });
+        console.log("getAllCanvases_canvases", canvases)
+        console.log("getAllCanvases_parsedCanvases", parsedCanvases)
+
+        return parsedCanvases;
     }
 }
