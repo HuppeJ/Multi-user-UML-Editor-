@@ -11,137 +11,67 @@ using System.Windows.Shapes;
 
 namespace PolyPaint.CustomInk
 {
-    class DottedPathAdorner : CustomAdorner
+    class CustomPath
     {
         Rect strokeBounds = Rect.Empty;
         private LinkStroke linkStroke;
         private CustomInkCanvas canvas;
 
         private Path linkPath;
-        PathGeometry linkPathGeom;
         LineGeometry lineGeom;
-
-        private Path arrow;
-        PathGeometry arrowGeom;
+        PathGeometry linkPathGeom;
         Polygon polygon = new Polygon();
 
         Path path = new Path();
-
-        VisualCollection visualChildren;
+        Line rect;
 
         // Be sure to call the base class constructor.
-        public DottedPathAdorner(UIElement adornedElement, LinkStroke stroke, CustomInkCanvas canvas)
-          : base(adornedElement)
+        public CustomPath(LinkStroke stroke)
         {
-            adornedStroke = stroke;
-
             linkStroke = stroke;
-            this.canvas = canvas;
-            visualChildren = new VisualCollection(this);
-            strokeBounds = stroke.GetCustomBound();
+            strokeBounds = stroke.GetBounds();
 
             linkPath = new Path();
-            linkPath.Stroke = (Brush) new BrushConverter().ConvertFromString(stroke.style.color);
-            linkPath.StrokeThickness = stroke.DrawingAttributes.Height;
-            linkPath.StrokeDashArray = new DoubleCollection { 1, 0.5 };
+            linkPath.Stroke = (Brush)new BrushConverter().ConvertFromString(stroke.style.color);
+            linkPath.StrokeThickness = stroke.getThickness();
+            linkPath.StrokeDashArray = new DoubleCollection { 1, 1 };
             linkPath.IsHitTestVisible = false;
             linkPath.Fill = Brushes.Black;
 
-            arrowGeom = new PathGeometry();
+            linkPathGeom = new PathGeometry();
             lineGeom = new LineGeometry();
 
             for (int i = 1; i < linkStroke.path.Count - 1; i++)
             {
                 lineGeom.StartPoint = linkStroke.path[i - 1].ToPoint();
                 lineGeom.EndPoint = linkStroke.path[i].ToPoint();
-                arrowGeom.AddGeometry(lineGeom);
+                linkPathGeom.AddGeometry(lineGeom);
             }
-
-            AddRelationArrows1();
-
-            linkPath.Data = arrowGeom;
-
-            arrowGeom = new PathGeometry();
 
             AddRelationArrows();
+            linkPath.Data = linkPathGeom;
 
-            arrow = new Path();
-            arrow.Data = arrowGeom;
-            arrow.Stroke = (Brush)new BrushConverter().ConvertFromString(stroke.style.color);
-            arrow.StrokeThickness = 2;
-            if (linkStroke.linkType == 1 || linkStroke.linkType == 2 && linkStroke.style?.thickness != 0)
-            {
-                arrow.StrokeThickness = 3;
-            }
-            arrow.IsHitTestVisible = false;
-            arrow.Fill = Brushes.Black;
+            rect = new Line();
+            rect.X1 = 0;
+            rect.Y1 = 0;
+            rect.X2 = 1;
+            rect.Y2 = 1;
+            rect.Stroke = (Brush)new BrushConverter().ConvertFromString(stroke.style.color);
+            rect.StrokeThickness = 100;// stroke.DrawingAttributes.Height;
+            rect.StrokeDashArray = new DoubleCollection { 1, 1 };
+            rect.IsHitTestVisible = false;
+            rect.Fill = Brushes.Black;
 
-            visualChildren.Add(linkPath);
-            visualChildren.Add(arrow);
         }
 
-        /// <summary>
-        /// Draw the rotation handle and the outline of
-        /// the element.
-        /// </summary>
-        /// <param name="finalSize">The final area within the 
-        /// parent that this element should use to arrange 
-        /// itself and its children.</param>
-        /// <returns>The actual size used. </returns>
-        protected override Size ArrangeOverride(Size finalSize)
+        public Path GetPath()
         {
-            if (strokeBounds.IsEmpty)
-            {
-                return finalSize;
-            }
-
-            arrow.Arrange(new Rect(finalSize));
-            linkPath.Arrange(new Rect(finalSize));
-            polygon.Arrange(new Rect(finalSize));
-            return finalSize;
+            return linkPath;
         }
 
-        // Override the VisualChildrenCount and 
-        // GetVisualChild properties to interface with 
-        // the adorner's visual collection.
-        protected override int VisualChildrenCount
+        public Line GetLine()
         {
-            get { return visualChildren.Count; }
-        }
-
-        protected override Visual GetVisualChild(int index)
-        {
-            return visualChildren[index];
-        }
-
-        private void AddRelationArrows1()
-        {
-            switch ((LinkTypes)linkStroke.linkType)
-            {
-                case LinkTypes.LINE:
-                case LinkTypes.ONE_WAY_ASSOCIATION:
-                case LinkTypes.TWO_WAY_ASSOCIATION:
-                    lineGeom.StartPoint = linkStroke.path[linkStroke.path.Count - 2].ToPoint();
-                    lineGeom.EndPoint = linkStroke.path[linkStroke.path.Count - 1].ToPoint();
-                    arrowGeom.AddGeometry(lineGeom); break;
-                case LinkTypes.HERITAGE:
-                    Point pointOnStroke = GetPointForArrow(linkStroke.path[linkStroke.path.Count - 1], linkStroke.path[linkStroke.path.Count - 2], 10);
-                    lineGeom.StartPoint = linkStroke.path[linkStroke.path.Count - 2].ToPoint();
-                    lineGeom.EndPoint = pointOnStroke;
-                    arrowGeom.AddGeometry(lineGeom); 
-                    ////on the to point
-                    //AddHeritageArrow(linkStroke.path[linkStroke.path.Count - 1], linkStroke.path[linkStroke.path.Count - 2]); ;
-                    break;
-                case LinkTypes.AGGREGATION:
-                case LinkTypes.COMPOSITION:
-                    Point pointBeforeOnStroke = GetPointForArrow(linkStroke.path[linkStroke.path.Count - 1], linkStroke.path[linkStroke.path.Count - 2], 20);
-                    lineGeom.StartPoint = linkStroke.path[linkStroke.path.Count - 2].ToPoint();
-                    lineGeom.EndPoint = pointBeforeOnStroke;
-                    arrowGeom.AddGeometry(lineGeom);
-                    break;
-                default:
-                    break;
-            }
+            return rect;
         }
 
         private void AddRelationArrows()
@@ -149,6 +79,7 @@ namespace PolyPaint.CustomInk
             switch ((LinkTypes)linkStroke.linkType)
             {
                 case LinkTypes.LINE:
+                    AddLineGeometry(linkStroke.path[linkStroke.path.Count - 2], linkStroke.path[linkStroke.path.Count - 1]);
                     break;
                 case LinkTypes.ONE_WAY_ASSOCIATION:
                     //on the to point
@@ -189,25 +120,29 @@ namespace PolyPaint.CustomInk
             Point actualArrowPoint1 = new Point(arrowPoint1.X / arrowNorm + toPoint.x, arrowPoint1.Y / arrowNorm + toPoint.y);
             Point actualArrowPoint2 = new Point(arrowPoint2.X / arrowNorm + toPoint.x, arrowPoint2.Y / arrowNorm + toPoint.y);
 
+            AddLineGeometry(beforeToPoint, pointBeforeOnStroke);
             AddLineGeometry(pointBeforeOnStroke, actualArrowPoint1);
             AddLineGeometry(new Coordinates(actualArrowPoint1), toPoint);
             AddLineGeometry(toPoint, actualArrowPoint2);
             AddLineGeometry(actualArrowPoint2, pointBeforeOnStroke);
-            
+
             polygon.Points = new PointCollection { pointBeforeOnStroke, actualArrowPoint1, toPoint.ToPoint(), actualArrowPoint2, pointBeforeOnStroke };
             polygon.Fill = (Brush)new BrushConverter().ConvertFromString(linkStroke.style.color);
             polygon.IsHitTestVisible = false;
-            visualChildren.Add(polygon);
         }
 
         #region AddArrow functions
         private void AddAssociationArrow(Coordinates firstPoint, Coordinates lastPoint, int pathIndex)
         {
             List<Coordinates> path = linkStroke.path;
-            Point pointOnStroke = GetPointForArrow(firstPoint, lastPoint, 15);
+            Point pointOnStroke = GetPointForArrow(firstPoint, lastPoint, 10);
 
             Point actualArrowPoint1 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), 45);
             Point actualArrowPoint2 = rotatePointAroundPoint(pointOnStroke, firstPoint.ToPoint(), -45);
+            if (pathIndex > 0)
+            {
+                AddLineGeometry(path[pathIndex - 1], path[pathIndex]);
+            }
 
             AddLineGeometry(path[pathIndex], actualArrowPoint1);
             AddLineGeometry(path[pathIndex], actualArrowPoint2);
@@ -225,6 +160,7 @@ namespace PolyPaint.CustomInk
             Point actualArrowPoint1 = new Point(arrowPoint1.X / arrowNorm + toPoint.x, arrowPoint1.Y / arrowNorm + toPoint.y);
             Point actualArrowPoint2 = new Point(arrowPoint2.X / arrowNorm + toPoint.x, arrowPoint2.Y / arrowNorm + toPoint.y);
 
+            AddLineGeometry(beforeToPoint, pointOnStroke);
             AddLineGeometry(actualArrowPoint2, actualArrowPoint1);
             AddLineGeometry(toPoint, actualArrowPoint2);
             AddLineGeometry(toPoint, actualArrowPoint1);
@@ -242,7 +178,8 @@ namespace PolyPaint.CustomInk
 
             Point actualArrowPoint1 = new Point(arrowPoint1.X / arrowNorm + toPoint.x, arrowPoint1.Y / arrowNorm + toPoint.y);
             Point actualArrowPoint2 = new Point(arrowPoint2.X / arrowNorm + toPoint.x, arrowPoint2.Y / arrowNorm + toPoint.y);
-            
+
+            AddLineGeometry(beforeToPoint, pointBeforeOnStroke);
             AddLineGeometry(pointBeforeOnStroke, actualArrowPoint1);
             AddLineGeometry(new Coordinates(actualArrowPoint1), toPoint);
             AddLineGeometry(toPoint, actualArrowPoint2);
@@ -253,21 +190,21 @@ namespace PolyPaint.CustomInk
         {
             lineGeom.StartPoint = start.ToPoint();
             lineGeom.EndPoint = end;
-            arrowGeom.AddGeometry(lineGeom);
+            linkPathGeom.AddGeometry(lineGeom);
         }
 
         private void AddLineGeometry(Point start, Point end)
         {
             lineGeom.StartPoint = start;
             lineGeom.EndPoint = end;
-            arrowGeom.AddGeometry(lineGeom);
+            linkPathGeom.AddGeometry(lineGeom);
         }
 
         private void AddLineGeometry(Coordinates start, Coordinates end)
         {
             lineGeom.StartPoint = start.ToPoint();
             lineGeom.EndPoint = end.ToPoint();
-            arrowGeom.AddGeometry(lineGeom);
+            linkPathGeom.AddGeometry(lineGeom);
         }
 
         private static Point GetPointForArrow(Coordinates firstPoint, Coordinates lastPoint, int distanceFromPoint)

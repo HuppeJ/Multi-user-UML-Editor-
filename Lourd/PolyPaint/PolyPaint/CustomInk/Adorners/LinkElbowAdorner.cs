@@ -11,20 +11,18 @@ using PolyPaint.Templates;
 using PolyPaint.Enums;
 using PolyPaint.Services;
 using System.Windows.Ink;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
-    class LinkElbowAdorner : Adorner
+    class LinkElbowAdorner : CustomAdorner 
     {
         List<Thumb> anchors;
         VisualCollection visualChildren;
 
         // The center of the strokes.
         Point center;
-
-        // The linkLine
-        Path line;
-
+        
         const int HANDLEMARGIN = 15;
 
         // The bounds of the Strokes;
@@ -37,6 +35,8 @@ namespace PolyPaint.CustomInk
         public LinkElbowAdorner(Point mousePosition, int index, UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            adornedStroke = linkStroke;
+
             initialMousePosition = mousePosition;
             indexInPath = index;
 
@@ -68,10 +68,6 @@ namespace PolyPaint.CustomInk
 
                 visualChildren.Add(anchor);
             }
-
-            line = new Path();
-
-            visualChildren.Add(line);
 
         }
 
@@ -149,9 +145,7 @@ namespace PolyPaint.CustomInk
             {
                 ArrangeAnchor(i, -center.X + initialMousePosition.X, -center.Y + initialMousePosition.Y);
             }
-
-            line.Arrange(new Rect(finalSize));
-
+            
             return finalSize;
         }
 

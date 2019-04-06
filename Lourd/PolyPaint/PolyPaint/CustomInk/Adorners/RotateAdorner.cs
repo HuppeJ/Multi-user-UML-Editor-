@@ -8,10 +8,11 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Ink;
 using PolyPaint.CustomInk.Strokes;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
-    public class RotateAdorner : Adorner
+    public class RotateAdorner : CustomAdorner
     {
         // The Thumb to drag to rotate the strokes.
         Thumb rotateHandle;
@@ -38,6 +39,7 @@ namespace PolyPaint.CustomInk
         public RotateAdorner(UIElement adornedElement, CustomStroke strokeToRotate, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            adornedStroke = strokeToRotate;
             stroke = strokeToRotate;
             canvas = actualCanvas;
             // rotation initiale de la stroke (pour dessiner le rectangle)

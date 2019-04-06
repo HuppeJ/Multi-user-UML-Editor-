@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 using Path = System.Windows.Shapes.Path;
 using sd = System.Drawing;
 using s2d = System.Drawing.Drawing2D;
-using System.Windows.Shapes;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
@@ -732,24 +732,64 @@ namespace PolyPaint.CustomInk
 
         private void OnRemoveStrokes(StrokeCollection strokes)
         {
+
             foreach (CustomStroke stroke in strokes)
             {
+                RemoveAdorners(stroke);
+
                 foreach (CustomStroke stroke2 in Strokes)
                 {
-                    if(stroke.guid.Equals(stroke2.guid))
+                    if (stroke.guid.Equals(stroke2.guid))
                     {
                         RemoveStroke(stroke2);
                         break;
                     }
                 }
             }
-            RefreshChildren();
+            //RefreshChildren();
+        }
+
+        private void RemoveAdorners(CustomStroke stroke)
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                UIElement child = Children[i];
+                // egalement regarder si le child est de type customTextBox si oui -> Uid
+                if (child is CustomTextBox)
+                {
+                    if (((CustomTextBox)child).Uid == stroke.guid.ToString())
+                    {
+                        Children.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(child);
+                int numberArdorners = myAdornerLayer?.GetAdorners(child)?.Count() == null ? 0 : myAdornerLayer.GetAdorners(child).Count();
+
+
+                for (int j = 0; j < numberArdorners; j++)
+                {
+
+                    if ((myAdornerLayer.GetAdorners(child)[j] as CustomAdorner).adornedStroke?.guid.ToString() != null
+                        && (myAdornerLayer.GetAdorners(child)[j] as CustomAdorner).adornedStroke.guid.ToString() == stroke.guid.ToString())
+                    {
+                        myAdornerLayer.Remove(myAdornerLayer.GetAdorners(child)[j]);
+                        j--;
+                        numberArdorners--;
+                    }
+
+                }
+            }
         }
         #endregion
 
         private void OnUpdateStroke(InkCanvasStrokeCollectedEventArgs e)
         {
             CustomStroke stroke = (CustomStroke)e.Stroke;
+
+            RemoveAdorners(stroke);
+
             foreach (CustomStroke stroke2 in Strokes)
             {
                 if (stroke.guid.Equals(stroke2.guid))
@@ -771,7 +811,9 @@ namespace PolyPaint.CustomInk
                     break;
                 }
             }
-            RefreshChildren();
+            // faire les Add de refreshChildren
+            RefreshAdornersRemoteChildren();
+            //RefreshChildren();
         }
 
         #region OnStrokeCollected
@@ -1145,7 +1187,7 @@ namespace PolyPaint.CustomInk
             Children.Clear();
 
             isUpdatingLink = false;
-            
+
             StrokeCollection selectedStrokes = new StrokeCollection();
 
             // Add selection adorners to selectedStrokes
@@ -1156,6 +1198,11 @@ namespace PolyPaint.CustomInk
 
             addAdorners(selectedStrokes);
 
+            RefreshAdornersRemoteChildren();
+        }
+
+        private void RefreshAdornersRemoteChildren()
+        {
             foreach (string strokeId in DrawingService.remoteSelectedStrokes)
             {
                 foreach (CustomStroke stroke in Strokes)

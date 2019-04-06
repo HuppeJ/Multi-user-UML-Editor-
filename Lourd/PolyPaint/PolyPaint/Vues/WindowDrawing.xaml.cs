@@ -289,7 +289,7 @@ namespace PolyPaint.Vues
             stroke.addStylusPointsToLink();
             // dotted
             if(stroke.style.type == 1){
-                stroke.DrawingAttributes.Color = Colors.White;
+                stroke.DrawingAttributes.Color = Colors.Transparent;
             }
             else // normal line
             {
@@ -299,20 +299,20 @@ namespace PolyPaint.Vues
             switch (linkThickness)
             {
                 case 0:
-                    stroke.DrawingAttributes.Width = 2;
-                    stroke.DrawingAttributes.Height = 2;
+                    stroke.DrawingAttributes.Width = 4;
+                    stroke.DrawingAttributes.Height = 4;
                     break;
                 case 1:
                     stroke.DrawingAttributes.Width = 6;
                     stroke.DrawingAttributes.Height = 6;
                     break;
                 case 2:
-                    stroke.DrawingAttributes.Width = 10;
-                    stroke.DrawingAttributes.Height = 10;
+                    stroke.DrawingAttributes.Width = 8;
+                    stroke.DrawingAttributes.Height = 8;
                     break;
                 default:
-                    stroke.DrawingAttributes.Width = 2;
-                    stroke.DrawingAttributes.Height = 2;
+                    stroke.DrawingAttributes.Width = 4;
+                    stroke.DrawingAttributes.Height = 4;
                     break;
             }
 

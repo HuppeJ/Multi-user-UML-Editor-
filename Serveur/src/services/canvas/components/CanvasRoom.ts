@@ -476,6 +476,10 @@ export default class CanvasRoom {
         return JSON.stringify(this.history);
     }
 
+    public getCanvasLogHistory(): IHistoryData[] {
+        return this.history;
+    }
+
     // // fromJSON is used to convert an serialized version
     // // of the User to an instance of the class
     // static fromJSON(json: ICanvasRoom | string): User {

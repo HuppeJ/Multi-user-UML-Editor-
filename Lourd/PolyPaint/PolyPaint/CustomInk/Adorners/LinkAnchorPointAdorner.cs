@@ -8,10 +8,11 @@ using System.Windows.Controls.Primitives;
 using System;
 using System.Windows.Shapes;
 using PolyPaint.Templates;
+using PolyPaint.CustomInk.Adorners;
 
 namespace PolyPaint.CustomInk
 {
-    class LinkAnchorPointAdorner : Adorner
+    class LinkAnchorPointAdorner : CustomAdorner
     {
         List<Thumb> anchors;
         VisualCollection visualChildren;
@@ -34,6 +35,8 @@ namespace PolyPaint.CustomInk
         public LinkAnchorPointAdorner(UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            adornedStroke = linkStroke;
+
             visualChildren = new VisualCollection(this);
 
             linkPreview = new Path();
@@ -155,6 +158,12 @@ namespace PolyPaint.CustomInk
             {
                 linkPreviewGeom.StartPoint = pos;
                 linkPreviewGeom.EndPoint = linkStroke.path[1].ToPoint();
+            }
+
+            if(linkStroke.path.Count > 2)
+            {
+                linkPreview.Stroke = Brushes.Transparent;
+                linkPreview.StrokeThickness = 0;
             }
 
             linkPreview.Data = linkPreviewGeom;

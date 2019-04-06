@@ -1,5 +1,5 @@
 import CanvasRoom from "./CanvasRoom";
-import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData, IResizeCanevasData } from "../interfaces/interfaces";
+import { IEditCanevasData, IEditGalleryData, IUpdateFormsData, IUpdateLinksData, IResizeCanevasData, IHistoryData } from "../interfaces/interfaces";
 import { CANVAS_ROOM_ID } from "../../../constants/RoomID";
 import { mapToObj } from "../../../utils/mapToObj";
 import CanvasDataStoreManager from "./CanvasDataStoreManager";
@@ -56,6 +56,15 @@ export default class CanvasManager {
         }
 
         return canvasRoom.getCanvasLogHistorySERI();
+    }
+
+    public getCanvasLogHistory(canvasRoomId: string): IHistoryData[] {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        if (!canvasRoom) {
+            return [];
+        }
+
+        return canvasRoom.getCanvasLogHistory();
     }
 
     public accessCanvas(canvasRoomId: string, data: IEditGalleryData): boolean {
