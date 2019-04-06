@@ -296,26 +296,9 @@ namespace PolyPaint.Vues
                 stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
             }
 
-            switch (linkThickness)
-            {
-                case 0:
-                    stroke.DrawingAttributes.Width = 4;
-                    stroke.DrawingAttributes.Height = 4;
-                    break;
-                case 1:
-                    stroke.DrawingAttributes.Width = 6;
-                    stroke.DrawingAttributes.Height = 6;
-                    break;
-                case 2:
-                    stroke.DrawingAttributes.Width = 8;
-                    stroke.DrawingAttributes.Height = 8;
-                    break;
-                default:
-                    stroke.DrawingAttributes.Width = 4;
-                    stroke.DrawingAttributes.Height = 4;
-                    break;
-            }
-
+            stroke.DrawingAttributes.Width = stroke.getThickness();
+            stroke.DrawingAttributes.Height = stroke.getThickness();
+            
             StrokeCollection sc = new StrokeCollection();
             sc.Add(stroke);
             DrawingService.UpdateLinks(sc);

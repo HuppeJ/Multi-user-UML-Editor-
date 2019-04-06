@@ -181,25 +181,25 @@ namespace PolyPaint.CustomInk
             pos.X += 5;
             pos.Y += 5;
 
-            if(shapeStroke.strokeType == (int)StrokeTypes.ROLE)
+            if(shapeStroke is ActorStroke)
             {
-                if (strokeTo?.GetType() == typeof(ActivityStroke))
+                if (strokeTo is ActivityStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
                     MessageBox.Show("A role can only be linked to an activity.");
-            } else if (shapeStroke.strokeType == (int)StrokeTypes.ARTIFACT)
+            } else if (shapeStroke is ArtifactStroke)
             {
-                if (strokeTo?.GetType() == typeof(ActivityStroke))
+                if (strokeTo is ActivityStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
                     MessageBox.Show("An artifact can only be linked to an activity.");
-            } else if (shapeStroke.strokeType == (int)StrokeTypes.ACTIVITY)
+            } else if (shapeStroke is ActivityStroke)
             {
-                if (strokeTo?.GetType() == typeof(ArtifactStroke))
+                if (strokeTo is ArtifactStroke)
                     CreateLink(actualPos, strokeTo, number, linkAnchorNumber, LinkTypes.ONE_WAY_ASSOCIATION, pos);
                 else
                     MessageBox.Show("An activity can only be linked to an artifact.");
-            } else if (strokeTo?.GetType() == typeof(ArtifactStroke) || strokeTo?.GetType() == typeof(ActorStroke) || strokeTo?.GetType() == typeof(ActivityStroke))
+            } else if (strokeTo != null && strokeTo.isProccessStroke())
             {
                 MessageBox.Show("Cannot create link.");
             }

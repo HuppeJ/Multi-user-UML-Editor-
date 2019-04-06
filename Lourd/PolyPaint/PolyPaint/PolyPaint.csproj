@@ -196,7 +196,6 @@
     <Compile Include="Convertisseurs\StringToByteArrayConverter.cs" />
     <Compile Include="Convertisseurs\MultiValueEqualityConverter.cs" />
     <Compile Include="CustomInk\Adorners\CustomAdorner.cs" />
-    <Compile Include="CustomInk\Adorners\CustomPath.cs" />
     <Compile Include="CustomInk\Adorners\DottedPathAdorner.cs" />
     <Compile Include="CustomInk\Adorners\LinkRotateAdorner.cs" />
     <Compile Include="CustomInk\Adorners\SelectionMultipleAdorner.cs" />
