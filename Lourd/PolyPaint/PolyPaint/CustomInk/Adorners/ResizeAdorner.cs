@@ -51,6 +51,10 @@ namespace PolyPaint.CustomInk
         public ResizeAdorner(UIElement adornedElement, CustomStroke customStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
         {
+            if(customStroke is LinkStroke)
+            {
+                WIDTH_LEGER = 1;
+            }
             adornedStroke = customStroke;
 
             visualChildren = new VisualCollection(this);

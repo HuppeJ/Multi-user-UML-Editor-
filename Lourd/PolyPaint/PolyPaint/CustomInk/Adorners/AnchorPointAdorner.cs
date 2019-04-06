@@ -234,7 +234,7 @@ namespace PolyPaint.CustomInk
             }
             DrawingService.UpdateShapes(shapesToUpdate);
 
-            canvas.Select(new StrokeCollection { linkBeingCreated });
+            // canvas.Select(new StrokeCollection { linkBeingCreated });
         }
 
         // Override the VisualChildrenCount and 
