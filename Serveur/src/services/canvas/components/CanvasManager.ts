@@ -329,6 +329,12 @@ export default class CanvasManager {
         return canvasRoom.getSelectedLinksSERI();
     }
 
+    public getCanvas(canvasRoomId: string): ICanevas {
+        const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
+        return canvasRoom.canvas;
+    }
+
+
     public getCanvasSERI(canvasRoomId: string): string {
         const canvasRoom: CanvasRoom = this.canvasRooms.get(canvasRoomId);
         return JSON.stringify(canvasRoom.canvas);
