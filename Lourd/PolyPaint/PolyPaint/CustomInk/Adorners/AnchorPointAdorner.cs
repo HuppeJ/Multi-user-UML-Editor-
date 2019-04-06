@@ -11,6 +11,7 @@ using System.Windows.Ink;
 using PolyPaint.Services;
 using PolyPaint.Enums;
 using PolyPaint.CustomInk.Adorners;
+using System.Windows.Controls;
 
 namespace PolyPaint.CustomInk
 {
@@ -59,13 +60,17 @@ namespace PolyPaint.CustomInk
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
             anchors.Add(new Thumb());
-
+            
             foreach (Thumb anchor in anchors)
             {
                 anchor.Cursor = Cursors.ScrollAll;
                 anchor.Width = 6;
                 anchor.Height = 6;
-                anchor.Background = Brushes.IndianRed;
+                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFDDDDDD"),
+                    (Color)ColorConverter.ConvertFromString("#809dce"), 45); ;
+                anchor.BorderBrush = Brushes.Black;
+                anchor.BorderThickness = new Thickness(2);
+                anchor.Margin = new Thickness(0);
 
                 anchor.DragStarted += new DragStartedEventHandler(dragHandle_DragStarted);
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
@@ -73,7 +78,7 @@ namespace PolyPaint.CustomInk
 
                 visualChildren.Add(anchor);
             }
-
+            
             cheatAnchors = new List<StrokeAnchorPointThumb>();
             cheatAnchors.Add(new StrokeAnchorPointThumb(shapeStroke, canvas, 0));
             cheatAnchors.Add(new StrokeAnchorPointThumb(shapeStroke, canvas, 1));
@@ -112,10 +117,10 @@ namespace PolyPaint.CustomInk
         private void ArrangeAnchor(int anchorNumber, double xOffset, double yOffset)
         {
             // The rectangle that determines the position of the Thumb.
-            Rect handleRect = new Rect(strokeBounds.X + xOffset,
-                                  strokeBounds.Y + yOffset,
-                                  strokeBounds.Width,
-                                  strokeBounds.Height);
+            Rect handleRect = new Rect(strokeBounds.X + xOffset -2,
+                                  strokeBounds.Y + yOffset -2,
+                                  strokeBounds.Width + 4,
+                                  strokeBounds.Height + 4);
             handleRect.Transform(rotation.Value);
 
             // Draws the thumb and the rectangle around the strokes.

@@ -64,9 +64,12 @@ namespace PolyPaint.CustomInk
             foreach (Thumb anchor in anchors)
             {
                 anchor.Cursor = Cursors.ScrollAll;
-                anchor.Width = 8;
-                anchor.Height = 8;
-                anchor.Background = Brushes.IndianRed;
+                anchor.Width = 10;
+                anchor.Height = 10;
+                //anchor.Background = (Brush)new BrushConverter().ConvertFromString("x809dce");
+
+                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFDDDDDD"),
+                    (Color)ColorConverter.ConvertFromString("#809dce"), 45);
 
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
                 anchor.DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);

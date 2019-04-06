@@ -18,6 +18,7 @@ using Path = System.Windows.Shapes.Path;
 using sd = System.Drawing;
 using s2d = System.Drawing.Drawing2D;
 using PolyPaint.CustomInk.Adorners;
+using System.Windows.Controls.Primitives;
 
 namespace PolyPaint.CustomInk
 {
@@ -1267,6 +1268,17 @@ namespace PolyPaint.CustomInk
                         myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new RotateAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+
+                        Thumb anchor = new Thumb();
+                        anchor.Cursor = Cursors.ScrollAll;
+                        anchor.Width = 6;
+                        anchor.Height = 6;
+                        anchor.Background = Brushes.White;
+                        anchor.BorderBrush = Brushes.Black;
+                        anchor.BorderThickness = new Thickness(100);
+
+                        Children.Add(anchor);
+
                     }
                     /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {

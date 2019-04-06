@@ -159,7 +159,7 @@ namespace PolyPaint.Vues
                 }
                 else if((strokes[0] as CustomStroke).strokeType == (int)StrokeTypes.LINK)
                 {
-                    popUpLinkVue.setParameters();
+                    popUpLinkVue.setParameters(strokes[0] as LinkStroke, surfaceDessin);
                     popUpLink.IsOpen = true;
                 }
                 else if (strokes[0] is CommentStroke)

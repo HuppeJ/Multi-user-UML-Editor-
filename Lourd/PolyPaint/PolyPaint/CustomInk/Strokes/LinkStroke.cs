@@ -166,7 +166,7 @@ namespace PolyPaint.CustomInk.Strokes
             return (LinkTypes)linkType == LinkTypes.HERITAGE ||
                 (LinkTypes)linkType == LinkTypes.AGGREGATION || (LinkTypes)linkType == LinkTypes.COMPOSITION;
         }
-
+               
         public int getThickness()
         {
             int thickness = 4;
