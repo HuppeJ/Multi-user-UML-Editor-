@@ -1,7 +1,7 @@
-import * as SocketEvents from "../../constants/SocketEvents";
 import { ICanevas, IEditCanevasData, IEditGalleryData } from "./interfaces/interfaces";
 import CanvasManager from "./components/CanvasManager";
 import CanvasDataStoreManager from "./components/CanvasDataStoreManager";
+import { EMPTY_THUMBNAIL } from "../../constants/thumbnail";
 
 export const CanvasTestRoom: string = "Canvas_test_room";
 
@@ -40,8 +40,12 @@ export default class CanvasSocketEvents {
 
                     const canvasRoomId: string = canvasManager.getCanvasRoomIdFromName(data.canevas.name);
     
+
+                    const updatedData: IEditCanevasData = data;
+                    updatedData.canevas.thumbnail = EMPTY_THUMBNAIL;
+
                     const response = {
-                        isCreated: canvasManager.addCanvasRoom(canvasRoomId, data),
+                        isCreated: canvasManager.addCanvasRoom(canvasRoomId, updatedData),
                         canvasName: data.canevas.name
                     };
     
