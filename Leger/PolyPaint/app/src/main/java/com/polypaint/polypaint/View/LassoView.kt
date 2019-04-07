@@ -285,6 +285,9 @@ class LassoView(context: Context?) : View(context) {
                 for(shape in viewsIn) {
                     shape.syncShapeWithView()
                 }
+                for(link in linksIn){
+                    link.emitUpdate()
+                }
                 invalidate()
                 requestLayout()
                 downWasInBox = false
