@@ -396,9 +396,11 @@ namespace PolyPaint.Vues
             classStroke.name = name;
             classStroke.attributes = properties;
             classStroke.methods = methods;
-
+            
             InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(classStroke);
             DrawingService.AddClassFromCode(eventArgs);
+
+            DrawingService.CreateShape(classStroke);
         }
 
         private void AdjustToLargestClassWidth(object sender, EventArgs e)
