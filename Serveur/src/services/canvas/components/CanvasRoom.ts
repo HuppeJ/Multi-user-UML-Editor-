@@ -11,6 +11,7 @@ export interface ISelectedLinksValue {
     link: ILink,
 }
 
+export const HISTORY_MAX_SIZE: number = 15;
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
@@ -39,7 +40,16 @@ export default class CanvasRoom {
             canevas: newCanvas
         }
 
-        this.history.push(newLog);
+        if (this.history.length < HISTORY_MAX_SIZE){
+            this.history.push(newLog);
+        } else {
+            const newHistory = [];
+            for (let i = 1; i < HISTORY_MAX_SIZE; i++) {
+                newHistory.push(this.history[i]);
+            }
+            newHistory.push(newLog);
+            this.history = newHistory;
+        }
 
         return true;
     }
