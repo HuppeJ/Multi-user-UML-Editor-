@@ -355,7 +355,7 @@ namespace PolyPaint.Services
 
             socket.On("disconnect", (data) =>
             {
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
+                // Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
             });
 
             RefreshCanvases();
@@ -433,7 +433,7 @@ namespace PolyPaint.Services
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             }
 
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { RefreshChildren(); }), DispatcherPriority.Render);
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { RefreshChildren(); }), DispatcherPriority.ContextIdle);
 
         }
 
@@ -451,7 +451,7 @@ namespace PolyPaint.Services
             canvas.thumbnail = thumbnail;
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
             // Commente pour pas buster le cloud (à uncomment avant la remise)
-             socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
+            socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
         }
 
         public static void RefreshCanvases()
@@ -806,12 +806,7 @@ namespace PolyPaint.Services
 
         internal static void LeaveDrawing()
         {
-<<<<<<< HEAD
             Application.Current?.Dispatcher?.Invoke(new Action(() => { LeaveDrawingAction(); }), DispatcherPriority.Render);
-
-=======
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
->>>>>>> test
         }
 
         internal static void GetHistoryLog(object o)
