@@ -17,13 +17,12 @@ namespace PolyPaint.Services
         public static event Action ConnectionReconnected;
         public static event Action ConnectionClosed;
         
-        public static string username = null;
+        public static string username = "";
         public static bool hasUserDoneTutorial = false;
 
         private static JavaScriptSerializer serializer = new JavaScriptSerializer();
         private static string url = "https://projet-3-228722.appspot.com";
         //private static string url = "http://localhost:5020";
-        // private static string url = "http://localhost:8010";
         // private static string url = "http://10.200.3.1:5020";
         // private static string url = "http://10.200.31.156:5020";
 
@@ -54,7 +53,7 @@ namespace PolyPaint.Services
 
                 if(!isLoginSuccessful)
                 {
-                    username = null;
+                    username = "";
                 } else
                 {
                     socket.Emit("hasUserDoneTutorial", username);

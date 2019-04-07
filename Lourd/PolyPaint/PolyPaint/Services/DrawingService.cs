@@ -105,7 +105,7 @@ namespace PolyPaint.Services
             socket.On("canvasResized", (data) =>
             {
                 ResizeCanevasData response = serializer.Deserialize<ResizeCanevasData>((string)data);
-                if (!username.Equals((string)response.username) && Application.Current != null)
+                if (username != null && !username.Equals((string)response.username))
                 {
                     Application.Current?.Dispatcher?.Invoke(new Action(() => { OnResizeCanvas(response.dimensions); }), DispatcherPriority.Render);
                 }
@@ -310,7 +310,7 @@ namespace PolyPaint.Services
             socket.On("canvasSaved", (data) =>
             {
                 EditCanevasData response = serializer.Deserialize<EditCanevasData>((string)data);
-                if (!username.Equals(response.username))
+                if (username != null && !username.Equals(response.username))
                 {
                     RefreshPublicCanvases();
                 }
@@ -334,7 +334,7 @@ namespace PolyPaint.Services
 
             socket.On("disconnect", (data) =>
             {
-                BackToGallery?.Invoke();
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
             });
 
             RefreshCanvases();
@@ -410,7 +410,7 @@ namespace PolyPaint.Services
             canvas.thumbnail = thumbnail;
             EditCanevasData editCanevasData = new EditCanevasData(username, canvas);
             // Commente pour pas buster le cloud (à uncomment avant la remise)
-            // socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
+             socket.Emit("saveCanvas", serializer.Serialize(editCanevasData));
         }
 
         public static void RefreshCanvases()

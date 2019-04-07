@@ -43,7 +43,7 @@ namespace PolyPaint.CustomInk
                 border.StrokeThickness = 1;
             }
 
-            border.Stroke = Brushes.Red;
+            border.Stroke = (Brush)new BrushConverter().ConvertFromString("#CC7F7F");
 
             visualChildren.Add(border);
         }

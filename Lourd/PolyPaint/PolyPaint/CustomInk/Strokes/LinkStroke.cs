@@ -57,8 +57,8 @@ namespace PolyPaint.CustomInk.Strokes
                     DrawingAttributes.Height = getThickness();
                     break;
                 default:
-                    DrawingAttributes.Width = 4;
-                    DrawingAttributes.Height = 4;
+                    DrawingAttributes.Width = 2;
+                    DrawingAttributes.Height = 2;
                     break;
             }
 
@@ -88,7 +88,7 @@ namespace PolyPaint.CustomInk.Strokes
             to = new AnchorPoint();
             to.SetDefaults();
             strokeType = (int)StrokeTypes.LINK;
-            linkType = (int)LinkTypes.LINE;
+            linkType = (int)LinkTypes.TWO_WAY_ASSOCIATION;
             style = new LinkStyle();
             style.SetDefaults();
             path = new List<Coordinates>();
@@ -112,9 +112,11 @@ namespace PolyPaint.CustomInk.Strokes
             }
             else
             {
-                StylusPoints.Add(new StylusPoint(firstPoint.X + 100, lastPoint.Y + 100));
+                StylusPoints.Add(new StylusPoint(firstPoint.X + 100, lastPoint.Y));
                 path.Add(new Coordinates(StylusPoints[1].X, StylusPoints[1].Y));
             }
+
+            addStylusPointsToLink();
         }
 
 
@@ -481,6 +483,10 @@ namespace PolyPaint.CustomInk.Strokes
 
         internal bool ContainsPoint(Point point)
         {
+            if(style.thickness == 0)
+            {
+                return GetGeometry().FillContains(point, 2, ToleranceType.Absolute);
+            }
             return GetGeometry().FillContains(point);
         }
 

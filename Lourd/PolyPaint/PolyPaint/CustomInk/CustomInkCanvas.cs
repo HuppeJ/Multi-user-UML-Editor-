@@ -734,9 +734,33 @@ namespace PolyPaint.CustomInk
 
         private void OnRemoteSelection()
         {
-            List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+            List<string> remoteSelectedStrokes = new List<string>(DrawingService.remoteSelectedStrokes);
             foreach (string strokeId in remoteSelectedStrokes)
             {
+                foreach(UIElement child in Children)
+                {
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(child);
+                    int numberArdorners = myAdornerLayer.GetAdorners(child)?.Count() == null ? 0 : myAdornerLayer.GetAdorners(child).Count();
+                    bool foundAnchorPointAdorner = false;
+
+                    for (int i = 0; i < numberArdorners; i++)
+                    {
+                        CustomAdorner adorner = myAdornerLayer.GetAdorners(child)[i] as CustomAdorner;
+
+                        if (adorner.adornedStroke?.guid.ToString() == strokeId
+                            && adorner is AnchorPointAdorner)
+                        {
+                            myAdornerLayer.Remove(adorner);
+                            foundAnchorPointAdorner = true;
+                            break;
+                            //i--;
+                            //numberArdorners--;
+                        }
+                    }
+
+                    if (foundAnchorPointAdorner) break;
+                }
+
                 foreach (CustomStroke stroke in Strokes)
                 {
                     if (stroke.guid.ToString().Equals(strokeId))
@@ -1243,7 +1267,7 @@ namespace PolyPaint.CustomInk
 
         private void RefreshAdornersRemoteChildren()
         {
-            List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+            List<string> remoteSelectedStrokes = new List<string>(DrawingService.remoteSelectedStrokes);
 
             foreach (string strokeId in remoteSelectedStrokes)
             {
@@ -1342,7 +1366,7 @@ namespace PolyPaint.CustomInk
 
         public void addAnchorPoints()
         {
-            List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+            List<string> remoteSelectedStrokes = new List<string>(DrawingService.remoteSelectedStrokes);
 
             foreach (CustomStroke stroke in Strokes)
             {
@@ -1362,7 +1386,7 @@ namespace PolyPaint.CustomInk
         
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
         {
-            List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+            List<string> remoteSelectedStrokes = new List<string>(DrawingService.remoteSelectedStrokes);
 
             if (EditingMode == InkCanvasEditingMode.Select)
             {
@@ -1483,7 +1507,7 @@ namespace PolyPaint.CustomInk
             }
             else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
             {
-                List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+                List<string> remoteSelectedStrokes = new List<string>(DrawingService.remoteSelectedStrokes);
 
                 if (selectionPath.Segments.Any())
                 {
@@ -1538,7 +1562,7 @@ namespace PolyPaint.CustomInk
                         SelectedStrokes.Clear();
                         PathFigureCollection figures = new PathFigureCollection { selectionPath };
                         PathGeometry geometry = new PathGeometry(figures);
-                        List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+                        List<string> remoteSelectedStrokes = new List<string>(DrawingService.remoteSelectedStrokes);
                         foreach (CustomStroke stroke in Strokes)
                         {
                             if (!remoteSelectedStrokes.Contains(stroke.guid.ToString())) {

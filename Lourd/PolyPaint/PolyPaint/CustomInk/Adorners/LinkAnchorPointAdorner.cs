@@ -10,6 +10,7 @@ using System.Windows.Shapes;
 using PolyPaint.Templates;
 using PolyPaint.CustomInk.Adorners;
 using PolyPaint.Vues;
+using System.Windows.Ink;
 
 namespace PolyPaint.CustomInk
 {
@@ -67,7 +68,7 @@ namespace PolyPaint.CustomInk
                 anchor.Cursor = Cursors.ScrollAll;
                 anchor.Width = 10;
                 anchor.Height = 10;
-                //anchor.Background = (Brush)new BrushConverter().ConvertFromString("x809dce");
+                //anchor.Background = (Brush)new BrushConverter().ConvertFromString("#809dce");
 
                 anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFDDDDDD"),
                     (Color)ColorConverter.ConvertFromString("#809dce"), 45);
@@ -104,12 +105,6 @@ namespace PolyPaint.CustomInk
 
         private void ArrangeAnchor(int anchorNumber, double xOffset, double yOffset)
         {
-            // The rectangle that determines the position of the Thumb.
-            Rect handleRect = new Rect(strokeBounds.X + xOffset,
-                                  strokeBounds.Y + yOffset,
-                                  strokeBounds.Width,
-                                  strokeBounds.Height);
-
             // Draws the thumb and the rectangle around the strokes.
             if (anchorNumber < anchors.Count)
             {
@@ -326,6 +321,11 @@ namespace PolyPaint.CustomInk
             if (!hasFailed)
             {
                 canvas.updateLink(linkStrokeAnchor, linkStroke, newAnchoredStroke as ShapeStroke, number, actualPos);
+            } else
+            {
+                StrokeCollection selectedStrokes = new StrokeCollection { canvas.GetSelectedStrokes() };
+                canvas.Select(new StrokeCollection { });
+                canvas.Select(selectedStrokes);
             }
 
 
