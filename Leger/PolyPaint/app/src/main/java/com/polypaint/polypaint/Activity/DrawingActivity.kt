@@ -732,7 +732,7 @@ class DrawingActivity : AppCompatActivity(){
 
             val basicShapeId: String = ViewShapeHolder.getInstance().map.getValue(view)
             val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
-            //if(!view.isSelected) {
+            if(!view.isSelected) {
                 if (basicShape != null) {
                     view.x = (basicShape.shapeStyle.coordinates.x).toFloat() - shapeOffset
                     view.y = (basicShape.shapeStyle.coordinates.y).toFloat() - shapeOffset
@@ -820,7 +820,7 @@ class DrawingActivity : AppCompatActivity(){
 
                     }
                 }
-            //}
+            }
             if (basicShape != null) {
                 runOnUiThread {
                     view.outlineColor(
