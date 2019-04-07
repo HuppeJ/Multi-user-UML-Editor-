@@ -449,6 +449,7 @@ namespace PolyPaint.VueModeles
 
         private void OfflineMode(object o)
         {
+            DrawingService.UpdateCanvasName("Offline Mode");
             UserMode = UserModes.Offline;
         }
         #endregion

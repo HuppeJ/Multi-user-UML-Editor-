@@ -35,6 +35,7 @@ namespace PolyPaint.Services
         public static event Action ReintializeCanvas;
         public static event Action GoToTutorial;
         public static event Action CanvasCreationFailed;
+        public static event Action<string> UpdateCanvasNameAction;
 
         public static event Action<History> UpdateHistory;
 
@@ -42,6 +43,7 @@ namespace PolyPaint.Services
             MaxJsonLength = int.MaxValue
         };
         public static string canvasName;
+        public static string canvasNameEdition { get; set; }
         public static Templates.Canvas currentCanvas;
         public static List<string> remoteSelectedStrokes = new List<string>();
         public static List<string> localSelectedStrokes = new List<string>();
@@ -106,6 +108,7 @@ namespace PolyPaint.Services
                 if (response.isPasswordValid)
                 {
                     canvasName = response.canvasName;
+                    UpdateCanvasName(canvasName);
                 }
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { JoinCanvasRoom(response); }), DispatcherPriority.Render);
             });
@@ -860,6 +863,11 @@ namespace PolyPaint.Services
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
             socket.Emit("getCanvasLogHistory", serializer.Serialize(editGalleryData));
+        }
+
+        internal static void UpdateCanvasName(string name)
+        {
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { UpdateCanvasNameAction(name); }), DispatcherPriority.Render);
         }
     }
 }
