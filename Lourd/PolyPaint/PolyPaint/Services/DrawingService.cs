@@ -505,6 +505,7 @@ namespace PolyPaint.Services
             localAddedStrokes = new List<string>();
             remoteSelectedStrokes = new List<string>();
             socket.Emit("reinitializeCanvas", serializer.Serialize(new EditCanevasData(username, currentCanvas)));
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         private static void EmitIfStrokes(string eventString, UpdateFormsData shapes)
