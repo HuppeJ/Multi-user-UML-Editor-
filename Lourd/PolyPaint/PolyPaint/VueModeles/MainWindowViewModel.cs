@@ -1092,6 +1092,11 @@ namespace PolyPaint.VueModeles
             CloseChatWindow?.Invoke();
             UserMode = UserModes.Tutorial;
         }
+
+        private void CanvasCreationFailed()
+        {
+            dialogService.ShowNotification("A canvas with this name already exists. Please chose another name");
+        }
         #endregion
 
         #region Tutorial
@@ -1242,6 +1247,7 @@ namespace PolyPaint.VueModeles
             DrawingService.BackToGallery += BackToGallery;
             DrawingService.LeaveDrawingAction += LeaveDrawing;
             DrawingService.GoToTutorial += GoToTutorial;
+            DrawingService.CanvasCreationFailed += CanvasCreationFailed;
 
             chatService.NewMessage += NewMessage;
             chatService.GetChatrooms += GetChatrooms;

@@ -34,6 +34,7 @@ namespace PolyPaint.Services
         public static event Action RefreshChildren;
         public static event Action ReintializeCanvas;
         public static event Action GoToTutorial;
+        public static event Action CanvasCreationFailed;
 
         public static event Action<History> UpdateHistory;
 
@@ -72,6 +73,10 @@ namespace PolyPaint.Services
                 {
                     canvasName = response.canvasName;
                     RefreshCanvases();
+                }
+                else
+                {
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { CanvasCreationFailed(); }), DispatcherPriority.Render);
                 }
             });
 
