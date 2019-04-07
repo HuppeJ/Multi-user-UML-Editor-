@@ -34,7 +34,7 @@
                         <Image Width="700" Height="400" Source="{Binding thumbnail, Converter={StaticResource StringToByteArrayConverter}, Mode=OneWay}"/>
                     </StackPanel>
                 </Border>
-                <Button Content="CLOSE" Margin="181,340,169,28" Width="150" Click="Close"/>
+                <Button Content="CLOSE" Margin="325,452,325,10" Width="150" Click="Close"/>
             </Grid>
         </materialDesign:Card>
     </Border>
