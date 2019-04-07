@@ -20,32 +20,34 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="243" Margin="0" ForceCursor="True">
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
-                <TextBlock>Shape name:</TextBlock>
-                <TextBox x:Name="ClassNameTextBox" Width="76" MaxWidth="150"
+    <Border BorderBrush="DodgerBlue" BorderThickness="2" >
+        <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="243" Margin="0" ForceCursor="True">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="25">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                    <TextBlock>Shape name:</TextBlock>
+                    <TextBox x:Name="ClassNameTextBox" Width="76" MaxWidth="150"
                         MinLines="1"
                         MaxLines="1"
                         VerticalAlignment="Top"
                         Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="3,0,0,0"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
-                <TextBlock>Border style:</TextBlock>
-                <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LineStylesList}"
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="148" Height="31">
+                    <TextBlock>Border style:</TextBlock>
+                    <ComboBox Margin="7,-11,0,4" ItemsSource="{Binding LineStylesList}"
                   SelectedValue="{Binding LineStyle}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
-                <TextBlock Margin="0,0,0,0.2" Width="72">Border color:</TextBlock>
-                <wpfx:ColorPicker  x:Name="pickBorderColor" Width="78" MaxWidth="150" Margin="0,0,0,0.2"
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
+                    <TextBlock Margin="0,0,0,0.2" Width="72">Border color:</TextBlock>
+                    <wpfx:ColorPicker  x:Name="pickBorderColor" Width="78" MaxWidth="150" Margin="0,0,0,0.2"
                                    SelectedColor="{Binding BorderColor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
-                <TextBlock Margin="0,0,0,0.2" Width="72">Fill color:</TextBlock>
-                <wpfx:ColorPicker  x:Name="pickFillColor" Width="78" MaxWidth="150" Margin="0,0,0,0.2"
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="19">
+                    <TextBlock Margin="0,0,0,0.2" Width="72">Fill color:</TextBlock>
+                    <wpfx:ColorPicker  x:Name="pickFillColor" Width="78" MaxWidth="150" Margin="0,0,0,0.2"
                                    SelectedColor="{Binding FillColor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                </StackPanel>
+                <Button Content="ACCEPT CHANGES" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
             </StackPanel>
-            <Button Content="Accept Changes" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
-        </StackPanel>
-    </materialDesign:Card>
+        </materialDesign:Card>
+    </Border>
 </UserControl>

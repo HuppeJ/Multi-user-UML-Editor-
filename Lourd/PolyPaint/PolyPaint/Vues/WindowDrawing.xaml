@@ -191,19 +191,19 @@
 
                 <Button x:Name="ClassFromCodeButton" Width="40" Height="40" Margin="5" Padding="0,0"
                         Click="OpenClassPopup"
-                        Content="Code" ToolTip="CLASS FROM CODE">
+                        Content="CODE" ToolTip="CLASS FROM CODE">
                 </Button>
                 <Button x:Name="LargestClassWidth" Width="40" Height="40" Margin="5" Padding="0,0"
                         Click="AdjustToLargestClassWidth"
-                        Content="Width" ToolTip="Adjust to largest class width">
+                        Content="WIDTH" ToolTip="Adjust to largest class width">
                 </Button>
                 <Button x:Name="ExportCanvasButton" Width="40" Height="40" Margin="5" Padding="0,0"
                         Click="ExportCanvas"
-                        Content="Export" ToolTip="EXPORT CANVAS">
+                        Content="EXPORT" ToolTip="EXPORT CANVAS">
                 </Button>
                 <Button x:Name="TutoButton" Width="40" Height="40" Margin="5" Padding="0,0"
                         Click="OpenTutorial"
-                        Content="Tuto" ToolTip="OPEN TUTORIAL">
+                        Content="TUTO" ToolTip="OPEN TUTORIAL">
                 </Button>
 
                 <StackPanel Orientation="Horizontal">
@@ -232,6 +232,9 @@
             </StackPanel>
 
         </Border>
+        <Popup x:Name="popUpMessage" Placement="Center">
+            <Vues:MessagePopup x:Name="popUpMessageVue"/>
+        </Popup>
         <Popup x:Name="popUpName" Placement="Center">
             <Vues:RenamePopup x:Name="popUpNameVue"/>
         </Popup>
@@ -253,8 +256,8 @@
 
         <Border DockPanel.Dock="Bottom" Height="25" BorderThickness="0,0.75,0,0.75" BorderBrush="#77000000">
             <StackPanel Orientation="Horizontal" Background="#FFF0F0F0">
-                <Button Content="Back To Gallery" Margin="0" Click="BackToGallery" Width="150" VerticalAlignment="Top"/>
-                <Button Content="History" Margin="5,0,0,0" Command="{Binding GetCanvasHistoryLogCommand}" Click="ViewHistoryPopup" Width="150" VerticalAlignment="Top"/>
+                <Button Content="BACK TO GALLERY" Margin="0" Click="BackToGallery" Width="150" VerticalAlignment="Top"/>
+                <Button Content="HISTORY" Margin="5,0,0,0" Command="{Binding GetCanvasHistoryLogCommand}" Click="ViewHistoryPopup" Width="150" VerticalAlignment="Top"/>
                 <Image Source="/Resources/position.png" Margin="5,5,5,5" VerticalAlignment="Center"/>
                 <TextBlock x:Name="textBlockPosition" VerticalAlignment="Center" HorizontalAlignment="Left"/>
             </StackPanel>

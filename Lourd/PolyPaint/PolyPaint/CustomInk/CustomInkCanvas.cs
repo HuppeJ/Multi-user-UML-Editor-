@@ -18,6 +18,7 @@ using Path = System.Windows.Shapes.Path;
 using sd = System.Drawing;
 using s2d = System.Drawing.Drawing2D;
 using PolyPaint.CustomInk.Adorners;
+using System.Windows.Controls.Primitives;
 
 namespace PolyPaint.CustomInk
 {
@@ -733,7 +734,8 @@ namespace PolyPaint.CustomInk
 
         private void OnRemoteSelection()
         {
-            foreach (string strokeId in DrawingService.remoteSelectedStrokes)
+            List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+            foreach (string strokeId in remoteSelectedStrokes)
             {
                 foreach (CustomStroke stroke in Strokes)
                 {
@@ -1241,7 +1243,9 @@ namespace PolyPaint.CustomInk
 
         private void RefreshAdornersRemoteChildren()
         {
-            foreach (string strokeId in DrawingService.remoteSelectedStrokes)
+            List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+
+            foreach (string strokeId in remoteSelectedStrokes)
             {
                 foreach (CustomStroke stroke in Strokes)
                 {
@@ -1294,6 +1298,17 @@ namespace PolyPaint.CustomInk
                         myAdornerLayer.Add(new ResizeAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new EditionAdorner(path, selectedStroke, this));
                         myAdornerLayer.Add(new AnchorPointAdorner(path, selectedStroke, this));
+
+                        Thumb anchor = new Thumb();
+                        anchor.Cursor = Cursors.ScrollAll;
+                        anchor.Width = 6;
+                        anchor.Height = 6;
+                        anchor.Background = Brushes.White;
+                        anchor.BorderBrush = Brushes.Black;
+                        anchor.BorderThickness = new Thickness(100);
+
+                        Children.Add(anchor);
+
                     }
                     /*if (selectedStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {
@@ -1327,9 +1342,11 @@ namespace PolyPaint.CustomInk
 
         public void addAnchorPoints()
         {
+            List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+
             foreach (CustomStroke stroke in Strokes)
             {
-                if(stroke.GetType() != typeof(LinkStroke) && !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                if(stroke.GetType() != typeof(LinkStroke) && !remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                 {
                     Path path = new Path();
                     path.Data = stroke.GetGeometry();
@@ -1345,6 +1362,8 @@ namespace PolyPaint.CustomInk
         
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
         {
+            List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+
             if (EditingMode == InkCanvasEditingMode.Select)
             {
                 SelectedStrokes = GetSelectedStrokes();
@@ -1393,10 +1412,11 @@ namespace PolyPaint.CustomInk
                 }
                 selectionPath.Segments.Add(new LineSegment(e.GetPosition(this), true));
                 StrokeCollection phaseStrokes = new StrokeCollection();
+
                 foreach (CustomStroke stroke in Strokes)
                 {
                     if (stroke.HitTestPoint(e.GetPosition(this)) && 
-                        !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                        !remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                     {
                         if (beingSelected.Any())
                         {
@@ -1428,7 +1448,7 @@ namespace PolyPaint.CustomInk
                 foreach (CustomStroke stroke in Strokes)
                 {
                     if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)) &&
-                        !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                        !remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                     {
                         beingSelected.Add(stroke);
                     }
@@ -1463,13 +1483,15 @@ namespace PolyPaint.CustomInk
             }
             else if (EditingMode == InkCanvasEditingMode.EraseByStroke)
             {
+                List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
+
                 if (selectionPath.Segments.Any())
                 {
                     beingSelected = new StrokeCollection();
                     foreach (CustomStroke stroke in Strokes)
                     {
                         if (stroke is ShapeStroke && stroke.HitTestPoint(e.GetPosition(this)) &&
-                            !DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                            !remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                         {
                             beingSelected.Add(stroke);
                         }
@@ -1516,9 +1538,10 @@ namespace PolyPaint.CustomInk
                         SelectedStrokes.Clear();
                         PathFigureCollection figures = new PathFigureCollection { selectionPath };
                         PathGeometry geometry = new PathGeometry(figures);
+                        List<string> remoteSelectedStrokes = DrawingService.remoteSelectedStrokes;
                         foreach (CustomStroke stroke in Strokes)
                         {
-                            if (!DrawingService.remoteSelectedStrokes.Contains(stroke.guid.ToString())) {
+                            if (!remoteSelectedStrokes.Contains(stroke.guid.ToString())) {
                                 if (stroke.isLinkStroke())
                                 {
                                     bool isInside = true;

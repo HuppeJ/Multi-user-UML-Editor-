@@ -10,6 +10,7 @@
                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                    mc:Ignorable="d"
                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                   xmlns:Vues="clr-namespace:PolyPaint.Vues"
                    Background="{DynamicResource MaterialDesignPaper}"
                    DataContext="{Binding Source={StaticResource VMLocator}, Path=MainVM}"
                    Title="PolyPaint" ResizeMode="CanResize" TitleCaps="False" TitleCharacterCasing="Normal" 
@@ -36,6 +37,9 @@
 
     <Grid>
         <ContentControl Content="{Binding}" Style="{StaticResource ChatContentStyle}"/>
+        <Popup x:Name="popUpMessage" Placement="Center">
+            <Vues:MessagePopupLogin x:Name="popUpMessageVue"/>
+        </Popup>
     </Grid>
     
 </metro:MetroWindow>

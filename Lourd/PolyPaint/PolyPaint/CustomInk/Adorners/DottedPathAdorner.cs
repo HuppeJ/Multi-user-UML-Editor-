@@ -71,7 +71,7 @@ namespace PolyPaint.CustomInk
             arrow.StrokeThickness = 2;
             if (linkStroke.linkType == 1 || linkStroke.linkType == 2 && linkStroke.style?.thickness != 0)
             {
-                arrow.StrokeThickness = 3;
+                arrow.StrokeThickness= 3;
             }
             arrow.IsHitTestVisible = false;
             arrow.Fill = Brushes.Black;

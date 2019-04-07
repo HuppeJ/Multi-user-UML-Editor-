@@ -52,7 +52,7 @@
                     ScrollViewer.VerticalScrollBarVisibility="Visible"/>
             </StackPanel>
 
-            <Button Content="Return to drawing" Margin="0" Command="{Binding DrawingViewCommand}" Width="150" VerticalAlignment="Top"/>
+            <Button Content="RETURN TO DRAWING" Margin="0" Command="{Binding DrawingViewCommand}" Width="150" VerticalAlignment="Top"/>
         </StackPanel>
 
     </materialDesign:Card>
