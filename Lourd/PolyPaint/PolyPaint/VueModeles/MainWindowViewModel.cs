@@ -1004,7 +1004,7 @@ namespace PolyPaint.VueModeles
             {
                 if (response.isPasswordValid)
                 {
-                    DrawingService.JoinCanvas(response.canvasName, "");
+                    DrawingService.JoinCanvasRoomServer(response.canvasName, "");
 
                     if (UserMode == UserModes.Gallery)
                     {

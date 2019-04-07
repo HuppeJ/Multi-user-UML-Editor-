@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using PolyPaint.CustomInk;
 using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
@@ -360,6 +360,12 @@ namespace PolyPaint.Services
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);
             socket.Emit("accessCanvas", serializer.Serialize(editGalleryData));
+        }
+
+        public static void JoinCanvasRoomServer(string roomName, string password)
+        {
+            EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);
+            socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
         }
 
         public static void ResizeCanvas(Coordinates coordinates)
