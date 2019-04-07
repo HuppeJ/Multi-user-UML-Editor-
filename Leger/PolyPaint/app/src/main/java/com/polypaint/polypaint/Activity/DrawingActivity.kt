@@ -747,15 +747,12 @@ class DrawingActivity : AppCompatActivity(){
 //                        }
                         ShapeTypes.CLASS_SHAPE.value() -> {
                             if (basicShape is ClassShape) {
-
-
                                 runOnUiThread {
                                     view as ClassView
                                     Log.d(
                                         "syncLayoutFromCanevas",
                                         basicShape.name + " w " + basicShape.shapeStyle.width.toInt() + " h " + basicShape.shapeStyle.height.toInt()
                                     )
-
                                     view.class_name.text = basicShape.name
                                     var tmp: String = ""
                                     if (basicShape.attributes != null) {
@@ -764,13 +761,13 @@ class DrawingActivity : AppCompatActivity(){
                                         }
                                     }
                                     view.class_attributes.text = tmp
-                                    tmp = ""
+                                    var tmp2 = ""
                                     if (basicShape.methods != null) {
                                         for (e in basicShape.methods) {
-                                            tmp += e + "\n"
+                                            tmp2 += e + "\n"
                                         }
                                     }
-                                    view.class_methods.text = tmp
+                                    view.class_methods.text = tmp2
                                     view.resize(
                                         basicShape.shapeStyle.width.toInt(),
                                         basicShape.shapeStyle.height.toInt()

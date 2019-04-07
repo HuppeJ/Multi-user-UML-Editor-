@@ -1051,7 +1051,7 @@ namespace PolyPaint.VueModeles
             else
             {
                 IsChatWindowClosing = true;
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { CloseChatWindow(); }), DispatcherPriority.ContextIdle);
+                CloseChatWindow?.Invoke();
                 UserMode = UserModes.Gallery;
             }
         }
