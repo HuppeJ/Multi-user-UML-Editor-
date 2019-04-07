@@ -14,7 +14,7 @@
                    Background="{DynamicResource MaterialDesignPaper}"
                    DataContext="{Binding Source={StaticResource VMLocator}, Path=MainVM}"
                    Title="PolyPaint" ResizeMode="CanResize" TitleCaps="False" TitleCharacterCasing="Normal" 
-                   ShowTitleBar="True" ShowIconOnTitleBar="True" WindowTitleBrush="DodgerBlue"
+                   TitleForeground="Black" ShowTitleBar="True" ShowIconOnTitleBar="True" WindowTitleBrush="DodgerBlue"
                    WindowState="Maximized"
                    BorderBrush="{DynamicResource PrimaryHueDarkBrush}">
     <metro:MetroWindow.Resources>

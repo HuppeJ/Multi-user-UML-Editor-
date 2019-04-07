@@ -248,7 +248,12 @@ namespace PolyPaint.Services
                     StrokeCollection strokes = new StrokeCollection();
                     foreach (dynamic shape in response.forms)
                     {
-                        strokes.Add(createShapeStroke(shape));
+                        ShapeStroke shapeStroke = createShapeStroke(shape);
+                        if (remoteSelectedStrokes.Contains(shapeStroke.guid.ToString()))
+                        {
+                            remoteSelectedStrokes.Remove(shapeStroke.guid.ToString());
+                        }
+                        strokes.Add(shapeStroke);
                     }
                     Application.Current?.Dispatcher?.Invoke(new Action(() => { RemoveStrokes(strokes); }), DispatcherPriority.ContextIdle);
                 }
