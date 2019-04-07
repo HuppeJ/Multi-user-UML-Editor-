@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace PolyPaint.VueModeles
 {
@@ -1037,20 +1038,20 @@ namespace PolyPaint.VueModeles
         private void BackToGallery()
         {
             IsChatWindowClosing = true;
-            CloseChatWindow?.Invoke();
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { CloseChatWindow(); }), DispatcherPriority.ContextIdle);
             UserMode = UserModes.Gallery;
         }
 
         private void LeaveDrawing()
         {
-            IsChatWindowClosing = true;
-            CloseChatWindow?.Invoke();
             if(UserMode == UserModes.Offline)
             {
                 UserMode = UserModes.Login;
             }
             else
             {
+                IsChatWindowClosing = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { CloseChatWindow(); }), DispatcherPriority.ContextIdle);
                 UserMode = UserModes.Gallery;
             }
         }
