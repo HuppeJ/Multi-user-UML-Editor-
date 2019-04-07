@@ -63,7 +63,7 @@ class MessageListFragment: Fragment(){
     override fun onAttach(context: Context) {
         super.onAttach(context)
         username = UserHolder.getInstance().username
-        adapter = MessageListAdapter(context, messages, username!!)
+        adapter = MessageListAdapter(context, MessagesHolder.getInstance().messages, username!!)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,12 +116,12 @@ class MessageListFragment: Fragment(){
 
     override fun onDestroy() {
         super.onDestroy()
-        socket?.disconnect();
+        //socket?.disconnect();
         socket?.off(Socket.EVENT_CONNECT, onConnect);
         socket?.off(Socket.EVENT_DISCONNECT, onDisconnect);
         socket?.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
         socket?.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        socket?.off("messageSent", onNewMessage);
+        //socket?.off("messageSent", onNewMessage);
 //        socket?.off("user joined", onUserJoined);
 //        socket?.off("user left", onUserLeft);
 //        socket?.off("typing", onTyping);
@@ -204,9 +204,9 @@ class MessageListFragment: Fragment(){
 
     }
 
-    private fun addMessage(message: Message){
-        messages.add(message)
-        adapter?.notifyItemInserted(messages.size -1)
+    private fun addMessage(){
+//        MessagesHolder.getInstance().messages.add(message)
+        adapter?.notifyItemInserted(MessagesHolder.getInstance().messages.size -1)
         scrollToBottom()
     }
 
@@ -239,10 +239,12 @@ class MessageListFragment: Fragment(){
 
     private var onNewMessage:Emitter.Listener = Emitter.Listener {
         activity?.runOnUiThread {
-            Log.d("*-*****", it[0].toString())
-            val gson = Gson()
-            val messageEvent: MessageEvent = gson.fromJson(it[0].toString())
-            val message: Message = Message(messageEvent.message, messageEvent.username, messageEvent.createdAt.toLong())
+//            Log.d("*-*****", it[0].toString())
+//            val gson = Gson()
+//            val messageEvent: MessageEvent = gson.fromJson(it[0].toString())
+//            val message: Message = Message(messageEvent.message, messageEvent.username, messageEvent.createdAt.toLong())
+
+
             //val data: JSONObject = it[0] as JSONObject
             /*var username: String? = null
             var message: String? = null
@@ -256,14 +258,14 @@ class MessageListFragment: Fragment(){
             }
 
             val messageObject = Message(message!!, User(username!!), createdAt!!)*/
-            addMessage(message)
+            addMessage()
         }
     }
 
     fun changeRoom(room: Room){
-        Log.d("------", room.name)
-        messages = MessagesHolder.getInstance().messagesByRoom[room.name]!!
-        adapter?.messageList = messages
-        adapter?.notifyDataSetChanged()
+//        Log.d("------", room.name)
+//        messages = MessagesHolder.getInstance().messagesByRoom[room.name]!!
+//        adapter?.messageList = messages
+//        adapter?.notifyDataSetChanged()
     }
 }
