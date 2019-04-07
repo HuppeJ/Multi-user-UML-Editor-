@@ -70,8 +70,8 @@ class RoomsListAdapter (var context: Context, var roomsList:MutableList<Room>, v
         internal fun bind(room: Room, listener: OnItemClickListener) {
             itemView.setOnClickListener { listener.onItemClick(room) }
             userText.text = "You"
-            messageText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.text
-            timeText.text = DateUtils.formatDateTime(context, MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.createdAt!!, DateUtils.FORMAT_SHOW_TIME)
+//            messageText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.text
+//            timeText.text = DateUtils.formatDateTime(context, MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.createdAt!!, DateUtils.FORMAT_SHOW_TIME)
         }
     }
 
@@ -82,9 +82,9 @@ class RoomsListAdapter (var context: Context, var roomsList:MutableList<Room>, v
 
         internal fun bind(room: Room, listener: OnItemClickListener) {
             itemView.setOnClickListener { listener.onItemClick(room) }
-            messageText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.text
-            timeText.text = DateUtils.formatDateTime(context, MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.createdAt!!, DateUtils.FORMAT_SHOW_TIME)
-            nameText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.sender
+//            messageText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.text
+//            timeText.text = DateUtils.formatDateTime(context, MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.createdAt!!, DateUtils.FORMAT_SHOW_TIME)
+//            nameText.text = MessagesHolder.getInstance().messagesByRoom[room.name]?.last()?.sender
         }
     }
 

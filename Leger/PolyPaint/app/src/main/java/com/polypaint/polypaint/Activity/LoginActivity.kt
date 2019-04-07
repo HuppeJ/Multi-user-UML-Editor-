@@ -42,6 +42,7 @@ class LoginActivity:Activity(){
         opts.reconnection = false
         try {
             app.socket = IO.socket(app.uri, opts)
+            app.triggerListeningOnMessage()
             Log.d("******", "**************************************")
         } catch (e: Exception){
             val builder = AlertDialog.Builder(this)
