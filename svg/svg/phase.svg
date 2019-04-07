@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="84.374992mm"
-   height="84.374969mm"
-   viewBox="0 0 84.374992 84.374969"
+   width="82.374992mm"
+   height="82.374969mm"
+   viewBox="0 0 82.374992 82.374969"
    version="1.1"
    id="svg8"
    sodipodi:docname="phase.svg"
@@ -26,15 +26,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="198.41265"
-     inkscape:cy="170.09565"
+     inkscape:cx="87.133122"
+     inkscape:cy="166.31612"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:window-width="1299"
      inkscape:window-height="713"
-     inkscape:window-x="67"
-     inkscape:window-y="27"
+     inkscape:window-x="1987"
+     inkscape:window-y="339"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -45,8 +45,8 @@
        id="grid2484"
        spacingx="5.2916667"
        spacingy="5.2916667"
-       originx="-2.7916666"
-       originy="-2.7917" />
+       originx="-3.7916665"
+       originy="-3.7916994" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -64,14 +64,14 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-2.7916667,-209.83333)">
+     transform="translate(-3.7916667,-210.83333)">
     <path
-       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 5.2916667,212.33333 H 84.666661 v 26.45833 H 5.2916667 Z"
        id="path2494"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 5.2916667,238.79163 V 291.7083 H 84.66666 v -52.91667 z"
        id="path2496"
        inkscape:connector-curvature="0" />

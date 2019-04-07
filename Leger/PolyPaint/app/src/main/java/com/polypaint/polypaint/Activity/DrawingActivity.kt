@@ -207,7 +207,7 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         duplicate_button.setOnClickListener{
-            selection_button.isChecked = false
+            //selection_button.isChecked = false
             duplicateView()
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
@@ -1376,7 +1376,7 @@ class DrawingActivity : AppCompatActivity(){
                         true
                     );
                     val thumbnailString: String = bitMapToString(resized)
-                    Log.d("bitmapString", thumbnailString)
+                    Log.d("bitmapString", "*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|"/*thumbnailString*/)
 
                     ViewShapeHolder.getInstance().canevas.thumbnail = thumbnailString
 
@@ -1390,7 +1390,7 @@ class DrawingActivity : AppCompatActivity(){
                     Log.d("Exception", "Trying to save thumbnail")
                 }
 
-            }, 1000)
+            }, 2000)
         }
     }
 
