@@ -21,7 +21,7 @@ class DeleteParticle (override var xOrigin: Float, override var yOrigin:Float, o
         //mBitmap = Bitmap.createScaledBitmap(mBase,100,100,true)
         //mBitmap = mBase
         //Set Random direction
-        mPaint.color = Color.RED
+        mPaint.color = Color.parseColor("@color/colorRedGray")
 
         this.x = xOrigin
         this.y = yOrigin

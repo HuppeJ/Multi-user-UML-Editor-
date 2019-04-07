@@ -178,13 +178,21 @@ class DrawingActivity : AppCompatActivity(){
             selection_button.isChecked = false
             var linkDefaultPath : ArrayList<Coordinates> = ArrayList()
             linkDefaultPath.add(Coordinates(65.0,65.0))
-            linkDefaultPath.add(Coordinates(250.0,65.0))
-            var newLink: Link = Link(UUID.randomUUID().toString(),"Link", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",0,0), linkDefaultPath )
+            linkDefaultPath.add(Coordinates(275.0,275.0))
+            var newLink: Link = Link(UUID.randomUUID().toString(),"Link", AnchorPoint(), AnchorPoint(), 2, LinkStyle("#FF000000",0,0), linkDefaultPath )
 
             ViewShapeHolder.getInstance().canevas.addLink(newLink)
             val linkView: LinkView = LinkView(this)
             linkView.setLinkAndAnchors(newLink)
             ViewShapeHolder.getInstance().linkMap.forcePut(linkView, newLink.id)
+            val linksToUpdate = ArrayList<Link>()
+            linksToUpdate.add(newLink)
+            var linkObj: String =""
+            val gson = Gson()
+            val linkUpdate: LinksUpdateEvent = LinksUpdateEvent(UserHolder.getInstance().username, ViewShapeHolder.getInstance().canevas.name, linksToUpdate)
+            linkObj = gson.toJson(linkUpdate)
+            Log.d("emitingCreateLink", linkObj)
+            socket?.emit(SocketConstants.CREATE_LINK, linkObj)
             parent_relative_layout?.addView(linkView)
             ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(newLink.id)
             //saveCanevas()
