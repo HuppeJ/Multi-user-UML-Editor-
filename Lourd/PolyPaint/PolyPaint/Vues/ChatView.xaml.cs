@@ -23,6 +23,7 @@ namespace PolyPaint.Vues
         void ChatView_Loaded(object sender, RoutedEventArgs e)
         {
             dataContext = DataContext as MainWindowViewModel;
+            if(dataContext != null)
             dataContext.CreateChatRoomFailed += CreateChatRoomFailed;
         }
 

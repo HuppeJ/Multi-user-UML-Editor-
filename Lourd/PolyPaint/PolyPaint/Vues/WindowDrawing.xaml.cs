@@ -455,9 +455,9 @@ namespace PolyPaint.Vues
             DrawingService.OpenTutorial();
         }
 
-        private void BackToGallery(object sender, RoutedEventArgs e)
+        private void LeaveDrawing(object sender, RoutedEventArgs e)
         {
-            DrawingService.GoToGallery();
+            DrawingService.LeaveDrawing();
         }
 
         private void ViewHistoryPopup(object sender, RoutedEventArgs e)
