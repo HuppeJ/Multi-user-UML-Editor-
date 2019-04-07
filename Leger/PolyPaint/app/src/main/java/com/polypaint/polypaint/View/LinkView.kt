@@ -73,7 +73,7 @@ class LinkView: View{
     fun setIsSelectedByOther(isSelectedByOther: Boolean){
         this.isSelectedByOther = isSelectedByOther
         if(isSelectedByOther){
-            paint.color = Color.RED
+            paint.color = Color.parseColor("@color/colorRedGray")
         } else {
             setPaintColorWithLinkStyle()
         }

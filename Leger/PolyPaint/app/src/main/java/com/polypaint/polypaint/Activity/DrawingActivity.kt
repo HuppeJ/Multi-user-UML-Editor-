@@ -178,8 +178,8 @@ class DrawingActivity : AppCompatActivity(){
             selection_button.isChecked = false
             var linkDefaultPath : ArrayList<Coordinates> = ArrayList()
             linkDefaultPath.add(Coordinates(65.0,65.0))
-            linkDefaultPath.add(Coordinates(250.0,65.0))
-            var newLink: Link = Link(UUID.randomUUID().toString(),"Link", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",0,0), linkDefaultPath )
+            linkDefaultPath.add(Coordinates(275.0,275.0))
+            var newLink: Link = Link(UUID.randomUUID().toString(),"Link", AnchorPoint(), AnchorPoint(), 2, LinkStyle("#FF000000",0,0), linkDefaultPath )
 
             ViewShapeHolder.getInstance().canevas.addLink(newLink)
             val linkView: LinkView = LinkView(this)
