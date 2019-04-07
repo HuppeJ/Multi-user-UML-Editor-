@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace PolyPaint.VueModeles
 {
@@ -29,6 +30,7 @@ namespace PolyPaint.VueModeles
         public event Action CloseChatWindow;
         public bool IsChatWindowOpened = false;
         public bool IsChatWindowClosing = false;
+        public bool AccessingCanvas = false;
 
         public event Action LoginFailed;
         public event Action CreateUserFailed;
@@ -856,8 +858,9 @@ namespace PolyPaint.VueModeles
         private void JoinUnprotectedCanvas(object o)
         {
             var canvas = o as Templates.Canvas;
-            DrawingService.JoinCanvas(canvas.name, "");
             SelectedCanvas = canvas;
+            AccessingCanvas = true;
+            DrawingService.JoinCanvas(canvas.name, "");
         }
         #endregion
 
@@ -874,6 +877,7 @@ namespace PolyPaint.VueModeles
         private void JoinProtectedCanvas(object o)
         {
             var passwordBox = o as PasswordBox;
+            AccessingCanvas = true;
             DrawingService.JoinCanvas(SelectedCanvas.name, passwordBox.Password);
         }
         #endregion
@@ -926,7 +930,7 @@ namespace PolyPaint.VueModeles
             {
                 if (room.name == message.chatroomName && !room.Chatter.Contains(cm))
                 {
-                    ctxTaskFactory.StartNew(() => room.Chatter.Add(cm)).Wait();
+                    room.Chatter.Add(cm);
                 }
                 OnPropertyChanged("selectedRoom");
             }
@@ -976,6 +980,7 @@ namespace PolyPaint.VueModeles
                 UserMode = UserModes.Gallery;
                 selectedRoom = rooms.First();
                 IsLoggedIn = true;
+                DrawingService.RefreshCanvases();
             }
             else
             {
@@ -995,40 +1000,60 @@ namespace PolyPaint.VueModeles
             PrivateCanvases = canvas.privateCanvas;
         }
 
-        private void JoinCanvasRoom(JoinCanvasRoomResponse response)
+        private void JoinCanvasRoom(AccessCanvasResponse response)
         {
-            if (response.isCanvasRoomJoined)
+            if(UserMode != UserModes.Drawing && AccessingCanvas)
             {
-                if(UserMode == UserModes.Gallery)
+                if (response.isPasswordValid)
                 {
-                    IsChatWindowClosing = true;
-                    CloseChatWindow?.Invoke();
-                }
-                
-                if (!ConnectionService.hasUserDoneTutorial)
-                {
-                    UserMode = UserModes.Tutorial;
+                    DrawingService.JoinCanvasRoomServer(response.canvasName, "");
+
+                    if (UserMode == UserModes.Gallery)
+                    {
+                        IsChatWindowClosing = true;
+                        CloseChatWindow?.Invoke();
+                    }
+
+                    if (!ConnectionService.hasUserDoneTutorial)
+                    {
+                        UserMode = UserModes.Tutorial;
+                    }
+                    else
+                    {
+                        if (UserMode != UserModes.Drawing)
+                        {
+                            UserMode = UserModes.Drawing;
+                            DrawingService.DrawCanvas(SelectedCanvas);
+                        }
+                    }
                 }
                 else
                 {
-                    if (UserMode != UserModes.Drawing)
-                    {
-                        UserMode = UserModes.Drawing;
-                        DrawingService.DrawCanvas(SelectedCanvas);
-                    }
+                    dialogService.ShowNotification("You entered the wrong password");
                 }
-            }
-            else
-            {
-                dialogService.ShowNotification("Could not join canvasroom");
+                AccessingCanvas = false;
             }
         }
 
         private void BackToGallery()
         {
             IsChatWindowClosing = true;
-            CloseChatWindow?.Invoke();
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { CloseChatWindow(); }), DispatcherPriority.ContextIdle);
             UserMode = UserModes.Gallery;
+        }
+
+        private void LeaveDrawing()
+        {
+            if(UserMode == UserModes.Offline)
+            {
+                UserMode = UserModes.Login;
+            }
+            else
+            {
+                IsChatWindowClosing = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { CloseChatWindow(); }), DispatcherPriority.ContextIdle);
+                UserMode = UserModes.Gallery;
+            }
         }
 
         private void CreateRoom(CreateChatroomResponse response)
@@ -1215,6 +1240,7 @@ namespace PolyPaint.VueModeles
             DrawingService.UpdatePrivateCanvases += UpdatePrivateCanvases;
             DrawingService.JoinCanvasRoom += JoinCanvasRoom;
             DrawingService.BackToGallery += BackToGallery;
+            DrawingService.LeaveDrawingAction += LeaveDrawing;
             DrawingService.GoToTutorial += GoToTutorial;
 
             chatService.NewMessage += NewMessage;

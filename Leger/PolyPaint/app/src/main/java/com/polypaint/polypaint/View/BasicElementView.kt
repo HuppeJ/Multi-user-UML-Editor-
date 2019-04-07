@@ -377,7 +377,7 @@ open class BasicElementView: ConstraintLayout {
                                 anchorPointStart,
                                 anchorPointEnd,
                                 3,
-                                LinkStyle("#FF000000", 10, 0),
+                                LinkStyle("#FF000000", 0, 0),
                                 path
                             )
 

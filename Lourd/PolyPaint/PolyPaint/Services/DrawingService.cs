@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using PolyPaint.CustomInk;
 using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
@@ -17,7 +17,7 @@ namespace PolyPaint.Services
 {
     class DrawingService : ConnectionService
     {
-        public static event Action<JoinCanvasRoomResponse> JoinCanvasRoom;
+        public static event Action<AccessCanvasResponse> JoinCanvasRoom;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
@@ -29,6 +29,7 @@ namespace PolyPaint.Services
         public static event Action<Coordinates> OnResizeCanvas;
         public static event Action RemoteReset;
         public static event Action BackToGallery;
+        public static event Action LeaveDrawingAction;
         public static event Action SaveCanvas;
         public static event Action RefreshChildren;
         public static event Action ReintializeCanvas;
@@ -92,10 +93,10 @@ namespace PolyPaint.Services
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
             });
 
-            socket.On("joinCanvasRoomResponse", (data) =>
+            socket.On("accessCanvasResponse", (data) =>
             {
-                JoinCanvasRoomResponse response = serializer.Deserialize<JoinCanvasRoomResponse>((string)data);
-                if (response.isCanvasRoomJoined)
+                AccessCanvasResponse response = serializer.Deserialize<AccessCanvasResponse>((string)data);
+                if (response.isPasswordValid)
                 {
                     canvasName = response.canvasName;
                 }
@@ -334,6 +335,7 @@ namespace PolyPaint.Services
 
             socket.On("disconnect", (data) =>
             {
+                // gi pourquoi ca?
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
             });
 
@@ -357,6 +359,12 @@ namespace PolyPaint.Services
         }
 
         public static void JoinCanvas(string roomName, string password)
+        {
+            EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);
+            socket.Emit("accessCanvas", serializer.Serialize(editGalleryData));
+        }
+
+        public static void JoinCanvasRoomServer(string roomName, string password)
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
@@ -763,9 +771,10 @@ namespace PolyPaint.Services
             Application.Current?.Dispatcher?.Invoke(new Action(() => { GoToTutorial(); }), DispatcherPriority.Render);
         }
 
-        internal static void GoToGallery()
+        internal static void LeaveDrawing()
         {
-            BackToGallery?.Invoke();
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { LeaveDrawingAction(); }), DispatcherPriority.Render);
+
         }
 
         internal static void GetHistoryLog(object o)

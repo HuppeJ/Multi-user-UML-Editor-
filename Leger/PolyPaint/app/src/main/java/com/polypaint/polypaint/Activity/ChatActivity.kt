@@ -62,12 +62,6 @@ class ChatActivity : AppCompatActivity(), RoomsListFragment.OnRoomSelectedListen
                 }
             }
 
-            footer{
-                secondaryItem("Settings") {
-                    icon = R.drawable.ic_settings
-                }
-            }
-
             toolbar = activityToolbar
         }
         drawer?.setSelectionAtPosition(2, false)
