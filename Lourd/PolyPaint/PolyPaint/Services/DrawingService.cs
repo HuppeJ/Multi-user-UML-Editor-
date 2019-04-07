@@ -355,7 +355,7 @@ namespace PolyPaint.Services
 
             socket.On("disconnect", (data) =>
             {
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
+                // Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
             });
 
             RefreshCanvases();
