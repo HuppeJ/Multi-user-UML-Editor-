@@ -34,6 +34,7 @@ namespace PolyPaint.Services
         public static event Action RefreshChildren;
         public static event Action ReintializeCanvas;
         public static event Action GoToTutorial;
+        public static event Action CanvasCreationFailed;
 
         public static event Action<History> UpdateHistory;
 
@@ -72,6 +73,10 @@ namespace PolyPaint.Services
                 {
                     canvasName = response.canvasName;
                     RefreshCanvases();
+                }
+                else
+                {
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { CanvasCreationFailed(); }), DispatcherPriority.Render);
                 }
             });
 
@@ -336,10 +341,7 @@ namespace PolyPaint.Services
             socket.On("canvasSaved", (data) =>
             {
                 EditCanevasData response = serializer.Deserialize<EditCanevasData>((string)data);
-                if (username != null && username.Equals(response.username))
-                {
-                    RefreshCanvases();
-                }
+                RefreshCanvases();
             });
 
             socket.On("getCanvasResponse", (data) =>
@@ -527,6 +529,10 @@ namespace PolyPaint.Services
             if (shapes.forms.Count > 0)
             {
                 socket.Emit(eventString, serializer.Serialize(shapes));
+                if (eventString != "selectForms")
+                {
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                }
             }
         }
         private static void EmitIfStrokes(string eventString, UpdateLinksData links)
@@ -534,7 +540,10 @@ namespace PolyPaint.Services
             if (links.links.Count > 0)
             {
                 socket.Emit(eventString, serializer.Serialize(links));
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                if(eventString != "selectLinks")
+                {
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                }
             }
         }
 
