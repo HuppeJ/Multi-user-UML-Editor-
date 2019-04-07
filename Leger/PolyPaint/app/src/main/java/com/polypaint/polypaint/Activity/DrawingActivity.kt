@@ -739,11 +739,11 @@ class DrawingActivity : AppCompatActivity(){
     public fun syncLayoutFromCanevas(){
         Log.d("syncLayoutFromCanevas","***wawaw****")
 
-        for (view in ViewShapeHolder.getInstance().map.keys){
+        for (view in ViewShapeHolder.getInstance().map.keys) {
 
             val basicShapeId: String = ViewShapeHolder.getInstance().map.getValue(view)
             val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
-            if(!view.isSelected) {
+            if (!view.isSelected) {
                 if (basicShape != null) {
                     view.x = (basicShape.shapeStyle.coordinates.x).toFloat() - shapeOffset
                     view.y = (basicShape.shapeStyle.coordinates.y).toFloat() - shapeOffset
@@ -753,86 +753,64 @@ class DrawingActivity : AppCompatActivity(){
 
                     // TODO : Jé's Fix : j'ai bougé les view.resize dans les différents case pour que la fonction redéfinie des enfants de BasicShape soit appelée (ex.: pour que la fonction .resize de ImageElementView soit appelée)
                     // TODO : les attributs xml des différentes View ne sont pas reconnues même avec le cast de la view (ex.:view as ImageElementView), voir les "// TODO : is null" ci-dessous, je n'ai pas trouvé pourquoi ça faisait cela^^
-                    when (basicShape.type) {
-//                        ShapeTypes.DEFAULT.value() -> {
-//                        }
-                        ShapeTypes.CLASS_SHAPE.value() -> {
-                            if (basicShape is ClassShape) {
-                                runOnUiThread {
-                                    view as ClassView
-                                    Log.d(
-                                        "syncLayoutFromCanevas",
-                                        basicShape.name + " w " + basicShape.shapeStyle.width.toInt() + " h " + basicShape.shapeStyle.height.toInt()
-                                    )
-                                    view.class_name.text = basicShape.name
-                                    var tmp: String = ""
-                                    if (basicShape.attributes != null) {
-                                        for (e in basicShape.attributes) {
-                                            tmp += e + "\n"
-                                        }
-                                    }
-                                    view.class_attributes.text = tmp
-                                    var tmp2 = ""
-                                    if (basicShape.methods != null) {
-                                        for (e in basicShape.methods) {
-                                            tmp2 += e + "\n"
-                                        }
-                                    }
-                                    view.class_methods.text = tmp2
-                                    view.resize(
-                                        basicShape.shapeStyle.width.toInt(),
-                                        basicShape.shapeStyle.height.toInt()
-                                    )
-
-                                }
-                            }
-                        }
-                        ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
-                            runOnUiThread {
-                                view as ImageElementView
-                                // TODO :  is null : view_image_element_name
-                                view.view_image_element_name.text = basicShape.name
-                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                            }
-
-                        }
-                        ShapeTypes.COMMENT.value() -> {
-                            runOnUiThread {
-                                view as CommentView
-                                var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
-                                commentText.text = basicShape.name
-                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                            }
-
-                        }
-
-                        ShapeTypes.PHASE.value() -> {
-                            runOnUiThread {
-                                view as PhaseView
-                                view.view_phase_name.text = basicShape.name
-//                                view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                            }
-                        }
-                        ShapeTypes.FREETEXT.value() -> {
-                            runOnUiThread {
-                                view as FreeTextView
-                                view.free_text_text.text = basicShape.name
-                                //view.outlineColor(basicShape.shapeStyle.borderColor, basicShape.shapeStyle.borderStyle)
-                                view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
-                                //view.backgroundColor(basicShape.shapeStyle.backgroundColor)
-                            }
-                        }
-
-                    }
+                    view.resize(basicShape.shapeStyle.width.toInt(), basicShape.shapeStyle.height.toInt())
                 }
             }
             if (basicShape != null) {
+                when (basicShape.type) {
+                    ShapeTypes.CLASS_SHAPE.value() -> {
+                        if (basicShape is ClassShape) {
+                            runOnUiThread {
+                                view as ClassView
+                                view.class_name.text = basicShape.name
+                                var tmp: String = ""
+                                if (basicShape.attributes != null) {
+                                    for (e in basicShape.attributes) {
+                                        tmp += e + "\n"
+                                    }
+                                }
+                                view.class_attributes.text = tmp
+                                var tmp2 = ""
+                                if (basicShape.methods != null) {
+                                    for (e in basicShape.methods) {
+                                        tmp2 += e + "\n"
+                                    }
+                                }
+                                view.class_methods.text = tmp2
+                            }
+                        }
+                    }
+                    ShapeTypes.ARTIFACT.value(), ShapeTypes.ACTIVITY.value(), ShapeTypes.ROLE.value() -> {
+                        runOnUiThread {
+                            view as ImageElementView
+                            // TODO :  is null : view_image_element_name
+                            view.view_image_element_name.text = basicShape.name
+                        }
+
+                    }
+                    ShapeTypes.COMMENT.value() -> {
+                        runOnUiThread {
+                            view as CommentView
+                            var commentText: TextView = view.findViewById(R.id.comment_text) as TextView
+                            commentText.text = basicShape.name
+                        }
+
+                    }
+
+                    ShapeTypes.PHASE.value() -> {
+                        runOnUiThread {
+                            view as PhaseView
+                            view.view_phase_name.text = basicShape.name
+                        }
+                    }
+                    ShapeTypes.FREETEXT.value() -> {
+                        runOnUiThread {
+                            view as FreeTextView
+                            view.free_text_text.text = basicShape.name
+                        }
+                    }
+                }
+
                 runOnUiThread {
                     view.outlineColor(
                         basicShape.shapeStyle.borderColor,
