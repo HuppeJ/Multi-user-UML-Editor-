@@ -47,6 +47,8 @@ open class BasicElementView: ConstraintLayout {
     var leftX = this.pivotX
     var topY = this.pivotY
 
+    var isLinkInCreation: Boolean = false
+
     constructor(context: Context) : super(context) {
         init(context)
         val activity: AppCompatActivity = context as AppCompatActivity
@@ -151,8 +153,15 @@ open class BasicElementView: ConstraintLayout {
         this.isSelectedByOther = isSelectedByOther
         if(isSelectedByOther){
             borderResizableLayout.setBackgroundResource(R.drawable.borders_red)
+            hideButtonsAndAnchors()
         } else {
             borderResizableLayout.setBackgroundResource(R.drawable.borders_white)
+            for(view in ViewShapeHolder.getInstance().map.keys){
+                if(view.isLinkInCreation){
+                    setAnchorsVisible(true)
+                }
+                break
+            }
         }
     }
 
@@ -190,6 +199,7 @@ open class BasicElementView: ConstraintLayout {
 
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {//first_line.text = "ActionDown"
+                    isLinkInCreation = true
                     for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                         if (basicView != this && !basicView.isSelectedByOther) {
                             basicView.setAnchorsVisible(true)
@@ -242,6 +252,7 @@ open class BasicElementView: ConstraintLayout {
                     colorAnchorOnHover(link.end.x.toInt(), link.end.y.toInt())
                 }
                 MotionEvent.ACTION_UP -> {
+                    isLinkInCreation = false
                     for(basicView: BasicElementView in ViewShapeHolder.getInstance().map.keys) {
                         if (basicView != this && !basicView.isSelectedByOther) {
                             basicView.setAnchorsVisible(false)

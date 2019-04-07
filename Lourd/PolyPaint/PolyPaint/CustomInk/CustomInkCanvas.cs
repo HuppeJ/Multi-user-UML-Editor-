@@ -352,6 +352,7 @@ namespace PolyPaint.CustomInk
             DrawingService.RefreshChildren += RefreshChildren;
             DrawingService.RemoteReset += RemoteReset;
             DrawingService.BackToGallery += DeselectAll;
+            DrawingService.LeaveDrawingAction += DeselectAll;
         }
 
         private void DeselectAll()

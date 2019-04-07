@@ -549,6 +549,8 @@
     <Resource Include="Resources\withplus\freetext.png" />
     <Resource Include="Resources\withplus\link.png" />
     <Resource Include="Resources\withplus\phase.png" />
+    <Resource Include="Resources\withplus\CSharpCode.png" />
+    <Resource Include="Resources\withplus\ExportCanvas.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
