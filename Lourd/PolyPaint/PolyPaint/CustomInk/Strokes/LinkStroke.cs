@@ -112,7 +112,7 @@ namespace PolyPaint.CustomInk.Strokes
             }
             else
             {
-                StylusPoints.Add(new StylusPoint(firstPoint.X + 100, lastPoint.Y));
+                StylusPoints.Add(new StylusPoint(firstPoint.X + 100, lastPoint.Y + 100));
                 path.Add(new Coordinates(StylusPoints[1].X, StylusPoints[1].Y));
             }
 
@@ -171,7 +171,7 @@ namespace PolyPaint.CustomInk.Strokes
                
         public int getThickness()
         {
-            int thickness = 4;
+            int thickness = 2;
 
             switch (style.thickness)
             {
@@ -270,6 +270,7 @@ namespace PolyPaint.CustomInk.Strokes
             double deltaX = lastPoint.x - firstPoint.x;
 
             double norm = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2));
+            norm = norm == 0 ? 1 : norm;
             Vector uVector = new Vector(deltaX / norm, deltaY / norm);
             Point pointOnStroke = Point.Add(firstPoint.ToPoint(), distanceFromPoint * uVector);
             return pointOnStroke;
@@ -462,14 +463,8 @@ namespace PolyPaint.CustomInk.Strokes
             {
                 pathGeom = new LineGeometry(path[i].ToPoint(), path[i+1].ToPoint());
 
-                double tolerance = 4;
-                if (style.thickness == 0)
-                {
-                    tolerance = 2;
-                } else if (style.thickness == 1)
-                {
-                    tolerance = 3;
-                }
+                double tolerance = 2;
+                tolerance += getThickness();
 
                 if (pathGeom.FillContains(point, tolerance, ToleranceType.Absolute))
                 {
@@ -494,41 +489,6 @@ namespace PolyPaint.CustomInk.Strokes
         {
             return from?.formId != null || to?.formId != null;
         }
-        //public bool 
-
-        #region rotation
-        /*public override CustomStroke CloneRotated(double rotation)
-        {
-            LinkStroke newStroke = (LinkStroke)Clone();
-
-            // Changer les bounds? Gi
-            //newStroke.GetBounds().Transform(rotation.Value);
-
-            newStroke.rotation = rotation;
-            return newStroke;
-        }*/
-
-        //protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
-        //{
-        //    if (drawingContext == null)
-        //    {
-        //        throw new ArgumentNullException("drawingContext");
-        //    }
-        //    if (null == drawingAttributes)
-        //    {
-        //        throw new ArgumentNullException("drawingAttributes");
-        //    }
-        //    Rect bounds = GetBounds();
-        //    double x = (bounds.Right + bounds.Left) / 2;
-        //    double y = (bounds.Bottom + bounds.Top) / 2;
-
-        //    TransformGroup transform = new TransformGroup();
-
-        //    transform.Children.Add(new RotateTransform(rotation, x, y));
-
-        //    drawingContext.PushTransform(transform);
-        //}
-        #endregion
 
         public override void updatePosition(Rect newRect)
         {
@@ -546,8 +506,8 @@ namespace PolyPaint.CustomInk.Strokes
         {
             double[] limits = GetMaxAndMin();
             Rect oldRect = GetStraightBounds();
-            double widthRatio = newRect.Width / oldRect.Width;
-            double heightRatio = newRect.Height / oldRect.Height;
+            double widthRatio = oldRect.Width == 0 ? 1 : newRect.Width / oldRect.Width;
+            double heightRatio = oldRect.Height == 0 ? 1: newRect.Height / oldRect.Height;
             foreach (Coordinates point in path)
             {
                 point.x = newRect.Left + (point.x - oldRect.Left) * widthRatio;
@@ -557,8 +517,8 @@ namespace PolyPaint.CustomInk.Strokes
 
         public virtual Link GetLinkShape()
         {
-            AnchorPoint fromForComm = from.GetForServer();
-            AnchorPoint toForComm = to.GetForServer();
+            AnchorPoint fromForComm = from?.GetForServer();
+            AnchorPoint toForComm = to?.GetForServer();
             List<Coordinates> newPath = new List<Coordinates>();
             foreach (Coordinates coords in path)
             {

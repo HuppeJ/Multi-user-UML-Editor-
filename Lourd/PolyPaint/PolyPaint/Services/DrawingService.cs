@@ -576,6 +576,10 @@ namespace PolyPaint.Services
                         {
                             basicShape.linksFrom = new List<string>();
                         }
+                        if (basicShape.shapeStyle == null)
+                        {
+                            basicShape.shapeStyle = new ShapeStyle(new Coordinates(0,0), 1, 1, 0, "#000000", 0, "#00000000");
+                        }
                         forms.Add(basicShape);
                     }
                     else
@@ -588,6 +592,10 @@ namespace PolyPaint.Services
                         if (basicShape.linksFrom == null)
                         {
                             basicShape.linksFrom = new List<string>();
+                        }
+                        if (basicShape.shapeStyle == null)
+                        {
+                            basicShape.shapeStyle = new ShapeStyle(new Coordinates(0, 0), 1, 1, 0, "#000000", 0, "#00000000");
                         }
                         forms.Add(basicShape);
                     }
@@ -604,7 +612,16 @@ namespace PolyPaint.Services
             {
                 if (customStroke.isLinkStroke())
                 {
-                    links.Add((customStroke as LinkStroke).GetLinkShape());
+                    Link link = (customStroke as LinkStroke).GetLinkShape();
+                    if(link.style == null)
+                    {
+                        link.style = new LinkStyle("#000000", 0, 0);
+                    }
+                    if (link.path == null || link.from == null || link.to == null || link.path.Count == 0)
+                    {
+                        continue;
+                    }
+                    links.Add(link);
                 }
             }
 

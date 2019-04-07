@@ -97,6 +97,15 @@
                         <Image Source="/Resources/withplus/class.png"  />
                     </StackPanel>
                 </Button>
+                <Button x:Name="Link" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="LINK" ToolTip="LINK">
+                    <StackPanel>
+                        <Image Source="/Resources/withplus/link.png"  />
+                    </StackPanel>
+                </Button>
                 <Button AllowDrop="True" x:Name="Role" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri"  Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -124,6 +133,15 @@
                         <Image Source="/Resources/withplus/activity.png"  />
                     </StackPanel>
                 </Button>
+                <Button x:Name="Phase" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Command="{Binding ChooseStrokeTypeCommand}"
+                        CommandParameter="PHASE" ToolTip="PHASE">
+                    <StackPanel>
+                        <Image Source="/Resources/withplus/phase.png"  />
+                    </StackPanel>
+                </Button>
                 <Button x:Name="Comment" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -140,24 +158,6 @@
                         CommandParameter="FLOATINGTEXT" ToolTip="FREE TEXT">
                     <StackPanel>
                         <Image Source="/Resources/withplus/freetext.png"  />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="Phase" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
-                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
-                        Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="PHASE" ToolTip="PHASE">
-                    <StackPanel>
-                        <Image Source="/Resources/withplus/phase.png"  />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="Link" Width="40" Height="40" Margin="5" Padding="0,0" FontSize="12" FontFamily="Calibri" Foreground="Black"
-                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
-                        Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="LINK" ToolTip="LINK">
-                    <StackPanel>
-                        <Image Source="/Resources/withplus/link.png"  />
                     </StackPanel>
                 </Button>
                 <!--<Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
