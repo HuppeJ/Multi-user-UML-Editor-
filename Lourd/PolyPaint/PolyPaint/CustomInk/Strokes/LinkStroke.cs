@@ -24,6 +24,7 @@ namespace PolyPaint.CustomInk.Strokes
         {
             guid = new Guid(link.id);
             this.name = link.name;
+            this.name = guid.ToString();
             this.from = link.from;
             this.to = link.to;
             this.strokeType = (int)StrokeTypes.LINK;

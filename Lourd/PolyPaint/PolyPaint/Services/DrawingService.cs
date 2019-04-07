@@ -334,7 +334,7 @@ namespace PolyPaint.Services
 
             socket.On("disconnect", (data) =>
             {
-                BackToGallery?.Invoke();
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
             });
 
             RefreshCanvases();
@@ -765,7 +765,7 @@ namespace PolyPaint.Services
 
         internal static void GoToGallery()
         {
-            BackToGallery?.Invoke();
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
         }
 
         internal static void GetHistoryLog(object o)
