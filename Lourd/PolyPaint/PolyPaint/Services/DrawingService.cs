@@ -37,7 +37,7 @@ namespace PolyPaint.Services
 
         public static event Action<History> UpdateHistory;
 
-        private static JavaScriptSerializer serializer = new JavaScriptSerializer{
+        private static JavaScriptSerializer serializer = new JavaScriptSerializer {
             MaxJsonLength = int.MaxValue
         };
         public static string canvasName;
@@ -50,14 +50,14 @@ namespace PolyPaint.Services
 
         public DrawingService()
         {
-            
+
         }
 
         public static void Initialize(object o)
         {
             socket.On(Socket.EVENT_RECONNECT, () =>
             {
-                if(canvasName != null)
+                if (canvasName != null)
                 {
                     // Stocker le mot de passe? ADD
                     JoinCanvas(canvasName, "");
@@ -88,7 +88,7 @@ namespace PolyPaint.Services
                     RefreshCanvases();
                 }
             });
-            
+
             socket.On("canvasPasswordUpdated", (data) =>
             {
                 LeaveCanvas();
@@ -277,7 +277,7 @@ namespace PolyPaint.Services
                     {
                         ShapeStroke stroke = createShapeStroke(shape);
                         strokes.Add(stroke);
-                        if(!remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                        if (!remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                             remoteSelectedStrokes.Add(stroke.guid.ToString());
                         Application.Current?.Dispatcher?.Invoke(new Action(() => { UpdateSelection(); }), DispatcherPriority.Render);
                     }
@@ -294,7 +294,7 @@ namespace PolyPaint.Services
                     {
                         ShapeStroke stroke = createShapeStroke(shape);
                         strokes.Add(stroke);
-                        if(remoteSelectedStrokes.Contains(stroke.guid.ToString()))
+                        if (remoteSelectedStrokes.Contains(stroke.guid.ToString()))
                             remoteSelectedStrokes.Remove(stroke.guid.ToString());
                         Application.Current?.Dispatcher?.Invoke(new Action(() => { UpdateDeselection(); }), DispatcherPriority.Render);
                     }
@@ -307,7 +307,7 @@ namespace PolyPaint.Services
                 dynamic response = JObject.Parse((string)data);
                 foreach (string id in response.selectedForms)
                 {
-                    if(!remoteSelectedStrokes.Contains(id))
+                    if (!remoteSelectedStrokes.Contains(id))
                     {
                         remoteSelectedStrokes.Add(id);
                     }
@@ -335,6 +335,37 @@ namespace PolyPaint.Services
                 {
                     RefreshCanvases();
                 }
+            });
+
+            socket.On("getCanvasResponse", (data) =>
+            {
+                Templates.Canvas canvas = serializer.Deserialize<Templates.Canvas>((string)data);
+                canvasName = canvas.name;
+                currentCanvas = canvas;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { OnResizeCanvas(canvas.dimensions); }), DispatcherPriority.ContextIdle);
+                localSelectedStrokes = new List<string>();
+                localAddedStrokes = new List<string>();
+                EditGalleryData editGallerysData = new EditGalleryData(username, canvasName, "");
+
+                foreach (Link link in canvas.links)
+                {
+                    LinkStroke linkStroke = LinkStrokeFromLink(link);
+                    InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(linkStroke);
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+                }
+
+                List<BasicShape> basicShapes = ExtractShapesFromCanvas(canvas);
+                foreach (BasicShape shape in basicShapes)
+                {
+                    ShapeStroke shapeStroke = ShapeStrokeFromShape(shape);
+                    InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(shapeStroke);
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
+                }
+
+                socket.Emit("getSelectedForms", serializer.Serialize(editGallerysData));
+                socket.Emit("getSelectedLinks", serializer.Serialize(editGallerysData));
+
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { RefreshChildren(); }), DispatcherPriority.ContextIdle);
             });
 
             socket.On("canvasReinitialized", (data) =>
@@ -411,30 +442,8 @@ namespace PolyPaint.Services
 
         public static void DrawCanvas(Templates.Canvas canvas)
         {
-            canvasName = canvas.name;
-            currentCanvas = canvas;
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { OnResizeCanvas(canvas.dimensions); }), DispatcherPriority.ContextIdle);
-            localSelectedStrokes = new List<string>();
-            localAddedStrokes = new List<string>();
-            EditGalleryData editGallerysData = new EditGalleryData(username, canvasName, "");
-            socket.Emit("getSelectedForms", serializer.Serialize(editGallerysData));
-            socket.Emit("getSelectedLinks", serializer.Serialize(editGallerysData));
-            foreach (Link link in canvas.links)
-            {
-                LinkStroke linkStroke = LinkStrokeFromLink(link);
-                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(linkStroke);
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
-            }
-
-            foreach(BasicShape shape in canvas.shapes)
-            {
-                ShapeStroke shapeStroke = ShapeStrokeFromShape(shape);
-                InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(shapeStroke);
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
-            }
-
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { RefreshChildren(); }), DispatcherPriority.ContextIdle);
-
+            EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
+            socket.Emit("getCanvas", serializer.Serialize(editGalleryData));
         }
 
         public static void LeaveCanvas()
@@ -505,11 +514,12 @@ namespace PolyPaint.Services
             localAddedStrokes = new List<string>();
             remoteSelectedStrokes = new List<string>();
             socket.Emit("reinitializeCanvas", serializer.Serialize(new EditCanevasData(username, currentCanvas)));
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         private static void EmitIfStrokes(string eventString, UpdateFormsData shapes)
         {
-            if(shapes.forms.Count > 0)
+            if (shapes.forms.Count > 0)
             {
                 socket.Emit(eventString, serializer.Serialize(shapes));
             }
@@ -539,7 +549,7 @@ namespace PolyPaint.Services
         {
             foreach (CustomStroke stroke in strokes)
             {
-                if(!localSelectedStrokes.Contains(stroke.guid.ToString()))
+                if (!localSelectedStrokes.Contains(stroke.guid.ToString()))
                     localSelectedStrokes.Add(stroke.guid.ToString());
             }
             EmitIfStrokes("selectForms", createUpdateFormsData(strokes));
@@ -565,7 +575,7 @@ namespace PolyPaint.Services
             {
                 if (!customStroke.isLinkStroke())
                 {
-                    if(customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
+                    if (customStroke.strokeType == (int)StrokeTypes.CLASS_SHAPE)
                     {
                         BasicShape basicShape = (customStroke as ClassStroke).GetBasicShape().forServer();
                         if (basicShape.linksTo == null)
@@ -635,8 +645,8 @@ namespace PolyPaint.Services
                 link.path[i].x /= 2.1;
                 link.path[i].y /= 2.1;
             }
-            
-            LinkStroke linkStroke = new LinkStroke(link.ToObject<Link>(), new StylusPointCollection { new StylusPoint(0,0) });
+
+            LinkStroke linkStroke = new LinkStroke(link.ToObject<Link>(), new StylusPointCollection { new StylusPoint(0, 0) });
             linkStroke.guid = Guid.Parse((string)link.id);
 
             linkStroke.to = linkStroke.to.GetForLourd();
@@ -657,7 +667,7 @@ namespace PolyPaint.Services
             shape.shapeStyle.coordinates.y = (double)shape.shapeStyle.coordinates.y / 2.1;
 
             ShapeStroke shapeStroke;
-            StrokeTypes type = (StrokeTypes) shape.type;
+            StrokeTypes type = (StrokeTypes)shape.type;
 
             switch (type)
             {
@@ -735,7 +745,7 @@ namespace PolyPaint.Services
         private static LinkStroke LinkStrokeFromLink(Link link)
         {
             StrokeTypes type = (StrokeTypes)link.type;
-            for(int i=0; i<link.path.Count; i++)
+            for (int i = 0; i < link.path.Count; i++)
             {
                 link.path[i].x /= 2.1;
                 link.path[i].y /= 2.1;
@@ -744,7 +754,7 @@ namespace PolyPaint.Services
             link.from = link.from.GetForLourd();
             link.to = link.to.GetForLourd();
 
-            return new LinkStroke(link, new StylusPointCollection { new StylusPoint(0,0) });
+            return new LinkStroke(link, new StylusPointCollection { new StylusPoint(0, 0) });
         }
 
         private static void ExtractCanvasesShapes(List<Templates.Canvas> canvasesList)
@@ -753,38 +763,43 @@ namespace PolyPaint.Services
             {
                 foreach (Templates.Canvas canvas in canvasesList)
                 {
-                    List<BasicShape> basicShapeList = new List<BasicShape>();
-                    dynamic shapes = canvas.shapes;
-                    for (int i = 0; i < shapes.Length; i++)
-                    {
-                        // If there are 8 attributes, it's a class, else, it's a basicShape
-                        if (shapes[i].Count == 8)
-                        {
-                            string id = shapes[i]["id"];
-                            int type = shapes[i]["type"];
-                            string name = shapes[i]["name"];
-                            var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
-                            List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
-                            List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
-                            List<string> attributes = GetStringList(shapes[i]["attributes"]);
-                            List<string> methods = GetStringList(shapes[i]["methods"]);
-                            basicShapeList.Add(new ClassShape(id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
-                        }
-                        else
-                        {
-                            string id = shapes[i]["id"];
-                            int type = shapes[i]["type"];
-                            string name = shapes[i]["name"];
-                            var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
-                            List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
-                            List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
-                            basicShapeList.Add(new BasicShape(id, type, name, shapeStyle, linksTo, linksFrom));
-                        }
-                    }
-
-                    canvas.shapes = basicShapeList;
+                    canvas.shapes = ExtractShapesFromCanvas(canvas);
                 }
             }
+        }
+
+        private static List<BasicShape> ExtractShapesFromCanvas(Templates.Canvas canvas)
+        {
+            List<BasicShape> basicShapeList = new List<BasicShape>();
+            dynamic shapes = canvas.shapes;
+            for (int i = 0; i < shapes.Length; i++)
+            {
+                // If there are 8 attributes, it's a class, else, it's a basicShape
+                if (shapes[i].Count == 8)
+                {
+                    string id = shapes[i]["id"];
+                    int type = shapes[i]["type"];
+                    string name = shapes[i]["name"];
+                    var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
+                    List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
+                    List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
+                    List<string> attributes = GetStringList(shapes[i]["attributes"]);
+                    List<string> methods = GetStringList(shapes[i]["methods"]);
+                    basicShapeList.Add(new ClassShape(id, type, name, shapeStyle, linksTo, linksFrom, attributes, methods));
+                }
+                else
+                {
+                    string id = shapes[i]["id"];
+                    int type = shapes[i]["type"];
+                    string name = shapes[i]["name"];
+                    var shapeStyle = GetShapeStyle(shapes[i]["shapeStyle"]);
+                    List<string> linksTo = GetStringList(shapes[i]["linksTo"]);
+                    List<string> linksFrom = GetStringList(shapes[i]["linksFrom"]);
+                    basicShapeList.Add(new BasicShape(id, type, name, shapeStyle, linksTo, linksFrom));
+                }
+            }
+
+            return basicShapeList;
         }
 
         private static dynamic GetShapeStyle(dynamic shapeStyle)
