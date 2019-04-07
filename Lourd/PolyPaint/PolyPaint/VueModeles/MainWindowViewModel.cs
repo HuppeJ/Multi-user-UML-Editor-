@@ -929,7 +929,7 @@ namespace PolyPaint.VueModeles
             {
                 if (room.name == message.chatroomName && !room.Chatter.Contains(cm))
                 {
-                    ctxTaskFactory.StartNew(() => room.Chatter.Add(cm)).Wait();
+                    room.Chatter.Add(cm);
                 }
                 OnPropertyChanged("selectedRoom");
             }
