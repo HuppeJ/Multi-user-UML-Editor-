@@ -106,6 +106,13 @@ class DrawingActivity : AppCompatActivity(){
             primaryItem("Chat") {
                 icon = R.drawable.ic_chat
                 onClick { _ ->
+                    parent_relative_layout?.dispatchSetSelected(false )
+                    for(shape in FormsSelectionHolder.getInstance().formsSelectedId){
+                        ViewShapeHolder.getInstance().map.inverse()[shape]?.emitDeselection()
+                    }
+                    for(link in FormsSelectionHolder.getInstance().linksSelectedId){
+                        ViewShapeHolder.getInstance().linkMap.inverse()[link]?.emitDeselection()
+                    }
                     val intent = Intent(this@DrawingActivity, ChatActivity::class.java)
                     startActivity(intent)
                     true
