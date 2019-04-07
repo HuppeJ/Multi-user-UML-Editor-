@@ -135,43 +135,51 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         freetext_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.FREETEXT)
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
 
         class_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.CLASS_SHAPE)
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         artefact_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ARTIFACT)
             Log.d("before delay", "saveCanevasCall")
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         activity_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ACTIVITY)
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         role_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ROLE)
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         comment_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.COMMENT)
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         phase_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.PHASE)
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         link_button.setOnClickListener {
+            selection_button.isChecked = false
             var linkDefaultPath : ArrayList<Coordinates> = ArrayList()
             linkDefaultPath.add(Coordinates(65.0,65.0))
             linkDefaultPath.add(Coordinates(250.0,65.0))
@@ -188,6 +196,7 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         clear_canvas_button.setOnClickListener {
+            selection_button.isChecked = false
             emitClearCanvas()
             parent_relative_layout?.removeAllViews()
             ViewShapeHolder.getInstance().removeAll()
@@ -198,21 +207,25 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         duplicate_button.setOnClickListener{
+            selection_button.isChecked = false
             duplicateView()
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         cut_button.setOnClickListener{
+            selection_button.isChecked = false
             cutView()
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         stack_button.setOnClickListener{
+            selection_button.isChecked = false
             stackView()
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         unstack_button.setOnClickListener{
+            selection_button.isChecked = false
             unstackView()
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
