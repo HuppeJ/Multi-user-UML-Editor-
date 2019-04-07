@@ -336,7 +336,7 @@ class DrawingActivity : AppCompatActivity(){
         //addShapeToCanevas
         ViewShapeHolder.getInstance().canevas.addShape(shape)
         //mapViewAndShapeId
-        ViewShapeHolder.getInstance().map.put(view, shape.id)
+        ViewShapeHolder.getInstance().map.forcePut(view, shape.id)
         //stackFor Stack/Unstack
         ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(shape.id)
 
@@ -382,49 +382,49 @@ class DrawingActivity : AppCompatActivity(){
                     parent_relative_layout?.addView(viewType)
 
                     //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.forcePut(viewType, basicShape.id)
                 }
                 ShapeTypes.ARTIFACT.value() -> {
                     val viewType = newViewOnCanevas(ShapeTypes.ARTIFACT)
                     parent_relative_layout?.addView(viewType)
 
                     //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.forcePut(viewType, basicShape.id)
                 }
                 ShapeTypes.ACTIVITY.value() -> {
                     val viewType = newViewOnCanevas(ShapeTypes.ACTIVITY)
                     parent_relative_layout?.addView(viewType)
 
                     //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.forcePut(viewType, basicShape.id)
                 }
                 ShapeTypes.ROLE.value() -> {
                     val viewType = newViewOnCanevas(ShapeTypes.ROLE)
                     parent_relative_layout?.addView(viewType)
 
                     //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.forcePut(viewType, basicShape.id)
                 }
                 ShapeTypes.COMMENT.value() -> {
                     val viewType = newViewOnCanevas(ShapeTypes.COMMENT)
                     parent_relative_layout?.addView(viewType)
 
                     //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.forcePut(viewType, basicShape.id)
                 }
                 ShapeTypes.PHASE.value() -> {
                     val viewType = newViewOnCanevas(ShapeTypes.PHASE)
                     parent_relative_layout?.addView(viewType)
 
                     //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.forcePut(viewType, basicShape.id)
                 }
                 ShapeTypes.FREETEXT.value() -> {
                     val viewType = newViewOnCanevas(ShapeTypes.FREETEXT)
                     parent_relative_layout?.addView(viewType)
 
                     //For Sync
-                    ViewShapeHolder.getInstance().map.put(viewType, basicShape.id)
+                    ViewShapeHolder.getInstance().map.forcePut(viewType, basicShape.id)
                 }
 
             }
