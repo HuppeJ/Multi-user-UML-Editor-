@@ -495,7 +495,7 @@ export default class CanvasEditionSocketEvents {
                     // TODO remove
                     io.to(CanvasTestRoom).emit("canvasDeselected", dataStr);
                 } catch (e) {
-                    console.log("[Error]: ", e);
+                    console.log("[Error12]: ", e);
                 }
             });
 
