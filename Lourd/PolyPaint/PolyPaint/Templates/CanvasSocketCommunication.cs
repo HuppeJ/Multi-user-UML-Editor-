@@ -102,6 +102,12 @@ namespace PolyPaint.Templates
         public string canvasName { get; set; }
     }
 
+    class AccessCanvasResponse
+    {
+        public bool isPasswordValid { get; set; }
+        public string canvasName { get; set; }
+    }
+
     class CreateChatroomResponse
     {
         public bool isCreated { get; set; }

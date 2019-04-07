@@ -29,6 +29,7 @@ namespace PolyPaint.Vues
 
         private void Close(object sender, RoutedEventArgs e)
         {
+            PasswordTextBox.Clear();
             IsEnabled = true;
             galleryview.ClosePopUp();
         }

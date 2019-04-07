@@ -17,7 +17,7 @@ namespace PolyPaint.Services
 {
     class DrawingService : ConnectionService
     {
-        public static event Action<JoinCanvasRoomResponse> JoinCanvasRoom;
+        public static event Action<AccessCanvasResponse> JoinCanvasRoom;
         public static event Action<InkCanvasStrokeCollectedEventArgs> AddStroke;
         public static event Action<StrokeCollection> RemoveStrokes;
         public static event Action<InkCanvasStrokeCollectedEventArgs> UpdateStroke;
@@ -95,10 +95,10 @@ namespace PolyPaint.Services
                 }
             });
 
-            socket.On("joinCanvasRoomResponse", (data) =>
+            socket.On("accessCanvasResponse", (data) =>
             {
-                JoinCanvasRoomResponse response = serializer.Deserialize<JoinCanvasRoomResponse>((string)data);
-                if (response.isCanvasRoomJoined)
+                AccessCanvasResponse response = serializer.Deserialize<AccessCanvasResponse>((string)data);
+                if (response.isPasswordValid)
                 {
                     canvasName = response.canvasName;
                 }
@@ -371,7 +371,7 @@ namespace PolyPaint.Services
         public static void JoinCanvas(string roomName, string password)
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);
-            socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
+            socket.Emit("accessCanvas", serializer.Serialize(editGalleryData));
         }
 
         public static void ResizeCanvas(Coordinates coordinates)
