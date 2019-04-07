@@ -524,6 +524,10 @@ namespace PolyPaint.Services
             if (shapes.forms.Count > 0)
             {
                 socket.Emit(eventString, serializer.Serialize(shapes));
+                if (eventString != "selectForms")
+                {
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                }
             }
         }
         private static void EmitIfStrokes(string eventString, UpdateLinksData links)
@@ -531,7 +535,10 @@ namespace PolyPaint.Services
             if (links.links.Count > 0)
             {
                 socket.Emit(eventString, serializer.Serialize(links));
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                if(eventString != "selectLinks")
+                {
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                }
             }
         }
 

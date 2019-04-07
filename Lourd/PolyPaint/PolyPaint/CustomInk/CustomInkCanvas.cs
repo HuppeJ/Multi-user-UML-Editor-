@@ -1551,10 +1551,13 @@ namespace PolyPaint.CustomInk
 
         public void RefreshSelectedShape(ShapeStroke stroke)
         {
-            ShapeStroke strokeCopy = (ShapeStroke)stroke.Clone();
-            StrokeCollection strokes = new StrokeCollection() { strokeCopy };
-            Strokes.Replace(stroke, strokes);
-            Select(strokes);
+            if(stroke != null)
+            {
+                ShapeStroke strokeCopy = (ShapeStroke)stroke.Clone();
+                StrokeCollection strokes = new StrokeCollection() { strokeCopy };
+                Strokes.Replace(stroke, strokes);
+                Select(strokes);
+            }
         }
 
         public void ConvertInkCanvasToByteArray()

@@ -237,7 +237,7 @@ namespace PolyPaint.CustomInk
             {
                 shapesToUpdate.Add(shapeStroke);
             }
-            if (strokeTo != null)
+            if (strokeTo != null && !shapesToUpdate.Contains(strokeTo))
             {
                 shapesToUpdate.Add(strokeTo);
             }

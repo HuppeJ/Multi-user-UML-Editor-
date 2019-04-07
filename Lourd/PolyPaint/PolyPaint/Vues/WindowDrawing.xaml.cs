@@ -206,32 +206,38 @@ namespace PolyPaint.Vues
         public void Rename(string text, Color borderColor, Color fillColor, int lineStyle )
         {
             popUpName.IsOpen = false;
-            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
-            stroke.name = text;
-            stroke.shapeStyle.borderColor = borderColor.ToString();
-            stroke.shapeStyle.backgroundColor = fillColor.ToString();
-            stroke.shapeStyle.borderStyle = lineStyle;
-            StrokeCollection sc = new StrokeCollection();
-            sc.Add(stroke);
-            DrawingService.UpdateShapes(sc);
-            surfaceDessin.RefreshChildren();
-            surfaceDessin.RefreshSelectedShape(stroke);
+            if (surfaceDessin.GetSelectedStrokes().Count == 1 && surfaceDessin.GetSelectedStrokes()[0] != null)
+            {
+                ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
+                stroke.name = text;
+                stroke.shapeStyle.borderColor = borderColor.ToString();
+                stroke.shapeStyle.backgroundColor = fillColor.ToString();
+                stroke.shapeStyle.borderStyle = lineStyle;
+                StrokeCollection sc = new StrokeCollection();
+                sc.Add(stroke);
+                DrawingService.UpdateShapes(sc);
+                surfaceDessin.RefreshChildren();
+                surfaceDessin.RefreshSelectedShape(stroke);
+            }
             IsEnabled = true;
         }
 
         public void CommentEdition(string text, Color borderColor, Color fillColor, int lineStyle)
         {
             popUpComment.IsOpen = false;
-            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
-            stroke.name = text;
-            stroke.shapeStyle.borderColor = borderColor.ToString();
-            stroke.shapeStyle.backgroundColor = fillColor.ToString();
-            stroke.shapeStyle.borderStyle = lineStyle;
-            StrokeCollection sc = new StrokeCollection();
-            sc.Add(stroke);
-            DrawingService.UpdateShapes(sc);
-            surfaceDessin.RefreshChildren();
-            surfaceDessin.RefreshSelectedShape(stroke);
+            if (surfaceDessin.GetSelectedStrokes().Count == 1 && surfaceDessin.GetSelectedStrokes()[0] != null)
+            {
+                ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
+                stroke.name = text;
+                stroke.shapeStyle.borderColor = borderColor.ToString();
+                stroke.shapeStyle.backgroundColor = fillColor.ToString();
+                stroke.shapeStyle.borderStyle = lineStyle;
+                StrokeCollection sc = new StrokeCollection();
+                sc.Add(stroke);
+                DrawingService.UpdateShapes(sc);
+                surfaceDessin.RefreshChildren();
+                surfaceDessin.RefreshSelectedShape(stroke);
+            }
             IsEnabled = true;
         }
 
@@ -239,87 +245,97 @@ namespace PolyPaint.Vues
         public void FloatingTextEdition(string text, Color borderColor, Color fillColor, int lineStyle)
         {
             popUpFloatingText.IsOpen = false;
-            ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
-            stroke.name = text;
-            stroke.shapeStyle.borderColor = borderColor.ToString();
-            stroke.shapeStyle.backgroundColor = fillColor.ToString();
-            stroke.shapeStyle.borderStyle = lineStyle;
-            StrokeCollection sc = new StrokeCollection();
-            sc.Add(stroke);
-            DrawingService.UpdateShapes(sc);
-            surfaceDessin.RefreshChildren();
-            surfaceDessin.RefreshSelectedShape(stroke);
+            if (surfaceDessin.GetSelectedStrokes().Count == 1 && surfaceDessin.GetSelectedStrokes()[0] != null)
+            {
+                ShapeStroke stroke = (ShapeStroke)surfaceDessin.GetSelectedStrokes()[0];
+                stroke.name = text;
+                stroke.shapeStyle.borderColor = borderColor.ToString();
+                stroke.shapeStyle.backgroundColor = fillColor.ToString();
+                stroke.shapeStyle.borderStyle = lineStyle;
+                StrokeCollection sc = new StrokeCollection();
+                sc.Add(stroke);
+                DrawingService.UpdateShapes(sc);
+                surfaceDessin.RefreshChildren();
+                surfaceDessin.RefreshSelectedShape(stroke);
+            }
             IsEnabled = true;
         }
 
         public void Rename(string className, string attributes, string methods, Color borderColor, Color fillColor, int lineStyle)
         {
             popUpClass.IsOpen = false;
-            ClassStroke stroke = (ClassStroke)surfaceDessin.GetSelectedStrokes()[0];
-            stroke.name = className;
-            stroke.shapeStyle.borderColor = borderColor.ToString();
-            stroke.shapeStyle.backgroundColor = fillColor.ToString();
-            stroke.shapeStyle.borderStyle = lineStyle;
-
-            stroke.attributes = new List<string>();
-            string[] lines = attributes.Split(
-                new[] { Environment.NewLine },
-                StringSplitOptions.None
-            );
-            foreach(string line in lines)
+            if (surfaceDessin.GetSelectedStrokes().Count == 1 && surfaceDessin.GetSelectedStrokes()[0] != null)
             {
-                stroke.attributes.Add(line);
+                ClassStroke stroke = (ClassStroke)surfaceDessin.GetSelectedStrokes()[0];
+                stroke.name = className;
+                stroke.shapeStyle.borderColor = borderColor.ToString();
+                stroke.shapeStyle.backgroundColor = fillColor.ToString();
+                stroke.shapeStyle.borderStyle = lineStyle;
+
+                stroke.attributes = new List<string>();
+                string[] lines = attributes.Split(
+                    new[] { Environment.NewLine },
+                    StringSplitOptions.None
+                );
+                foreach(string line in lines)
+                {
+                    stroke.attributes.Add(line);
+                }
+
+                stroke.methods = new List<string>();
+                lines = methods.Split(
+                    new[] { Environment.NewLine },
+                    StringSplitOptions.None
+                );
+                foreach (string line in lines)
+                {
+                    stroke.methods.Add(line);
+                }
+
+                StrokeCollection sc = new StrokeCollection();
+                sc.Add(stroke);
+                DrawingService.UpdateShapes(sc);
+
+                surfaceDessin.RefreshChildren();
+                surfaceDessin.RefreshSelectedShape(stroke);
             }
-
-            stroke.methods = new List<string>();
-            lines = methods.Split(
-                new[] { Environment.NewLine },
-                StringSplitOptions.None
-            );
-            foreach (string line in lines)
-            {
-                stroke.methods.Add(line);
-            }
-
-            StrokeCollection sc = new StrokeCollection();
-            sc.Add(stroke);
-            DrawingService.UpdateShapes(sc);
-
-            surfaceDessin.RefreshChildren();
-            surfaceDessin.RefreshSelectedShape(stroke);
             IsEnabled = true;
         }
 
         public void EditLink(string linkName, int linkType, int linkStyle, string selectedColor, int linkThickness, string multiplicityFrom, string multiplicityTo)
         {
             popUpLink.IsOpen = false;
-            LinkStroke stroke = (LinkStroke)surfaceDessin.GetSelectedStrokes()[0];
-            stroke.name = linkName;
-            stroke.style.type = linkStyle;
-            stroke.style.color = selectedColor;
-            stroke.style.thickness = linkThickness;
-            stroke.from.multiplicity = multiplicityFrom;
-            stroke.to.multiplicity = multiplicityTo;
-
-            stroke.linkType = linkType;
-            stroke.addStylusPointsToLink();
-            // dotted
-            if(stroke.style.type == 1){
-                stroke.DrawingAttributes.Color = Colors.Transparent;
-            }
-            else // normal line
+            if (surfaceDessin.GetSelectedStrokes().Count == 1 && surfaceDessin.GetSelectedStrokes()[0] != null)
             {
-                stroke.DrawingAttributes.Color = (Color) ColorConverter.ConvertFromString(selectedColor);
+                LinkStroke stroke = (LinkStroke)surfaceDessin.GetSelectedStrokes()[0];
+                stroke.name = linkName;
+                stroke.style.type = linkStyle;
+                stroke.style.color = selectedColor;
+                stroke.style.thickness = linkThickness;
+                stroke.from.multiplicity = multiplicityFrom;
+                stroke.to.multiplicity = multiplicityTo;
+
+                stroke.linkType = linkType;
+                stroke.addStylusPointsToLink();
+                // dotted
+                if (stroke.style.type == 1)
+                {
+                    stroke.DrawingAttributes.Color = Colors.Transparent;
+                }
+                else // normal line
+                {
+                    stroke.DrawingAttributes.Color = (Color)ColorConverter.ConvertFromString(selectedColor);
+                }
+
+                stroke.DrawingAttributes.Width = stroke.getThickness();
+                stroke.DrawingAttributes.Height = stroke.getThickness();
+
+                StrokeCollection sc = new StrokeCollection();
+                sc.Add(stroke);
+                DrawingService.UpdateLinks(sc);
+
+                surfaceDessin.RefreshChildren();
             }
-
-            stroke.DrawingAttributes.Width = stroke.getThickness();
-            stroke.DrawingAttributes.Height = stroke.getThickness();
-            
-            StrokeCollection sc = new StrokeCollection();
-            sc.Add(stroke);
-            DrawingService.UpdateLinks(sc);
-
-            surfaceDessin.RefreshChildren();
             IsEnabled = true;
         }
 
