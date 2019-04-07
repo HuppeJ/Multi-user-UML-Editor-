@@ -113,7 +113,7 @@ namespace PolyPaint.Services
                 }
             });
 
-            socket.On("canvasSelected", (data) =>
+            socket.On("canvasDeselected", (data) =>
             {
                 EditGalleryData response = serializer.Deserialize<EditGalleryData>((string)data);
                 if (!username.Equals((string)response.username) && response.canevasName.Equals(canvasName))

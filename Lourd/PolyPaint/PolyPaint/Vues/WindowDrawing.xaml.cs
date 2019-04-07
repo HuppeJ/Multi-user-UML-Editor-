@@ -63,6 +63,7 @@ namespace PolyPaint.Vues
         {
             if(DrawingService.isCanvasSizeLocalyEditing) {
                 DrawingService.ResizeCanvas(new Coordinates(width * 2.1, height * 2.1));
+                DrawingService.isResizingCanvas(false);
             }
             (sender as Thumb).Background = Brushes.White;
         }
