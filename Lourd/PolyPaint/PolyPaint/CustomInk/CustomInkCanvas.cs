@@ -434,7 +434,7 @@ namespace PolyPaint.CustomInk
                             selectedIds.Add(customStroke.guid.ToString());
                         }
                     }
-                    if ((stroke as LinkStroke).from?.formId != null && !selectedIds.Contains((stroke as LinkStroke).to?.formId))
+                    if ((stroke as LinkStroke).to.formId != null && !selectedIds.Contains((stroke as LinkStroke).to?.formId))
                     {
                         CustomStroke customStroke;
                         if (StrokesDictionary.TryGetValue((stroke as LinkStroke).to.formId, out customStroke)
