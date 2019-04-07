@@ -18,6 +18,7 @@ namespace PolyPaint.CustomInk
 
         public FloatingTextStroke(StylusPointCollection pts) : base(pts)
         {
+            name = "Free text";
             shapeStyle.width = 90;
             shapeStyle.height = 90;
             shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());

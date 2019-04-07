@@ -331,9 +331,9 @@ namespace PolyPaint.Services
             socket.On("canvasSaved", (data) =>
             {
                 EditCanevasData response = serializer.Deserialize<EditCanevasData>((string)data);
-                if (username != null && !username.Equals(response.username))
+                if (username != null && username.Equals(response.username))
                 {
-                    RefreshPublicCanvases();
+                    RefreshCanvases();
                 }
             });
 
@@ -355,7 +355,7 @@ namespace PolyPaint.Services
 
             socket.On("disconnect", (data) =>
             {
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
+                // Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
             });
 
             RefreshCanvases();
@@ -493,7 +493,10 @@ namespace PolyPaint.Services
             }
 
             EmitIfStrokes("deleteForms", createUpdateFormsData(strokes));
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+
             EmitIfStrokes("deleteLinks", createUpdateLinksData(strokes));
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void Reset()
@@ -516,17 +519,20 @@ namespace PolyPaint.Services
             if (links.links.Count > 0)
             {
                 socket.Emit(eventString, serializer.Serialize(links));
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
             }
         }
 
         public static void UpdateShapes(StrokeCollection strokes)
         {
             EmitIfStrokes("updateForms", createUpdateFormsData(strokes));
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void UpdateLinks(StrokeCollection strokes)
         {
             EmitIfStrokes("updateLinks", createUpdateLinksData(strokes));
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
         }
 
         public static void SelectShapes(StrokeCollection strokes)
@@ -668,13 +674,13 @@ namespace PolyPaint.Services
                     shapeStroke = new ActorStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 case StrokeTypes.COMMENT:
-                    shapeStroke = new CommentStroke(points);
+                    shapeStroke = new CommentStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 case StrokeTypes.PHASE:
-                    shapeStroke = new PhaseStroke(points);
+                    shapeStroke = new PhaseStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 case StrokeTypes.FLOATINGTEXT:
-                    shapeStroke = new FloatingTextStroke(points);
+                    shapeStroke = new FloatingTextStroke(shape.ToObject<BasicShape>(), points);
                     break;
                 default:
                     shapeStroke = new ClassStroke(shape.ToObject<ClassShape>(), points);

@@ -30,12 +30,13 @@ export default class CanvasRoom {
     }
 
     public logHistory(username: string, message: string) {
+        const newCanvas = Object.assign({}, this.canvas);
         this.date = new Date();
         const newLog: IHistoryData = {
             username: username,
             message: message,  
             timestamp: this.date.getTime().toString(),
-            canevas: this.canvas
+            canevas: newCanvas
         }
 
         this.history.push(newLog);
@@ -85,11 +86,11 @@ export default class CanvasRoom {
         this.canvas.password = data.password;
         return true;
     }
-
     
     public isCanvasSaved(data: IEditCanevasData) {
         if (data.canevas.thumbnail != "") {
             this.canvas.thumbnail = data.canevas.thumbnail;
+            this.history[this.history.length - 1].canevas.thumbnail = data.canevas.thumbnail;
         }
 
         return true;
