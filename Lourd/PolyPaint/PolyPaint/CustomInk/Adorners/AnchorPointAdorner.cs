@@ -67,8 +67,7 @@ namespace PolyPaint.CustomInk
                 anchor.Cursor = Cursors.ScrollAll;
                 anchor.Width = 6;
                 anchor.Height = 6;
-                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFDDDDDD"),
-                    (Color)ColorConverter.ConvertFromString("#809dce"), 45); ;
+                anchor.Background = Brushes.DodgerBlue;
                 anchor.BorderBrush = Brushes.Black;
                 anchor.BorderThickness = new Thickness(2);
                 anchor.Margin = new Thickness(0);
@@ -215,6 +214,10 @@ namespace PolyPaint.CustomInk
             }
             
             visualChildren.Remove(linkPreview);
+            StrokeCollection selectedStrokes = new StrokeCollection { canvas.GetSelectedStrokes() };
+            canvas.Select(new StrokeCollection { });
+            canvas.Select(selectedStrokes);
+
             InvalidateArrange();
         }
         
@@ -252,11 +255,7 @@ namespace PolyPaint.CustomInk
             }
 
             WindowDrawing windowDrawing = (WindowDrawing)parent;
-            if (windowDrawing != null)
-            {
-                windowDrawing.OpenMessagePopup(message);
-            }
-            
+            windowDrawing?.OpenMessagePopup(message);
         }
 
         // Override the VisualChildrenCount and 

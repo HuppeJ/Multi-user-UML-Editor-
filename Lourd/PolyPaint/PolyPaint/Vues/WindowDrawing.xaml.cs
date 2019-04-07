@@ -45,27 +45,43 @@ namespace PolyPaint.Vues
         {
             // DrawingService.LeaveCanvas();
         }
-        
+
         // Pour gérer les points de contrôles.
-        private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
+        private void GlisserCommence(object sender, DragStartedEventArgs e)
+        {
+            if (!DrawingService.isCanvasSizeRemotelyEditing)
+            {
+                DrawingService.isResizingCanvas(true);
+                (sender as Thumb).Background = Brushes.Blue;
+            }
+            else
+            {
+                (sender as Thumb).Background = Brushes.Red;
+            }
+        }
         private void GlisserTermine(object sender, DragCompletedEventArgs e)
         {
+            if(DrawingService.isCanvasSizeLocalyEditing) {
+                DrawingService.ResizeCanvas(new Coordinates(width * 2.1, height * 2.1));
+                DrawingService.isResizingCanvas(false);
+            }
             (sender as Thumb).Background = Brushes.White;
-
-            DrawingService.ResizeCanvas(new Coordinates(width * 2.1, height * 2.1));
         }
         private void GlisserMouvementRecu(object sender, DragDeltaEventArgs e)
         {
-            String nom = (sender as Thumb).Name;
-            if (nom == "horizontal" || nom == "diagonal")
+            if (DrawingService.isCanvasSizeLocalyEditing)
             {
-                width = Math.Min(Math.Max(225, colonne.Width.Value + e.HorizontalChange), 800);
-                colonne.Width = new GridLength(width);
-            }
-            if (nom == "vertical" || nom == "diagonal")
-            {
-                height = Math.Min(Math.Max(225, ligne.Height.Value + e.VerticalChange), 550);
-                ligne.Height = new GridLength(height);
+                String nom = (sender as Thumb).Name;
+                if (nom == "horizontal" || nom == "diagonal")
+                {
+                    width = Math.Min(Math.Max(225, colonne.Width.Value + e.HorizontalChange), 800);
+                    colonne.Width = new GridLength(width);
+                }
+                if (nom == "vertical" || nom == "diagonal")
+                {
+                    height = Math.Min(Math.Max(225, ligne.Height.Value + e.VerticalChange), 550);
+                    ligne.Height = new GridLength(height);
+                }
             }
         }
 
@@ -380,9 +396,11 @@ namespace PolyPaint.Vues
             classStroke.name = name;
             classStroke.attributes = properties;
             classStroke.methods = methods;
-
+            
             InkCanvasStrokeCollectedEventArgs eventArgs = new InkCanvasStrokeCollectedEventArgs(classStroke);
             DrawingService.AddClassFromCode(eventArgs);
+
+            DrawingService.CreateShape(classStroke);
         }
 
         private void AdjustToLargestClassWidth(object sender, EventArgs e)
@@ -455,9 +473,9 @@ namespace PolyPaint.Vues
             DrawingService.OpenTutorial();
         }
 
-        private void BackToGallery(object sender, RoutedEventArgs e)
+        private void LeaveDrawing(object sender, RoutedEventArgs e)
         {
-            DrawingService.GoToGallery();
+            DrawingService.LeaveDrawing();
         }
 
         private void ViewHistoryPopup(object sender, RoutedEventArgs e)

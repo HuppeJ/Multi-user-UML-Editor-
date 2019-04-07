@@ -115,7 +115,7 @@ namespace PolyPaint.Modeles
                         isFound = true;
                     }
                 }
-                return isFound && !DrawingService.remoteSelectedStrokes.Contains(strokeEmpilable.guid.ToString());
+                return isFound && !new List<string>(DrawingService.remoteSelectedStrokes).Contains(strokeEmpilable.guid.ToString());
             }
             else
                 return false;

@@ -58,9 +58,12 @@ namespace PolyPaint.CustomInk
             foreach (Thumb anchor in anchors)
             {
                 anchor.Cursor = Cursors.ScrollAll;
-                anchor.Width = 6;
-                anchor.Height = 6;
-                anchor.Background = Brushes.Black;
+                anchor.Width = 8;
+                anchor.Height = 8;
+                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFDDDDDD"),
+                    (Color)ColorConverter.ConvertFromString("#FF000000"), 45);
+
+                SetAnchorRenderTransfrom(0, initialMousePosition.X, initialMousePosition.Y);
 
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
                 anchor.DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);
@@ -151,14 +154,17 @@ namespace PolyPaint.CustomInk
 
         private void ArrangeAnchor(int anchorNumber, double xOffset, double yOffset)
         {
-            // The rectangle that determines the position of the Thumb.
-            Rect handleRect = new Rect(strokeBounds.X + xOffset,
-                                  strokeBounds.Y + yOffset,
-                                  strokeBounds.Width,
-                                  strokeBounds.Height);
-
             // Draws the thumb and the rectangle around the strokes.
-            anchors[anchorNumber].Arrange(handleRect);
+            anchors[anchorNumber].Arrange(new Rect(new Size(canvas.ActualWidth, canvas.ActualHeight)));
+        }
+
+        private void SetAnchorRenderTransfrom(int anchorNumber, double xOffset, double yOffset)
+        {
+
+            TransformGroup transform = new TransformGroup();
+            transform.Children.Add(new TranslateTransform(-canvas.ActualWidth / 2 + xOffset,
+               -canvas.ActualHeight / 2 + yOffset));
+            anchors[anchorNumber].RenderTransform = transform;
         }
 
         void dragHandle_DragStarted(object sender, DragStartedEventArgs e)

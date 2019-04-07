@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace PolyPaint.VueModeles
 {
@@ -929,7 +930,7 @@ namespace PolyPaint.VueModeles
             {
                 if (room.name == message.chatroomName && !room.Chatter.Contains(cm))
                 {
-                    ctxTaskFactory.StartNew(() => room.Chatter.Add(cm)).Wait();
+                    room.Chatter.Add(cm);
                 }
                 OnPropertyChanged("selectedRoom");
             }
@@ -979,6 +980,7 @@ namespace PolyPaint.VueModeles
                 UserMode = UserModes.Gallery;
                 selectedRoom = rooms.First();
                 IsLoggedIn = true;
+                DrawingService.RefreshCanvases();
             }
             else
             {
@@ -1036,8 +1038,22 @@ namespace PolyPaint.VueModeles
         private void BackToGallery()
         {
             IsChatWindowClosing = true;
-            CloseChatWindow?.Invoke();
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { CloseChatWindow(); }), DispatcherPriority.ContextIdle);
             UserMode = UserModes.Gallery;
+        }
+
+        private void LeaveDrawing()
+        {
+            if(UserMode == UserModes.Offline)
+            {
+                UserMode = UserModes.Login;
+            }
+            else
+            {
+                IsChatWindowClosing = true;
+                CloseChatWindow?.Invoke();
+                UserMode = UserModes.Gallery;
+            }
         }
 
         private void CreateRoom(CreateChatroomResponse response)
@@ -1224,6 +1240,7 @@ namespace PolyPaint.VueModeles
             DrawingService.UpdatePrivateCanvases += UpdatePrivateCanvases;
             DrawingService.JoinCanvasRoom += JoinCanvasRoom;
             DrawingService.BackToGallery += BackToGallery;
+            DrawingService.LeaveDrawingAction += LeaveDrawing;
             DrawingService.GoToTutorial += GoToTutorial;
 
             chatService.NewMessage += NewMessage;
