@@ -74,12 +74,12 @@ namespace PolyPaint.Vues
                 String nom = (sender as Thumb).Name;
                 if (nom == "horizontal" || nom == "diagonal")
                 {
-                    width = Math.Min(Math.Max(225, colonne.Width.Value + e.HorizontalChange), 800);
+                    width = Math.Min(Math.Max(225, colonne.Width.Value + e.HorizontalChange), CustomInkCanvas.maxSize.Width);
                     colonne.Width = new GridLength(width);
                 }
                 if (nom == "vertical" || nom == "diagonal")
                 {
-                    height = Math.Min(Math.Max(225, ligne.Height.Value + e.VerticalChange), 550);
+                    height = Math.Min(Math.Max(225, ligne.Height.Value + e.VerticalChange), CustomInkCanvas.maxSize.Height);
                     ligne.Height = new GridLength(height);
                 }
             }

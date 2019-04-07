@@ -44,6 +44,8 @@ namespace PolyPaint.CustomInk
         LinkStroke previewLink = new LinkStroke(new StylusPointCollection { new StylusPoint(0,0) });
         bool isAddingLink = false;
 
+        public static Size maxSize = new Size(800, 550);
+
         #region Dictionary
         public void AddStroke(CustomStroke stroke)
         {
@@ -421,7 +423,7 @@ namespace PolyPaint.CustomInk
                 }
                 if (stroke is LinkStroke && (stroke as LinkStroke).isAttached())
                 {
-                    if (!selectedIds.Contains((stroke as LinkStroke).from?.formId))
+                    if ((stroke as LinkStroke).from?.formId != null && !selectedIds.Contains((stroke as LinkStroke).from?.formId))
                     {
                         CustomStroke customStroke;
                         if (StrokesDictionary.TryGetValue((stroke as LinkStroke).from.formId, out customStroke)
@@ -431,7 +433,7 @@ namespace PolyPaint.CustomInk
                             selectedIds.Add(customStroke.guid.ToString());
                         }
                     }
-                    if (!selectedIds.Contains((stroke as LinkStroke).to?.formId))
+                    if ((stroke as LinkStroke).from?.formId != null && !selectedIds.Contains((stroke as LinkStroke).to?.formId))
                     {
                         CustomStroke customStroke;
                         if (StrokesDictionary.TryGetValue((stroke as LinkStroke).to.formId, out customStroke)
