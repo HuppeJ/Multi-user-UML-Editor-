@@ -18,6 +18,7 @@ namespace PolyPaint.CustomInk
 
         public CommentStroke(StylusPointCollection pts) : base(pts)
         {
+            name = "Comment";
             shapeStyle.width = 90;
             shapeStyle.height = 90;
             shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());
