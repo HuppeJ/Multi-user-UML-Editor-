@@ -45,6 +45,8 @@ namespace PolyPaint.Services
         public static List<string> remoteSelectedStrokes = new List<string>();
         public static List<string> localSelectedStrokes = new List<string>();
         public static List<string> localAddedStrokes = new List<string>();
+        public static bool isCanvasSizeRemotelyEditing = false;
+        public static bool isCanvasSizeLocalyEditing = false;
 
         public DrawingService()
         {
@@ -101,6 +103,24 @@ namespace PolyPaint.Services
                     canvasName = response.canvasName;
                 }
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { JoinCanvasRoom(response); }), DispatcherPriority.Render);
+            });
+
+            socket.On("canvasSelected", (data) =>
+            {
+                EditGalleryData response = serializer.Deserialize<EditGalleryData>((string)data);
+                if (!username.Equals((string)response.username) && response.canevasName.Equals(canvasName))
+                {
+                    isCanvasSizeRemotelyEditing = true;
+                }
+            });
+
+            socket.On("canvasDeselected", (data) =>
+            {
+                EditGalleryData response = serializer.Deserialize<EditGalleryData>((string)data);
+                if (!username.Equals((string)response.username) && response.canevasName.Equals(canvasName))
+                {
+                    isCanvasSizeRemotelyEditing = false;
+                }
             });
 
             socket.On("canvasResized", (data) =>
@@ -335,7 +355,6 @@ namespace PolyPaint.Services
 
             socket.On("disconnect", (data) =>
             {
-                // gi pourquoi ca?
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
             });
 
@@ -368,6 +387,20 @@ namespace PolyPaint.Services
         {
             EditGalleryData editGalleryData = new EditGalleryData(username, roomName, password);
             socket.Emit("joinCanvasRoom", serializer.Serialize(editGalleryData));
+        }
+
+        public static void isResizingCanvas(bool isResizing)
+        {
+            isCanvasSizeLocalyEditing = isResizing;
+            EditGalleryData editGalleryData = new EditGalleryData(username, canvasName);
+            if (isResizing)
+            {
+                socket.Emit("selectCanvas", serializer.Serialize(editGalleryData));
+            }
+            else
+            {
+                socket.Emit("deselectCanvas", serializer.Serialize(editGalleryData));
+            }
         }
 
         public static void ResizeCanvas(Coordinates coordinates)
@@ -773,8 +806,12 @@ namespace PolyPaint.Services
 
         internal static void LeaveDrawing()
         {
+<<<<<<< HEAD
             Application.Current?.Dispatcher?.Invoke(new Action(() => { LeaveDrawingAction(); }), DispatcherPriority.Render);
 
+=======
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.ContextIdle);
+>>>>>>> test
         }
 
         internal static void GetHistoryLog(object o)
