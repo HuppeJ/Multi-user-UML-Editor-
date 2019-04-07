@@ -45,6 +45,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.github.salomonbrys.kotson.get
 import com.google.gson.*
+import com.polypaint.polypaint.Enum.LinkTypes
 import com.polypaint.polypaint.Fragment.TutorialDialogFragment
 import com.polypaint.polypaint.Holder.*
 import com.polypaint.polypaint.ResponseModel.GetSelectedFormsResponse
@@ -110,11 +111,6 @@ class DrawingActivity : AppCompatActivity(){
                     true
                 }
                 selectable = false
-            }
-            footer{
-                secondaryItem("Settings") {
-                    icon = R.drawable.ic_settings
-                }
             }
 
             toolbar = activityToolbar
@@ -183,7 +179,7 @@ class DrawingActivity : AppCompatActivity(){
             var linkDefaultPath : ArrayList<Coordinates> = ArrayList()
             linkDefaultPath.add(Coordinates(65.0,65.0))
             linkDefaultPath.add(Coordinates(250.0,65.0))
-            var newLink: Link = Link(UUID.randomUUID().toString(),"Link", AnchorPoint(), AnchorPoint(), 1, LinkStyle("#FF000000",10,0), linkDefaultPath )
+            var newLink: Link = Link(UUID.randomUUID().toString(),"Link", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",0,0), linkDefaultPath )
 
             ViewShapeHolder.getInstance().canevas.addLink(newLink)
             val linkView: LinkView = LinkView(this)

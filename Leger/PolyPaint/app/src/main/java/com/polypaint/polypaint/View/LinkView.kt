@@ -701,7 +701,7 @@ class LinkView: View{
 
 
                 val localLink: Link? = link
-                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",10,0), ArrayList())
+                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",0,0), ArrayList())
 
                 if(localLink != null){
                     previewLink.path.add(localLink.path[index])
@@ -770,7 +770,7 @@ class LinkView: View{
 
 
                 val localLink: Link? = link
-                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",10,0), ArrayList())
+                val previewLink = Link("","", AnchorPoint(), AnchorPoint(), 0, LinkStyle("#FF000000",0,0), ArrayList())
 
                 if(localLink != null){
                     previewLink.path.add(localLink.path[index])

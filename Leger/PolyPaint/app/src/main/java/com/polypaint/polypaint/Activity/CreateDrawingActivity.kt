@@ -80,11 +80,6 @@ class CreateDrawingActivity: AppCompatActivity(){
                 }
                 selectable = false
             }
-            footer{
-                secondaryItem("Settings") {
-                    icon = R.drawable.ic_settings
-                }
-            }
 
             toolbar = activityToolbar
         }

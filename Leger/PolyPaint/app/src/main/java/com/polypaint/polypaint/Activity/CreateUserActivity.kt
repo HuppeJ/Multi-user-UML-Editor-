@@ -97,7 +97,7 @@ class CreateUserActivity:Activity(){
             startActivityForResult(intent, 0)
         } else {
             runOnUiThread{
-                AlertDialog.Builder(this).setMessage("Pseudonyme déjà utilisé").show()
+                AlertDialog.Builder(this).setMessage("Create user failed.").show()
             }
 
         }

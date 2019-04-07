@@ -24,7 +24,9 @@
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="8dp" android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
-            android:tint="@color/colorPrimaryLight"/>
+            android:tint="@color/colorPrimaryLight"
+            android:background="#fff"
+    />
 
     <ImageButton
             android:id="@+id/deleteButton"
@@ -46,7 +48,9 @@
             app:layout_constraintHorizontal_bias="0.0"
             android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:tint="@color/colorPrimaryLight"/>
+            android:tint="@color/colorPrimaryLight"
+        android:background="#fff"
+/>
 
     <RelativeLayout
             android:id="@+id/borderResizableLayout"
@@ -83,7 +87,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/resizeButton"
-            android:tint="@color/colorPrimaryLight"/>
+            android:tint="@color/colorPrimaryLight"
+                        android:background="#fff"
+/>
 
 
     <ImageButton
@@ -100,7 +106,9 @@
             android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:tint="@color/colorPrimaryLight"/>
+            android:tint="@color/colorPrimaryLight"
+            android:background="#fff"
+/>
 
     <ImageButton
             android:id="@+id/resizeButton"

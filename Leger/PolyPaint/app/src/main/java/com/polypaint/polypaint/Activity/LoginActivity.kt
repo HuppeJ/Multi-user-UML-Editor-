@@ -155,7 +155,7 @@ class LoginActivity:Activity(){
         } else {
             runOnUiThread{
                 progressBar?.visibility = View.GONE
-                AlertDialog.Builder(this).setMessage("Mauvais mot de passe").show()
+                AlertDialog.Builder(this).setMessage("Login failed.").show()
             }
 
         }
