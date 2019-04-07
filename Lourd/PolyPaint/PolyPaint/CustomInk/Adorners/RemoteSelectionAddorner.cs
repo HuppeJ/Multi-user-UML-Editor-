@@ -1,4 +1,5 @@
 ﻿using PolyPaint.CustomInk.Adorners;
+using PolyPaint.CustomInk.Strokes;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -40,7 +41,7 @@ namespace PolyPaint.CustomInk
             else
             {
                 border.Data = stroke.GetGeometry();
-                border.StrokeThickness = 1;
+                border.StrokeThickness = (stroke as LinkStroke).getThickness();
             }
 
             border.Stroke = (Brush)new BrushConverter().ConvertFromString("#CC7F7F");
