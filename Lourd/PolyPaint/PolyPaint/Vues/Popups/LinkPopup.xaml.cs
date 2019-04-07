@@ -1,8 +1,12 @@
-﻿using PolyPaint.CustomInk.Strokes;
+﻿using PolyPaint.CustomInk;
+using PolyPaint.CustomInk.Strokes;
 using PolyPaint.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Ink;
+using System.Windows.Input;
 
 namespace PolyPaint.Vues
 {
@@ -224,7 +228,7 @@ namespace PolyPaint.Vues
             }
         }
 
-        public void setParameters()
+        public void setParameters(LinkStroke linkStroke, CustomInkCanvas canvas)
         {
             var parent = Parent;
             while (!(parent is WindowDrawing))
@@ -296,7 +300,22 @@ namespace PolyPaint.Vues
                 }
             }
 
-            _linkTypesList = new List<string> { "Line", "One way association", "Two way association", "Heritage", "Aggregation", "Composition" };
+            if (isBetweenTwoClasses(linkStroke, canvas))
+            {
+                _linkTypesList = new List<string> { "Line", "One way association", "Two way association", "Heritage", "Aggregation", "Composition" };
+            }
+            else if (isLinkedToOneClass(linkStroke, canvas))
+            {
+                _linkTypesList = new List<string> { "Line", "One way association", "Two way association" };
+            }
+            else if (isLinkedToProcess(linkStroke, canvas))
+            {
+                _linkTypesList = new List<string> { "One way association" };
+            }
+            else
+            {
+                _linkTypesList = new List<string> { "Line", "One way association", "Two way association"};
+            }
             _linkStylesList = new List<string> { "Full", "Dotted" };
             _linkThicknessesList = new List<string> { "Thin", "Normal", "Thick" };
 
@@ -310,6 +329,69 @@ namespace PolyPaint.Vues
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkStylesList"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkTypesList"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LinkThicknessesList"));
+        }
+
+        private bool isLinkedToOneClass(LinkStroke linkStroke, CustomInkCanvas canvas)
+        {
+            CustomStroke fromStroke = new Stroke(new StylusPointCollection { new StylusPoint(0,0)}) as CustomStroke;
+            CustomStroke toStroke = new Stroke(new StylusPointCollection { new StylusPoint(0, 0) }) as CustomStroke;
+
+            string from = "";
+            string to = "";
+            from = linkStroke.from?.formId;
+            to = linkStroke.to?.formId;
+            if (from != null)
+            {
+                canvas.StrokesDictionary.TryGetValue(from, out fromStroke);
+            }
+            if (to != null)
+            {
+                canvas.StrokesDictionary.TryGetValue(to, out toStroke);
+            }
+
+            return fromStroke is ClassStroke || toStroke is ClassStroke;
+        }
+
+        private bool isLinkedToProcess(LinkStroke linkStroke, CustomInkCanvas canvas)
+        {
+            CustomStroke fromStroke = new Stroke(new StylusPointCollection { new StylusPoint(0, 0) }) as CustomStroke;
+            CustomStroke toStroke = new Stroke(new StylusPointCollection { new StylusPoint(0, 0) }) as CustomStroke;
+
+            string from = "";
+            string to = "";
+            from = linkStroke.from?.formId;
+            to = linkStroke.to?.formId;
+            if (from != null)
+            {
+                canvas.StrokesDictionary.TryGetValue(from, out fromStroke);
+            }
+            if (to != null)
+            {
+                canvas.StrokesDictionary.TryGetValue(to, out toStroke);
+            }
+
+            return fromStroke != null && fromStroke.isProccessStroke() || toStroke != null && toStroke.isProccessStroke();
+        }
+
+        private bool isBetweenTwoClasses(LinkStroke linkStroke, CustomInkCanvas canvas)
+        {
+            CustomStroke fromStroke = new Stroke(new StylusPointCollection { new StylusPoint(0, 0) }) as CustomStroke;
+            CustomStroke toStroke = new Stroke(new StylusPointCollection { new StylusPoint(0, 0) }) as CustomStroke;
+
+            string from = "";
+            string to = "";
+            from = linkStroke.from?.formId;
+            to = linkStroke.to?.formId;
+            if (from != null)
+            {
+                canvas.StrokesDictionary.TryGetValue(from, out fromStroke);
+            }
+            if (to != null)
+            {
+                canvas.StrokesDictionary.TryGetValue(to, out toStroke);
+            }
+
+            return fromStroke is ClassStroke && toStroke is ClassStroke;
         }
 
         protected void NotifyPropertyChanged(string info)

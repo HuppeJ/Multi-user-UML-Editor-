@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="68.5mm"
-   height="52.625mm"
-   viewBox="0 0 68.5 52.625"
+   width="66.5mm"
+   height="50.625mm"
+   viewBox="0 0 66.5 50.625"
    version="1.1"
    id="svg4675"
    sodipodi:docname="class.svg"
@@ -26,15 +26,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="127.54197"
+     inkscape:cx="20.04197"
      inkscape:cy="84.023254"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:window-width="1299"
      inkscape:window-height="713"
-     inkscape:window-x="67"
-     inkscape:window-y="27"
+     inkscape:window-x="1987"
+     inkscape:window-y="339"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -44,8 +44,8 @@
        type="xygrid"
        id="grid4677"
        empspacing="30"
-       originx="-5.4374998"
-       originy="-5.4375082" />
+       originx="-5.4374999"
+       originy="-5.4375084" />
   </sodipodi:namedview>
   <metadata
      id="metadata4672">
@@ -63,7 +63,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-5.4239585,-238.42188)">
+     transform="translate(-5.4239585,-240.42188)">
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -76,25 +76,14 @@
          y="290.48877"
          style="stroke-width:0.26458332" /></text>
     <path
-       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 7.9239585,288.54688 v -15.875 -15.875 -15.875 H 71.423958 v 15.875 15.875 15.875 z"
+       style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 6.9239585,289.54688 v -15.875 -15.875 -15.875 H 70.423958 v 15.875 15.875 15.875 z"
        id="path5307"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 7.9239585,272.67188 H 71.423958 v -15.875 H 7.9239585 Z"
+       style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 6.9239585,273.67188 H 70.423958 v -15.875 H 6.9239585 Z"
        id="path5309"
        inkscape:connector-curvature="0" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="24.176935"
-       y="252.07217"
-       id="text5313"><tspan
-         sodipodi:role="line"
-         id="tspan5311"
-         x="24.176935"
-         y="252.07217"
-         style="stroke-width:0.26458332">Name</tspan></text>
   </g>
 </svg>

@@ -290,13 +290,13 @@
         </Border>
 
         <Button x:Name="CreateChatroomButton" Margin="60,25,60,25" Grid.Row="1" Padding="0"
-            Content="Create"
+            Content="CREATE"
             Click="CreateRoomPopup"/>
         <Button x:Name="JoinChatroomButton" Margin="5,25,120,25" Grid.Row="1" Padding="0"
-            Content="Join"
+            Content="JOIN"
             Click="JoinRoomPopup" Tag="{Binding joinableRooms}"/>
         <Button x:Name="LeaveChatroomButton" Margin="120,25,5,25" Grid.Row="1" Padding="0"
-            Content="Leave"
+            Content="LEAVE"
             Command="{Binding LeaveChatroomCommand}" CommandParameter="{Binding selectedRoom}"/>
         <!--Messages-->
         <ItemsControl x:Name="MessagesItemsCtrl" Grid.Column="1" Margin="0,5,0,0" 
@@ -355,6 +355,9 @@
         <Popup x:Name="popUpJoinRoom" Placement="Center">
             <Vues:JoinRoomPopup x:Name="popUpJoinRoomVue"/>
         </Popup>
-        
+        <Popup x:Name="popUpMessage" Placement="Center">
+            <Vues:MessagePopupCreateRoom x:Name="popUpMessageVue"/>
+        </Popup>
+
     </Grid>
 </UserControl>

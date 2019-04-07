@@ -135,36 +135,51 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         freetext_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.FREETEXT)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
 
         class_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.CLASS_SHAPE)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         artefact_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ARTIFACT)
             Log.d("before delay", "saveCanevasCall")
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         activity_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ACTIVITY)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         role_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ROLE)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         comment_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.COMMENT)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         phase_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.PHASE)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         link_button.setOnClickListener {
+            selection_button.isChecked = false
             var linkDefaultPath : ArrayList<Coordinates> = ArrayList()
             linkDefaultPath.add(Coordinates(65.0,65.0))
             linkDefaultPath.add(Coordinates(250.0,65.0))
@@ -176,37 +191,44 @@ class DrawingActivity : AppCompatActivity(){
             ViewShapeHolder.getInstance().linkMap.forcePut(linkView, newLink.id)
             parent_relative_layout?.addView(linkView)
             ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(newLink.id)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
 
         clear_canvas_button.setOnClickListener {
+            selection_button.isChecked = false
             emitClearCanvas()
             parent_relative_layout?.removeAllViews()
             ViewShapeHolder.getInstance().removeAll()
             ViewShapeHolder.getInstance().stackDrawingElementCreatedId = Stack<String>()
             parent_relative_layout?.addView(VFXHolder.getInstance().vfxView)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
 
         duplicate_button.setOnClickListener{
+            //selection_button.isChecked = false
             duplicateView()
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         cut_button.setOnClickListener{
+            selection_button.isChecked = false
             cutView()
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         stack_button.setOnClickListener{
+            selection_button.isChecked = false
             stackView()
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
         unstack_button.setOnClickListener{
+            selection_button.isChecked = false
             unstackView()
-            saveCanevas()
-        }
-
-        save_button.setOnClickListener{
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
 
 //        selection_button.setOnClickListener {
@@ -417,7 +439,7 @@ class DrawingActivity : AppCompatActivity(){
             ShapeTypes.CLASS_SHAPE -> {
                 shapeStyle.width = 168.0
                 shapeStyle.height = 189.0
-                shape = ClassShape(UUID.randomUUID().toString(), shapeType.value(), "classShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>(),ArrayList<String?>(), ArrayList<String?>())
+                shape = ClassShape(UUID.randomUUID().toString(), shapeType.value(), "Class", shapeStyle, ArrayList<String?>(), ArrayList<String?>(),ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.ARTIFACT -> {
                 shapeStyle.width = 168.0
@@ -447,7 +469,7 @@ class DrawingActivity : AppCompatActivity(){
             ShapeTypes.FREETEXT->{
                 shapeStyle.width = 189.0
                 shapeStyle.height = 189.0
-                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "FreeText", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Text", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
         }
 
@@ -516,6 +538,7 @@ class DrawingActivity : AppCompatActivity(){
             }
 
             //Add All DrawingElementOnCanevas
+            var drawingElementDuplicated : ArrayList<DrawingElement> = ArrayList()
             if (shapesToDuplicate != null) {
                 for (drawingElem in shapesToDuplicate){
                     if(drawingElem is BasicShape){
@@ -525,31 +548,51 @@ class DrawingActivity : AppCompatActivity(){
                         }
                         //val shapeDuplicated = drawingElem.copy()
                         shapeDuplicated.id = UUID.randomUUID().toString()
+                        drawingElementDuplicated.add(shapeDuplicated)
                         ViewShapeHolder.getInstance().canevas.addShape(shapeDuplicated)
-
                         addOnCanevas(shapeDuplicated)
-
                         emitAddForm(shapeDuplicated)
+
+                        ViewShapeHolder.getInstance().map.inverse()[shapeDuplicated.id]?.isSelected = true
 
                         ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(shapeDuplicated.id)
 
-                        ViewShapeHolder.getInstance().map.inverse().getValue(shapeDuplicated.id).isSelected = true
                     }else if(drawingElem is Link){
-                        //TODO:
                         var linkDuplicated = drawingElem.copy()
                         //linkDuplicated.id = UUID.randomUUID().toString()
-
+                        drawingElementDuplicated.add(linkDuplicated)
                         ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(linkDuplicated.id)
                         //emitAddLink ?
                         runOnUiThread {
                             ViewShapeHolder.getInstance().canevas.addLink(linkDuplicated)
                             val linkView: LinkView = LinkView(this)
+
                             linkView.setLinkAndAnchors(linkDuplicated)
                             ViewShapeHolder.getInstance().linkMap.forcePut(linkView, linkDuplicated.id)
                             parent_relative_layout?.addView(linkView)
+                            linkView.isSelected = true
                         }
                     }
                 }
+            }
+
+            if(lassoView != null){
+                Log.d("duplicateWithLasso","not null")
+                lassoView!!.linksIn = ArrayList()
+                lassoView!!.viewsIn = ArrayList()
+
+                for (drawingElem in drawingElementDuplicated){
+                    if(drawingElem is BasicShape){
+                        ViewShapeHolder.getInstance().map.inverse()[drawingElem.id]?.hideButtonsAndAnchors()
+                        lassoView!!.viewsIn.add(ViewShapeHolder.getInstance().map.inverse()[drawingElem.id]!!)
+                    }else if (drawingElem is Link){
+                        ViewShapeHolder.getInstance().linkMap.inverse()[drawingElem.id]?.boundingBox?.isLasso = true
+                        ViewShapeHolder.getInstance().linkMap.inverse()[drawingElem.id]?.hideButtons()
+                        lassoView!!.linksIn.add(ViewShapeHolder.getInstance().linkMap.inverse()[drawingElem.id]!!)
+
+                    }
+                }
+
             }
         }else{
             for(drawingElem in clipboard){
@@ -691,8 +734,8 @@ class DrawingActivity : AppCompatActivity(){
 
         for (view in ViewShapeHolder.getInstance().map.keys){
 
-                val basicShapeId: String = ViewShapeHolder.getInstance().map.getValue(view)
-                val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
+            val basicShapeId: String = ViewShapeHolder.getInstance().map.getValue(view)
+            val basicShape: BasicShape? = ViewShapeHolder.getInstance().canevas.findShape(basicShapeId)
             if(!view.isSelected) {
                 if (basicShape != null) {
                     view.x = (basicShape.shapeStyle.coordinates.x).toFloat() - shapeOffset
@@ -1333,7 +1376,7 @@ class DrawingActivity : AppCompatActivity(){
                         true
                     );
                     val thumbnailString: String = bitMapToString(resized)
-                    Log.d("bitmapString", thumbnailString)
+                    Log.d("bitmapString", "*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|"/*thumbnailString*/)
 
                     ViewShapeHolder.getInstance().canevas.thumbnail = thumbnailString
 
@@ -1342,12 +1385,12 @@ class DrawingActivity : AppCompatActivity(){
                     val gson = Gson()
                     val sendObj = gson.toJson(canvasEvent)
                     Log.d("createObj", sendObj)
-                    // socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
+                    socket?.emit(SocketConstants.SAVE_CANVAS, sendObj)
                 }catch (e: Exception){
                     Log.d("Exception", "Trying to save thumbnail")
                 }
 
-            }, 1000)
+            }, 2000)
         }
     }
 
@@ -1420,7 +1463,8 @@ class DrawingActivity : AppCompatActivity(){
         if(dataStr !="") {
             Log.d("emitingUpdate", dataStr)
             socket?.emit(SocketConstants.RESIZE_CANVAS, dataStr)
-            saveCanevas()
+            //saveCanevas()
+            SyncShapeHolder.getInstance().saveCanevas()
         }
     }
 
@@ -1473,11 +1517,11 @@ class DrawingActivity : AppCompatActivity(){
     }
 
     open protected var onSelectLasso = CompoundButton.OnCheckedChangeListener { _, isChecked ->
-
         if(isChecked) {
             lassoView = LassoView(this)
             parent_relative_layout?.addView(lassoView)
             parent_relative_layout?.dispatchSetSelected(false)
+
         } else {
             parent_relative_layout?.removeView(lassoView)
         }

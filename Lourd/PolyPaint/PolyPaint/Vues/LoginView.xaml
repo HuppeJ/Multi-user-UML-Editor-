@@ -50,9 +50,9 @@
                     <PasswordBox x:Name="PasswordTxtBox" Width="150" Margin="0,5" PasswordChar="*"
                                  materialDesign:HintAssist.Hint="Password">
                     </PasswordBox>
-                    <Button Content="Login" Margin="0,10,0,0" Command="{Binding LoginUserCommand}" Width="150" CommandParameter="{Binding ElementName=PasswordTxtBox}" IsDefault="True"/>
-                    <Button Content="Sign Up" Margin="0,10,0,0" Command="{Binding CreateUserViewCommand}" Width="150"/>
-                    <Button Content="Offline Mode" Margin="0,10,0,0" Command="{Binding OfflineModeCommand}" Width="150"/>
+                    <Button Content="LOGIN" Margin="0,10,0,0" Command="{Binding LoginUserCommand}" Width="150" CommandParameter="{Binding ElementName=PasswordTxtBox}" IsDefault="True"/>
+                    <Button Content="SIGN UP" Margin="0,10,0,0" Command="{Binding CreateUserViewCommand}" Width="150"/>
+                    <Button Content="OFFLINE" Margin="0,10,0,0" Command="{Binding OfflineModeCommand}" Width="150"/>
                 </StackPanel>
             </Border>
         </Grid>

@@ -9,6 +9,7 @@ using System;
 using System.Windows.Shapes;
 using PolyPaint.Templates;
 using PolyPaint.CustomInk.Adorners;
+using PolyPaint.Vues;
 
 namespace PolyPaint.CustomInk
 {
@@ -31,6 +32,9 @@ namespace PolyPaint.CustomInk
         LineGeometry linkPreviewGeom = new LineGeometry();
         int linkStrokeAnchor;
         CustomStroke anchoredShapeStroke = null;
+        CustomStroke anchoredShapeStrokeToUpdate = null;
+
+        private bool hasFailed = false;
 
         public LinkAnchorPointAdorner(UIElement adornedElement, LinkStroke linkStroke, CustomInkCanvas actualCanvas)
             : base(adornedElement)
@@ -61,9 +65,12 @@ namespace PolyPaint.CustomInk
             foreach (Thumb anchor in anchors)
             {
                 anchor.Cursor = Cursors.ScrollAll;
-                anchor.Width = 6;
-                anchor.Height = 6;
-                anchor.Background = Brushes.IndianRed;
+                anchor.Width = 10;
+                anchor.Height = 10;
+                //anchor.Background = (Brush)new BrushConverter().ConvertFromString("x809dce");
+
+                anchor.Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FFDDDDDD"),
+                    (Color)ColorConverter.ConvertFromString("#809dce"), 45);
 
                 anchor.DragDelta += new DragDeltaEventHandler(dragHandle_DragDelta);
                 anchor.DragCompleted += new DragCompletedEventHandler(dragHandle_DragCompleted);
@@ -129,15 +136,22 @@ namespace PolyPaint.CustomInk
             if(linkStrokeAnchor == 0 || linkStrokeAnchor == linkStroke.path.Count - 1)
             {
                 canvas.addAnchorPoints();
+                string formIdToUpdate = "";
                 string formId = "";
                 if(linkStrokeAnchor == 0)
                 {
-                    formId = linkStroke.from?.formId;
+                    formIdToUpdate = linkStroke.from?.formId;
+                    formId = linkStroke.to?.formId;
                 } else
                 {
-                    formId = linkStroke.to?.formId;
+                    formIdToUpdate = linkStroke.to?.formId;
+                    formId = linkStroke.from?.formId;
                 }
-                if(formId != null)
+                if(formIdToUpdate != null)
+                {
+                    canvas.StrokesDictionary.TryGetValue(formIdToUpdate, out anchoredShapeStrokeToUpdate);
+                }
+                if (formId != null)
                 {
                     canvas.StrokesDictionary.TryGetValue(formId, out anchoredShapeStroke);
                 }
@@ -183,7 +197,7 @@ namespace PolyPaint.CustomInk
                 return;
             }
 
-            CustomStroke strokeTo = null;
+            CustomStroke newAnchoredStroke = null;
             int number = 0;
 
 
@@ -200,29 +214,155 @@ namespace PolyPaint.CustomInk
                     double distBetweenPoints = (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)));
                     if (distBetweenPoints <= 10)
                     {
-                        strokeTo = cheatThumb.stroke;
+                        newAnchoredStroke = cheatThumb.stroke;
                         actualPos = thumbPosition;
                         number = cheatThumb.number;
                     }
                 }
             }
 
-            if (anchoredShapeStroke != null)
-            {
-                if(linkStrokeAnchor == 0) //from is changing
-                {
 
+            if (newAnchoredStroke != null)
+            {
+                //anchoredShapeStroke
+                if (linkStrokeAnchor == 0) //from is changing
+                {
+                    if (anchoredShapeStroke != null) // there is a to
+                    {
+                        if (anchoredShapeStroke.isProccessStroke())
+                        {
+                            if (anchoredShapeStroke is ActorStroke)
+                            {
+                                ShowMessage("Nothing can point to a role");
+                            }
+                            else if (anchoredShapeStroke is ActivityStroke)
+                            {
+                                if (newAnchoredStroke.GetType() != typeof(ActorStroke) &&
+                                    newAnchoredStroke.GetType() != typeof(ArtifactStroke))
+                                    ShowMessage("Only roles or artifacts can point to an activity.");
+                            }
+                            else if (anchoredShapeStroke is ArtifactStroke)
+                            {
+                                ShowMessage("A link cannot point to a role");
+                            }
+                        }
+                        else if (anchoredShapeStroke is ClassStroke && linkStroke.isLinkAggCompHeritage())
+                        {
+                            if (!(newAnchoredStroke is ClassStroke))
+                            {
+                                ShowMessage("Aggregation, composition and heritage links must be between two classes.");
+                            }
+                        }
+                        else if (newAnchoredStroke.isProccessStroke())
+                        {
+                            ShowMessage("Roles, artifacts and activities cannot gi.");
+                        }
+                    }
+                    else // there is no to
+                    {
+                        noNewStrokeLinkedToProcessOrClassCheck(newAnchoredStroke);
+                    }
                 }
                 else // to is changing
                 {
-
+                    CustomStroke fromStroke = anchoredShapeStroke;
+                    if (fromStroke != null) // there is a from
+                    {
+                        if (fromStroke is ActorStroke)
+                        {
+                            if (!(newAnchoredStroke is ActivityStroke))
+                                ShowMessage("A role can only be linked to an activity.");
+                        }
+                        else if (fromStroke is ArtifactStroke)
+                        {
+                            if (!(newAnchoredStroke is ActivityStroke))
+                                ShowMessage("An artifact can only be linked to an activity.");
+                        }
+                        else if (fromStroke is ActivityStroke)
+                        {
+                            if (!(newAnchoredStroke is ArtifactStroke))
+                                ShowMessage("An activity can only be linked to an artifact.");
+                        }
+                        else if (newAnchoredStroke != null && newAnchoredStroke.isProccessStroke())
+                        {
+                            ShowMessage("Cannot update link. From is not the right type");
+                        }
+                        else if (fromStroke is ClassStroke && linkStroke.isLinkAggCompHeritage())
+                        {
+                            if (!(newAnchoredStroke is ClassStroke))
+                            {
+                                ShowMessage("Aggregation, composition and heritage links must be between two classes.");
+                            }
+                        }
+                    }
+                    else // there is no from
+                    {
+                        noNewStrokeLinkedToProcessOrClassCheck(newAnchoredStroke);
+                    }
                 }
+            }
+            else // no newAnchoredStroke
+            {
+                if (anchoredShapeStroke != null && anchoredShapeStroke.isProccessStroke())
+                {
+                    ShowMessage("Roles, artifacts and activities cannot be linked to nothing.");
+                }
+
+                if (anchoredShapeStroke != null && anchoredShapeStroke is ClassStroke && linkStroke.isLinkAggCompHeritage())
+                {
+                    ShowMessage("Aggregation, composition and heritage links must be between two classes.");
+                }
+
+                //if (linkStrokeAnchor == 0) //from is changing to nothing. No from
+                //{
+                //}
+                //else //to is changing to nothing. Not to.
+                //{
+
+                //}
             }
             // voir fonction du anchorPointAdorner
 
-            canvas.updateLink(linkStrokeAnchor, linkStroke, strokeTo as ShapeStroke, number, actualPos);
+            if (!hasFailed)
+            {
+                canvas.updateLink(linkStrokeAnchor, linkStroke, newAnchoredStroke as ShapeStroke, number, actualPos);
+            }
+
+
+            //TODO eliminate preview
+            visualChildren.Remove(linkPreview);
 
             InvalidateArrange();
+        }
+
+        private void noNewStrokeLinkedToProcessOrClassCheck(CustomStroke newAnchoredStroke)
+        {
+            if (newAnchoredStroke.isProccessStroke())
+            {
+                ShowMessage("Roles, artifacts and activities cannot be linked to nothing.");
+            }
+            else if (newAnchoredStroke is ClassStroke && linkStroke.isLinkAggCompHeritage())
+            {
+                ShowMessage("Aggregation, composition and heritage links must be between two classes.");
+            }
+        }
+
+        private void ShowMessage(string message)
+        {
+            hasFailed = true;
+
+            var parent = canvas.Parent;
+            while (!(parent is WindowDrawing))
+            {
+                parent = LogicalTreeHelper.GetParent(parent);
+            }
+
+            WindowDrawing windowDrawing = (WindowDrawing)parent;
+            if (windowDrawing != null)
+            {
+                windowDrawing.OpenMessagePopup(message);
+            }
+
         }
 
         // Override the VisualChildrenCount and 

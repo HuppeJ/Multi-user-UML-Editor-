@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using PolyPaint.Modeles;
 using PolyPaint.Utilitaires;
 using PolyPaint.VueModeles;
@@ -23,11 +12,38 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class ChatView : UserControl
     {
+        MainWindowViewModel dataContext = null;
+
         public ChatView()
         {
             InitializeComponent();
+            Loaded += new RoutedEventHandler(ChatView_Loaded);
         }
 
+        void ChatView_Loaded(object sender, RoutedEventArgs e)
+        {
+            dataContext = DataContext as MainWindowViewModel;
+            dataContext.CreateChatRoomFailed += CreateChatRoomFailed;
+        }
+
+        public void CreateChatRoomFailed()
+        {
+            OpenMessagePopup("Chat room already exists.");
+        }
+
+        public void CloseMessagePopup()
+        {
+            IsEnabled = true;
+            popUpMessage.IsOpen = false;
+        }
+
+        public void OpenMessagePopup(string message)
+        {
+            popUpMessageVue.setParameters(message);
+            popUpMessage.IsOpen = true;
+            IsEnabled = false;
+        }
+   
         private void CreateRoomPopup(object sender, EventArgs e)
         {
             popUpCreateRoomVue.Initialize();

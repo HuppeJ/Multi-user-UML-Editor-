@@ -257,6 +257,7 @@ class LassoView(context: Context?) : View(context) {
                         }
                         shape.invalidate()
                         shape.requestLayout()
+                        shape.syncShapeWithView()
                     }
                     for(link in linksIn){
                         val linkPath = link.link?.path

@@ -605,14 +605,15 @@ open class BasicElementView: ConstraintLayout {
                 MotionEvent.ACTION_UP -> {
                     // first_line.text = "ActionUp"
                     if(isSelected) {
-                        val activity: AppCompatActivity = context as AppCompatActivity
-                        if (activity is DrawingActivity) {
-                            val drawingActivity: DrawingActivity = activity as DrawingActivity
-                            drawingActivity.syncCanevasFromLayout()
-                        }
-                        emitUpdate()
-                        emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksFrom!!)
-                        emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksTo!!)
+//                        val activity: AppCompatActivity = context as AppCompatActivity
+//                        if (activity is DrawingActivity) {
+//                            val drawingActivity: DrawingActivity = activity as DrawingActivity
+//                            drawingActivity.syncCanevasFromLayout()
+//                        }
+//                        emitUpdate()
+//                        emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksFrom!!)
+//                        emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksTo!!)
+                        syncShapeWithView()
                     }
                     pointerFinger1 = -1
                 }
@@ -626,6 +627,16 @@ open class BasicElementView: ConstraintLayout {
             }
         }
         true
+    }
+    fun syncShapeWithView(){
+        val activity: AppCompatActivity = context as AppCompatActivity
+        if (activity is DrawingActivity) {
+            val drawingActivity: DrawingActivity = activity as DrawingActivity
+            drawingActivity.syncCanevasFromLayout()
+        }
+        emitUpdate()
+        emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksFrom!!)
+        emitLinkUpdate(ViewShapeHolder.getInstance().canevas.findShape(ViewShapeHolder.getInstance().map[this]!!)?.linksTo!!)
     }
 
     private fun colorAnchorOnHover(x: Int, y: Int) {
@@ -888,7 +899,8 @@ open class BasicElementView: ConstraintLayout {
             Log.d("emitingUpdate", response)
             socket?.emit(SocketConstants.UPDATE_FORMS, response)
         }
-        SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
+        //SyncShapeHolder.getInstance().drawingActivity!!.saveCanevas()
+        SyncShapeHolder.getInstance().saveCanevas()
     }
 
     fun emitSelection(){
