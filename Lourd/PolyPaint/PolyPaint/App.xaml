@@ -77,6 +77,6 @@
             <utils:ViewModelLocator x:Key="VMLocator"/>
             <BitmapImage x:Key="BlankImage" UriSource="/PolyPaint;component/Imgs/blank.png"/>
             <utils:ByteBitmapSourceConverter x:Key="ByteBmpSrcConverter"/>
-        </ResourceDictionary>   
+        </ResourceDictionary>          
     </Application.Resources>
 </Application>

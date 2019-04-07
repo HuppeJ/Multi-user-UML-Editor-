@@ -56,8 +56,8 @@
                     <PasswordBox x:Name="PasswordTxtBox" Width="150" Margin="0,5" PasswordChar="*"
                                  materialDesign:HintAssist.Hint="Password">
                     </PasswordBox>
-                    <Button Content="Create user" Margin="0,10,0,0" Command="{Binding CreateUserCommand}" Width="150" CommandParameter="{Binding ElementName=PasswordTxtBox}"/>
-                    <Button Content="Back to login" Margin="0,10,0,0" Command="{Binding BackToLoginCommand}" Width="150"/>
+                    <Button Content="CREATE USER" Margin="0,10,0,0" Command="{Binding CreateUserCommand}" Width="150" CommandParameter="{Binding ElementName=PasswordTxtBox}"/>
+                    <Button Content="BACK TO LOGIN" Margin="0,10,0,0" Command="{Binding BackToLoginCommand}" Width="150"/>
                 </StackPanel>
             </Border>
             <Popup x:Name="popUpMessage" Placement="Center">

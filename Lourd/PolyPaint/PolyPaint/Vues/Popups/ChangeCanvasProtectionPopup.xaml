@@ -54,8 +54,8 @@
                             </PasswordBox>
                         </StackPanel>
 
-                        <Button Content="Change protection" Margin="0,10,0,0" Width="150" IsDefault="True" Click="Close" Command="{Binding ChangeCanvasProtectionCommand}" CommandParameter="{Binding ElementName=PasswordTextBox}"/>
-                        <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close" Command="{Binding CancelCanvasProtectionChangeCommand}" CommandParameter="{Binding ElementName=PasswordTextBox}"/>
+                        <Button Content="CHANGE PROTECTION" Margin="0,10,0,0" Width="150" IsDefault="True" Click="Close" Command="{Binding ChangeCanvasProtectionCommand}" CommandParameter="{Binding ElementName=PasswordTextBox}"/>
+                        <Button Content="CANCEL" Margin="0,10,0,0" Width="150" Click="Close" Command="{Binding CancelCanvasProtectionChangeCommand}" CommandParameter="{Binding ElementName=PasswordTextBox}"/>
                     </StackPanel>
                 </Border>
             </Grid>

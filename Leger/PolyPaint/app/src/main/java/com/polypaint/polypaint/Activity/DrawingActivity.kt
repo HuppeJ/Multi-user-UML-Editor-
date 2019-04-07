@@ -413,7 +413,7 @@ class DrawingActivity : AppCompatActivity(){
             ShapeTypes.CLASS_SHAPE -> {
                 shapeStyle.width = 168.0
                 shapeStyle.height = 189.0
-                shape = ClassShape(UUID.randomUUID().toString(), shapeType.value(), "classShape1", shapeStyle, ArrayList<String?>(), ArrayList<String?>(),ArrayList<String?>(), ArrayList<String?>())
+                shape = ClassShape(UUID.randomUUID().toString(), shapeType.value(), "Class", shapeStyle, ArrayList<String?>(), ArrayList<String?>(),ArrayList<String?>(), ArrayList<String?>())
             }
             ShapeTypes.ARTIFACT -> {
                 shapeStyle.width = 168.0
@@ -443,7 +443,7 @@ class DrawingActivity : AppCompatActivity(){
             ShapeTypes.FREETEXT->{
                 shapeStyle.width = 189.0
                 shapeStyle.height = 189.0
-                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "FreeText", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
+                shape = BasicShape(UUID.randomUUID().toString(), shapeType.value(), "Text", shapeStyle, ArrayList<String?>(), ArrayList<String?>())
             }
         }
 

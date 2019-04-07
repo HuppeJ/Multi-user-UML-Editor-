@@ -45,12 +45,12 @@
 
             <Rectangle VerticalAlignment="Stretch" Fill="Black" Margin="706,126,389,74"></Rectangle>
 
-            <Button Content="Leave Tutorial" Margin="923,31,27,637" Command="{Binding LeaveTutorialCommand}" Width="150"/>
+            <Button Content="LEAVE TUTORIAL" Margin="923,31,27,637" Command="{Binding LeaveTutorialCommand}" Width="150"/>
 
             <TextBlock Margin="726,118,11,535" FontSize="28" Text="{Binding TutorialTextTitle}"></TextBlock>
 
-            <Button Content="Previous" Margin="700,645,223,23" Command="{Binding PreviousTutorialPageCommand}" Width="120"/>
-            <Button Content="Next" Margin="840,645,113,23" Command="{Binding NextTutorialPageCommand}" Width="120"/>
+            <Button Content="PREVIOUS" Margin="700,645,223,23" Command="{Binding PreviousTutorialPageCommand}" Width="120"/>
+            <Button Content="NEXT" Margin="840,645,113,23" Command="{Binding NextTutorialPageCommand}" Width="120"/>
             <TextBlock Margin="726,171,11,78" FontSize="18" Text="{Binding TutorialText}" TextWrapping="Wrap" TextAlignment="Justify"></TextBlock>
             <TextBlock Margin="985,650,75,28" FontSize="12" Text="Page"/>
             <TextBlock Margin="1014,650,30,31" FontSize="12" Text="{Binding TutorialPage}"/>

@@ -64,7 +64,7 @@
                     <wpfx:ColorPicker  x:Name="pickFillColor" Width="78" MaxWidth="150" Margin="0,0,0,0.2"
                                    SelectedColor="{Binding FillColor, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 </StackPanel>
-                <Button Content="Accept Changes" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
+                <Button Content="ACCEPT CHANGES" Margin="0,0,0,0" Click="Rename" Width="150" RenderTransformOrigin="0.513,-0.352" IsDefault="True"/>
             </StackPanel>
         </materialDesign:Card>
     </Border>

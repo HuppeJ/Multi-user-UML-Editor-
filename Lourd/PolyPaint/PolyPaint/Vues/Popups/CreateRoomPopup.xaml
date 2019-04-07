@@ -37,8 +37,8 @@
                                  Text="{Binding CanvasName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                         </TextBox>
 
-                        <Button Content="Create room" Margin="0,10,0,0" Width="150" IsDefault="True" Click="Close" Command="{Binding CreateChatroomCommand}" CommandParameter="{Binding Text, ElementName=RoomNameTextBox}"/>
-                        <Button Content="Cancel" Margin="0,10,0,0" Width="150" Click="Close"/>
+                        <Button Content="CREATE ROOM" Margin="0,10,0,0" Width="150" IsDefault="True" Click="Close" Command="{Binding CreateChatroomCommand}" CommandParameter="{Binding Text, ElementName=RoomNameTextBox}"/>
+                        <Button Content="CANCEL" Margin="0,10,0,0" Width="150" Click="Close"/>
                     </StackPanel>
                 </Border>
             </Grid>

@@ -29,7 +29,7 @@
                             VerticalAlignment="Top"
                             Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="20,0,0,0"/>
                 </StackPanel>
-                <Button Content="Ok" Click="ClosePopup" Width="150" HorizontalAlignment="Right" IsDefault="True"/>
+                <Button Content="OK" Click="ClosePopup" Width="150" HorizontalAlignment="Right" IsDefault="True"/>
             </StackPanel>
         </materialDesign:Card>
     </Border>
