@@ -257,7 +257,6 @@ class LassoView(context: Context?) : View(context) {
                         }
                         shape.invalidate()
                         shape.requestLayout()
-                        shape.syncShapeWithView()
                     }
                     for(link in linksIn){
                         val linkPath = link.link?.path
@@ -282,6 +281,9 @@ class LassoView(context: Context?) : View(context) {
                     parentView.removeView(this)
                     activity.selection_button.isChecked = false
                     parentView.dispatchSetSelected(false)
+                }
+                for(shape in viewsIn) {
+                    shape.syncShapeWithView()
                 }
                 invalidate()
                 requestLayout()
