@@ -169,15 +169,7 @@
                         <Image Source="/Resources/crayon.png"  />
                     </StackPanel>
                 </Button>-->
-                <Button x:Name="efface_trait" Width="40" Height="40" Margin="5" Padding="0,0"
-                        BorderBrush="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
-                        Background="{Binding OutilSelectionne, ConverterParameter=efface_trait, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
-                        Command="{Binding ChoisirOutil}"
-                        CommandParameter="efface_trait" ToolTip="ERASER">
-                    <StackPanel>
-                        <Image Source="/Resources/efface.png" />
-                    </StackPanel>
-                </Button>
+
                 <!--<Button x:Name="align_left" Width="40" Height="40" Margin="5" Padding="0,0" Click="AlignLeft" Background="Transparent">
                     <StackPanel>
                         <Image Source="/Resources/align_left.png" />
@@ -189,10 +181,16 @@
                     </StackPanel>
                 </Button>-->
 
-                <Button x:Name="ClassFromCodeButton" Width="40" Height="40" Margin="5" Padding="0,0"
+                <Button x:Name="ClassFromCodeButton" Width="40" Height="40" Margin="5" Padding="0,0" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=CSHARP, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=CSHARP, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Click="OpenClassPopup"
-                        Content="CODE" ToolTip="CLASS FROM CODE">
+                        ToolTip="CLASS FROM CODE">
+                    <StackPanel>
+                        <Image Source="/Resources/withplus/CSharpCode.png"  />
+                    </StackPanel>
                 </Button>
+
                 <Button x:Name="LargestClassWidth" Width="40" Height="40" Margin="5" Padding="0,0"
                         Click="AdjustToLargestClassWidth"
                         Content="WIDTH" ToolTip="Adjust to largest class width">
@@ -203,7 +201,7 @@
                 </Button>
                 <Button x:Name="TutoButton" Width="40" Height="40" Margin="5" Padding="0,0"
                         Click="OpenTutorial"
-                        Content="TUTO" ToolTip="OPEN TUTORIAL">
+                        Content="TUTO" ToolTip="TUTORIAL">
                 </Button>
 
                 <StackPanel Orientation="Horizontal">
