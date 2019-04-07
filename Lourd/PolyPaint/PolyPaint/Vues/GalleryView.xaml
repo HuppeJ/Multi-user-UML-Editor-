@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:local="clr-namespace:PolyPaint.VueModeles"
              xmlns:Vues="clr-namespace:PolyPaint.Vues"
              xmlns:Converters="clr-namespace:PolyPaint.Convertisseurs"
              mc:Ignorable="d"              
@@ -19,7 +18,6 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Green.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <local:VueModele x:Key="VueModele" />
             <Converters:MultiValueEqualityConverter x:Key="MultiValueEqualityConverter"/>
             <Converters:StringToByteArrayConverter x:Key="StringToByteArrayConverter"/>
 
@@ -95,13 +93,6 @@
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
-
-    <i:Interaction.Triggers>
-        <i:EventTrigger>
-            <i:InvokeCommandAction Command="{Binding Source={StaticResource VueModele}, 
-                          Path=InitializeDrawingCommand}"/>
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
 
     <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="796" Height="700" Padding ="0" Margin="0">
         <Grid HorizontalAlignment="Left" Width="817" Margin="0,0,-21,0">

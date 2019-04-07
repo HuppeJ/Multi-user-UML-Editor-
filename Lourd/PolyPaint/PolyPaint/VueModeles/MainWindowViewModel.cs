@@ -979,6 +979,7 @@ namespace PolyPaint.VueModeles
                 UserMode = UserModes.Gallery;
                 selectedRoom = rooms.First();
                 IsLoggedIn = true;
+                DrawingService.RefreshCanvases();
             }
             else
             {
@@ -1038,6 +1039,20 @@ namespace PolyPaint.VueModeles
             IsChatWindowClosing = true;
             CloseChatWindow?.Invoke();
             UserMode = UserModes.Gallery;
+        }
+
+        private void LeaveDrawing()
+        {
+            IsChatWindowClosing = true;
+            CloseChatWindow?.Invoke();
+            if(UserMode == UserModes.Offline)
+            {
+                UserMode = UserModes.Login;
+            }
+            else
+            {
+                UserMode = UserModes.Gallery;
+            }
         }
 
         private void CreateRoom(CreateChatroomResponse response)
@@ -1224,6 +1239,7 @@ namespace PolyPaint.VueModeles
             DrawingService.UpdatePrivateCanvases += UpdatePrivateCanvases;
             DrawingService.JoinCanvasRoom += JoinCanvasRoom;
             DrawingService.BackToGallery += BackToGallery;
+            DrawingService.LeaveDrawingAction += LeaveDrawing;
             DrawingService.GoToTutorial += GoToTutorial;
 
             chatService.NewMessage += NewMessage;

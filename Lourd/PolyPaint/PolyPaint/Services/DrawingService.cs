@@ -29,6 +29,7 @@ namespace PolyPaint.Services
         public static event Action<Coordinates> OnResizeCanvas;
         public static event Action RemoteReset;
         public static event Action BackToGallery;
+        public static event Action LeaveDrawingAction;
         public static event Action SaveCanvas;
         public static event Action RefreshChildren;
         public static event Action ReintializeCanvas;
@@ -334,7 +335,7 @@ namespace PolyPaint.Services
 
             socket.On("disconnect", (data) =>
             {
-                BackToGallery?.Invoke();
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { BackToGallery(); }), DispatcherPriority.Render);
             });
 
             RefreshCanvases();
@@ -769,9 +770,10 @@ namespace PolyPaint.Services
             Application.Current?.Dispatcher?.Invoke(new Action(() => { GoToTutorial(); }), DispatcherPriority.Render);
         }
 
-        internal static void GoToGallery()
+        internal static void LeaveDrawing()
         {
-            BackToGallery?.Invoke();
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { LeaveDrawingAction(); }), DispatcherPriority.Render);
+
         }
 
         internal static void GetHistoryLog(object o)
