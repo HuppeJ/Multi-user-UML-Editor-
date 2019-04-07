@@ -331,9 +331,9 @@ namespace PolyPaint.Services
             socket.On("canvasSaved", (data) =>
             {
                 EditCanevasData response = serializer.Deserialize<EditCanevasData>((string)data);
-                if (username != null && !username.Equals(response.username))
+                if (username != null && username.Equals(response.username))
                 {
-                    RefreshPublicCanvases();
+                    RefreshCanvases();
                 }
             });
 
