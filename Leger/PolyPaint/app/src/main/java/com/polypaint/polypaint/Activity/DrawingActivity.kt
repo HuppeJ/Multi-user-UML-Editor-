@@ -135,36 +135,44 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         freetext_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.FREETEXT)
             saveCanevas()
         }
 
         class_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.CLASS_SHAPE)
             saveCanevas()
         }
         artefact_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ARTIFACT)
             Log.d("before delay", "saveCanevasCall")
             saveCanevas()
         }
         activity_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ACTIVITY)
             saveCanevas()
         }
         role_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.ROLE)
             saveCanevas()
         }
         comment_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.COMMENT)
             saveCanevas()
         }
         phase_button.setOnClickListener {
+            selection_button.isChecked = false
             addOnCanevas(ShapeTypes.PHASE)
             saveCanevas()
         }
         link_button.setOnClickListener {
+            selection_button.isChecked = false
             var linkDefaultPath : ArrayList<Coordinates> = ArrayList()
             linkDefaultPath.add(Coordinates(65.0,65.0))
             linkDefaultPath.add(Coordinates(250.0,65.0))
@@ -180,6 +188,7 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         clear_canvas_button.setOnClickListener {
+            selection_button.isChecked = false
             emitClearCanvas()
             parent_relative_layout?.removeAllViews()
             ViewShapeHolder.getInstance().removeAll()
@@ -189,18 +198,22 @@ class DrawingActivity : AppCompatActivity(){
         }
 
         duplicate_button.setOnClickListener{
+            selection_button.isChecked = false
             duplicateView()
             saveCanevas()
         }
         cut_button.setOnClickListener{
+            selection_button.isChecked = false
             cutView()
             saveCanevas()
         }
         stack_button.setOnClickListener{
+            selection_button.isChecked = false
             stackView()
             saveCanevas()
         }
         unstack_button.setOnClickListener{
+            selection_button.isChecked = false
             unstackView()
             saveCanevas()
         }
