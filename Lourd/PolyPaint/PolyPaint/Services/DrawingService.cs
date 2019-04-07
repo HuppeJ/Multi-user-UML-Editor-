@@ -400,7 +400,7 @@ namespace PolyPaint.Services
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { AddStroke(eventArgs); }), DispatcherPriority.ContextIdle);
             }
 
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { RefreshChildren(); }), DispatcherPriority.Render);
+            Application.Current?.Dispatcher?.Invoke(new Action(() => { RefreshChildren(); }), DispatcherPriority.ContextIdle);
 
         }
 

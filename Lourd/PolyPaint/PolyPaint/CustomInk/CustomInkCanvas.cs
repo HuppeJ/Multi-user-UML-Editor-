@@ -718,18 +718,21 @@ namespace PolyPaint.CustomInk
         private void OnRemoteStroke(InkCanvasStrokeCollectedEventArgs e)
         {
             CustomStroke stroke = (CustomStroke)e.Stroke;
-            AddStroke(stroke);
-            AddTextBox(stroke);
-            if (stroke.isLinkStroke() && (stroke as LinkStroke).style.type == 1) // dotted linkStroke
+            if (!StrokesDictionary.ContainsKey(stroke.guid.ToString()))
             {
-                Path path = new Path();
-                path.Data = stroke.GetGeometry();
+                AddStroke(stroke);
+                AddTextBox(stroke);
+                if (stroke.isLinkStroke() && (stroke as LinkStroke).style.type == 1) // dotted linkStroke
+                {
+                    Path path = new Path();
+                    path.Data = stroke.GetGeometry();
 
-                Children.Add(path);
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
+                    Children.Add(path);
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                    myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
+                }
             }
-
+            
         }
 
         private void OnRemoteSelection()
