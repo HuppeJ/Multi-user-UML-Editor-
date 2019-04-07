@@ -223,13 +223,13 @@ class DrawingActivity : AppCompatActivity(){
             SyncShapeHolder.getInstance().saveCanevas()
         }
         stack_button.setOnClickListener{
-            selection_button.isChecked = false
+            //selection_button.isChecked = false
             stackView()
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
         unstack_button.setOnClickListener{
-            selection_button.isChecked = false
+            //selection_button.isChecked = false
             unstackView()
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
@@ -670,6 +670,7 @@ class DrawingActivity : AppCompatActivity(){
         //Max : Comme c'est là, on peut stack qqc qui est sélectionné par les autres, plus facile comme ça, et pas spécifié dans le complément
         try {
             var idToStack = ViewShapeHolder.getInstance().stackDrawingElementCreatedId.pop()
+
             var drawingToStack = ViewShapeHolder.getInstance().findDrawingElement(idToStack)
             Log.d("stackView", "id: "+idToStack)
             //Basic Shape
@@ -693,6 +694,7 @@ class DrawingActivity : AppCompatActivity(){
                 parent_relative_layout.removeView(viewToRemove)
                 ViewShapeHolder.getInstance().remove(viewToRemove)
 
+                lassoView?.viewsIn?.remove(viewToRemove)
             }
             //Link
             else if(drawingToStack is Link){
@@ -701,6 +703,7 @@ class DrawingActivity : AppCompatActivity(){
                 ViewShapeHolder.getInstance().linkMap.inverse()[idToStack]?.deleteLink()
                 stackDrawingElement.push(drawingToStack)
 
+                lassoView?.linksIn?.remove(ViewShapeHolder.getInstance().linkMap.inverse()[idToStack])
             }
 
         }catch (e : EmptyStackException){}
