@@ -82,7 +82,7 @@
                             Background="{Binding OutilSelectionne, ConverterParameter=lasso, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                             Command="{Binding ChoisirOutil}"
                             CommandParameter="lasso"
-                            ToolTip="Selection">
+                            ToolTip="Select">
                         <StackPanel>
                             <Image Source="/Resources/NewLook/lasso.png"  />
                         </StackPanel>
@@ -94,7 +94,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=CLASS_SHAPE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="CLASS_SHAPE" ToolTip="CLASS">
+                        CommandParameter="CLASS_SHAPE" ToolTip="Add class">
                         <StackPanel>
                             <Image Source="/Resources/withplus/class.png"  />
                         </StackPanel>
@@ -103,7 +103,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=LINK, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="LINK" ToolTip="LINK">
+                        CommandParameter="LINK" ToolTip="Add link">
                         <StackPanel>
                             <Image Source="/Resources/withplus/link.png"  />
                         </StackPanel>
@@ -112,7 +112,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ROLE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="ROLE" ToolTip="ROLE">
+                        CommandParameter="ROLE" ToolTip="add role">
                         <StackPanel>
                             <Image Source="/Resources/withplus/actor.png"  />
                         </StackPanel>
@@ -121,7 +121,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ARTIFACT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="ARTIFACT" ToolTip="ARTIFACT">
+                        CommandParameter="ARTIFACT" ToolTip="Add artifact">
                         <StackPanel>
                             <Image Source="/Resources/withplus/artifact.png"  />
                         </StackPanel>
@@ -130,7 +130,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=ACTIVITY, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="ACTIVITY" ToolTip="ACTIVITY">
+                        CommandParameter="ACTIVITY" ToolTip="Add activity">
                         <StackPanel>
                             <Image Source="/Resources/withplus/activity.png"  />
                         </StackPanel>
@@ -139,7 +139,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=PHASE, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="PHASE" ToolTip="PHASE">
+                        CommandParameter="PHASE" ToolTip="Add phase">
                         <StackPanel>
                             <Image Source="/Resources/withplus/phase.png"  />
                         </StackPanel>
@@ -148,7 +148,7 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=COMMENT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="COMMENT" ToolTip="COMMENT">
+                        CommandParameter="COMMENT" ToolTip="Add comment">
                         <StackPanel>
                             <Image Source="/Resources/withplus/comment.png"  />
                         </StackPanel>
@@ -157,11 +157,14 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=FLOATINGTEXT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=FLOATINGTEXT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding ChooseStrokeTypeCommand}"
-                        CommandParameter="FLOATINGTEXT" ToolTip="FREE TEXT">
+                        CommandParameter="FLOATINGTEXT" ToolTip="Add floating text">
                         <StackPanel>
                             <Image Source="/Resources/withplus/freetext.png"  />
                         </StackPanel>
                     </Button>
+                    <StackPanel Orientation="Horizontal">
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                    </StackPanel>
                     <!--<Button x:Name="crayon" Width="40" Height="40" Margin="5" Padding="0,0" 
                         BorderBrush="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding OutilSelectionne, ConverterParameter=crayon, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
@@ -187,28 +190,38 @@
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=CSHARP, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=CSHARP, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Click="OpenClassPopup"
-                        ToolTip="CLASS FROM CODE">
+                        ToolTip="Add class from code">
                         <StackPanel>
                             <Image Source="/Resources/withplus/CSharpCode.png"  />
                         </StackPanel>
                     </Button>
 
                     <Button x:Name="LargestClassWidth" Width="40" Height="40" Margin="5" Padding="0,0"
-                        Click="AdjustToLargestClassWidth"
-                        Content="WIDTH" ToolTip="Adjust to largest class width">
+                        Click="AdjustToLargestClassWidth" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=EXPORT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=EXPORT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        
+                        ToolTip="Adjust classes to largest class">
+                        <StackPanel>
+                            <Image Source="/Resources/NewLook/AdjustClassWidthIcon.jpg"  />
+                        </StackPanel>
                     </Button>
                     <Button x:Name="ExportCanvasButton" Width="40" Height="40" Margin="5" Padding="0,0" Foreground="Black"
                         BorderBrush="{Binding SelectedStrokeType, ConverterParameter=EXPORT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding SelectedStrokeType, ConverterParameter=EXPORT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
                         Click="ExportCanvas"
-                        ToolTip="EXPORT CANVAS">
+                        ToolTip="Export canvas">
                         <StackPanel>
                             <Image Source="/Resources/withplus/ExportCanvas.png"/>
                         </StackPanel>
                     </Button>
-                    <Button x:Name="TutoButton" Width="40" Height="40" Margin="5" Padding="0,0"
-                        Click="OpenTutorial"
-                        Content="TUTO" ToolTip="TUTORIAL">
+                    <Button x:Name="TutoButton" Width="40" Height="40" Margin="5" Padding="0,0" Foreground="Black"
+                        BorderBrush="{Binding SelectedStrokeType, ConverterParameter=EXPORT, Converter={StaticResource convertisseurBordure}, UpdateSourceTrigger=PropertyChanged}" 
+                        Background="{Binding SelectedStrokeType, ConverterParameter=EXPORT, Converter={StaticResource convertisseurCouleurFond}, UpdateSourceTrigger=PropertyChanged}" 
+                        Click="OpenTutorial" ToolTip="Tutorial">
+                        <StackPanel>
+                            <Image Source="/Resources/NewLook/QuestionMarkIcon.png"/>
+                        </StackPanel>
                     </Button>
 
                     <StackPanel Orientation="Horizontal">

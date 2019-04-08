@@ -36,17 +36,16 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Margin="200,60,200,41" Height="375">
-        <Grid Margin="0,0,0,-41">
+    <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="auto" Padding="40, 0" Margin="200,60,200,41" Height="500">
+        <Grid Margin="0,0,0,-77">
             <Grid.RowDefinitions>
-                <RowDefinition Height="160"/>
+                <RowDefinition Height="210"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Image Source="/PolyPaint;component/Resources/chat.png" HorizontalAlignment="Center"
-                                VerticalAlignment="Top" Margin="15,20,15,25"/>
+            <TextBlock Text="PolyPaint Pro" TextAlignment="Center" VerticalAlignment="Center" FontSize="60" Foreground="DodgerBlue"/>
 
-            <Border Grid.Row="1" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0">
+            <Border Grid.Row="1" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="0,0,0.333,125.333">
                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center"
                                 VerticalAlignment="Top">
                     <TextBox x:Name="UsernameTxtBox" Width="150" Margin="0,5"
