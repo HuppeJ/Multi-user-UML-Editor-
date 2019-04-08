@@ -281,6 +281,9 @@
     <Compile Include="Vues\Popups\HistoryPopup.xaml.cs">
       <DependentUpon>HistoryPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Popups\MessagePopupGalleryView.xaml.cs">
+      <DependentUpon>MessagePopupGalleryView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Popups\MessagePopupCreateUser.xaml.cs">
       <DependentUpon>MessagePopupCreateUser.xaml</DependentUpon>
     </Compile>
@@ -419,6 +422,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\Popups\HistoryPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vues\Popups\MessagePopupGalleryView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

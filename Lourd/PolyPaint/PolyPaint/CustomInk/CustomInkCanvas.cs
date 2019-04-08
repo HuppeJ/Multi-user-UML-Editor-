@@ -502,17 +502,25 @@ namespace PolyPaint.CustomInk
                     {
                         if (i == 0 && linkStroke.isAttached() && linkStroke.from?.formId != null)
                         {
-                            if (!SelectedStrokes.Contains(StrokesDictionary[linkStroke.from.formId]))
+                            CustomStroke strokeFromDictionary;
+                            if (StrokesDictionary.TryGetValue(linkStroke.from.formId, out strokeFromDictionary))
                             {
-                                continue;
+                                if (!SelectedStrokes.Contains(strokeFromDictionary))
+                                {
+                                    continue;
+                                }
                             }
                         }
                         if (i == linkStroke.path.Count - 1 && linkStroke.isAttached() && linkStroke.to?.formId != null)
                         {
-                            if (!SelectedStrokes.Contains(StrokesDictionary[linkStroke.to.formId]))
+                            CustomStroke strokeFromDictionary;
+                            if (StrokesDictionary.TryGetValue(linkStroke.to.formId, out strokeFromDictionary))
                             {
-                                continue;
-                            };
+                                if (!SelectedStrokes.Contains(strokeFromDictionary))
+                                {
+                                    continue;
+                                };
+                            }
                         }
                         Coordinates coords = (stroke as LinkStroke).path[i];
                         coords.x += delta.X;
@@ -584,16 +592,24 @@ namespace PolyPaint.CustomInk
                     {
                         if (i == 0 && linkStroke.isAttached() && linkStroke.from?.formId != null)
                         {
-                            if (!SelectedStrokes.Contains(StrokesDictionary[linkStroke.from.formId]))
+                            CustomStroke strokeFromDictionary;
+                            if (StrokesDictionary.TryGetValue(linkStroke.from.formId, out strokeFromDictionary))
                             {
-                                continue;
+                                if (!SelectedStrokes.Contains(strokeFromDictionary))
+                                {
+                                    continue;
+                                }
                             }
                         }
                         if (i == linkStroke.path.Count - 1 && linkStroke.isAttached() && linkStroke.to?.formId != null)
                         {
-                            if (!SelectedStrokes.Contains(StrokesDictionary[linkStroke.to.formId]))
+                            CustomStroke strokeFromDictionary;
+                            if (StrokesDictionary.TryGetValue(linkStroke.to.formId, out strokeFromDictionary))
                             {
-                                continue;
+                                if (!SelectedStrokes.Contains(strokeFromDictionary))
+                                {
+                                    continue;
+                                }
                             }
                         }
                         Coordinates coords = (stroke as LinkStroke).path[i];

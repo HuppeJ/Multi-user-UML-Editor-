@@ -121,6 +121,11 @@
             <Popup x:Name="popUpChangeCanvasProtection" Placement="Center">
                 <Vues:ChangeCanvasProtectionPopup x:Name="popUpChangeCanvasProtectionVue"/>
             </Popup>
+
+            <Popup x:Name="popUpMessageGalleryView" Placement="Center">
+                <Vues:MessagePopupGalleryView x:Name="popUpMessageGalleryViewVue"/>
+            </Popup>
+
             <ListBox 
                     MaxHeight="450"
                     ItemsSource="{Binding PublicCanvases}" 

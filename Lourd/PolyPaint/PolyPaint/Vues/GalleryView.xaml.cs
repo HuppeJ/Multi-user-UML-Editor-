@@ -1,4 +1,5 @@
 ﻿using PolyPaint.Services;
+using PolyPaint.VueModeles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,33 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class GalleryView : UserControl
     {
+
+        MainWindowViewModel dataContext = null;
+
         public GalleryView()
         {
             InitializeComponent();
+            Loaded += new RoutedEventHandler(GalleryView_Loaded);
+        }
+
+        void GalleryView_Loaded(object sender, RoutedEventArgs e)
+        {
+            dataContext = DataContext as MainWindowViewModel;
+            if (dataContext != null)
+                dataContext.PopupMessageOnGalleryView += OpenMessagePopup;
+        }
+        
+        //public void CloseDisconnectPopup()
+        //{
+        //    IsEnabled = true;
+        //    popUpMessage.IsOpen = false;
+        //}
+
+        public void OpenMessagePopup(string message)
+        {
+            popUpMessageGalleryViewVue.setParameters(message);
+            popUpMessageGalleryView.IsOpen = true;
+            IsEnabled = false;
         }
 
         private void CreateCanvas(object sender, RoutedEventArgs e)
@@ -51,6 +76,7 @@ namespace PolyPaint.Vues
             popUpCreateCanvas.IsOpen = false;
             popUpJoinProtectedCanvas.IsOpen = false;
             popUpChangeCanvasProtection.IsOpen = false;
+            popUpMessageGalleryView.IsOpen = false;
             IsEnabled = true;
         }
     }
