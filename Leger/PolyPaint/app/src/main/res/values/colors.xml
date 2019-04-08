@@ -16,4 +16,8 @@
 
     <color name="colorBordersRed">#FFFF0000</color>
 
+
+    <color name="colorRedGray">#FFCC7F7F</color>
+
+
 </resources>

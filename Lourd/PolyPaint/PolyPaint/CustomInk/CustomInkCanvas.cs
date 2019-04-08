@@ -44,6 +44,8 @@ namespace PolyPaint.CustomInk
         LinkStroke previewLink = new LinkStroke(new StylusPointCollection { new StylusPoint(0,0) });
         bool isAddingLink = false;
 
+        public static Size maxSize = new Size(800, 550);
+
         #region Dictionary
         public void AddStroke(CustomStroke stroke)
         {
@@ -350,6 +352,7 @@ namespace PolyPaint.CustomInk
             DrawingService.RefreshChildren += RefreshChildren;
             DrawingService.RemoteReset += RemoteReset;
             DrawingService.BackToGallery += DeselectAll;
+            DrawingService.LeaveDrawingAction += DeselectAll;
         }
 
         private void DeselectAll()
@@ -421,7 +424,7 @@ namespace PolyPaint.CustomInk
                 }
                 if (stroke is LinkStroke && (stroke as LinkStroke).isAttached())
                 {
-                    if (!selectedIds.Contains((stroke as LinkStroke).from?.formId))
+                    if ((stroke as LinkStroke).from?.formId != null && !selectedIds.Contains((stroke as LinkStroke).from?.formId))
                     {
                         CustomStroke customStroke;
                         if (StrokesDictionary.TryGetValue((stroke as LinkStroke).from.formId, out customStroke)
@@ -431,7 +434,7 @@ namespace PolyPaint.CustomInk
                             selectedIds.Add(customStroke.guid.ToString());
                         }
                     }
-                    if (!selectedIds.Contains((stroke as LinkStroke).to?.formId))
+                    if ((stroke as LinkStroke).to.formId != null && !selectedIds.Contains((stroke as LinkStroke).to?.formId))
                     {
                         CustomStroke customStroke;
                         if (StrokesDictionary.TryGetValue((stroke as LinkStroke).to.formId, out customStroke)
@@ -647,18 +650,21 @@ namespace PolyPaint.CustomInk
         private void OnRemoteStroke(InkCanvasStrokeCollectedEventArgs e)
         {
             CustomStroke stroke = (CustomStroke)e.Stroke;
-            AddStroke(stroke);
-            AddTextBox(stroke);
-            if (stroke.isLinkStroke() && (stroke as LinkStroke).style.type == 1) // dotted linkStroke
+            if (!StrokesDictionary.ContainsKey(stroke.guid.ToString()))
             {
-                Path path = new Path();
-                path.Data = stroke.GetGeometry();
+                AddStroke(stroke);
+                AddTextBox(stroke);
+                if (stroke.isLinkStroke() && (stroke as LinkStroke).style.type == 1) // dotted linkStroke
+                {
+                    Path path = new Path();
+                    path.Data = stroke.GetGeometry();
 
-                Children.Add(path);
-                AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
-                myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
+                    Children.Add(path);
+                    AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(path);
+                    myAdornerLayer.Add(new DottedPathAdorner(path, stroke as LinkStroke, this));
+                }
             }
-
+            
         }
 
         private void OnRemoteSelection()
@@ -1545,10 +1551,13 @@ namespace PolyPaint.CustomInk
 
         public void RefreshSelectedShape(ShapeStroke stroke)
         {
-            ShapeStroke strokeCopy = (ShapeStroke)stroke.Clone();
-            StrokeCollection strokes = new StrokeCollection() { strokeCopy };
-            Strokes.Replace(stroke, strokes);
-            Select(strokes);
+            if(stroke != null)
+            {
+                ShapeStroke strokeCopy = (ShapeStroke)stroke.Clone();
+                StrokeCollection strokes = new StrokeCollection() { strokeCopy };
+                Strokes.Replace(stroke, strokes);
+                Select(strokes);
+            }
         }
 
         public void ConvertInkCanvasToByteArray()

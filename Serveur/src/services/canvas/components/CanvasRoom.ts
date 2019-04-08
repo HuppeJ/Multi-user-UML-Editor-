@@ -11,6 +11,7 @@ export interface ISelectedLinksValue {
     link: ILink,
 }
 
+export const HISTORY_MAX_SIZE: number = 15;
 
 export default class CanvasRoom {
     public connectedUsers: any;  // connectedUsers is a Set : [key: username]
@@ -30,15 +31,25 @@ export default class CanvasRoom {
     }
 
     public logHistory(username: string, message: string) {
+        const newCanvas = Object.assign({}, this.canvas);
         this.date = new Date();
         const newLog: IHistoryData = {
             username: username,
             message: message,  
             timestamp: this.date.getTime().toString(),
-            canevas: this.canvas
+            canevas: newCanvas
         }
 
-        this.history.push(newLog);
+        if (this.history.length < HISTORY_MAX_SIZE){
+            this.history.push(newLog);
+        } else {
+            const newHistory = [];
+            for (let i = 1; i < HISTORY_MAX_SIZE; i++) {
+                newHistory.push(this.history[i]);
+            }
+            newHistory.push(newLog);
+            this.history = newHistory;
+        }
 
         return true;
     }
@@ -85,11 +96,11 @@ export default class CanvasRoom {
         this.canvas.password = data.password;
         return true;
     }
-
     
     public isCanvasSaved(data: IEditCanevasData) {
         if (data.canevas.thumbnail != "") {
             this.canvas.thumbnail = data.canevas.thumbnail;
+            this.history[this.history.length - 1].canevas.thumbnail = data.canevas.thumbnail;
         }
 
         return true;

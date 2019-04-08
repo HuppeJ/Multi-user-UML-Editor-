@@ -112,7 +112,6 @@
             <Button Content="CREATE DRAWING" Margin="632,12,35,656" Click="CreateCanvas" Width="150" RenderTransformOrigin="-1.78,0.469"/>
             <Button Content="DISCONNECT" Margin="23,651,644,17" Command="{Binding LogoutCommand}" Width="150"/>
 
-            <Button Content="Reset Server" Margin="624,652,43,17" Command="{Binding ResetServerCommand}" Width="150" RenderTransformOrigin="-2.393,0.844"/>
             <Popup x:Name="popUpCreateCanvas" Placement="Center">
                 <Vues:CreateCanvasPopup x:Name="popUpCreateCanvasVue"/>
             </Popup>

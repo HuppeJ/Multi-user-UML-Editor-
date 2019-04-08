@@ -63,6 +63,16 @@ namespace PolyPaint.CustomInk
 
                     visualChildren.Add(path);
                 }
+                if (stroke is LinkStroke)
+                {
+                    Path path = new Path();
+                    path.Data = stroke.GetGeometry();
+                    path.Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF809dce"));
+                    path.StrokeThickness = (stroke as LinkStroke).getThickness();
+                    shapeBorders.Add(path);
+
+                    visualChildren.Add(path);
+                }
             }
 
             double maxX = -9999999;

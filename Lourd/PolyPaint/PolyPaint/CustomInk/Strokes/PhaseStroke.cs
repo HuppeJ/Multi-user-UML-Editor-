@@ -20,6 +20,7 @@ namespace PolyPaint.CustomInk
 
         public PhaseStroke(StylusPointCollection pts) : base(pts)
         {
+            name = "Phase";
             shapeStyle.width = 90;
             shapeStyle.height = 90;
             shapeStyle.coordinates = new Coordinates(pts[pts.Count - 1].ToPoint());
