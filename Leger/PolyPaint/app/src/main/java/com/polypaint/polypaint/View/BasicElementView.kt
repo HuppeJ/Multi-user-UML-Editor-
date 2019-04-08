@@ -750,6 +750,7 @@ open class BasicElementView: ConstraintLayout {
                 emitDelete()
 
                 VFXHolder.getInstance().fireDeleteVFX(leftX+borderResizableLayout.layoutParams.width/2 ,topY+borderResizableLayout.layoutParams.height/2,context)
+                PlaySoundHolder.getInstance().playNotification2(context)
                 val parentView = v.parent.parent.parent as RelativeLayout
 
                 val shapeId: String? = ViewShapeHolder.getInstance().map[this]
