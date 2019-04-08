@@ -145,7 +145,11 @@ namespace PolyPaint.Services
 
                 ExtractCanvasesShapes(canvases.publicCanvas);
 
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { UpdatePublicCanvases(canvases); }), DispatcherPriority.Render);
+                try
+                {
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { UpdatePublicCanvases(canvases); }), DispatcherPriority.Render);
+                }
+                catch { }
             });
 
             socket.On("getPrivateCanvasResponse", (data) =>

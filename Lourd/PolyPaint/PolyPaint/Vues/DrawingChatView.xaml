@@ -22,7 +22,7 @@
         <Vues:WindowDrawing x:Name="WindowDrawing" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Stretch"  Grid.ColumnSpan="2"/>
         <Vues:ChatView x:Name="ChatView" Grid.Row="0" Grid.Column="2" Height="Auto"/>
 
-        <Button x:Name="chatButton" Grid.Row="0" Grid.Column="1" Width="60" Height="60" Background="Transparent"
+        <Button x:Name="chatButton" Grid.Row="0" Grid.Column="1" Width="60" Height="60" Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
                 HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0,0" Click="ChangeChatMode" Tag="{Binding}" Command="{Binding ChatWindowOpenedCommand}">
             <StackPanel>
                 <Image Source="/Resources/chat.png"/>
