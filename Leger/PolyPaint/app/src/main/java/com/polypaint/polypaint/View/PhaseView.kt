@@ -70,12 +70,12 @@ class PhaseView(context: Context): BasicElementView(context) {
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
             // TODO :  is null : linearLayoutCompat & linearLayoutCompat2
-            linearLayoutCompat.layoutParams.height = 60
-            linearLayoutCompat2.layoutParams.height = newHeight - 60
+            linearLayoutCompat.layoutParams.height = 64
+            linearLayoutCompat2.layoutParams.height = newHeight - 64
         }else{
             borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-            linearLayoutCompat.layoutParams.height = 60
-            linearLayoutCompat2.layoutParams.height = mMinimumHeight.toInt() - 60
+            linearLayoutCompat.layoutParams.height = 64
+            linearLayoutCompat2.layoutParams.height = mMinimumHeight.toInt() - 64
         }
 
         borderResizableLayout.requestLayout()

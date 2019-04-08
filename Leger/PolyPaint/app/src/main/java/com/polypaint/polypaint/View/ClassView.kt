@@ -54,14 +54,14 @@ class ClassView(context: Context): BasicElementView(context) {
 
         if(newHeight >= mMinimumHeight){
             borderResizableLayout.layoutParams.height = newHeight
-            linearLayoutCompat.layoutParams.height = 60
-            linearLayoutCompat2.layoutParams.height = (3 * (newHeight-60) / 7)
-            linearLayoutCompat3.layoutParams.height = (4 * (newHeight-60) / 7)
+            linearLayoutCompat.layoutParams.height = 64
+            linearLayoutCompat2.layoutParams.height = (3 * (newHeight-64) / 7)
+            linearLayoutCompat3.layoutParams.height = (4 * (newHeight-64) / 7)
         }else{
             borderResizableLayout.layoutParams.height = (mMinimumHeight).toInt()
-            linearLayoutCompat.layoutParams.height = 60
-            linearLayoutCompat2.layoutParams.height = (3*(mMinimumHeight-60)/7).toInt()
-            linearLayoutCompat3.layoutParams.height = (4*(mMinimumHeight-60)/7).toInt()
+            linearLayoutCompat.layoutParams.height = 64
+            linearLayoutCompat2.layoutParams.height = (3*(mMinimumHeight-64)/7).toInt()
+            linearLayoutCompat3.layoutParams.height = (4*(mMinimumHeight-64)/7).toInt()
         }
 
         borderResizableLayout.requestLayout()

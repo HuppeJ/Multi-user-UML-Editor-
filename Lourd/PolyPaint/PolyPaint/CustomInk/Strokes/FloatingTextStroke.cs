@@ -40,9 +40,9 @@ namespace PolyPaint.CustomInk
             UpdateShapePoints();
 
             // drawingContext.DrawRectangle(fillColor, pen, new Rect(topLeft, bottomRight));
-            shapeStyle.backgroundColor = "#FF000000"; 
+            shapeStyle.backgroundColor = "#00000000"; 
             FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-                new Typeface("Arial"), 12, fillColor);
+                new Typeface("Arial"), 16, Brushes.Black);
 
             formattedText.MaxTextWidth = shapeStyle.width;
             formattedText.MaxTextHeight = shapeStyle.height;
