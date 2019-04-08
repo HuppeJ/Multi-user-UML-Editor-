@@ -42,9 +42,9 @@ namespace PolyPaint.CustomInk
             UpdateShapePoints();
 
             LineSegment topRightSeg = new LineSegment(topRight, true);
-            LineSegment bottomRightSeg = new LineSegment(bottomRight, true);
-            LineSegment bottomLeftSeg = new LineSegment(bottomLeft, true);
-            PathSegmentCollection segments = new PathSegmentCollection { topRightSeg, bottomRightSeg, bottomLeftSeg };
+            LineSegment middleRightSeg = new LineSegment(middleRight, true);
+            LineSegment middleLeftSeg = new LineSegment(middleLeft, true);
+            PathSegmentCollection segments = new PathSegmentCollection { topRightSeg, middleRightSeg, middleLeftSeg };
             PathFigure figure = new PathFigure();
             figure.Segments = segments;
             figure.IsClosed = true;
@@ -54,17 +54,28 @@ namespace PolyPaint.CustomInk
             geometry.Figures = figures;
 
             drawingContext.DrawGeometry(fillColor, pen, geometry);
+            
+            LineSegment bottomRightSeg = new LineSegment(bottomRight, true);
+            LineSegment bottomLeftSeg = new LineSegment(bottomLeft, true);
+            PathSegmentCollection segments2 = new PathSegmentCollection { middleRightSeg, bottomRightSeg, bottomLeftSeg };
+            PathFigure figure2 = new PathFigure();
+            figure2.Segments = segments2;
+            figure2.IsClosed = true;
+            figure2.StartPoint = middleLeft;
+            PathFigureCollection figures2 = new PathFigureCollection { figure2 };
+            PathGeometry geometry2 = new PathGeometry();
+            geometry2.Figures = figures2;
 
-            drawingContext.DrawLine(pen, middleRight, middleLeft);
+            drawingContext.DrawGeometry(Brushes.Transparent, pen, geometry2);
 
             FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-                new Typeface("Arial"), 12, Brushes.Black);
+                new Typeface("Arial"), 20, Brushes.Black);
 
             formattedText.MaxTextWidth = shapeStyle.width;
             formattedText.MaxLineCount = 1;
             formattedText.Trimming = TextTrimming.CharacterEllipsis;
 
-            drawingContext.DrawText(formattedText, GetCustomBound().TopLeft);
+            drawingContext.DrawText(formattedText, new Point(GetCustomBound().TopLeft.X + 2, GetCustomBound().TopLeft.Y + 4));
         }
 
         public override Rect GetBounds()
@@ -125,9 +136,9 @@ namespace PolyPaint.CustomInk
 
             topRight = new Point(topLeft.X + width, topLeft.Y);
 
-            middleLeft = new Point(topLeft.X, topLeft.Y + 20);
+            middleLeft = new Point(topLeft.X, topLeft.Y + 30);
 
-            middleRight = new Point(topLeft.X + width, topLeft.Y + 20);
+            middleRight = new Point(topLeft.X + width, topLeft.Y + 30);
 
             bottomLeft = new Point(topLeft.X, topLeft.Y + height);
 

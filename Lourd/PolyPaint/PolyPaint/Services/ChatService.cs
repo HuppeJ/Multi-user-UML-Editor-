@@ -45,7 +45,11 @@ namespace PolyPaint.Services
             socket.On("joinChatroomResponse", (data) =>
             {
                 JoinChatroomResponse response = serializer.Deserialize<JoinChatroomResponse>((string)data);
+                try
+                {
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { RoomJoin(response); }), DispatcherPriority.ContextIdle);
+                }
+                catch { }
 
                 RequestChatrooms();
             });

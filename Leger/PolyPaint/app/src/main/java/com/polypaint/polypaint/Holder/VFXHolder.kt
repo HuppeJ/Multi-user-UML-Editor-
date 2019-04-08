@@ -29,7 +29,7 @@ class VFXHolder (){
 
     fun fireDeleteVFX(x :Float, y : Float, context: Context){
         if(particleSystem == null || particleSystem!!.isDead()){
-            particleSystem = DeleteParticleSystem(20,x,y,context)
+            particleSystem = DeleteParticleSystem(20,Math.abs(x),Math.abs(y),context)
             particleSystem?.initialize()
             animationHandler.removeCallbacks(animationRunner)
             animationHandler.post(animationRunner)
