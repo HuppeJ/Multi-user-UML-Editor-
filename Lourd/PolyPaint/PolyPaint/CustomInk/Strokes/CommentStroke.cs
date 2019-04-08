@@ -42,7 +42,7 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawRectangle(fillColor, pen, new Rect(topLeft, bottomRight));
 
             FormattedText formattedText = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-                new Typeface("Arial"), 12, Brushes.Black);
+                new Typeface("Arial"), 16, Brushes.Black);
 
             formattedText.MaxTextWidth = shapeStyle.width;
             formattedText.MaxTextHeight = shapeStyle.height;

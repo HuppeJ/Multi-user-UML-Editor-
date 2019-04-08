@@ -206,7 +206,7 @@ namespace PolyPaint.CustomInk
                     ShowMessage("An activity can only be linked to an artifact.");
             } else if (strokeTo != null && strokeTo.isProccessStroke())
             {
-                ShowMessage("Cannot create link.");
+                ShowMessage("A role, an artifact or a role cannot be linked to nothing.");
             }
             else
             {

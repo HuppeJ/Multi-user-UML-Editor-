@@ -228,7 +228,7 @@ namespace PolyPaint.CustomInk
                         {
                             if (anchoredShapeStroke is ActorStroke)
                             {
-                                ShowMessage("Nothing can point to a role");
+                                ShowMessage("No shape can point to a role");
                             }
                             else if (anchoredShapeStroke is ActivityStroke)
                             {
@@ -250,7 +250,7 @@ namespace PolyPaint.CustomInk
                         }
                         else if (newAnchoredStroke.isProccessStroke())
                         {
-                            ShowMessage("Roles, artifacts and activities cannot gi.");
+                            ShowMessage("Roles, artifacts and activities must be linked between themselves.");
                         }
                     }
                     else // there is no to
@@ -280,7 +280,7 @@ namespace PolyPaint.CustomInk
                         }
                         else if (newAnchoredStroke != null && newAnchoredStroke.isProccessStroke())
                         {
-                            ShowMessage("Cannot update link. From is not the right type");
+                            ShowMessage("Roles, artifacts and activities must be linked between themselves.");
                         }
                         else if (fromStroke is ClassStroke && linkStroke.isLinkAggCompHeritage())
                         {

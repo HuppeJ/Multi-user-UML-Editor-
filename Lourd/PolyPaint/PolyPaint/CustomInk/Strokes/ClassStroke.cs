@@ -65,13 +65,13 @@ namespace PolyPaint.CustomInk
             drawingContext.DrawLine(pen, middleLeft2, middleRight2);
 
             FormattedText title = new FormattedText(name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-                new Typeface("Arial"), 12, Brushes.Black);
+                new Typeface("Arial"), 20, Brushes.Black);
 
             title.MaxTextWidth = shapeStyle.width;
             title.MaxLineCount = 1;
             title.Trimming = TextTrimming.CharacterEllipsis;
 
-            drawingContext.DrawText(title, topLeft);
+            drawingContext.DrawText(title, new Point(topLeft.X + 2, topLeft.Y + 4));
 
             string attributesStr = "";
             foreach (string attribute in attributes)
@@ -81,10 +81,10 @@ namespace PolyPaint.CustomInk
             }
 
             FormattedText attributesText = new FormattedText(attributesStr, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-                new Typeface("Arial"), 12, Brushes.Black);
+                new Typeface("Arial"), 16, Brushes.Black);
 
             attributesText.MaxTextWidth = shapeStyle.width;
-            attributesText.MaxTextHeight = (shapeStyle.height - 20) / 2;
+            attributesText.MaxTextHeight = (shapeStyle.height - 30) / 2;
             attributesText.Trimming = TextTrimming.CharacterEllipsis;
 
             drawingContext.DrawText(attributesText, middleLeft1);
@@ -97,10 +97,10 @@ namespace PolyPaint.CustomInk
             }
 
             FormattedText methodsText = new FormattedText(methodsStr, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-                new Typeface("Arial"), 12, Brushes.Black);
+                new Typeface("Arial"), 16, Brushes.Black);
 
             methodsText.MaxTextWidth = shapeStyle.width;
-            methodsText.MaxTextHeight = (shapeStyle.height - 20) / 2;
+            methodsText.MaxTextHeight = (shapeStyle.height - 30) / 2;
             methodsText.Trimming = TextTrimming.CharacterEllipsis;
 
             drawingContext.DrawText(methodsText, middleLeft2);
@@ -179,13 +179,13 @@ namespace PolyPaint.CustomInk
 
             topRight = new Point(topLeft.X + width, topLeft.Y);
 
-            middleLeft1 = new Point(topLeft.X, topLeft.Y + 20);
+            middleLeft1 = new Point(topLeft.X, topLeft.Y + 30);
 
-            middleRight1 = new Point(topLeft.X + width, topLeft.Y + 20);
+            middleRight1 = new Point(topLeft.X + width, topLeft.Y + 30);
 
-            middleLeft2 = new Point(topLeft.X, topLeft.Y + 20 + (height - 20) / 2);
+            middleLeft2 = new Point(topLeft.X, topLeft.Y + 30 + (height - 30) / 2);
 
-            middleRight2 = new Point(topLeft.X + width, topLeft.Y + 20 + (height - 20) / 2);
+            middleRight2 = new Point(topLeft.X + width, topLeft.Y + 30 + (height - 30) / 2);
 
             bottomLeft = new Point(topLeft.X, topLeft.Y + height);
 

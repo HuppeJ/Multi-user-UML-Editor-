@@ -430,7 +430,7 @@ namespace PolyPaint.Vues
 
             foreach(ShapeStroke stroke in sc)
             {
-                if(stroke.strokeType == 0)
+                if(stroke is ClassStroke)
                 {
                     if(stroke.shapeStyle.width > maxWidth)
                     {
@@ -439,9 +439,10 @@ namespace PolyPaint.Vues
                 }
             }
 
+            List<String> remoteSelectedStrokesIds = new List<string>(DrawingService.remoteSelectedStrokes);
             for(int i=0; i<sc.Count; i++)
             {
-                if ((sc[i] as ShapeStroke).strokeType == 0)
+                if (sc[i] is ClassStroke && !remoteSelectedStrokesIds.Contains((sc[i] as ShapeStroke).guid.ToString()))
                 {
                     (sc[i] as ShapeStroke).shapeStyle.width = maxWidth;
                     var updatedStroke = sc[i];
