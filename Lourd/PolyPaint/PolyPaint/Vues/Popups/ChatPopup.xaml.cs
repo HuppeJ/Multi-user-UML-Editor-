@@ -34,7 +34,7 @@ namespace PolyPaint.Vues.Popups
         {
             grid.Children.Remove(chatUserControl);
 
-            if(!(DataContext as MainWindowViewModel).IsChatWindowOpened || !(DataContext as MainWindowViewModel).IsChatWindowClosing)
+            if((DataContext as MainWindowViewModel).IsChatWindowOpened || !(DataContext as MainWindowViewModel).IsChatWindowClosing)
             {
                 if (drawingChatView != null)
                 {
