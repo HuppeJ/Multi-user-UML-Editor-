@@ -19,6 +19,17 @@ class PlaySoundHolder(){
         }
     }
 
+    fun playNotification2(context: Context){
+        try {
+            var alarm : Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            var r : Ringtone = RingtoneManager.getRingtone(context, alarm)
+            r.play()
+
+        } catch (e : Exception) {
+            e.printStackTrace();
+        }
+    }
+
     companion object {
         private val playSoundHolder: PlaySoundHolder = PlaySoundHolder()
 

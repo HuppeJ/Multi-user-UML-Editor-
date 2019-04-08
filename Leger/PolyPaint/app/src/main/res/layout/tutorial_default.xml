@@ -15,12 +15,17 @@
               android:id="@+id/body_text_view"
               app:layout_constraintTop_toBottomOf="@+id/title_text_view" app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintEnd_toEndOf="parent"/>
-    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
-                  android:id="@+id/LinearLayout_images" android:orientation="horizontal"
+    <LinearLayout android:layout_width="match_parent" android:layout_height="300dp"
+                  android:id="@+id/linearLayout_images" android:orientation="horizontal"
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintTop_toBottomOf="@+id/body_text_view">
 
+        <ImageView android:layout_width="700dp"
+                   android:layout_height="300dp"
+                   android:src="@drawable/move_shape"
+                   android:id="@+id/holder_image"/>
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

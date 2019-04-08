@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
+import android.media.Image
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +17,9 @@ import androidx.fragment.app.FragmentActivity
 import com.polypaint.polypaint.R
 import com.polypaint.polypaint.Socket.SocketConstants
 import com.polypaint.polypaint.Tutorial.Section
-import com.polypaint.polypaint.Tutorial.Section1
-import kotlinx.android.synthetic.main.dialog_tutorial.*
 import kotlinx.android.synthetic.main.dialog_tutorial.view.*
 import kotlinx.android.synthetic.main.tutorial_default.view.*
+import kotlinx.android.synthetic.main.tutorial_move_shape.*
 import java.util.*
 import kotlin.collections.ArrayList
 import android.util.Log
@@ -30,6 +30,7 @@ class TutorialDialogFragment: DialogFragment() {
 
     var currentSection : Section? = null
     var indexes : ArrayList<String> = ArrayList()
+    var mapImgIndexes : HashMap<String, View> = HashMap()
     var mapTutorial : HashMap<String, View> = HashMap()
     var buttons : ArrayList<Button> = ArrayList()
     var viewSelf : View? = null
@@ -107,6 +108,9 @@ class TutorialDialogFragment: DialogFragment() {
             var viewInflate = it.layoutInflater.inflate(R.layout.tutorial_default,null)
             viewInflate.title_text_view.text = indexes[i]
             viewInflate.body_text_view.text = tutorialText[i]
+
+            viewInflate.linearLayout_images.holder_image.setImageResource(mapImages(i))
+
             mapTutorial.put(indexes[i], viewInflate)
         }
 
@@ -198,6 +202,53 @@ class TutorialDialogFragment: DialogFragment() {
                 //(viewSelf!!.findViewById(R.id.text_container) as TextView).text = buttons[i].text
             }
         }
+    }
+
+    private fun mapImages(i: Int): Int{
+       return when(i) {
+           0 -> {
+               R.drawable.all_shapes
+           }
+           2 -> {
+               R.drawable.move_shape
+           }
+           3 -> {
+               R.drawable.delete_shape
+           }
+           4 -> {
+               R.drawable.edit_shape
+           }
+           5 -> {
+               R.drawable.link
+           }
+           6 -> {
+               R.drawable.add_links
+           }
+           7 -> {
+               R.drawable.move_link
+           }
+           8 -> {
+               R.drawable.delete_link
+           }
+           9 -> {
+               R.drawable.edit_link
+           }
+           11 -> {
+               R.drawable.resize
+           }
+           12 -> {
+               R.drawable.rotation
+           }
+           17 -> {
+               R.drawable.lasso
+           }
+           19 -> {
+               R.drawable.canvas_resize
+           }
+           else -> {
+               R.drawable.borders_white
+           }
+       }
     }
 
 }
