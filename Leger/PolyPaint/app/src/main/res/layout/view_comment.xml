@@ -18,7 +18,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Comment text"
-                android:gravity="center"
                 android:background="@drawable/borders_comment"/>
         </RelativeLayout>
 </RelativeLayout>
