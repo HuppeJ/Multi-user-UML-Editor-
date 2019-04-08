@@ -230,11 +230,17 @@ class TutorialDialogFragment: DialogFragment() {
            8 -> {
                R.drawable.delete_link
            }
+           9 -> {
+               R.drawable.edit_link
+           }
            11 -> {
                R.drawable.resize
            }
            12 -> {
                R.drawable.rotation
+           }
+           17 -> {
+               R.drawable.lasso
            }
            19 -> {
                R.drawable.canvas_resize
