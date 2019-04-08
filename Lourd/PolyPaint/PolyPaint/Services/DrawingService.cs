@@ -108,7 +108,6 @@ namespace PolyPaint.Services
                 if (response.isPasswordValid)
                 {
                     canvasName = response.canvasName;
-                    UpdateCanvasName(canvasName);
                 }
                 Application.Current?.Dispatcher?.Invoke(new Action(() => { JoinCanvasRoom(response); }), DispatcherPriority.Render);
             });
