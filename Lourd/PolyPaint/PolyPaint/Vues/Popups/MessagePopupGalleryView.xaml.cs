@@ -1,5 +1,6 @@
 ﻿using PolyPaint.CustomInk;
 using PolyPaint.Enums;
+using PolyPaint.VueModeles;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
@@ -10,12 +11,12 @@ namespace PolyPaint.Vues
     /// <summary>
     /// Interaction logic for RenamePopup.xaml
     /// </summary>
-    public partial class MessagePopupCreateRoom : INotifyPropertyChanged
+    public partial class MessagePopupGalleryView : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private ChatView chatView = null;
+        private GalleryView galleryView = null;
 
-        public MessagePopupCreateRoom()
+        public MessagePopupGalleryView()
         {
             InitializeComponent();
             DataContext = this;
@@ -37,16 +38,13 @@ namespace PolyPaint.Vues
         private void ClosePopup(object sender, RoutedEventArgs e)
         {
             var parent = Parent;
-            while (!(parent is ChatView) && parent != null)
+            while (!(parent is GalleryView))
             {
                 parent = LogicalTreeHelper.GetParent(parent);
             }
 
-            chatView = (ChatView)parent;
-            if (chatView != null)
-            {
-                chatView.CloseMessagePopup();
-            }
+            galleryView = (GalleryView)parent;
+            galleryView?.ClosePopUp();
         }
 
         public void setParameters(string message)

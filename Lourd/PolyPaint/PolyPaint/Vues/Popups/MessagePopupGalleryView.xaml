@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PolyPaint.Vues.MessagePopupCreateRoom"
+﻿<UserControl x:Class="PolyPaint.Vues.MessagePopupGalleryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -21,9 +21,9 @@
     </UserControl.Resources>
 
     <Border BorderBrush="DodgerBlue" BorderThickness="2" >
-        <materialDesign:Card VerticalAlignment="Center" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" Width="auto" Height="138" Margin="0" ForceCursor="True">
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="10,35,10,28" Width="auto">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"  Width="auto" Height="40">
+        <materialDesign:Card VerticalAlignment="Center" BorderBrush="White" BorderThickness="2" HorizontalAlignment="Center" Width="396" Height="138" Margin="0" ForceCursor="True">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="10,35,10,28" Width="376">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center"  Width="376" Height="40">
                     <TextBlock x:Name="MessageText" MaxWidth="400" Height="auto" Width="auto"
                             TextWrapping="Wrap"
                             VerticalAlignment="Top"

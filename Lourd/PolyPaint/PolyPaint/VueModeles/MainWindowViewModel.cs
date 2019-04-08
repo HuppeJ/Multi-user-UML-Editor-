@@ -35,6 +35,7 @@ namespace PolyPaint.VueModeles
         public event Action LoginFailed;
         public event Action CreateUserFailed;
         public event Action CreateChatRoomFailed;
+        public event Action<string> PopupMessageOnGalleryView;
 
         const string EMPTY_CANVAS = "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD//2Q==";
 
@@ -969,7 +970,7 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { CreateUserFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { CreateUserFailed(); }), DispatcherPriority.ContextIdle);
                 //dialogService.ShowNotification("The user could not be created");
             }
         }
@@ -985,7 +986,7 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                Application.Current?.Dispatcher?.Invoke(new Action(() => { LoginFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { LoginFailed(); }), DispatcherPriority.ContextIdle);
                 //LoginFailed?.Invoke();
                 //dialogService.ShowNotification("Login failed :/");
             }
@@ -1031,7 +1032,9 @@ namespace PolyPaint.VueModeles
                 }
                 else
                 {
-                    dialogService.ShowNotification("You entered the wrong password");
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { PopupMessageOnGalleryView("You entered the wrong password"); }), DispatcherPriority.ContextIdle);
+
+                    //dialogService.ShowNotification("You entered the wrong password");
                 }
                 AccessingCanvas = false;
             }
@@ -1073,7 +1076,7 @@ namespace PolyPaint.VueModeles
             {
                 if(response.chatroomName != "MainRoom")
                 {
-                    Application.Current?.Dispatcher?.Invoke(new Action(() => { CreateChatRoomFailed(); }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                    Application.Current?.Dispatcher?.Invoke(new Action(() => { CreateChatRoomFailed(); }), DispatcherPriority.ContextIdle);
 
                     //dialogService.ShowNotification("This room already exists");
                 }
@@ -1102,7 +1105,12 @@ namespace PolyPaint.VueModeles
 
         private void CanvasCreationFailed()
         {
-            dialogService.ShowNotification("A canvas with this name already exists. Please chose another name");
+            Application.Current?.Dispatcher?.Invoke(
+                new Action(() => { PopupMessageOnGalleryView("A canvas with this name already exists. Please chose another name"); }), 
+                DispatcherPriority.ContextIdle
+                );
+
+            //dialogService.ShowNotification("A canvas with this name already exists. Please chose another name");
         }
         #endregion
 
