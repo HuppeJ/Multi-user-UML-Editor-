@@ -202,6 +202,9 @@ class DrawingActivity : AppCompatActivity(){
             socket?.emit(SocketConstants.CREATE_LINK, linkObj)
             parent_relative_layout?.addView(linkView)
             ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(newLink.id)
+
+            //VFXHolder.getInstance().fireVFX(linkView.x+100F,linkView.y+100F,this)
+            //PlaySoundHolder.getInstance().playNotification1(this)
             //saveCanevas()
             SyncShapeHolder.getInstance().saveCanevas()
         }
@@ -559,6 +562,9 @@ class DrawingActivity : AppCompatActivity(){
                         }
                         //val shapeDuplicated = drawingElem.copy()
                         shapeDuplicated.id = UUID.randomUUID().toString()
+                        shapeDuplicated.shapeStyle.coordinates.x += 42.0
+                        shapeDuplicated.shapeStyle.coordinates.y += 42.0
+
                         drawingElementDuplicated.add(shapeDuplicated)
                         ViewShapeHolder.getInstance().canevas.addShape(shapeDuplicated)
                         addOnCanevas(shapeDuplicated)
@@ -570,6 +576,10 @@ class DrawingActivity : AppCompatActivity(){
 
                     }else if(drawingElem is Link){
                         var linkDuplicated = drawingElem.copy()
+                        for(point in linkDuplicated.path){
+                            point.x += 42
+                            point.y += 42
+                        }
                         //linkDuplicated.id = UUID.randomUUID().toString()
                         drawingElementDuplicated.add(linkDuplicated)
                         ViewShapeHolder.getInstance().stackDrawingElementCreatedId.push(linkDuplicated.id)
@@ -591,6 +601,13 @@ class DrawingActivity : AppCompatActivity(){
                 Log.d("duplicateWithLasso","not null")
                 lassoView!!.linksIn = ArrayList()
                 lassoView!!.viewsIn = ArrayList()
+                for (point in lassoView!!.pathPoints){
+                    point.x += 42
+                    point.y += 42
+                }
+
+                lassoView!!.requestLayout()
+                lassoView!!.invalidate()
 
                 for (drawingElem in drawingElementDuplicated){
                     if(drawingElem is BasicShape){
