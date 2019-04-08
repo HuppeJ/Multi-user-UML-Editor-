@@ -137,7 +137,7 @@ namespace PolyPaint.Vues
                     _lineStyle = "Full";
                     break;
             }
-            _lineStylesList = new List<string> { "Full", "Dashed", "Dotted" };
+            _lineStylesList = new List<string> { "Full", "Dashed" };
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Label"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BorderColor"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FillColor"));
