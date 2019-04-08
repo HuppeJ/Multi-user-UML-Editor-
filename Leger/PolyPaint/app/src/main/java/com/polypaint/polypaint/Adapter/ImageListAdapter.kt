@@ -74,9 +74,16 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>,  v
         internal fun bind(canevas: Canevas, listener: OnItemClickListener) {
             itemView.setOnClickListener { listener.onItemClick(canevas) }
             nameText.text = canevas.name
-            imageView.setImageResource(R.drawable.ic_picture)
-            imageView.layoutParams.width = 100
-            imageView.layoutParams.height = 100
+            //imageView.setImageResource(R.drawable.ic_picture)
+           // imageView.layoutParams.width = 100
+            //imageView.layoutParams.height = 100
+
+            if(canevas.thumbnail != "" && canevas.thumbnail != null) {
+                imageView.setImageDrawable(getDrawableThumbnail(canevas.thumbnail))
+            } else {
+                imageView.setImageResource(R.drawable.ic_picture)
+            }
+
             if(canevas.password != ""){
                 lockImage.setImageResource(R.drawable.ic_padlock)
             }
@@ -99,7 +106,7 @@ class ImageListAdapter (var context: Context, var canevasList: List<Canevas>,  v
         internal fun bind(canevas: Canevas, listener: OnItemClickListener) {
             itemView.setOnClickListener { listener.onItemClick(canevas) }
             if(canevas.owner == UserHolder.getInstance().username){
-                nameText.text = canevas.name + " owned by you"
+                nameText.text = canevas.name + " owned by " + canevas.owner
             } else {
                 nameText.text = canevas.name + " owned by " + canevas.owner
             }
