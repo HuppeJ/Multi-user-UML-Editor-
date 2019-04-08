@@ -551,6 +551,8 @@
     <Resource Include="Resources\withplus\phase.png" />
     <Resource Include="Resources\withplus\CSharpCode.png" />
     <Resource Include="Resources\withplus\ExportCanvas.png" />
+    <Resource Include="Resources\NewLook\AdjustClassWidthIcon.jpg" />
+    <Resource Include="Resources\NewLook\QuestionMarkIcon.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
