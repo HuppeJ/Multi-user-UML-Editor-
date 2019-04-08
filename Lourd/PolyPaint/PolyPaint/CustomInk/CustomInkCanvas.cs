@@ -19,6 +19,7 @@ using sd = System.Drawing;
 using s2d = System.Drawing.Drawing2D;
 using PolyPaint.CustomInk.Adorners;
 using System.Windows.Controls.Primitives;
+using System.Threading;
 
 namespace PolyPaint.CustomInk
 {
@@ -32,7 +33,7 @@ namespace PolyPaint.CustomInk
 
         public StylusPoint firstPoint;
         public bool isUpdatingLink = false;
-        
+
         private StrokeCollection beingSelected = new StrokeCollection();
         private PathFigure selectionPath = new PathFigure();
         StrokeCollection oldSelectedStrokes = new StrokeCollection();
@@ -348,7 +349,10 @@ namespace PolyPaint.CustomInk
             DrawingService.UpdateSelection += OnRemoteSelection;
             DrawingService.UpdateDeselection += OnRemoteDeselection;
             DrawingService.OnResizeCanvas += OnResizeCanvas;
+
+            DrawingService.SaveCanvas -= ConvertInkCanvasToByteArray;
             DrawingService.SaveCanvas += ConvertInkCanvasToByteArray;
+
             DrawingService.RefreshChildren += RefreshChildren;
             DrawingService.RemoteReset += RemoteReset;
             DrawingService.BackToGallery += DeselectAll;
@@ -1562,39 +1566,30 @@ namespace PolyPaint.CustomInk
 
         public void ConvertInkCanvasToByteArray()
         {
-            var rect = new Rect(RenderSize);
-            var visual = new DrawingVisual();
-
-            using (var dc = visual.RenderOpen())
+            if (DrawingService.saving)
             {
-                dc.DrawRectangle(new VisualBrush(this), null, rect);
-            }
+                var rect = new Rect(RenderSize);
+                var visual = new DrawingVisual();
 
-            var rtb = new RenderTargetBitmap(
-                (int)rect.Width, (int)rect.Height, 96d, 96d, PixelFormats.Default);
-            rtb.Render(visual);
+                using (var dc = visual.RenderOpen())
+                {
+                    dc.DrawRectangle(new VisualBrush(this), null, rect);
+                }
 
-            var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(rtb));
-            byte[] buffer;
-            using (var stream = new MemoryStream())
-            {
-                encoder.Save(stream);
-                buffer = stream.ToArray();
-                string thumbnailString = Convert.ToBase64String(buffer);
-                DrawingService.SendCanvas(thumbnailString);
-            }
+                var rtb = new RenderTargetBitmap(
+                    (int)rect.Width, (int)rect.Height, 96d, 96d, PixelFormats.Default);
+                rtb.Render(visual);
 
-            sd.Image image = (sd.Bitmap)((new sd.ImageConverter()).ConvertFrom(buffer));
-
-            sd.Bitmap bitmap = ResizeImage(image, 80, 50);
-
-            using (var stream = new MemoryStream())
-            {
-                bitmap.Save(stream, sd.Imaging.ImageFormat.Png);
-                byte [] resizedImageBuffer = stream.ToArray();
-                string thumbnailString = Convert.ToBase64String(resizedImageBuffer);
-                //DrawingService.SendCanvas(thumbnailString);
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(rtb));
+                byte[] buffer;
+                using (var stream = new MemoryStream())
+                {
+                    encoder.Save(stream);
+                    buffer = stream.ToArray();
+                    string thumbnailString = Convert.ToBase64String(buffer);
+                    DrawingService.SendCanvas(thumbnailString);
+                }
             }
         }
 

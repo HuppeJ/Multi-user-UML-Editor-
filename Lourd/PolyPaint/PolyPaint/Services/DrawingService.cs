@@ -43,7 +43,7 @@ namespace PolyPaint.Services
             MaxJsonLength = int.MaxValue
         };
         public static string canvasName;
-        public static string canvasNameEdition { get; set; }
+        public static bool saving = false;
         public static Templates.Canvas currentCanvas;
         public static List<string> remoteSelectedStrokes = new List<string>();
         public static List<string> localSelectedStrokes = new List<string>();
@@ -345,6 +345,7 @@ namespace PolyPaint.Services
             {
                 EditCanevasData response = serializer.Deserialize<EditCanevasData>((string)data);
                 RefreshCanvases();
+                saving = false;
             });
 
             socket.On("getCanvasResponse", (data) =>
@@ -493,14 +494,22 @@ namespace PolyPaint.Services
         {
             socket.Emit("createForm", serializer.Serialize(createUpdateFormsData(new StrokeCollection { shapeStroke })));
             localAddedStrokes.Add(shapeStroke.guid.ToString());
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            if (!saving)
+            {
+                saving = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
         }
 
         public static void CreateLink(LinkStroke linkStroke)
         {
             socket.Emit("createLink", serializer.Serialize(createUpdateLinksData(new StrokeCollection { linkStroke })));
             localAddedStrokes.Add(linkStroke.guid.ToString());
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            if (!saving)
+            {
+                saving = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
         }
 
         public static void RemoveShapes(StrokeCollection strokes)
@@ -512,10 +521,18 @@ namespace PolyPaint.Services
             }
 
             EmitIfStrokes("deleteForms", createUpdateFormsData(strokes));
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            if (!saving)
+            {
+                saving = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
 
             EmitIfStrokes("deleteLinks", createUpdateLinksData(strokes));
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            if (!saving)
+            {
+                saving = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
         }
 
         public static void Reset()
@@ -524,7 +541,11 @@ namespace PolyPaint.Services
             localAddedStrokes = new List<string>();
             remoteSelectedStrokes = new List<string>();
             socket.Emit("reinitializeCanvas", serializer.Serialize(new EditCanevasData(username, currentCanvas)));
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            if (!saving)
+            {
+                saving = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
         }
 
         private static void EmitIfStrokes(string eventString, UpdateFormsData shapes)
@@ -534,7 +555,11 @@ namespace PolyPaint.Services
                 socket.Emit(eventString, serializer.Serialize(shapes));
                 if (eventString != "selectForms")
                 {
-                    Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                    if (!saving)
+                    {
+                        saving = true;
+                        Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                    }
                 }
             }
         }
@@ -545,7 +570,11 @@ namespace PolyPaint.Services
                 socket.Emit(eventString, serializer.Serialize(links));
                 if(eventString != "selectLinks")
                 {
-                    Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                    if (!saving)
+                    {
+                        saving = true;
+                        Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+                    }
                 }
             }
         }
@@ -553,13 +582,21 @@ namespace PolyPaint.Services
         public static void UpdateShapes(StrokeCollection strokes)
         {
             EmitIfStrokes("updateForms", createUpdateFormsData(strokes));
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            if (!saving)
+            {
+                saving = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
         }
 
         public static void UpdateLinks(StrokeCollection strokes)
         {
             EmitIfStrokes("updateLinks", createUpdateLinksData(strokes));
-            Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            if (!saving)
+            {
+                saving = true;
+                Application.Current?.Dispatcher?.Invoke(new Action(() => { SaveCanvas(); }), DispatcherPriority.Render);
+            }
         }
 
         public static void SelectShapes(StrokeCollection strokes)
