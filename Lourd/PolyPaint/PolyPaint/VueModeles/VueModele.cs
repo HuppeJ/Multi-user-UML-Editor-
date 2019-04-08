@@ -82,6 +82,13 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        // Nom du canevas actuel
+        public string CanvasName
+        {
+            get { return editeur.CanvasName; }
+            set { ProprieteModifiee(); }
+        }
+
         /* public string CouleurSelectionnee
         {
             get { return editeur.CouleurSelectionnee; }
@@ -158,6 +165,7 @@ namespace PolyPaint.VueModeles
             editeur.AddStrokeFromModel += OnStrokeCollectedEvent;
 
             DrawingService.UpdateHistory += UpdateHistory;
+            DrawingService.UpdateCanvasNameAction += UpdateCanvasName;
         }
 
         /// <summary>
@@ -272,6 +280,11 @@ namespace PolyPaint.VueModeles
         private void UpdateHistory(History history)
         {
             historyLogs = new AsyncObservableCollection<HistoryData>(history.history);
+        }
+
+        private void UpdateCanvasName(string name)
+        {
+            editeur.CanvasName = name;
         }
 
         #region Initialize DrawingService Command

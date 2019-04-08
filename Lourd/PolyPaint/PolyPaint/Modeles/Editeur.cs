@@ -51,6 +51,18 @@ namespace PolyPaint.Modeles
             set { outilSelectionne = value; ProprieteModifiee(); }
         }
 
+        // Nom du canevas actuel
+        private string canvasName = "Offline Mode";
+        public string CanvasName
+        {
+            get { return canvasName; }
+            set
+            {
+                canvasName = value;
+                ProprieteModifiee();
+            }
+        }
+
         internal CustomStroke AddStrokeFromView(CustomStroke selectedStroke/*StylusPoint firstPoint, StrokeTypes strokeType*/)
         {
             // Deja fait par le binding
