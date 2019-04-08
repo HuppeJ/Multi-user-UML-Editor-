@@ -22,6 +22,7 @@ import com.polypaint.polypaint.Enum.ThicknessTypes
 import com.polypaint.polypaint.Fragment.EditLinkDialogFragment
 import com.polypaint.polypaint.Holder.FormsSelectionHolder
 import com.polypaint.polypaint.Holder.UserHolder
+import com.polypaint.polypaint.Holder.VFXHolder
 import com.polypaint.polypaint.Holder.ViewShapeHolder
 import com.polypaint.polypaint.Model.*
 import com.polypaint.polypaint.R
